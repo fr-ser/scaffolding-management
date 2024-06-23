@@ -2,8 +2,8 @@
 
 <template>
   <div class="navigation-bar">
-    <RouterLink class="navigation-link" to="/">Home</RouterLink>
-    <RouterLink class="navigation-link" to="/about">About</RouterLink>
+    <RouterLink class="navigation-link" to="/">Kunden</RouterLink>
+    <RouterLink class="navigation-link" to="/articles">Artikel</RouterLink>
   </div>
 </template>
 
