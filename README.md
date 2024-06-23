@@ -18,3 +18,10 @@ The following tools are required to use the development setup
 - make
 - nodejs (use a version manager like [asdf](https://asdf-vm.com/) or manually conform to the version in `.tool-versions`)
 - npm
+
+### Setup
+
+After the tools above are installed you can run `make install` to install all dependencies.
+
+Then run `make start-backend` and `make start-frontend` in different terminals.
+Now you can visit the URL shown in the frontend command to visit the page.
