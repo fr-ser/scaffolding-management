@@ -7,6 +7,7 @@ import NavigationBar from '@/components/NavigationBar.vue'
 <template>
   <NavigationBar />
   <RouterView />
+
 </template>
 
 <style scoped></style>
