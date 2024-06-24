@@ -9,14 +9,13 @@
     "preview": "vite preview",
     "test": "npm run test:unit && npm run lint",
     "test:unit": "vitest run",
-    "build-only": "vite build",
+    "build-only": "vite build && cp -r dist ../backend/dist/static",
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
     "format": "npm run lint -- --fix && prettier --write src/"
   },
   "dependencies": {
     "axios": "^1.7.2",
-    "numeral": "^2.0.6",
     "pinia": "^2.1.7",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"

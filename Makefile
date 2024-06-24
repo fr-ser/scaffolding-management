@@ -22,3 +22,12 @@ start-backend:
 #: start the frontend
 start-frontend:
 	cd frontend && npm run dev
+
+#: build all assets for production mode
+build:
+	cd backend && npm run build
+	cd frontend && npm run build
+
+#: start application in production mode (both backend and frontend)
+run-production:
+	cd backend && CONFIG_PATH=local.env npm run run:production

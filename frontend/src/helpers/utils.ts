@@ -1,6 +1,3 @@
-import numeral from "numeral";
-import "numeral/locales/de";
-
 /**
  * This function is for compile time checking of completeness of if statements
  * It needs to be passed the parameter, that has been checked exhaustively
@@ -28,10 +25,6 @@ export function debounce<F extends Function>(func: F, wait: number): F {
   } as any;
 }
 
-export function prettyByteSize(bytes: number) {
-  numeral.locale("de");
-  return numeral(bytes).format("0.00 b");
-}
 
 export function validEMail(strEMail: string) {
   var emailRegExp = /^[a-zA-Z0-9.#*+_-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/;
@@ -71,17 +64,6 @@ export function getDateForDOM(date: Date) {
   return temp.getFullYear() + "-" + ("00" + (temp.getMonth() + 1)).slice(-2) + "-" + ("00" + temp.getDate()).slice(-2);
 }
 
-export function numToStr(numVar: number, opts?: { currency?: boolean; decimals?: number }) {
-  const { currency, decimals } = opts || { currency: false, decimals: 5 };
-  numeral.locale("de");
-
-  if (!currency) {
-    const decPlaces = new Array(decimals).fill("0").join("");
-    return numeral(numVar).format(`0,0.[${decPlaces}]`);
-  } else {
-    return numeral(numVar).format(`0,0[.]00 $`);
-  }
-}
 
 export function isNumeric(varParameter: any): boolean {
   return (

@@ -9,7 +9,7 @@ import morgan from 'morgan'
 import path from 'path'
 import 'source-map-support/register'
 
-import { PORT, USERS } from '@/config'
+import { PORT, STATIC_FILE_ROOT, USERS } from '@/config'
 import { closeDatabase, getAppDataSource } from '@/db'
 import { sendMsgLog } from '@/helpers/logging'
 import { apiErrorHandler, shouldLoggerSkip, timeoutCheck } from '@/helpers/middleware'
@@ -20,19 +20,6 @@ import { ordersRouter } from '@/routes/orders'
 
 function configureServer() {
   const app = express()
-
-  app.use(
-    morgan(':date[iso] :method :url :status :res[content-length] - :response-time ms', {
-      skip: shouldLoggerSkip,
-    }),
-  )
-  app.use(cors())
-  app.use(timeoutCheck)
-  app.use(compression())
-  app.use(bodyParser.json({ limit: '5mb' }))
-  app.use(bodyParser.text({ type: 'text/plain', limit: '1mb' }))
-  app.use(bodyParser.text({ type: 'text/html', limit: '3mb' }))
-  app.use(express.static('public'))
 
   app.use(
     basicAuth({
@@ -47,6 +34,19 @@ function configureServer() {
       ),
     }),
   )
+
+  app.use(
+    morgan(':date[iso] :method :url :status :res[content-length] - :response-time ms', {
+      skip: shouldLoggerSkip,
+    }),
+  )
+  app.use(cors())
+  app.use(timeoutCheck)
+  app.use(compression())
+  app.use(bodyParser.json({ limit: '5mb' }))
+  app.use(bodyParser.text({ type: 'text/plain', limit: '1mb' }))
+  app.use(bodyParser.text({ type: 'text/html', limit: '3mb' }))
+  app.use(express.static(STATIC_FILE_ROOT))
 
   app.set('port', PORT)
 

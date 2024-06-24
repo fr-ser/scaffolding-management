@@ -1,4 +1,4 @@
-import { Article, Client, Invoice, Offer, Order } from "./entities";
+import type { Article, Client, Invoice, Offer, Order } from "./entities";
 
 export type ClientCreate = Omit<Client, "id">;
 export type ClientUpdate = Partial<Omit<Client, "id">>;
