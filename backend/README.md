@@ -8,3 +8,7 @@ Run `npm run dev` to start the backend.
 
 <!-- TODO: add unit tests -->
 Run `npm run test` to run all tests.
+
+### Authorization
+
+The backend uses basic auth and the users and their passwords are defined in the environment file.

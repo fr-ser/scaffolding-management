@@ -3,12 +3,13 @@ import compression from 'compression'
 import cors from 'cors'
 import 'dotenv/config'
 import express from 'express'
+import basicAuth from 'express-basic-auth'
 import fs from 'fs'
 import morgan from 'morgan'
 import path from 'path'
 import 'source-map-support/register'
 
-import { PORT } from '@/config'
+import { PORT, USERS } from '@/config'
 import { closeDatabase, getAppDataSource } from '@/db'
 import { sendMsgLog } from '@/helpers/logging'
 import { apiErrorHandler, shouldLoggerSkip, timeoutCheck } from '@/helpers/middleware'
@@ -32,6 +33,20 @@ function configureServer() {
   app.use(bodyParser.text({ type: 'text/plain', limit: '1mb' }))
   app.use(bodyParser.text({ type: 'text/html', limit: '3mb' }))
   app.use(express.static('public'))
+
+  app.use(
+    basicAuth({
+      challenge: true,
+      realm: 'scaffolding',
+      users: Object.entries(USERS).reduce(
+        (acc, [name, { password }]) => {
+          acc[name] = password
+          return acc
+        },
+        {} as Record<string, string>,
+      ),
+    }),
+  )
 
   app.set('port', PORT)
 
