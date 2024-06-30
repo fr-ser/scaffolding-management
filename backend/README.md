@@ -4,6 +4,9 @@
 
 Run `npm run db_seed` to get a local database with some data.
 
+- If you want to update the seed you need to delete the current database first.
+  The database should be at `backend/data.db`.
+
 Run `npm run dev` to start the backend.
 
 <!-- TODO: add unit tests -->
