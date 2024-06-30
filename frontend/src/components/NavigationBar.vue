@@ -1,25 +1,44 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import Menubar from 'primevue/menubar';
+import { ref } from "vue";
+import { ROUTES } from '@/router';
+
+const items = ref([
+  {
+    label: ROUTES.CLIENTS.label,
+    icon: 'pi pi-user',
+    route: ROUTES.CLIENTS.path
+  }, {
+    label: ROUTES.ORDER.label,
+    icon: 'pi pi-shopping-cart',
+    route: ROUTES.ORDER.path
+  }, {
+    label: ROUTES.ORDERS.label,
+    icon: 'pi pi-search',
+    route: ROUTES.ORDERS.path
+  }, {
+    label: ROUTES.DOCUMENTS.label,
+    icon: 'pi pi-file',
+    route: ROUTES.DOCUMENTS.path
+  }, {
+    label: ROUTES.ARTICLES.label,
+    icon: 'pi pi-list',
+    route: ROUTES.ARTICLES.path
+  },
+]);
+</script>
 
 <template>
-  <div class="navigation-bar">
-    <RouterLink class="navigation-link" to="/">Kunden</RouterLink>
-    <RouterLink class="navigation-link" to="/articles">Artikel</RouterLink>
+  <div class="card">
+    <Menubar :model="items">
+      <template #item="{ item, props, hasSubmenu }">
+        <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
+          <a v-ripple :href="href" v-bind="props.action" @click="navigate">
+            <span :class="item.icon" />
+            <span class="ml-2">{{ item.label }}</span>
+          </a>
+        </router-link>
+      </template>
+    </Menubar>
   </div>
 </template>
-
-<style>
-.navigation-bar {
-  display: flex;
-  background-color: gray;
-
-  .navigation-link {
-    padding: 10px;
-    color: white;
-    text-decoration: none;
-
-    &:hover {
-      background-color: black;
-    }
-  }
-}
-</style>
