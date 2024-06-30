@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import ClientView from '@/views/ClientView.vue'
 
 export const ROUTES = {
-  CLIENTS: { name: 'clients', path: '/clients', label: 'Kunden' },
+  CLIENTS: { name: 'clients', path: '/', label: 'Kunden' },
   ORDER: { name: 'order', path: '/order', label: 'Aufträge' },
   ORDERS: { name: 'orders', path: '/orders', label: 'Übersicht' },
   DOCUMENTS: { name: 'documents', path: '/documents', label: 'Dokumente' },
@@ -13,17 +13,25 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'clients',
+      path: ROUTES.CLIENTS.path,
+      name: ROUTES.CLIENTS.name,
       component: ClientView,
-    },
-    {
-      path: '/articles',
-      name: 'articles',
-      // route level code-splitting
-      // this generates a separate chunk ([name].[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('@/views/ArticleView.vue'),
+    }, {
+      path: ROUTES.ORDER.path,
+      name: ROUTES.ORDER.name,
+      component: ClientView,
+    }, {
+      path: ROUTES.ORDERS.path,
+      name: ROUTES.ORDERS.name,
+      component: ClientView,
+    }, {
+      path: ROUTES.DOCUMENTS.path,
+      name: ROUTES.DOCUMENTS.name,
+      component: ClientView,
+    }, {
+      path: ROUTES.ARTICLES.path,
+      name: ROUTES.ARTICLES.name,
+      component: ClientView,
     },
   ],
 })
