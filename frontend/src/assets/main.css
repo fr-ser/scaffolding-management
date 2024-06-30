@@ -1,6 +1,6 @@
-@import './base.css';
+@import "./base.css";
 
-@import 'primeicons/primeicons.css';
+@import "primeicons/primeicons.css";
 
 @tailwind base;
 @tailwind components;

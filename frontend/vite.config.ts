@@ -1,20 +1,20 @@
-import vue from '@vitejs/plugin-vue'
-import { URL, fileURLToPath } from 'node:url'
-import { defineConfig, loadEnv } from 'vite'
+import vue from "@vitejs/plugin-vue";
+import { URL, fileURLToPath } from "node:url";
+import { defineConfig, loadEnv } from "vite";
 
 // <https://vitejs.dev/config/>
 export default defineConfig((env) => {
-  const envVariables = loadEnv(env.mode, './')
+  const envVariables = loadEnv(env.mode, "./");
 
-  const serverURL = new URL(envVariables.VITE_SERVER_URL ?? '<http://localhost:3001>')
-  const serverAPIPath = envVariables.VITE_SERVER_API_PATH ?? '/api'
+  const serverURL = new URL(envVariables.VITE_SERVER_URL ?? "<http://localhost:3001>");
+  const serverAPIPath = envVariables.VITE_SERVER_API_PATH ?? "/api";
 
   return {
-    envDir: './',
+    envDir: "./",
     plugins: [vue()],
     resolve: {
       alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url)),
+        "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     },
 
@@ -25,5 +25,5 @@ export default defineConfig((env) => {
         [serverAPIPath]: serverURL.origin,
       },
     },
-  }
-})
+  };
+});

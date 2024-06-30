@@ -4,8 +4,8 @@ import {
   OfferStatus,
   OrderStatus,
   OverdueNoticeLevel,
-  PaymentStatus,
   OverdueNoticePaymentStatus,
+  PaymentStatus,
 } from "./appTypes";
 
 export interface Article {

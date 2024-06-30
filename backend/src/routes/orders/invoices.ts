@@ -1,102 +1,102 @@
-import express from 'express'
+import express from "express";
 
-import { getAppDataSource } from '@/db'
-import { InvoiceDocumentItem } from '@/db/entities/document_items'
-import { InvoiceDocument } from '@/db/entities/documents'
-import { Invoice } from '@/db/entities/invoice'
-import { ErrorCode, UserRole } from '@/global/types/backendTypes'
-import { ApiError } from '@/helpers/apiErrors'
-import { noCache } from '@/helpers/middleware'
-import { checkAuth } from '@/helpers/roleManagement'
+import { getAppDataSource } from "@/db";
+import { InvoiceDocumentItem } from "@/db/entities/document_items";
+import { InvoiceDocument } from "@/db/entities/documents";
+import { Invoice } from "@/db/entities/invoice";
+import { ErrorCode, UserRole } from "@/global/types/backendTypes";
+import { ApiError } from "@/helpers/apiErrors";
+import { noCache } from "@/helpers/middleware";
+import { checkAuth } from "@/helpers/roleManagement";
 
-export const invoicesRouter = express.Router()
-invoicesRouter.use(noCache)
+export const invoicesRouter = express.Router();
+invoicesRouter.use(noCache);
 // TODO: check here and everywhere in the backend that the user permissions are respected
 
 invoicesRouter.get(
-  '/:id',
+  "/:id",
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource()
+    const dataSource = await getAppDataSource();
     const invoice = await dataSource.manager.findOne(Invoice, {
       where: { id: parseInt(req.params.id) },
-    })
+    });
 
-    if (!invoice) next(new ApiError(ErrorCode.ENTITY_NOT_FOUND))
-    else res.json(invoice)
+    if (!invoice) next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
+    else res.json(invoice);
   },
-)
+);
 
 invoicesRouter.delete(
-  '/:id',
+  "/:id",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource()
+    const dataSource = await getAppDataSource();
 
     const documentCount = await dataSource.manager.countBy(InvoiceDocument, {
       invoice_id: req.params.id,
-    })
+    });
     if (documentCount > 0) {
-      next(new ApiError(ErrorCode.FK_CONSTRAINT_DOCUMENT))
-      return
+      next(new ApiError(ErrorCode.FK_CONSTRAINT_DOCUMENT));
+      return;
     }
 
     try {
-      res.json(await dataSource.manager.delete(Invoice, { id: req.params.id }))
+      res.json(await dataSource.manager.delete(Invoice, { id: req.params.id }));
     } catch (error) {
-      next(error)
+      next(error);
     }
   },
-)
+);
 
 invoicesRouter.patch(
-  '/:id',
+  "/:id",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource()
+    const dataSource = await getAppDataSource();
     const invoice = await dataSource.manager.findOne(Invoice, {
       where: { id: parseInt(req.params.id) },
-    })
+    });
     if (!invoice) {
-      next(new ApiError(ErrorCode.ENTITY_NOT_FOUND))
-      return
+      next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
+      return;
     }
 
     for (const [key, value] of Object.entries(req.body)) {
-      ;(invoice as any)[key] = value // eslint-disable-line @typescript-eslint/no-explicit-any
+      (invoice as any)[key] = value; // eslint-disable-line @typescript-eslint/no-explicit-any
     }
     try {
-      res.json(await dataSource.manager.save(Invoice, invoice))
+      res.json(await dataSource.manager.save(Invoice, invoice));
     } catch (error) {
-      next(error)
+      next(error);
     }
   },
-)
+);
 
 invoicesRouter.get(
-  '/:id/documents',
+  "/:id/documents",
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response) => {
-    const dataSource = await getAppDataSource()
+    const dataSource = await getAppDataSource();
     const documents = await dataSource.manager.find(InvoiceDocument, {
       where: { invoice_id: req.params.id },
-    })
-    res.json(documents)
+    });
+    res.json(documents);
   },
-)
+);
 
 invoicesRouter.post(
-  '/:id/documents/create',
+  "/:id/documents/create",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource()
+    const dataSource = await getAppDataSource();
     const invoice = await dataSource.manager.findOne(Invoice, {
       where: { id: parseInt(req.params.id) },
       relations: { order: { client: true }, items: true },
-    })
+    });
     if (!invoice) {
-      next(new ApiError(ErrorCode.ENTITY_NOT_FOUND))
-      return
+      next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
+      return;
     }
 
     const maxId = (
@@ -105,7 +105,7 @@ invoicesRouter.post(
       from invoice_document
       where id LIKE 'R-${invoice.invoice_date.substring(0, 7)}-%'
     `)
-    )[0].max_id
+    )[0].max_id;
 
     const document = dataSource.manager.create(InvoiceDocument, {
       id: `R-${invoice.invoice_date.substring(0, 7)}-${maxId + 1}`,
@@ -125,10 +125,10 @@ invoicesRouter.post(
       can_have_cash_discount: invoice.order.can_have_cash_discount,
       discount_duration: invoice.order.discount_duration,
       discount_percentage: invoice.order.discount_percentage,
-    })
+    });
 
     await dataSource.transaction(async (transactionalEntityManager) => {
-      await transactionalEntityManager.save(InvoiceDocument, document)
+      await transactionalEntityManager.save(InvoiceDocument, document);
 
       await transactionalEntityManager
         .createQueryBuilder()
@@ -144,12 +144,12 @@ invoicesRouter.post(
               unit: item.unit,
               price: item.price,
               amount: item.amount,
-            }
+            };
           }),
         )
-        .execute()
-    })
+        .execute();
+    });
 
-    res.json(document)
+    res.json(document);
   },
-)
+);
