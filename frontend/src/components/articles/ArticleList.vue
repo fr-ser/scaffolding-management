@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import { onMounted, ref } from "vue";
+
 import { getArticles } from "@/backendClient";
 import type { Article } from "@/global/types/entities";
-import { onMounted, ref } from "vue";
 
 const articles = ref([] as Article[]);
 
 onMounted(async () => {
   articles.value = await getArticles();
-})
-
+});
 </script>
 
 <template>

@@ -1,7 +1,7 @@
 export const mmToPx = function (num: number) {
   // default dpi is 72
-  return (72 / 25.4) * num
-}
+  return (72 / 25.4) * num;
+};
 
 export const appPageOptions = {
   pageHeight: mmToPx(297),
@@ -9,12 +9,12 @@ export const appPageOptions = {
   horizontalMargin: mmToPx(15),
   headerEnd: mmToPx(40),
   footerStart: mmToPx(270),
-}
+};
 
 export interface PdfFileData {
-  totalPages: number
-  prevY: number
-  currY: number
+  totalPages: number;
+  prevY: number;
+  currY: number;
 }
 
 export const pageOptions: PDFKit.PDFDocumentOptions = {
@@ -26,9 +26,9 @@ export const pageOptions: PDFKit.PDFDocumentOptions = {
     left: appPageOptions.horizontalMargin,
     right: appPageOptions.horizontalMargin,
   },
-  layout: 'portrait', // can be 'landscape',
+  layout: "portrait", // can be 'landscape',
   bufferPages: true,
-}
+};
 
 export function newPageCheck(
   doc: PDFKit.PDFDocument,
@@ -37,9 +37,9 @@ export function newPageCheck(
   argPDocData: PdfFileData,
 ) {
   if (appPageOptions.footerStart < start + addition) {
-    doc.addPage(pageOptions)
-    argPDocData.totalPages++
-    argPDocData.currY = appPageOptions.headerEnd
-    return true
-  } else return false
+    doc.addPage(pageOptions);
+    argPDocData.totalPages++;
+    argPDocData.currY = appPageOptions.headerEnd;
+    return true;
+  } else return false;
 }

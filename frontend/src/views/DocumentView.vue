@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { saveAs } from 'file-saver'
-import Button from 'primevue/button'
-import { onMounted, ref } from 'vue'
+import { saveAs } from "file-saver";
+import Button from "primevue/button";
+import { onMounted, ref } from "vue";
 
-import { getDocumentPdf, getDocuments } from '@/backendClient'
-import { DocumentKind } from '@/global/types/appTypes'
-import type { GetDocumentsResponse } from '@/global/types/backendTypes'
+import { getDocumentPdf, getDocuments } from "@/backendClient";
+import { DocumentKind } from "@/global/types/appTypes";
+import type { GetDocumentsResponse } from "@/global/types/backendTypes";
 
-const documents = ref(null as null | GetDocumentsResponse)
+const documents = ref(null as null | GetDocumentsResponse);
 
 async function handleClick(kind: DocumentKind, id: string) {
-  const response = await getDocumentPdf([{ kind, id }])
-  saveAs(response, `${kind}-${id}.pdf`)
+  const response = await getDocumentPdf([{ kind, id }]);
+  saveAs(response, `${kind}-${id}.pdf`);
 }
 
 onMounted(async () => {
-  documents.value = await getDocuments()
-})
+  documents.value = await getDocuments();
+});
 </script>
 
 <template>

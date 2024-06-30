@@ -1,10 +1,4 @@
-/**
- * This function is for compile time checking of completeness of if statements
- * It needs to be passed the parameter, that has been checked exhaustively
- */
-export function neverFunction(x?: never): never {
-  throw new Error("This function should not have been called.");
-}
+import { round } from "@/global/helpers";
 
 export function debounce<F extends Function>(func: F, wait: number): F {
   let timeoutID: number;
@@ -25,9 +19,8 @@ export function debounce<F extends Function>(func: F, wait: number): F {
   } as any;
 }
 
-
 export function validEMail(strEMail: string) {
-  var emailRegExp = /^[a-zA-Z0-9.#*+_-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/;
+  const emailRegExp = /^[a-zA-Z0-9.#*+_-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)+$/;
   return emailRegExp.test(strEMail);
 }
 
@@ -37,14 +30,6 @@ export function getUniqueArray<T>(array: Array<T>) {
   });
 }
 
-export function round(number: number, precision: number): number {
-  // taken from mdn - no idea how this works
-  var factor = Math.pow(10, precision);
-  var tempNumber = number * factor;
-  var roundedTempNumber = Math.round(tempNumber);
-  return roundedTempNumber / factor;
-}
-
 /**
  * The function takes a numeric string (german)
  * and returns the number or null (if it cannot be parsed)
@@ -52,7 +37,7 @@ export function round(number: number, precision: number): number {
  * @param precision optional precision of output
  */
 export function strToFloat(strNum: string, precision?: number): number {
-  const cleanStr = strNum.replace(/[\s\.]/g, "").replace(",", ".");
+  const cleanStr = strNum.replace(/[\s.]/g, "").replace(",", ".");
   const parsedNum = parseFloat(cleanStr);
 
   if (typeof precision === "number") return round(parsedNum, precision);
@@ -60,10 +45,15 @@ export function strToFloat(strNum: string, precision?: number): number {
 }
 
 export function getDateForDOM(date: Date) {
-  var temp = date;
-  return temp.getFullYear() + "-" + ("00" + (temp.getMonth() + 1)).slice(-2) + "-" + ("00" + temp.getDate()).slice(-2);
+  const temp = date;
+  return (
+    temp.getFullYear() +
+    "-" +
+    ("00" + (temp.getMonth() + 1)).slice(-2) +
+    "-" +
+    ("00" + temp.getDate()).slice(-2)
+  );
 }
-
 
 export function isNumeric(varParameter: any): boolean {
   return (
@@ -74,7 +64,7 @@ export function isNumeric(varParameter: any): boolean {
 }
 
 export const dateAddDays = function (initDate: Date, addDays: number) {
-  let newDate = new Date(initDate);
+  const newDate = new Date(initDate);
   newDate.setDate(newDate.getDate() + addDays);
   return newDate;
 };

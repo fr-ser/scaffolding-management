@@ -1,17 +1,17 @@
 // CONFIG_PATH=local.env npx ts-node -r tsconfig-paths/register scripts/seedLocalData.ts
-import fs from 'fs'
-import { DataSource } from 'typeorm'
+import fs from "fs";
+import { DataSource } from "typeorm";
 
-import { DB_PATH } from '@/config'
-import { getAppDataSource } from '@/db'
-import { Article } from '@/db/entities/article'
-import { Client } from '@/db/entities/client'
-import { OfferDocumentItem } from '@/db/entities/document_items'
-import { OfferDocument } from '@/db/entities/documents'
-import { Offer } from '@/db/entities/offer'
-import { Order } from '@/db/entities/order'
-import { OfferItem } from '@/db/entities/order_items'
-import { ArticleKind, ClientSalutation, OfferStatus, OrderStatus } from '@/global/types/appTypes'
+import { DB_PATH } from "@/config";
+import { getAppDataSource } from "@/db";
+import { Article } from "@/db/entities/article";
+import { Client } from "@/db/entities/client";
+import { OfferDocumentItem } from "@/db/entities/document_items";
+import { OfferDocument } from "@/db/entities/documents";
+import { Offer } from "@/db/entities/offer";
+import { Order } from "@/db/entities/order";
+import { OfferItem } from "@/db/entities/order_items";
+import { ArticleKind, ClientSalutation, OfferStatus, OrderStatus } from "@/global/types/appTypes";
 
 async function insertData(dataSource: DataSource) {
   await dataSource
@@ -34,10 +34,10 @@ async function insertData(dataSource: DataSource) {
           postal_code: `postal code ${index + 1}`,
           city: `city ${index + 1}`,
           street_and_number: `street and number ${index + 1}`,
-        }
+        };
       }),
     )
-    .execute()
+    .execute();
 
   await dataSource
     .createQueryBuilder()
@@ -45,7 +45,7 @@ async function insertData(dataSource: DataSource) {
     .into(Article)
     .values(
       Array.from(Array(10)).map((_: unknown, index: number) => {
-        const isEven = index % 2 === 0
+        const isEven = index % 2 === 0;
         return {
           id: `Art${index + 1}`,
           kind: isEven ? ArticleKind.item : ArticleKind.heading,
@@ -53,10 +53,10 @@ async function insertData(dataSource: DataSource) {
           description: `Description ${index + 1}`,
           price: isEven ? 101 + index : undefined,
           unit: isEven ? `Unit ${index + 1}` : undefined,
-        }
+        };
       }),
     )
-    .execute()
+    .execute();
 
   await dataSource
     .createQueryBuilder()
@@ -73,10 +73,10 @@ async function insertData(dataSource: DataSource) {
           can_have_cash_discount: true,
           discount_duration: index + 1,
           discount_percentage: index + 1,
-        }
+        };
       }),
     )
-    .execute()
+    .execute();
 
   await dataSource
     .createQueryBuilder()
@@ -90,10 +90,10 @@ async function insertData(dataSource: DataSource) {
           description: `Description ${index + 1}`,
           offered_at: `2021-01-0${index + 1}`,
           offer_valid_until: `2022-01-0${index + 1}`,
-        }
+        };
       }),
     )
-    .execute()
+    .execute();
 
   await dataSource
     .createQueryBuilder()
@@ -101,7 +101,7 @@ async function insertData(dataSource: DataSource) {
     .into(OfferItem)
     .values(
       Array.from(Array(10)).map((_: unknown, index: number) => {
-        const isEven = index % 2 === 0
+        const isEven = index % 2 === 0;
 
         return {
           offer_id: () => `(SELECT id from offer where order_id='A${index + 1}')`,
@@ -111,10 +111,10 @@ async function insertData(dataSource: DataSource) {
           unit: isEven ? `Unit ${index + 1}` : undefined,
           price: isEven ? 101 + index : undefined,
           amount: isEven ? index + 1 : undefined,
-        }
+        };
       }),
     )
-    .execute()
+    .execute();
 
   await dataSource
     .createQueryBuilder()
@@ -138,17 +138,17 @@ async function insertData(dataSource: DataSource) {
           creation_date: `2021-01-0${index + 1}`,
           offered_at: `2021-02-0${index + 1}`,
           offer_valid_until: `2021-03-0${index + 1}`,
-        }
+        };
       }),
     )
-    .execute()
+    .execute();
   await dataSource
     .createQueryBuilder()
     .insert()
     .into(OfferDocumentItem)
     .values(
       Array.from(Array(10)).map((_: unknown, index: number) => {
-        const isEven = index % 2 === 0
+        const isEven = index % 2 === 0;
 
         return {
           offer_document_id: () =>
@@ -159,35 +159,35 @@ async function insertData(dataSource: DataSource) {
           unit: isEven ? `Unit ${index + 1}` : undefined,
           price: isEven ? 101 + index : undefined,
           amount: isEven ? index + 1 : undefined,
-        }
+        };
       }),
     )
-    .execute()
+    .execute();
 }
 
 async function main() {
   if (fs.existsSync(DB_PATH)) {
-    console.log('database already exists')
-    return
+    console.log("database already exists");
+    return;
   }
 
-  const dataSource = await getAppDataSource()
-  await dataSource.synchronize()
+  const dataSource = await getAppDataSource();
+  await dataSource.synchronize();
 
-  await insertData(dataSource)
+  await insertData(dataSource);
 
-  console.log('Created seed database')
+  console.log("Created seed database");
 }
 main()
   .then(() => {
-    console.log('Finished creating local database')
+    console.log("Finished creating local database");
   })
   .catch((err) => {
     try {
-      fs.unlinkSync(DB_PATH)
+      fs.unlinkSync(DB_PATH);
     } catch (unlinkError) {
-      console.error('Cannot remove database: ', unlinkError)
-      console.error('Error: ', err)
+      console.error("Cannot remove database: ", unlinkError);
+      console.error("Error: ", err);
     }
-    console.error('Error: ', err)
-  })
+    console.error("Error: ", err);
+  });

@@ -1,48 +1,48 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
-import { Invoice } from '@/db/entities/invoice'
-import { Offer } from '@/db/entities/offer'
-import { ArticleKind } from '@/global/types/appTypes'
+import { Invoice } from "@/db/entities/invoice";
+import { Offer } from "@/db/entities/offer";
+import { ArticleKind } from "@/global/types/appTypes";
 
 export abstract class OrderItem {
   @PrimaryGeneratedColumn()
-  id: number
+  id: number;
 
-  @Column({ type: 'text' })
-  kind: ArticleKind
-
-  @Column()
-  title: string
+  @Column({ type: "text" })
+  kind: ArticleKind;
 
   @Column()
-  description: string
+  title: string;
+
+  @Column()
+  description: string;
 
   @Column({ nullable: true })
-  unit?: string
+  unit?: string;
 
   @Column({ nullable: true })
-  price?: number
+  price?: number;
 
   @Column({ nullable: true })
-  amount?: number
+  amount?: number;
 }
 
 @Entity()
 export class OfferItem extends OrderItem {
   @Column()
-  offer_id: number
+  offer_id: number;
 
-  @ManyToOne(() => Offer, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'offer_id' })
-  offer: Offer
+  @ManyToOne(() => Offer, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "offer_id" })
+  offer: Offer;
 }
 
 @Entity()
 export class InvoiceItem extends OrderItem {
   @Column()
-  invoice_id: number
+  invoice_id: number;
 
-  @ManyToOne(() => Invoice, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'invoice_id' })
-  invoice: Invoice
+  @ManyToOne(() => Invoice, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "invoice_id" })
+  invoice: Invoice;
 }
