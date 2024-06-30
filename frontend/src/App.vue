@@ -2,38 +2,37 @@
 import { RouterView } from 'vue-router';
 import Menubar from 'primevue/menubar';
 
-import NavigationBar from '@/components/NavigationBar.vue'
 
 import { ref } from "vue";
+import { ROUTES } from './router';
 
 const items = ref([
   {
-    label: 'Kunden',
+    label: ROUTES.CLIENTS.label,
     icon: 'pi pi-user',
-    route: '/customers'
+    route: ROUTES.CLIENTS.path
   }, {
-    label: 'Aufträge',
+    label: ROUTES.ORDER.label,
     icon: 'pi pi-shopping-cart',
-    route: '/order'
+    route: ROUTES.ORDER.path
   }, {
-    label: 'Übersicht',
+    label: ROUTES.ORDERS.label,
     icon: 'pi pi-search',
-    route: '/orders'
+    route: ROUTES.ORDERS.path
   }, {
-    label: 'Dokumente',
+    label: ROUTES.DOCUMENTS.label,
     icon: 'pi pi-file',
-    route: '/documents'
+    route: ROUTES.DOCUMENTS.path
   }, {
-    label: 'Artikel',
+    label: ROUTES.ARTICLES.label,
     icon: 'pi pi-list',
-    route: '/articles'
+    route: ROUTES.ARTICLES.path
   },
 
 ]);
 </script>
 
 <template>
-  <!-- <NavigationBar /> -->
   <div class="card">
     <Menubar :model="items">
       <template #item="{ item, props, hasSubmenu }">
