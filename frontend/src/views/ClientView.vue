@@ -31,7 +31,7 @@ const value = ref(null);
       <Button class="hidden md:inline-block" label="Create new client" />
     </div>
     <div class="grow overflow-auto">
-      <Card class="my-2" v-for="client in clientsList">
+      <Card class="my-2" v-for="client in clientsList" :key="client.id">
         <template #content>
           <div class="flex flex-row justify-between items-center">
             <div>
