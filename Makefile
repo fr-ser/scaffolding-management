@@ -14,6 +14,7 @@ help:
 install:
 	cd backend && npm install
 	cd frontend && npm install
+	npm install
 
 #: start the backend
 start-backend:
@@ -25,9 +26,15 @@ start-frontend:
 
 #: build all assets for production mode
 build:
-	cd backend && npm run build
+	cd backend && rm -rf dist && npm run build
 	cd frontend && npm run build
 
 #: start application in production mode (both backend and frontend)
 run-production:
-	cd backend && CONFIG_PATH=local.env npm run run:production
+	cd backend && STATIC_FILE_ROOT=dist/static CONFIG_PATH=local.env npm run run
+
+#: run all tests
+test-all:
+	cd backend && npm run test
+	cd frontend && npm run test
+	npm run test

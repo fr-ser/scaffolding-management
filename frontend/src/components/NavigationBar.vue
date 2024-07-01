@@ -35,10 +35,10 @@ const items = ref([
 
 <template>
   <div class="card">
-    <Menubar :model="items">
+    <Menubar :model="items" data-testid="navigation-bar">
       <template #item="{ item, props }">
         <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
-          <a v-ripple :href="href" v-bind="props.action" @click="navigate">
+          <a :href="href" v-bind="props.action" @click="navigate">
             <span :class="item.icon" />
             <span class="ml-2">{{ item.label }}</span>
           </a>

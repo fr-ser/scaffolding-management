@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon",
     "build": "tsc && tsc-alias",
-    "run:production": "node ./dist/src/main.js",
+    "run": "node ./dist/src/main.js",
     "db_seed": "CONFIG_PATH=local.env npx ts-node -r tsconfig-paths/register scripts/seedLocalData.ts",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
     "format": "npm run lint -- --fix && prettier --write src/",
