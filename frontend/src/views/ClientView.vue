@@ -24,11 +24,11 @@ const value = ref(null);
         <i
           class="pi pi-search absolute top-2/4 -mt-2 left-3 text-surface-400 dark:text-surface-600"
         />
-        <InputText v-model="value" placeholder="Search for client" class="pl-10 w-full" />
+        <InputText v-model="value" placeholder="Kundensuche" class="pl-10 w-full" />
       </span>
 
-      <Button class="md:hidden" icon="pi pi-user" size="small" rounded aria-label="User" />
-      <Button class="hidden md:inline-block" label="Create new client" />
+      <Button class="md:hidden" icon="pi pi-user" size="small" rounded aria-label="Kunde" />
+      <Button class="hidden md:inline-block" label="Neuen Kunden erstellen" />
     </div>
     <div class="grow overflow-auto">
       <Card class="my-2" v-for="client in clientsList" :key="client.id">
@@ -39,7 +39,7 @@ const value = ref(null);
             </div>
             <div class="flex flex-col gap-y-2">
               <Button
-                label="Bearbiten"
+                label="Bearbeiten"
                 icon="pi pi-pencil"
                 severity="secondary"
                 outlined
