@@ -5,8 +5,12 @@ import NavigationBar from "@/components/NavigationBar.vue";
 </script>
 
 <template>
-  <NavigationBar />
-  <RouterView />
+  <div class="h-screen flex flex-col overflow-hidden">
+    <NavigationBar />
+    <div class="px-3 py-3 bg-neutral-100 grow overflow-auto">
+      <RouterView />
+    </div>
+  </div>
 </template>
 
 <style scoped></style>
