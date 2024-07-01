@@ -19,11 +19,17 @@ const value = ref(null);
     <Button class="md:hidden" icon="pi pi-user" size="small" rounded aria-label="User" />
     <Button class="hidden md:inline-block" label="Create new client" />
   </div>
-  <card class="my-1" v-for="client in clientsList">
+  <card class="my-1 " v-for="client in clientsList">
     <template #content>
-      {{ client.name }}
-      <Button label="Bearbiten" icon="pi pi-pencil" severity="success" size="small" />
-      <Button label="Löschen" icon="pi pi-times" severity="danger" size="small" />
+      <div class="flex flex-row justify-between items-center">
+        <div>
+          {{ client.name }}
+        </div>
+        <div class="flex flex-col gap-y-2">
+          <Button label="Bearbiten" icon="pi pi-pencil" severity="secondary" outlined size="small" />
+          <Button label="Löschen" icon="pi pi-times" severity="danger" size="small" />
+        </div>
+      </div>
     </template>
   </card>
 
