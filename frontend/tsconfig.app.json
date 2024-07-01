@@ -1,6 +1,7 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "compilerOptions": {
+    "allowJs": true,
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
 
@@ -9,6 +10,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.vue", "../shared/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.vue", "../shared/**/*.ts", "src/presets/**/*.js"],
   "exclude": ["src/**/__tests__/*"]
 }

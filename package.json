@@ -1,0 +1,16 @@
+{
+  "name": "scaffolding-management",
+  "version": "1.0.0",
+  "description": "This app should provide basic functionalities to manage a very specific scaffolding business. The functionality basically includes:",
+  "main": "index.js",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test": "npm run test:e2e"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.45.0",
+    "@types/node": "^20.14.9"
+  }
+}
