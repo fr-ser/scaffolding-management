@@ -2,6 +2,9 @@
 import { ref } from 'vue';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
+import Card from 'primevue/card';
+let id = 0;
+const clientsList = ref([{ id: 1, name: 'Artem Kovshov' }, { id: 2, name: 'Sergej Herbert' }, { id: 3, name: 'Artem Kovshov' }, { id: 4, name: 'Daria Eliseeva' }]);
 
 const value = ref(null);
 </script>
@@ -15,9 +18,15 @@ const value = ref(null);
 
     <Button class="md:hidden" icon="pi pi-user" size="small" rounded aria-label="User" />
     <Button class="hidden md:inline-block" label="Create new client" />
-
-    <!-- <InputText type="text" v-model="value" /> -->
   </div>
+  <card class="my-1" v-for="client in clientsList">
+    <template #content>
+      {{ client.name }}
+      <Button label="Bearbiten" icon="pi pi-pencil" severity="success" size="small" />
+      <Button label="Löschen" icon="pi pi-times" severity="danger" size="small" />
+    </template>
+  </card>
+
 </template>
 
 <style></style>
