@@ -10,7 +10,7 @@
     "db_seed": "CONFIG_PATH=local.env npx ts-node -r tsconfig-paths/register scripts/seedLocalData.ts",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
     "format": "npm run lint -- --fix && prettier --write src/",
-    "test:unit": "vitest run",
+    "test:unit": "CONFIG_PATH=local.env vitest run",
     "test": "npm run lint && npm run test:unit"
   },
   "nodemonConfig": {

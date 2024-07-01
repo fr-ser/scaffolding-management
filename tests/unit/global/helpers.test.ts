@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 
-import { formatIsoDateString, formatNumber, round } from "@/global/helpers";
+import { formatIsoDateString, formatNumber, round } from "../../../backend/src/global/helpers";
 
 test("formatNumber", () => {
   expect(formatNumber(1234)).toBe("1.234");
