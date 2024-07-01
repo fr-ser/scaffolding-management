@@ -314,7 +314,12 @@ const createDocument = function createDocument(
         // could be two lines, therefore save height
         const postHeadY = pdfFile.y + 1;
 
-        if (item.kind === ArticleKind.item) {
+        if (
+          item.kind === ArticleKind.item &&
+          item.amount != null &&
+          item.price != null &&
+          item.unit != null
+        ) {
           pdfFile
             .text(formatNumber(item.amount), tParams.c2x, pdfFileData.currY, {
               width: tParams.c3x - tParams.c2x,
