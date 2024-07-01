@@ -143,9 +143,9 @@ interface DocumentItem {
   kind: ArticleKind;
   title: string;
   description: string;
-  unit: string;
-  price: number;
-  amount: number;
+  unit?: string;
+  price?: number;
+  amount?: number;
 }
 
 export interface OfferDocumentItem extends DocumentItem {
