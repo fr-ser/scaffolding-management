@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import ArticleView from "@/views/ArticleView.vue";
-import ClientView from "@/views/ClientView.vue";
+import ClientsView from "@/views/ClientsView.vue";
 import DocumentView from "@/views/DocumentView.vue";
 
 export const ROUTES = {
@@ -17,17 +17,17 @@ const router = createRouter({
     {
       path: ROUTES.CLIENTS.path,
       name: ROUTES.CLIENTS.name,
-      component: ClientView,
+      component: ClientsView,
     },
     {
       path: ROUTES.ORDER.path,
       name: ROUTES.ORDER.name,
-      component: ClientView,
+      component: ClientsView,
     },
     {
       path: ROUTES.ORDERS.path,
       name: ROUTES.ORDERS.name,
-      component: ClientView,
+      component: ClientsView,
     },
     {
       path: ROUTES.DOCUMENTS.path,
