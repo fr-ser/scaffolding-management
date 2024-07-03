@@ -29,7 +29,7 @@ const artikel = ref([{ article: "Artikel" }, { article: "Hinweis" }]);
         />
         <InputText v-model="value" placeholder="Suche" class="pl-10 w-full" />
       </span>
-      <Button label="Search" severity="secondary" outlined />
+      <Button label="Create" severity="secondary" outlined />
     </div>
     <div class="flex flex-col gap-2 grow overflow-auto">
       <Card v-for="article in articlesList" :key="article.id">
