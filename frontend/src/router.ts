@@ -6,7 +6,7 @@ import ClientView from "@/views/ClientView.vue";
 import DocumentView from "@/views/DocumentView.vue";
 
 export const ROUTES = {
-  CLIENTS: { name: "clients", path: "/", label: "Kunden" },
+  CLIENTS: { name: "clients", path: "/clients", label: "Kunden" },
   CLIENT: { name: "client", path: "/client", label: "Kunde" },
   ORDER: { name: "order", path: "/order", label: "Aufträge" },
   ORDERS: { name: "orders", path: "/orders", label: "Übersicht" },
@@ -16,6 +16,10 @@ export const ROUTES = {
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: "/",
+      redirect: ROUTES.CLIENTS.path,
+    },
     {
       path: ROUTES.CLIENTS.path,
       name: ROUTES.CLIENTS.name,
