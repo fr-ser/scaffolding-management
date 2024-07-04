@@ -7,7 +7,31 @@ import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { ref } from "vue";
 
-const articlesList = ref([{ id: 1 }, { id: 2 }, { id: 3 }]);
+import { ArticleKind } from "@/global/types/appTypes";
+import type { Article } from "@/global/types/entities";
+
+const articlesList = ref<Article[]>([
+  {
+    id: "1",
+    kind: ArticleKind.heading,
+    title: "title 1",
+    description: "description 1",
+  },
+  {
+    id: "2",
+    kind: ArticleKind.item,
+    title: "title 2",
+    description: "description 2",
+    unit: "unit 2",
+    price: 2.2,
+  },
+  {
+    id: "3",
+    kind: ArticleKind.heading,
+    title: "title 3",
+    description: "description 3",
+  },
+]);
 
 let value = ref();
 let articleInfo = ref({
