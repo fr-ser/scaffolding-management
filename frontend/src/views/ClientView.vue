@@ -9,6 +9,7 @@ import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { ref } from "vue";
 
+import { ClientSalutation } from "@/global/types/appTypes";
 import type { ClientCreate, ClientUpdate } from "@/global/types/dataEditTypes";
 
 const selectedGender = ref();
@@ -16,12 +17,13 @@ let userInfo = ref<ClientUpdate | ClientCreate>({});
 
 let birthdayDate = ref<Date>();
 
-const genders = ref([
-  { gender: "Herr" },
-  { gender: "Frau" },
-  { gender: "Frau Dr." },
-  { gender: "Herr dr." },
-]);
+const genders = [
+  { gender: ClientSalutation.empty },
+  { gender: ClientSalutation.mister },
+  { gender: ClientSalutation.misses },
+  { gender: ClientSalutation.mister_doctor },
+  { gender: ClientSalutation.misses_doctor },
+];
 </script>
 
 <template>
