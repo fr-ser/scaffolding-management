@@ -1,5 +1,5 @@
 import express from "express";
-import { In } from "typeorm";
+import { In, LessThanOrEqual } from "typeorm";
 
 import { getAppDataSource } from "@/db";
 import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/db/entities/documents";
@@ -7,7 +7,6 @@ import { DocumentKind } from "@/global/types/appTypes";
 import {
   AnyDocument,
   ErrorCode,
-  GetDocumentsResponse,
   SaveDocumentsAsPdfPayload,
   UserRole,
 } from "@/global/types/backendTypes";
@@ -15,6 +14,7 @@ import { ApiError } from "@/helpers/apiErrors";
 import { sendErrorLog } from "@/helpers/logging";
 import { noCache } from "@/helpers/middleware";
 import { checkAuth } from "@/helpers/roleManagement";
+import { mergeSortedDocuments } from "@/helpers/utils";
 import { renderMultiplePDF } from "@/pdf/renderPDF";
 
 export const documentsRouter = express.Router();
@@ -23,19 +23,44 @@ documentsRouter.use(noCache);
 documentsRouter.get(
   "",
   [checkAuth({ all: true })],
-  async (_: express.Request, res: express.Response) => {
+  async (req: express.Request, res: express.Response) => {
+    // "regular" pagination will not work with this endpoint that returns data from
+    // multiple tables.
+    interface QueryParams {
+      start_date?: string;
+      take?: number;
+    }
+    const { take = 300 } = req.query as QueryParams;
+    let { start_date } = req.query as QueryParams;
+    if (start_date == null) {
+      start_date = new Date().toISOString().split("T")[0];
+    }
+
     const dataSource = await getAppDataSource();
     const allDataResult = await Promise.all([
-      dataSource.manager.find(InvoiceDocument),
-      dataSource.manager.findBy(OfferDocument, {}),
-      dataSource.manager.findBy(OverdueNoticeDocument, {}),
+      dataSource.manager.find(InvoiceDocument, {
+        where: { creation_date: LessThanOrEqual(start_date) },
+        order: { creation_date: "DESC" },
+        take: take,
+      }),
+      dataSource.manager.find(OfferDocument, {
+        where: { creation_date: LessThanOrEqual(start_date) },
+        order: { creation_date: "DESC" },
+        take: take,
+      }),
+      dataSource.manager.find(OverdueNoticeDocument, {
+        where: { creation_date: LessThanOrEqual(start_date) },
+        order: { creation_date: "DESC" },
+        take: take,
+      }),
     ]);
 
-    res.json({
-      [DocumentKind.invoice]: allDataResult[0],
-      [DocumentKind.offer]: allDataResult[1],
-      [DocumentKind.overdueNotice]: allDataResult[2],
-    } as GetDocumentsResponse);
+    res.json(
+      mergeSortedDocuments(...allDataResult, {
+        isAscending: false,
+        maxItems: take,
+      }),
+    );
   },
 );
 

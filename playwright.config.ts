@@ -27,5 +27,6 @@ export default defineConfig({
     command: "make build run-production",
     url: "http://127.0.0.1:3001",
     reuseExistingServer: !process.env.CI,
+    stdout: process.env.CI ? "pipe" : "ignore",
   },
 });

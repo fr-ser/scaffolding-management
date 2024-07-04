@@ -3,7 +3,12 @@ import express from "express";
 import { getAppDataSource } from "@/db";
 import { Client } from "@/db/entities/client";
 import { Order } from "@/db/entities/order";
-import { ErrorCode, UserRole } from "@/global/types/backendTypes";
+import {
+  ErrorCode,
+  PaginationQueryParameters,
+  PaginationResponse,
+  UserRole,
+} from "@/global/types/backendTypes";
 import { ApiError, SQLITE_CONSTRAINT_ERROR_CODE } from "@/helpers/apiErrors";
 import { noCache } from "@/helpers/middleware";
 import { checkAuth } from "@/helpers/roleManagement";
@@ -14,9 +19,15 @@ clientsRouter.use(noCache);
 clientsRouter.get(
   "/",
   [checkAuth({ all: true })],
-  async (_: express.Request, res: express.Response) => {
+  async (req: express.Request, res: express.Response) => {
+    const { skip = 0, take = 100 } = req.query as PaginationQueryParameters;
     const dataSource = await getAppDataSource();
-    res.json(await dataSource.manager.find(Client));
+    const result = await dataSource.manager.findAndCount(Client, {
+      skip,
+      take,
+      order: { id: "ASC" },
+    });
+    res.json({ data: result[0], totalCount: result[1] } as PaginationResponse<Client>);
   },
 );
 
@@ -29,7 +40,7 @@ clientsRouter.post(
       const maxId = await dataSource.manager.query(
         "SELECT max(cast(substr(id,2) as integer)) as max_id from client",
       );
-      const client = await dataSource.manager.create(Client, {
+      const client = dataSource.manager.create(Client, {
         ...req.body,
         id: `K${maxId[0].max_id + 1}`,
       });

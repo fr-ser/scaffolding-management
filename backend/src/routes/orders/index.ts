@@ -6,8 +6,12 @@ import { Invoice } from "@/db/entities/invoice";
 import { Offer } from "@/db/entities/offer";
 import { Order } from "@/db/entities/order";
 import { OverdueNotice } from "@/db/entities/overdue_notice";
-import { DocumentKind } from "@/global/types/appTypes";
-import { ErrorCode, GetDocumentsResponse, UserRole } from "@/global/types/backendTypes";
+import {
+  ErrorCode,
+  PaginationQueryParameters,
+  PaginationResponse,
+  UserRole,
+} from "@/global/types/backendTypes";
 import { ApiError, SQLITE_CONSTRAINT_ERROR_CODE } from "@/helpers/apiErrors";
 import { noCache } from "@/helpers/middleware";
 import { checkAuth } from "@/helpers/roleManagement";
@@ -22,12 +26,15 @@ ordersRouter.get(
   "",
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response) => {
+    const { skip = 0, take = 100 } = req.query as PaginationQueryParameters;
     const dataSource = await getAppDataSource();
-    res.json(
-      await dataSource.manager.findBy(Order, {
-        client_id: req.query.client_id as string,
-      }),
-    );
+    const result = await dataSource.manager.findAndCount(Order, {
+      skip,
+      take,
+      order: { id: "ASC" },
+    });
+
+    res.json({ data: result[0], totalCount: result[1] } as PaginationResponse<Order>);
   },
 );
 
@@ -147,11 +154,7 @@ ordersRouter.get(
       }),
     ]);
 
-    res.json({
-      [DocumentKind.invoice]: allDataResult[0],
-      [DocumentKind.offer]: allDataResult[1],
-      [DocumentKind.overdueNotice]: allDataResult[2],
-    } as GetDocumentsResponse);
+    res.json([...allDataResult[0], ...allDataResult[1], ...allDataResult[2]]);
   },
 );
 

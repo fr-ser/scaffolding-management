@@ -2,7 +2,12 @@ import express from "express";
 
 import { getAppDataSource } from "@/db";
 import { Article } from "@/db/entities/article";
-import { ErrorCode, UserRole } from "@/global/types/backendTypes";
+import {
+  ErrorCode,
+  PaginationQueryParameters,
+  PaginationResponse,
+  UserRole,
+} from "@/global/types/backendTypes";
 import { ApiError } from "@/helpers/apiErrors";
 import { noCache } from "@/helpers/middleware";
 import { checkAuth } from "@/helpers/roleManagement";
@@ -13,9 +18,15 @@ articlesRouter.use(noCache);
 articlesRouter.get(
   "",
   [checkAuth({ all: true })],
-  async (_: express.Request, res: express.Response) => {
+  async (req: express.Request, res: express.Response) => {
+    const { skip = 0, take = 100 } = req.query as PaginationQueryParameters;
     const dataSource = await getAppDataSource();
-    res.json(await dataSource.manager.find(Article));
+    const result = await dataSource.manager.findAndCount(Article, {
+      skip,
+      take,
+      order: { id: "ASC" },
+    });
+    res.json({ data: result[0], totalCount: result[1] } as PaginationResponse<Article>);
   },
 );
 
