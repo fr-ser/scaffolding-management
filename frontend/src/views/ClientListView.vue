@@ -28,7 +28,7 @@ const value = ref(null);
       </span>
 
       <Button class="md:hidden" icon="pi pi-user" size="small" rounded aria-label="Kunde" />
-      <Button class="hidden md:inline-block" label="Neuen Kunden erstellen" />
+      <!-- <Button class="hidden md:inline-block" label="Neuen Kunden erstellen" /> -->
     </div>
     <div class="grow overflow-auto">
       <Card class="my-2" v-for="client in clientsList" :key="client.id">

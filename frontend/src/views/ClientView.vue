@@ -35,10 +35,10 @@ const genders = ref([
 <template>
   <form>
     <div class="flex flex-row justify-between">
-      <Button label="See contracts" severity="secondary" text raised />
+      <Button label="Aufträge anzeigen" severity="secondary" text raised />
       <div class="flex gap-x-2">
-        <Button label="Save" text raised />
-        <Button label="Delete" severity="danger" text raised />
+        <Button label="Speichern" text raised />
+        <Button label="Löschen" severity="danger" text raised />
       </div>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 sm:gap-2 xl:grid-cols-4 xl:gap-4">
@@ -54,8 +54,8 @@ const genders = ref([
               class="w-full md:w-[14rem]"
             />
             <FloatLabel>
-              <InputText id="username" v-model="userInfo.name" class="w-full" />
-              <label for="username">Vorname</label>
+              <InputText id="user-name" v-model="userInfo.name" class="w-full" />
+              <label for="user-name">Vorname</label>
             </FloatLabel>
             <FloatLabel>
               <InputText id="usesurname" v-model="userInfo.surname" class="w-full" />
@@ -74,7 +74,7 @@ const genders = ref([
             </FloatLabel>
 
             <FloatLabel>
-              <InputNumber id="plz" v-model="userInfo.plz" inputId="integeronly" class="w-full" />
+              <InputText id="plz" v-model="userInfo.plz" class="w-full" />
               <label for="plz">PLZ</label>
             </FloatLabel>
             <FloatLabel>
