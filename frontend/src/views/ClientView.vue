@@ -48,12 +48,12 @@ const genders = [
               class="w-full md:w-[14rem]"
             />
             <FloatLabel>
-              <InputText id="user-name" v-model="userInfo.first_name" class="w-full" />
-              <label for="user-name">Vorname</label>
+              <InputText id="first-name" v-model="userInfo.first_name" class="w-full" />
+              <label for="first-name">Vorname</label>
             </FloatLabel>
             <FloatLabel>
-              <InputText id="usesurname" v-model="userInfo.last_name" class="w-full" />
-              <label for="usersurname">Nachname</label>
+              <InputText id="last-name" v-model="userInfo.last_name" class="w-full" />
+              <label for="last-name">Nachname</label>
             </FloatLabel>
           </div>
         </template>
