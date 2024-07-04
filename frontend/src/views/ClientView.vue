@@ -9,20 +9,12 @@ import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { ref } from "vue";
 
-const selectedGender = ref();
+import type { ClientCreate, ClientUpdate } from "@/global/types/dataEditTypes";
 
-let userInfo = ref({
-  name: null,
-  surname: null,
-  street: null,
-  plz: null,
-  city: null,
-  landline: null,
-  mobil: null,
-  email: null,
-  date: null,
-  text: null,
-});
+const selectedGender = ref();
+let userInfo = ref<ClientUpdate | ClientCreate>({});
+
+let birthdayDate = ref<Date>();
 
 const genders = ref([
   { gender: "Herr" },
@@ -54,11 +46,11 @@ const genders = ref([
               class="w-full md:w-[14rem]"
             />
             <FloatLabel>
-              <InputText id="user-name" v-model="userInfo.name" class="w-full" />
+              <InputText id="user-name" v-model="userInfo.first_name" class="w-full" />
               <label for="user-name">Vorname</label>
             </FloatLabel>
             <FloatLabel>
-              <InputText id="usesurname" v-model="userInfo.surname" class="w-full" />
+              <InputText id="usesurname" v-model="userInfo.last_name" class="w-full" />
               <label for="usersurname">Nachname</label>
             </FloatLabel>
           </div>
@@ -69,12 +61,12 @@ const genders = ref([
           <div class="mb-4 font-bold">Adresse</div>
           <div class="card flex flex-col justify-center gap-y-6">
             <FloatLabel>
-              <InputText id="street" v-model="userInfo.street" class="w-full" />
+              <InputText id="street" v-model="userInfo.street_and_number" class="w-full" />
               <label for="street">Straße und Nr.</label>
             </FloatLabel>
 
             <FloatLabel>
-              <InputText id="plz" v-model="userInfo.plz" class="w-full" />
+              <InputText id="plz" v-model="userInfo.postal_code" class="w-full" />
               <label for="plz">PLZ</label>
             </FloatLabel>
             <FloatLabel>
@@ -89,12 +81,12 @@ const genders = ref([
           <div class="mb-4">Kontakt</div>
           <div class="card flex flex-col justify-center gap-y-6">
             <FloatLabel>
-              <InputText id="landline" v-model="userInfo.landline" class="w-full" />
+              <InputText id="landline" v-model="userInfo.landline_phone" class="w-full" />
               <label for="landline">Festnetz</label>
             </FloatLabel>
 
             <FloatLabel>
-              <InputNumber id="mobil" v-model="userInfo.mobil" class="w-full" />
+              <InputText id="mobil" v-model="userInfo.mobile_phone" class="w-full" />
               <label for="mobil">Mobil</label>
             </FloatLabel>
             <FloatLabel>
@@ -111,7 +103,7 @@ const genders = ref([
             <FloatLabel>
               <Calendar
                 id="calendar"
-                v-model="userInfo.date"
+                v-model="birthdayDate"
                 dateFormat="dd/mm/yy"
                 showIcon
                 iconDisplay="input"
@@ -121,7 +113,7 @@ const genders = ref([
             <FloatLabel>
               <Textarea
                 id="text"
-                v-model="userInfo.text"
+                v-model="userInfo.comment"
                 class="w-full"
                 autoResize
                 rows="5"
