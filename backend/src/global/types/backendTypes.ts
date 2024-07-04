@@ -8,6 +8,16 @@ export enum UserRole {
   employee = "MITARBEITER",
 }
 
+export interface PaginationQueryParameters {
+  skip?: number;
+  take?: number;
+}
+
+export interface PaginationResponse<T> {
+  data: T[];
+  totalCount: number;
+}
+
 export enum ErrorCode {
   INVALID_FILE_NAME = "INVALID_FILE_NAME",
   ENTITY_NOT_FOUND = "ENTITY_NOT_FOUND",
@@ -20,14 +30,6 @@ export enum ErrorCode {
   PDF_NOT_ALL_DOCUMENTS_FOUND = "PDF_NOT_ALL_DOCUMENTS_FOUND",
   PDF_TOO_MANY_DOCUMENTS_SELECTED = "PDF_TOO_MANY_DOCUMENTS_SELECTED",
   INTERNAL = "INTERNAL",
-}
-
-export interface GetDocumentsResponse {
-  [key: string]: InvoiceDocument[] | OfferDocument[] | OverdueNoticeDocument[];
-
-  [DocumentKind.invoice]: InvoiceDocument[];
-  [DocumentKind.offer]: OfferDocument[];
-  [DocumentKind.overdueNotice]: OverdueNoticeDocument[];
 }
 
 export type SaveDocumentsAsPdfPayload = { kind: DocumentKind; id: string }[];

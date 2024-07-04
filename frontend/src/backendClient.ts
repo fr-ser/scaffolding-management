@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { neverFunction } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
-import type { GetDocumentsResponse, SaveDocumentsAsPdfPayload } from "@/global/types/backendTypes";
+import type { SaveDocumentsAsPdfPayload } from "@/global/types/backendTypes";
 import type {
   ArticleCreate,
   ArticleUpdate,
@@ -112,12 +112,10 @@ export async function updateInvoice(id: number, invoice: InvoiceUpdate): Promise
   const response = await axiosInstance.patch(`/api/orders/invoices/${id}`, invoice);
   return response.data;
 }
-export async function getDocumentsByOrder(id: string): Promise<GetDocumentsResponse> {
-  const response = await axiosInstance.get(`/api/orders/${id}/documents`);
-  return response.data;
-}
 
-export async function getDocuments(): Promise<GetDocumentsResponse> {
+export async function getDocuments(): Promise<
+  (OfferDocument | OverdueNoticeDocument | InvoiceDocument)[]
+> {
   const response = await axiosInstance.get(`/api/documents`);
   return response.data;
 }
