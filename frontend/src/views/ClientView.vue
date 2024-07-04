@@ -80,7 +80,7 @@ const genders = [
       </Card>
       <Card class="my-2">
         <template #content>
-          <div class="mb-4">Kontakt</div>
+          <div class="mb-4 font-bold">Kontakt</div>
           <div class="card flex flex-col justify-center gap-y-6">
             <FloatLabel>
               <InputText id="landline" v-model="userInfo.landline_phone" class="w-full" />
