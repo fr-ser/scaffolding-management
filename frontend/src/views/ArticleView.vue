@@ -41,7 +41,7 @@ let articleInfo = ref({
   price: null,
 });
 const selectedArtikel = ref(null);
-const artikel = ref([{ article: ArticleKind.heading }, { article: ArticleKind.item }]);
+const artikel = [{ article: ArticleKind.heading }, { article: ArticleKind.item }];
 </script>
 
 <template>
