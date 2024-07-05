@@ -4,6 +4,7 @@ import ArticleView from "@/views/ArticleView.vue";
 import ClientListView from "@/views/ClientListView.vue";
 import ClientView from "@/views/ClientView.vue";
 import DocumentView from "@/views/DocumentView.vue";
+import OrderListView from "@/views/OrderListView.vue";
 
 export const ROUTES = {
   CLIENTS: { name: "clients", path: "/clients", label: "Kunden" },
@@ -38,7 +39,7 @@ const router = createRouter({
     {
       path: ROUTES.ORDERS.path,
       name: ROUTES.ORDERS.name,
-      component: ClientListView,
+      component: OrderListView,
     },
     {
       path: ROUTES.DOCUMENTS.path,
