@@ -7,6 +7,7 @@ import { ref } from "vue";
 
 import { getClients } from "@/backendClient";
 import type { Client } from "@/global/types/entities";
+import { ROUTES } from "@/router";
 
 const clientsList = ref<Client[]>([]);
 
@@ -38,13 +39,15 @@ onMounted(async () => {
               {{ `${client.first_name} ${client.last_name}` }}
             </div>
             <div class="flex flex-col gap-y-2">
-              <Button
-                label="Bearbeiten"
-                icon="pi pi-pencil"
-                severity="secondary"
-                outlined
-                size="small"
-              />
+              <router-link :to="`${ROUTES.CLIENT.path}/${client.id}`">
+                <Button
+                  label="Bearbeiten"
+                  icon="pi pi-pencil"
+                  severity="secondary"
+                  outlined
+                  size="small"
+                />
+              </router-link>
               <Button label="Löschen" icon="pi pi-times" severity="danger" size="small" />
             </div>
           </div>

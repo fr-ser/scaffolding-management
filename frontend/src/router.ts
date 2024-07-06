@@ -27,7 +27,7 @@ const router = createRouter({
       component: ClientListView,
     },
     {
-      path: ROUTES.CLIENT.path,
+      path: `${ROUTES.CLIENT.path}/:id`,
       name: ROUTES.CLIENT.name,
       component: ClientView,
     },
