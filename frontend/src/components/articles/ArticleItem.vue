@@ -17,6 +17,8 @@ const props = defineProps<{
 
 const selectedArtikel = ref(null);
 const artikel = [{ article: ArticleKind.heading }, { article: ArticleKind.item }];
+
+const editableArticle = ref(props.article);
 </script>
 
 <template>
@@ -25,13 +27,13 @@ const artikel = [{ article: ArticleKind.heading }, { article: ArticleKind.item }
       <form class="flex flex-col gap-y-3">
         <div>
           <FloatLabel class="mb-6 mt-2">
-            <InputText id="titel" v-model="article.title" class="w-full" />
+            <InputText id="titel" v-model="editableArticle.title" class="w-full" />
             <label for="titel">Titel</label>
           </FloatLabel>
           <FloatLabel>
             <Textarea
               id="text"
-              v-model="article.description"
+              v-model="editableArticle.description"
               class="w-full"
               autoResize
               rows="5"
@@ -51,14 +53,14 @@ const artikel = [{ article: ArticleKind.heading }, { article: ArticleKind.item }
               <label for="select">Art</label>
             </FloatLabel>
             <FloatLabel>
-              <InputText class="w-full" id="unit" v-model="article.unit" />
+              <InputText class="w-full" id="unit" v-model="editableArticle.unit" />
               <label for="unit">Einheit</label>
             </FloatLabel>
           </div>
         </div>
         <div class="flex flex-row justify-end gap-4 mt-4">
           <FloatLabel class="grow">
-            <InputNumber class="w-full" id="price" v-model="article.price" />
+            <InputNumber class="w-full" id="price" v-model="editableArticle.price" />
             <label for="price">Preis</label>
           </FloatLabel>
           <Button icon="pi pi-check" text rounded aria-label="Filter" />
