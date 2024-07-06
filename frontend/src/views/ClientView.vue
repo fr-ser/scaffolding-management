@@ -7,7 +7,9 @@ import FloatLabel from "primevue/floatlabel";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { ref } from "vue";
+import { onMounted } from "vue";
 
+import { getClient } from "@/backendClient";
 import { ClientSalutation } from "@/global/types/appTypes";
 import type { ClientCreate, ClientUpdate } from "@/global/types/dataEditTypes";
 
@@ -23,6 +25,10 @@ const genders = [
   { gender: ClientSalutation.mister_doctor },
   { gender: ClientSalutation.misses_doctor },
 ];
+onMounted(async () => {
+  userInfo.value = await getClient("K1");
+  birthdayDate.value = userInfo.value.birthday ? new Date(userInfo.value.birthday) : undefined;
+});
 </script>
 
 <template>
