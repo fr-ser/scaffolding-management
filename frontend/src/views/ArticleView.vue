@@ -31,12 +31,6 @@ const articlesList = ref<Article[]>([
 ]);
 
 let value = ref();
-let articleInfo = ref({
-  titel: null,
-  text: null,
-  unit: null,
-  price: null,
-});
 </script>
 
 <template>
