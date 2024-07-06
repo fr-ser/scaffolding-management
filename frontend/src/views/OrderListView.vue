@@ -6,7 +6,7 @@ import { ref } from "vue";
 
 const ordersList = ref([
   { id: 1, name: "Order 1" },
-  { id: 2, name: " Order 2" },
+  { id: 2, name: "Order 2" },
   { id: 3, name: "Order 3" },
   { id: 4, name: "Order 4" },
   { id: 2, name: "Order 5" },

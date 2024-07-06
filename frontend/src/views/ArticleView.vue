@@ -3,7 +3,7 @@ import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import { ref } from "vue";
 
-import Item from "@/components/Item.vue";
+import ArticlesItem from "@/components/articles/ArticleItem.vue";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { Article } from "@/global/types/entities";
 
@@ -51,7 +51,7 @@ let articleInfo = ref({
       <Button label="Create" severity="secondary" outlined />
     </div>
     <div class="flex flex-col gap-2 grow overflow-auto">
-      <Item v-for="article in articlesList" :article="articleInfo" :key="article.id" />
+      <ArticlesItem v-for="article in articlesList" :article="article" :key="article.id" />
     </div>
   </div>
 </template>

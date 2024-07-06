@@ -3,6 +3,7 @@ import Button from "primevue/button";
 import Card from "primevue/card";
 import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
+import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { ref } from "vue";
@@ -10,24 +11,27 @@ import { ref } from "vue";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { Article } from "@/global/types/entities";
 
-defineProps(["article"]);
+const props = defineProps<{
+  article: Article;
+}>();
 
 const selectedArtikel = ref(null);
 const artikel = [{ article: ArticleKind.heading }, { article: ArticleKind.item }];
 </script>
+
 <template>
   <Card>
     <template #content>
       <form class="flex flex-col gap-y-3">
         <div>
           <FloatLabel class="mb-6 mt-2">
-            <InputText id="titel" v-model="article.titel" class="w-full" />
+            <InputText id="titel" v-model="article.title" class="w-full" />
             <label for="titel">Titel</label>
           </FloatLabel>
           <FloatLabel>
             <Textarea
               id="text"
-              v-model="article.text"
+              v-model="article.description"
               class="w-full"
               autoResize
               rows="5"
@@ -54,7 +58,7 @@ const artikel = [{ article: ArticleKind.heading }, { article: ArticleKind.item }
         </div>
         <div class="flex flex-row justify-end gap-4 mt-4">
           <FloatLabel class="grow">
-            <InputText class="w-full" id="price" v-model="article.price" />
+            <InputNumber class="w-full" id="price" v-model="article.price" />
             <label for="price">Preis</label>
           </FloatLabel>
           <Button icon="pi pi-check" text rounded aria-label="Filter" />
