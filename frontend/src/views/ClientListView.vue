@@ -2,19 +2,19 @@
 import Button from "primevue/button";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
+import { onMounted } from "vue";
 import { ref } from "vue";
 
-const clientsList = ref([
-  { id: 1, name: "Artem Kovshov" },
-  { id: 2, name: "Sergej Herbert" },
-  { id: 3, name: "Artem Kovshov" },
-  { id: 4, name: "Daria Eliseeva" },
-  { id: 2, name: "Sergej Herbert" },
-  { id: 3, name: "Artem Kovshov" },
-  { id: 4, name: "Daria Eliseeva" },
-]);
+import { getClients } from "@/backendClient";
+import type { Client } from "@/global/types/entities";
+
+const clientsList = ref<Client[]>([]);
 
 const value = ref(null);
+
+onMounted(async () => {
+  clientsList.value = await getClients();
+});
 </script>
 
 <template>
@@ -33,9 +33,9 @@ const value = ref(null);
     <div class="grow overflow-auto">
       <Card class="my-2" v-for="client in clientsList" :key="client.id">
         <template #content>
-          <div class="flex flex-row justify-between items-center">
+          <div class="flex gap-2 flex-row justify-between items-center">
             <div>
-              {{ client.name }}
+              {{ `${client.first_name} ${client.last_name}` }}
             </div>
             <div class="flex flex-col gap-y-2">
               <Button
