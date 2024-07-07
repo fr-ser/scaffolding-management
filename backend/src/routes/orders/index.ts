@@ -27,7 +27,7 @@ ordersRouter.get(
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response) => {
     const { skip = 0, take = 100 } = req.query as PaginationQueryParameters;
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const result = await dataSource.manager.findAndCount(Order, {
       skip,
       take,
@@ -42,7 +42,7 @@ ordersRouter.post(
   "",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     try {
       const maxId = await dataSource.manager.query(
         `SELECT max(cast(substr(id,2) as integer)) as max_id from "order"`,
@@ -63,7 +63,7 @@ ordersRouter.get(
   "/:id",
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const order = await dataSource.manager.findOne(Order, {
       relations: {
         client: true,
@@ -83,7 +83,7 @@ ordersRouter.patch(
   "/:id",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const order = await dataSource.manager.findOne(Order, {
       relations: {
         client: true,
@@ -113,7 +113,7 @@ ordersRouter.delete(
   "/:id",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     try {
       res.json(await dataSource.manager.delete(Order, { id: req.params.id }));
     } catch (error) {
@@ -141,7 +141,7 @@ ordersRouter.get(
   "/:id/documents",
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const allDataResult = await Promise.all([
       dataSource.manager.find(InvoiceDocument, {
         where: { invoice: { order_id: req.params.id } },

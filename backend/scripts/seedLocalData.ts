@@ -3,7 +3,7 @@ import fs from "fs";
 import { DataSource } from "typeorm";
 
 import { DB_PATH } from "@/config";
-import { getAppDataSource } from "@/db";
+import { initializeAppDataSource } from "@/db";
 import { Article } from "@/db/entities/article";
 import { Client } from "@/db/entities/client";
 import { OfferDocumentItem } from "@/db/entities/document_items";
@@ -171,7 +171,7 @@ async function main() {
     return;
   }
 
-  const dataSource = await getAppDataSource();
+  const dataSource = await initializeAppDataSource(DB_PATH);
   await dataSource.synchronize();
 
   await insertData(dataSource);

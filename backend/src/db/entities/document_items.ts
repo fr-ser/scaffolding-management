@@ -5,30 +5,30 @@ import { ArticleKind } from "@/global/types/appTypes";
 
 abstract class DocumentItem {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @Column({ type: "text" })
   kind: ArticleKind;
 
-  @Column()
+  @Column({ type: "text" })
   title: string;
 
-  @Column()
+  @Column({ type: "text" })
   description: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   unit: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "numeric", nullable: true })
   price: number;
 
-  @Column({ nullable: true })
+  @Column({ type: "numeric", nullable: true })
   amount: number;
 }
 
 @Entity()
 export class OfferDocumentItem extends DocumentItem {
-  @Column()
+  @Column({ type: "text" })
   offer_document_id: string;
 
   @ManyToOne(() => OfferDocument, { onDelete: "CASCADE" })
@@ -38,7 +38,7 @@ export class OfferDocumentItem extends DocumentItem {
 
 @Entity()
 export class InvoiceDocumentItem extends DocumentItem {
-  @Column()
+  @Column({ type: "text" })
   invoice_document_id: string;
 
   @ManyToOne(() => InvoiceDocument, { onDelete: "CASCADE" })

@@ -19,7 +19,7 @@ offersRouter.get(
   "/:id",
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const offer = await dataSource.manager.findOne(Offer, {
       where: { id: parseInt(req.params.id) },
     });
@@ -33,7 +33,7 @@ offersRouter.post(
   "",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const payload = req.body as OfferCreate;
 
     const offer = dataSource.manager.create(Offer, { ...payload });
@@ -69,7 +69,7 @@ offersRouter.patch(
   "/:id",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const offer = await dataSource.manager.findOne(Offer, {
       where: { id: parseInt(req.params.id) },
     });
@@ -93,10 +93,10 @@ offersRouter.delete(
   "/:id",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
 
     const documentCount = await dataSource.manager.countBy(OfferDocument, {
-      offer_id: req.params.id,
+      offer_id: parseInt(req.params.id),
     });
     if (documentCount > 0) {
       next(new ApiError(ErrorCode.FK_CONSTRAINT_DOCUMENT));
@@ -115,10 +115,10 @@ offersRouter.get(
   "/:id/documents",
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     res.json(
       await dataSource.manager.find(OfferDocument, {
-        where: { offer_id: req.params.id },
+        where: { offer_id: parseInt(req.params.id) },
       }),
     );
   },
@@ -128,7 +128,7 @@ offersRouter.post(
   "/:id/documents/create",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const offer = await dataSource.manager.findOne(Offer, {
       where: { id: parseInt(req.params.id) },
       relations: { order: { client: true }, items: true },
@@ -158,7 +158,7 @@ offersRouter.post(
       client_postal_code: offer.order.client.postal_code,
       client_city: offer.order.client.city,
       order_title: offer.order.title,
-      offer_id: String(offer.id),
+      offer_id: offer.id,
       offered_at: offer.offered_at,
       offer_valid_until: offer.offer_valid_until,
     });

@@ -36,7 +36,7 @@ documentsRouter.get(
       start_date = new Date().toISOString().split("T")[0];
     }
 
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const allDataResult = await Promise.all([
       dataSource.manager.find(InvoiceDocument, {
         where: { creation_date: LessThanOrEqual(start_date) },
@@ -78,7 +78,7 @@ documentsRouter.post(
       return;
     }
 
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const allDocuments = (
       (await Promise.all([
         dataSource.manager

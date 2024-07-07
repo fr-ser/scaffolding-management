@@ -14,7 +14,7 @@ invoiceDocumentsRouter.get(
   "/:id",
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const document = await dataSource.manager.findOne(InvoiceDocument, {
       relations: { items: true },
       where: { id: req.params.id },
@@ -29,7 +29,7 @@ invoiceDocumentsRouter.delete(
   "/:id",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     try {
       res.json(await dataSource.manager.delete(InvoiceDocument, { id: req.params.id }));
     } catch (error) {
@@ -39,7 +39,7 @@ invoiceDocumentsRouter.delete(
       }
       // TODO: check if an exception is raised for this
       const overdueNoticeDocumentCount = await dataSource.manager.countBy(OverdueNoticeDocument, {
-        invoice_documents: { invoice_id: req.params.id },
+        invoice_documents: { invoice_id: parseInt(req.params.id) },
       });
       if (overdueNoticeDocumentCount > 0) {
         next(new ApiError(ErrorCode.FK_CONSTRAINT_OVERDUE_NOTICE_DOCUMENT));

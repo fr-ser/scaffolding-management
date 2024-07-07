@@ -23,7 +23,7 @@ clientsRouter.get(
     const { skip = 0, take = 100 } = req.query as PaginationQueryParameters;
     const { search } = req.query as { search?: string };
 
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
 
     // the "simple" case without search
     if (!search) {
@@ -59,7 +59,7 @@ clientsRouter.post(
   "/",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     try {
       const maxId = await dataSource.manager.query(
         "SELECT max(cast(substr(id,2) as integer)) as max_id from client",
@@ -80,7 +80,7 @@ clientsRouter.delete(
   "/:id",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     try {
       res.json(await dataSource.manager.delete(Client, { id: req.params.id }));
     } catch (error) {
@@ -104,7 +104,7 @@ clientsRouter.patch(
   "/:id",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const client = await dataSource.manager.findOneBy(Client, {
       id: req.params.id,
     });
@@ -128,7 +128,7 @@ clientsRouter.get(
   "/:id",
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const client = await dataSource.manager.findOneBy(Client, {
       id: req.params.id,
     });

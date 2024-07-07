@@ -4,21 +4,21 @@ import { ArticleKind } from "@/global/types/appTypes";
 
 @Entity()
 export class Article {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: "text" })
   id: string;
 
   @Column({ type: "text" })
   kind: ArticleKind;
 
-  @Column()
+  @Column({ type: "text" })
   title: string;
 
-  @Column()
+  @Column({ type: "text" })
   description: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   unit?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "numeric", nullable: true })
   price?: number;
 }

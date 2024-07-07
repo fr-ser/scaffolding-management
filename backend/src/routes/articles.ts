@@ -20,7 +20,7 @@ articlesRouter.get(
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response) => {
     const { skip = 0, take = 100 } = req.query as PaginationQueryParameters;
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const result = await dataSource.manager.findAndCount(Article, {
       skip,
       take,
@@ -34,7 +34,7 @@ articlesRouter.patch(
   "/:id",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const article = await dataSource.manager.findOneBy(Article, {
       id: req.params.id,
     });
@@ -58,7 +58,7 @@ articlesRouter.post(
   "/",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     try {
       const maxId = (
         await dataSource.manager.query(
@@ -82,7 +82,7 @@ articlesRouter.delete(
   "/:id",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     try {
       res.json(await dataSource.manager.delete(Article, { id: req.params.id }));
     } catch (error) {

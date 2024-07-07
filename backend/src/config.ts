@@ -15,7 +15,6 @@ export const APP_SECRET = getRequired("APP_SECRET"); // session secret
 
 export const PORT = process.env.PORT || 3001;
 export const STATIC_FILE_ROOT = process.env.STATIC_FILE_ROOT || "static";
-export const NODE_ENV = getRequired("NODE_ENV");
 export const DROPBOX_ACCESS_TOKEN = getRequired("DROPBOX_ACCESS_TOKEN");
 export const DAILY_BACKUP_COUNT = parseInt(getRequired("DAILY_BACKUP_COUNT"));
 export const MONTHLY_BACKUP_COUNT = parseInt(getRequired("MONTHLY_BACKUP_COUNT"));
