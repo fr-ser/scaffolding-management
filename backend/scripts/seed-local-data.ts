@@ -1,4 +1,3 @@
-// CONFIG_PATH=local.env npx ts-node -r tsconfig-paths/register scripts/seedLocalData.ts
 import fs from "fs";
 import { DataSource } from "typeorm";
 
@@ -8,10 +7,20 @@ import { Article } from "@/db/entities/article";
 import { Client } from "@/db/entities/client";
 import { OfferDocumentItem } from "@/db/entities/document_items";
 import { OfferDocument } from "@/db/entities/documents";
+import { Invoice } from "@/db/entities/invoice";
 import { Offer } from "@/db/entities/offer";
 import { Order } from "@/db/entities/order";
 import { OfferItem } from "@/db/entities/order_items";
-import { ArticleKind, ClientSalutation, OfferStatus, OrderStatus } from "@/global/types/appTypes";
+import { OverdueNotice } from "@/db/entities/overdue_notice";
+import {
+  ArticleKind,
+  ClientSalutation,
+  OfferStatus,
+  OrderStatus,
+  OverdueNoticeLevel,
+  OverdueNoticePaymentStatus,
+  PaymentStatus,
+} from "@/global/types/appTypes";
 
 async function insertData(dataSource: DataSource) {
   await dataSource
@@ -64,9 +73,12 @@ async function insertData(dataSource: DataSource) {
     .into(Order)
     .values(
       Array.from(Array(10)).map((_: unknown, index: number) => {
+        const anyOrderStatus =
+          Object.values(OrderStatus)[index % Object.values(OrderStatus).length];
+
         return {
           id: `A${index + 1}`,
-          status: OrderStatus.preparation,
+          status: anyOrderStatus,
           title: `Title ${index + 1}`,
           client_id: `K${index + 1}`,
           description: `Description ${index + 1}`,
@@ -84,9 +96,12 @@ async function insertData(dataSource: DataSource) {
     .into(Offer)
     .values(
       Array.from(Array(10)).map((_: unknown, index: number) => {
+        const anyOfferStatus =
+          Object.values(OfferStatus)[index % Object.values(OfferStatus).length];
+
         return {
           order_id: `A${index + 1}`,
-          status: OfferStatus.created,
+          status: anyOfferStatus,
           description: `Description ${index + 1}`,
           offered_at: `2021-01-0${index + 1}`,
           offer_valid_until: `2022-01-0${index + 1}`,
@@ -159,6 +174,56 @@ async function insertData(dataSource: DataSource) {
           unit: isEven ? `Unit ${index + 1}` : undefined,
           price: isEven ? 101 + index : undefined,
           amount: isEven ? index + 1 : undefined,
+        };
+      }),
+    )
+    .execute();
+
+  await dataSource
+    .createQueryBuilder()
+    .insert()
+    .into(Invoice)
+    .values(
+      Array.from(Array(10)).map((_: unknown, index: number) => {
+        const anyPaymentStatus =
+          Object.values(PaymentStatus)[index % Object.values(PaymentStatus).length];
+
+        return {
+          order_id: `A${index + 1}`,
+          sub_id: String(index),
+          service_dates: [`2021-01-0${index + 1}`, `2022-01-0${index + 1}`],
+          invoice_date: `2023-01-0${index + 1}`,
+          payment_target: `2024-01-0${index + 1}`,
+          status: anyPaymentStatus,
+          description: `description ${index + 1}`,
+        };
+      }),
+    )
+    .execute();
+
+  await dataSource
+    .createQueryBuilder()
+    .insert()
+    .into(OverdueNotice)
+    .values(
+      Array.from(Array(10)).map((_: unknown, index: number) => {
+        const anyPaymentStatus = Object.values(OverdueNoticePaymentStatus)[
+          index % Object.values(OverdueNoticePaymentStatus).length
+        ];
+        const anyNoticeLevel =
+          Object.values(OverdueNoticeLevel)[index % Object.values(OverdueNoticeLevel).length];
+
+        return {
+          order_id: `A${index + 1}`,
+          sub_id: String(index),
+          payments_until: `2021-01-0${index + 1}`,
+          notice_date: `2023-01-0${index + 1}`,
+          payment_target: `2024-01-0${index + 1}`,
+          notice_level: anyNoticeLevel,
+          payment_status: anyPaymentStatus,
+          notice_costs: index + 1,
+          default_interest: index + 10,
+          description: `description ${index + 1}`,
         };
       }),
     )

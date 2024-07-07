@@ -1,4 +1,10 @@
+# npm files
 node_modules
+
+# build artifacts
 dist
 .env*
+
+# local development artifacts
+.envrc
 *.db

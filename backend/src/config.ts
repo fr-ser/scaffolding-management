@@ -61,7 +61,7 @@ export const APP_MAIL_FROM = getRequired("APP_MAIL_FROM");
 export const APP_MAIL_INVOICE_FROM = getRequired("APP_MAIL_INVOICE_FROM");
 export const APP_MAIL_HOST = getRequired("APP_MAIL_HOST");
 export const APP_MAIL_PORT = parseInt(getRequired("APP_MAIL_PORT"));
-
+export const APP_MAIL_PAGE_URL = getRequired("APP_MAIL_PAGE_URL");
 // this is the PDF/document content
 export const COMPANY_NAME = getRequired("COMPANY_NAME");
 export const COMPANY_STREET_AND_NUMBER = getRequired("COMPANY_STREET_AND_NUMBER");
