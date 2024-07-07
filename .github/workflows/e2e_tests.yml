@@ -1,5 +1,13 @@
-name: E2E Tests
-on: pull_request
+name: e2e-tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
   test:
     timeout-minutes: 60
