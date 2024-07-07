@@ -1,7 +1,8 @@
-import { getClient } from "../factories";
 import { Express } from "express";
 import { mkdtempSync, rmdirSync } from "node:fs";
 import { Server } from "node:http";
+import os from "node:os";
+import path from "node:path";
 import { DataSource } from "typeorm";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 
@@ -9,15 +10,16 @@ import { closeDatabase, initializeAppDataSource } from "@/db";
 import { Client } from "@/db/entities/client";
 import { getApp } from "@/main";
 import { getRequest } from "@/tests/api-utils";
+import { getClient } from "@/tests/factories";
 
 describe("Clients routes", () => {
   let app: Express;
   let server: Server;
   let appDataSource: DataSource;
-  const temporaryDirectory = mkdtempSync("test-");
+  const temporaryDirectory = mkdtempSync(path.join(os.tmpdir(), "test-"));
 
   beforeAll(async () => {
-    appDataSource = await initializeAppDataSource(`${temporaryDirectory}/test.db`);
+    appDataSource = await initializeAppDataSource(path.join(temporaryDirectory, "test.db"));
     await appDataSource.synchronize();
 
     app = getApp();
