@@ -1,4 +1,5 @@
 import express from "express";
+import { FindOneOptions, ILike } from "typeorm";
 
 import { getAppDataSource } from "@/db";
 import { Article } from "@/db/entities/article";
@@ -20,12 +21,26 @@ articlesRouter.get(
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response) => {
     const { skip = 0, take = 100 } = req.query as PaginationQueryParameters;
+    const { search } = req.query as { search?: string };
     const dataSource = getAppDataSource();
+
+    let whereClause: FindOneOptions<Article>["where"] = undefined;
+
+    if (search) {
+      whereClause = [
+        { id: ILike(`%${search}%`) },
+        { title: ILike(`%${search}%`) },
+        { description: ILike(`%${search}%`) },
+      ];
+    }
+
     const result = await dataSource.manager.findAndCount(Article, {
       skip,
       take,
       order: { id: "ASC" },
+      where: whereClause,
     });
+
     res.json({ data: result[0], totalCount: result[1] } as PaginationResponse<Article>);
   },
 );

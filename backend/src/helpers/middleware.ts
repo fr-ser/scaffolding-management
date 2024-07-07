@@ -2,7 +2,7 @@ import express from "express";
 import { setTimeout } from "timers";
 
 import { ErrorCode } from "@/global/types/backendTypes";
-import { sendMsgLog } from "@/helpers/logging";
+import { log } from "@/helpers/logging";
 
 // eslint-disable-next-line  @typescript-eslint/no-unused-vars
 export function noCache(_: express.Request, res: express.Response, next: express.NextFunction) {
@@ -21,7 +21,7 @@ export function timeoutCheck(
 ) {
   setTimeout(function timeoutTimer() {
     if (!res.headersSent) {
-      sendMsgLog(`Possible timeout error: ${req.path} `);
+      log(`Possible timeout error: ${req.path} `);
     }
   }, 30000);
   next();
@@ -46,10 +46,10 @@ export function apiErrorHandler(
 ) {
   if (err.errorCode) {
     const status = err.errorStatus || 400;
-    sendMsgLog(`Error: ${err.errorCode} - ${err}`);
+    log(`Error: ${err.errorCode} - ${err}`);
     res.status(status).send({ error: { code: err.errorCode } });
   } else {
-    sendMsgLog(`Error: Unknown - ${err}`);
+    log(`Error: Unknown - ${err}`);
     res.status(500).send({ error: { code: ErrorCode.INTERNAL } });
   }
 }
