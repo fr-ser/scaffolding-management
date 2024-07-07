@@ -24,7 +24,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "make build run-production",
+    command: "make build run-server-production",
     url: "http://127.0.0.1:3001",
     reuseExistingServer: !process.env.CI,
     stdout: process.env.CI ? "pipe" : "ignore",

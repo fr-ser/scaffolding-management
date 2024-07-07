@@ -5,22 +5,20 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon",
-    "build": "tsc && tsc-alias",
-    "run": "node ./dist/src/index.js",
-    "db_seed": "CONFIG_PATH=local.env npx ts-node -r tsconfig-paths/register scripts/seedLocalData.ts",
+    "build": "CONFIG_PATH=local.env tsc && tsc-alias",
+    "start:email-task": "npm run build && CONFIG_PATH=local.env node ./dist/src/tasks/email_notification/task.js",
+    "start:server": "npm run build && CONFIG_PATH=local.env node ./dist/src/index.js",
+    "db:seed": "CONFIG_PATH=local.env npx ts-node -r tsconfig-paths/register scripts/seed-local-data.ts",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
     "format": "npm run lint -- --fix && prettier --write src/",
     "test:code": "CONFIG_PATH=local.env vitest run",
     "test": "npm run lint && npm run test:code"
   },
   "nodemonConfig": {
-    "env": {
-      "CONFIG_PATH": "local.env"
-    },
     "watch": [
       "src"
     ],
-    "exec": "npm run build && node ./dist/src/index.js",
+    "exec": "npm run start:server",
     "ext": "ts,js"
   },
   "keywords": [],
@@ -34,6 +32,7 @@
     "express": "^4.19.2",
     "express-basic-auth": "^1.2.1",
     "morgan": "^1.10.0",
+    "nodemailer": "^6.9.14",
     "pdfkit": "^0.15.0",
     "source-map-support": "^0.5.21",
     "sqlite3": "^5.1.7",
@@ -47,6 +46,7 @@
     "@types/express": "^4.17.21",
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.11.17",
+    "@types/nodemailer": "^6.4.15",
     "@types/pdfkit": "^0.13.4",
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
