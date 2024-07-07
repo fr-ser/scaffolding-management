@@ -108,7 +108,7 @@ interface BaseDocument {
 }
 
 export interface OfferDocument extends BaseDocument {
-  offer_id: string;
+  offer_id: number;
   offer: Offer;
   items: OfferDocumentItem[];
   offered_at: string;
@@ -116,7 +116,7 @@ export interface OfferDocument extends BaseDocument {
 }
 
 export interface InvoiceDocument extends BaseDocument {
-  invoice_id: string;
+  invoice_id: number;
   invoice: Invoice;
   items: InvoiceDocumentItem[];
   service_dates: string[];
@@ -127,7 +127,7 @@ export interface InvoiceDocument extends BaseDocument {
 }
 
 export interface OverdueNoticeDocument extends BaseDocument {
-  overdue_notice_id: string;
+  overdue_notice_id: number;
   overdue_notice: OverdueNotice;
   notice_level: OverdueNoticeLevel;
   notice_date: string;
@@ -139,7 +139,7 @@ export interface OverdueNoticeDocument extends BaseDocument {
 }
 
 interface DocumentItem {
-  id: string;
+  id: number;
   kind: ArticleKind;
   title: string;
   description: string;

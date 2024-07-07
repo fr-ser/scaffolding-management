@@ -2,11 +2,11 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "index.js",
   "scripts": {
     "dev": "nodemon",
     "build": "tsc && tsc-alias",
-    "run": "node ./dist/src/main.js",
+    "run": "node ./dist/src/index.js",
     "db_seed": "CONFIG_PATH=local.env npx ts-node -r tsconfig-paths/register scripts/seedLocalData.ts",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
     "format": "npm run lint -- --fix && prettier --write src/",
@@ -20,7 +20,7 @@
     "watch": [
       "src"
     ],
-    "exec": "npm run build && node ./dist/src/main.js",
+    "exec": "npm run build && node ./dist/src/index.js",
     "ext": "ts,js"
   },
   "keywords": [],

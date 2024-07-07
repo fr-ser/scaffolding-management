@@ -1,5 +1,10 @@
-import { ArticleKind, OverdueNoticeLevel } from "@/global/types/appTypes";
-import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/global/types/entities";
+import { ArticleKind, ClientSalutation, OverdueNoticeLevel } from "@/global/types/appTypes";
+import {
+  Client,
+  InvoiceDocument,
+  OfferDocument,
+  OverdueNoticeDocument,
+} from "@/global/types/entities";
 
 export function getInvoiceDocument() {
   return {
@@ -14,17 +19,17 @@ export function getInvoiceDocument() {
     client_postal_code: "client_postal_code",
     client_city: "client_city",
     order_title: "order_title",
-    invoice_id: "invoice_id",
+    invoice_id: 1,
     invoice: {} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     items: [
       {
-        id: "id1",
+        id: 1,
         kind: ArticleKind.heading,
         title: "title1",
         description: "description1",
       },
       {
-        id: "id2",
+        id: 2,
         kind: ArticleKind.item,
         title: "title2",
         description: "description2",
@@ -54,17 +59,17 @@ export function getOfferDocument() {
     client_postal_code: "client_postal_code",
     client_city: "client_city",
     order_title: "order_title",
-    offer_id: "offer_id",
+    offer_id: 1,
     offer: {} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     items: [
       {
-        id: "id1",
+        id: 1,
         kind: ArticleKind.heading,
         title: "title1",
         description: "description1",
       },
       {
-        id: "id2",
+        id: 2,
         kind: ArticleKind.item,
         title: "title2",
         description: "description2",
@@ -91,7 +96,7 @@ export function getOverdueNoticeDocument() {
     client_postal_code: "client_postal_code",
     client_city: "client_city",
     order_title: "order_title",
-    overdue_notice_id: "overdue_notice_id",
+    overdue_notice_id: 1,
     overdue_notice: {} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     items: [],
     notice_level: OverdueNoticeLevel.first,
@@ -102,4 +107,24 @@ export function getOverdueNoticeDocument() {
     default_interest: 2.5,
     invoice_documents: [getInvoiceDocument()],
   } as OverdueNoticeDocument;
+}
+
+export function getClient(clientOverride: Partial<Client> = {}): Client {
+  const client = {
+    id: `K${Date.now() + Math.random()}`,
+    first_name: `First Name`,
+    last_name: `Last Name`,
+    salutation: ClientSalutation.mister_doctor,
+    email: `email@local.com`,
+    landline_phone: `+49 1111`,
+    company_name: `Company`,
+    birthday: `2021-01-01`,
+    comment: `Comment`,
+    mobile_phone: `+49 222`,
+    postal_code: `postal code`,
+    city: `city`,
+    street_and_number: `street and number`,
+  };
+
+  return { ...client, ...clientOverride };
 }

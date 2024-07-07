@@ -5,43 +5,43 @@ import { ClientSalutation } from "@/global/types/appTypes";
 
 @Entity()
 export class Client {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: "text" })
   id: string;
 
-  @Column({ nullable: true, type: "text" })
+  @Column({ type: "text", nullable: true })
   salutation?: ClientSalutation;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   email?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   landline_phone?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   company_name?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   birthday?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   comment?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   mobile_phone?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   first_name?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   last_name?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   postal_code?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   city?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   street_and_number?: string;
 
   @OneToMany(() => Order, (order) => order.client)

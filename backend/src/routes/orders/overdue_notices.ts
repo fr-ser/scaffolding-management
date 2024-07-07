@@ -16,7 +16,7 @@ overdueNoticesRouter.get(
   "/:id",
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const overdue_notice = await dataSource.manager.findOne(OverdueNotice, {
       where: { id: parseInt(req.params.id) },
     });
@@ -30,10 +30,10 @@ overdueNoticesRouter.delete(
   "/:id",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
 
     const documentCount = await dataSource.manager.countBy(OverdueNoticeDocument, {
-      overdue_notice_id: req.params.id,
+      overdue_notice_id: parseInt(req.params.id),
     });
     if (documentCount > 0) {
       next(new ApiError(ErrorCode.FK_CONSTRAINT_DOCUMENT));
@@ -52,10 +52,10 @@ overdueNoticesRouter.get(
   "/:id/documents",
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     res.json(
       await dataSource.manager.find(OverdueNoticeDocument, {
-        where: { overdue_notice_id: req.params.id },
+        where: { overdue_notice_id: parseInt(req.params.id) },
       }),
     );
   },
@@ -65,7 +65,7 @@ overdueNoticesRouter.post(
   "/:id/documents/create",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const overdueNotice = await dataSource.manager.findOne(OverdueNotice, {
       where: { id: parseInt(req.params.id) },
       relations: { order: { client: true } },
@@ -96,7 +96,7 @@ overdueNoticesRouter.post(
       client_postal_code: overdueNotice.order.client.postal_code,
       client_city: overdueNotice.order.client.city,
       order_title: overdueNotice.order.title,
-      overdue_notice_id: String(overdueNotice.id),
+      overdue_notice_id: overdueNotice.id,
       notice_level: overdueNotice.notice_level,
       notice_date: overdueNotice.notice_date,
       payments_until: overdueNotice.payments_until,

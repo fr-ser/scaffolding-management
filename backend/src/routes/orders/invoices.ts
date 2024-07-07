@@ -17,7 +17,7 @@ invoicesRouter.get(
   "/:id",
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const invoice = await dataSource.manager.findOne(Invoice, {
       where: { id: parseInt(req.params.id) },
     });
@@ -31,10 +31,10 @@ invoicesRouter.delete(
   "/:id",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
 
     const documentCount = await dataSource.manager.countBy(InvoiceDocument, {
-      invoice_id: req.params.id,
+      invoice_id: parseInt(req.params.id),
     });
     if (documentCount > 0) {
       next(new ApiError(ErrorCode.FK_CONSTRAINT_DOCUMENT));
@@ -53,7 +53,7 @@ invoicesRouter.patch(
   "/:id",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const invoice = await dataSource.manager.findOne(Invoice, {
       where: { id: parseInt(req.params.id) },
     });
@@ -77,9 +77,9 @@ invoicesRouter.get(
   "/:id/documents",
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const documents = await dataSource.manager.find(InvoiceDocument, {
-      where: { invoice_id: req.params.id },
+      where: { invoice_id: parseInt(req.params.id) },
     });
     res.json(documents);
   },
@@ -89,7 +89,7 @@ invoicesRouter.post(
   "/:id/documents/create",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const invoice = await dataSource.manager.findOne(Invoice, {
       where: { id: parseInt(req.params.id) },
       relations: { order: { client: true }, items: true },
@@ -119,7 +119,7 @@ invoicesRouter.post(
       client_postal_code: invoice.order.client.postal_code,
       client_city: invoice.order.client.city,
       order_title: invoice.order.title,
-      invoice_id: String(invoice.id),
+      invoice_id: invoice.id,
       service_dates: invoice.service_dates,
       payment_target: invoice.payment_target,
       can_have_cash_discount: invoice.order.can_have_cash_discount,

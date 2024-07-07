@@ -8,10 +8,10 @@ import { OrderStatus } from "@/global/types/appTypes";
 
 @Entity()
 export class Order {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: "text" })
   id: string;
 
-  @Column()
+  @Column({ type: "text" })
   client_id: string;
 
   @ManyToOne(() => Client)
@@ -30,18 +30,18 @@ export class Order {
   @Column({ type: "text" })
   status: OrderStatus;
 
-  @Column()
+  @Column({ type: "text" })
   title: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   description: string;
 
-  @Column()
+  @Column({ type: "boolean" })
   can_have_cash_discount: boolean;
 
-  @Column({ nullable: true })
+  @Column({ type: "numeric", nullable: true })
   discount_duration: number;
 
-  @Column({ nullable: true })
+  @Column({ type: "numeric", nullable: true })
   discount_percentage: number;
 }

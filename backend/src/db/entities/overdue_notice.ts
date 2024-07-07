@@ -17,7 +17,7 @@ export class OverdueNotice {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: "text" })
   order_id: string;
 
   @ManyToOne(() => Order)
@@ -36,19 +36,19 @@ export class OverdueNotice {
   invoice_documents: InvoiceDocument[];
 
   // TODO: this is only created for the migration. Delete it afterwards
-  @Column()
+  @Column({ type: "text" })
   sub_id: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   description: string;
 
-  @Column()
+  @Column({ type: "text" })
   notice_date: string;
 
-  @Column()
+  @Column({ type: "text" })
   payments_until: string;
 
-  @Column()
+  @Column({ type: "text" })
   payment_target: string;
 
   @Column({ type: "text" })
@@ -57,9 +57,9 @@ export class OverdueNotice {
   @Column({ type: "text" })
   payment_status: OverdueNoticePaymentStatus;
 
-  @Column()
+  @Column({ type: "numeric" })
   notice_costs: number;
 
-  @Column({ nullable: true })
+  @Column({ type: "numeric", nullable: true })
   default_interest: number;
 }

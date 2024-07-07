@@ -10,7 +10,7 @@ export class Offer {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: "text" })
   order_id: string;
 
   @OneToOne(() => Order)
@@ -20,13 +20,13 @@ export class Offer {
   @Column({ type: "text" })
   status: OfferStatus;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   description: string;
 
-  @Column()
+  @Column({ type: "text" })
   offered_at: string;
 
-  @Column()
+  @Column({ type: "text" })
   offer_valid_until: string;
 
   @OneToMany(() => OfferItem, (offer_item) => offer_item.offer)

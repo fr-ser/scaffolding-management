@@ -9,7 +9,7 @@ export class Invoice {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: "text" })
   order_id: string;
 
   @ManyToOne(() => Order)
@@ -17,22 +17,22 @@ export class Invoice {
   order: Order;
 
   // TODO: this is only created for the migration. Delete it afterwards
-  @Column()
+  @Column({ type: "text" })
   sub_id: string;
 
   @Column("simple-json")
   service_dates: string[];
 
-  @Column()
+  @Column({ type: "text" })
   invoice_date: string;
 
-  @Column()
+  @Column({ type: "text" })
   payment_target: string;
 
   @Column({ type: "text" })
   status: PaymentStatus;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   description: string;
 
   @OneToMany(() => InvoiceItem, (invoice_item) => invoice_item.invoice)

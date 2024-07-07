@@ -1,7 +1,5 @@
-import "reflect-metadata";
 import { DataSource } from "typeorm";
 
-import { DB_PATH } from "@/config";
 import { Article } from "@/db/entities/article";
 import { Client } from "@/db/entities/client";
 import { InvoiceDocumentItem, OfferDocumentItem } from "@/db/entities/document_items";
@@ -15,11 +13,17 @@ import { sendMsgLog } from "@/helpers/logging";
 
 let AppDataSource: DataSource;
 
-export async function getAppDataSource() {
-  if (AppDataSource) return AppDataSource;
+export function getAppDataSource() {
+  if (!AppDataSource) {
+    throw new Error("AppDataSource is not initialized");
+  }
+  return AppDataSource;
+}
+
+export async function initializeAppDataSource(databasePath: string) {
   AppDataSource = new DataSource({
     type: "sqlite",
-    database: DB_PATH,
+    database: databasePath,
     entities: [
       Client,
       Article,
@@ -37,13 +41,12 @@ export async function getAppDataSource() {
     ],
   });
   await AppDataSource.initialize();
-  sendMsgLog(`Initialized database at ${DB_PATH}`);
   return AppDataSource;
 }
 
 export async function closeDatabase() {
   if (AppDataSource) {
     await AppDataSource.destroy();
-    sendMsgLog(`Closed database at ${DB_PATH}`);
+    sendMsgLog(`Closed database`);
   }
 }

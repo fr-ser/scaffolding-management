@@ -14,7 +14,7 @@ overdueNoticeDocumentsRouter.get(
   "/:id",
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     const document = await dataSource.manager.findOne(OverdueNoticeDocument, {
       relations: { invoice_documents: { items: true } },
       where: { id: req.params.id },
@@ -29,7 +29,7 @@ overdueNoticeDocumentsRouter.delete(
   "/:id",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const dataSource = await getAppDataSource();
+    const dataSource = getAppDataSource();
     try {
       res.json(
         await dataSource.manager.delete(OverdueNoticeDocument, {
