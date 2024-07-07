@@ -1,6 +1,7 @@
-export function sendMsgLog(message: string) {
-  console.log(new Date().toISOString(), message);
-}
-export function sendErrorLog(message: string, error: Error) {
-  console.log(new Date().toISOString(), "Error:", message, error);
+export function log(message: string, error?: Error) {
+  if (error) {
+    console.log(new Date().toISOString(), "Error:", message, error);
+  } else {
+    console.log(new Date().toISOString(), message);
+  }
 }

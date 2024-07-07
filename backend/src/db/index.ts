@@ -9,7 +9,7 @@ import { Offer } from "@/db/entities/offer";
 import { Order } from "@/db/entities/order";
 import { InvoiceItem, OfferItem } from "@/db/entities/order_items";
 import { OverdueNotice } from "@/db/entities/overdue_notice";
-import { sendMsgLog } from "@/helpers/logging";
+import { log } from "@/helpers/logging";
 
 let AppDataSource: DataSource;
 
@@ -47,6 +47,6 @@ export async function initializeAppDataSource(databasePath: string) {
 export async function closeDatabase() {
   if (AppDataSource) {
     await AppDataSource.destroy();
-    sendMsgLog(`Closed database`);
+    log(`Closed database`);
   }
 }

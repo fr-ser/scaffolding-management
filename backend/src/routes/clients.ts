@@ -25,32 +25,30 @@ clientsRouter.get(
 
     const dataSource = getAppDataSource();
 
+    let result: [Client[], number];
+
     // the "simple" case without search
     if (!search) {
-      const result = await dataSource.manager.findAndCount(Client, {
+      result = await dataSource.manager.findAndCount(Client, {
         skip,
         take,
         order: { id: "ASC" },
       });
-      res.json({ data: result[0], totalCount: result[1] } as PaginationResponse<Client>);
-      return;
+    } else {
+      const baseQuery = dataSource.manager
+        .createQueryBuilder(Client, "client")
+        .where(
+          "first_name || ' ' || last_name LIKE '%' || :nameSearch || '%' " +
+            "OR company_name LIKE '%' || :nameSearch || '%'",
+          {
+            nameSearch: search,
+            companySearch: search,
+          },
+        );
+
+      result = await Promise.all([baseQuery.take(take).skip(skip).getMany(), baseQuery.getCount()]);
     }
 
-    const baseQuery = dataSource.manager
-      .createQueryBuilder(Client, "client")
-      .where(
-        "first_name || ' ' || last_name LIKE '%' || :nameSearch || '%' " +
-          "OR company_name LIKE '%' || :nameSearch || '%'",
-        {
-          nameSearch: search,
-          companySearch: search,
-        },
-      );
-
-    const result = await Promise.all([
-      baseQuery.take(take).skip(skip).getMany(),
-      baseQuery.getCount(),
-    ]);
     res.json({ data: result[0], totalCount: result[1] } as PaginationResponse<Client>);
   },
 );

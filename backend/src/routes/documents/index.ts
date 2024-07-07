@@ -11,7 +11,7 @@ import {
   UserRole,
 } from "@/global/types/backendTypes";
 import { ApiError } from "@/helpers/apiErrors";
-import { sendErrorLog } from "@/helpers/logging";
+import { log } from "@/helpers/logging";
 import { noCache } from "@/helpers/middleware";
 import { checkAuth } from "@/helpers/roleManagement";
 import { mergeSortedDocuments } from "@/helpers/utils";
@@ -141,7 +141,7 @@ documentsRouter.post(
       );
       res.send(await renderMultiplePDF(allDocuments));
     } catch (error) {
-      sendErrorLog(`Could not generate a PDF for: ${payload.map((item) => item.id)}`, error);
+      log(`Could not generate a PDF for: ${payload.map((item) => item.id)}`, error);
       next(error);
     }
   },
