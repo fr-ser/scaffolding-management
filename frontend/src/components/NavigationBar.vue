@@ -6,9 +6,9 @@ import { ROUTES } from "@/router";
 
 const items = ref([
   {
-    label: ROUTES.CLIENTS.label,
+    label: ROUTES.CLIENT.label,
     icon: "pi pi-user",
-    route: ROUTES.CLIENTS.path,
+    route: ROUTES.CLIENT.path,
   },
   {
     label: ROUTES.ORDER.label,
