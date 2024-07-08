@@ -7,8 +7,7 @@ import DocumentView from "@/views/DocumentView.vue";
 import OrderListView from "@/views/OrderListView.vue";
 
 export const ROUTES = {
-  CLIENTS: { name: "clients", path: "/clients", label: "Kunden" },
-  CLIENT: { name: "client", path: "/client", label: "Kunde" },
+  CLIENT: { name: "client", path: "/client", label: "Kunden" },
   ORDER: { name: "order", path: "/order", label: "Aufträge" },
   ORDERS: { name: "orders", path: "/orders", label: "Übersicht" },
   DOCUMENTS: { name: "documents", path: "/documents", label: "Dokumente" },
@@ -19,11 +18,11 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      redirect: ROUTES.CLIENTS.path,
+      redirect: ROUTES.CLIENT.path,
     },
     {
-      path: ROUTES.CLIENTS.path,
-      name: ROUTES.CLIENTS.name,
+      path: ROUTES.CLIENT.path,
+      name: `${ROUTES.CLIENT.name}-list`,
       component: ClientListView,
     },
     {

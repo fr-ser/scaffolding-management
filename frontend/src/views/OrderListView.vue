@@ -25,7 +25,7 @@ let value = ref();
         />
         <InputText v-model="value" placeholder="Suche" class="pl-10 w-full" />
       </span>
-      <Button label="Create" severity="secondary" outlined />
+      <Button label="Neuen Auftrag erstellen" severity="secondary" outlined />
     </div>
     <div class="grow overflow-auto">
       <Card class="my-2" v-for="order in ordersList" :key="order.id">
