@@ -13,18 +13,11 @@ import { getClient } from "@/backendClient";
 import { ClientSalutation } from "@/global/types/appTypes";
 import type { ClientCreate, ClientUpdate } from "@/global/types/dataEditTypes";
 
-const selectedGender = ref();
 let userInfo = ref<ClientUpdate | ClientCreate>({});
 
 let birthdayDate = ref<Date>();
 
-const genders = [
-  { gender: ClientSalutation.empty },
-  { gender: ClientSalutation.mister },
-  { gender: ClientSalutation.misses },
-  { gender: ClientSalutation.mister_doctor },
-  { gender: ClientSalutation.misses_doctor },
-];
+const genders = Object.values(ClientSalutation);
 
 const route = useRoute();
 
@@ -49,9 +42,8 @@ onMounted(async () => {
           <div class="mb-4 font-bold">Name</div>
           <div class="card flex flex-col justify-center gap-y-6">
             <Dropdown
-              v-model="selectedGender"
+              v-model="userInfo.salutation"
               :options="genders"
-              optionLabel="gender"
               placeholder="Anrede"
               class="w-full md:w-[14rem]"
             />

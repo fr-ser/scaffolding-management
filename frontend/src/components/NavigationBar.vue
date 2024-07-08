@@ -16,11 +16,6 @@ const items = ref([
     route: ROUTES.ORDER.path,
   },
   {
-    label: ROUTES.ORDERS.label,
-    icon: "pi pi-search",
-    route: ROUTES.ORDERS.path,
-  },
-  {
     label: ROUTES.DOCUMENTS.label,
     icon: "pi pi-file",
     route: ROUTES.DOCUMENTS.path,
