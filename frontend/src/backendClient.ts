@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { neverFunction } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
-import type { SaveDocumentsAsPdfPayload } from "@/global/types/backendTypes";
+import type { PaginationResponse, SaveDocumentsAsPdfPayload } from "@/global/types/backendTypes";
 import type {
   ArticleCreate,
   ArticleUpdate,
@@ -54,7 +54,7 @@ export async function deleteArticle(id: string): Promise<void> {
   await axiosInstance.delete(`/api/articles/${id}`);
 }
 
-export async function getClients(): Promise<Client[]> {
+export async function getClients(): Promise<PaginationResponse<Client>> {
   const response = await axiosInstance.get(`/api/clients`);
   return response.data;
 }

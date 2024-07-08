@@ -14,7 +14,8 @@ const clientsList = ref<Client[]>([]);
 const value = ref(null);
 
 onMounted(async () => {
-  clientsList.value = await getClients();
+  const result = await getClients();
+  clientsList.value = result.data;
 });
 </script>
 
