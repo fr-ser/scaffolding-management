@@ -16,7 +16,6 @@ const props = defineProps<{
 }>();
 
 const articlesType = Object.values(ArticleKind);
-// const artikel = [{ article: ArticleKind.heading }, { article: ArticleKind.item }];
 
 const editableArticle = ref(props.article);
 </script>

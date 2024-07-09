@@ -24,7 +24,6 @@ articlesRouter.get(
     const { search } = req.query as { search?: string };
     const dataSource = getAppDataSource();
 
-
     let whereClause: FindOneOptions<Article>["where"] = undefined;
 
     if (search) {
@@ -34,8 +33,6 @@ articlesRouter.get(
         { description: ILike(`%${search}%`) },
       ];
     }
-
-   
 
     const result = await dataSource.manager.findAndCount(Article, {
       skip,
