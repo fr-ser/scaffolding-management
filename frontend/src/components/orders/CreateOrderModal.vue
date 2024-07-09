@@ -24,5 +24,4 @@ function onModalClose() {
       <Button type="button" label="Save" @click="onModalClose"></Button>
     </div>
   </Dialog>
-  <!-- <button @click="onButtonClick">close</button> -->
 </template>

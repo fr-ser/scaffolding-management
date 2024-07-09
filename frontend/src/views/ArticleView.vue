@@ -9,30 +9,8 @@ import ArticlesItem from "@/components/articles/ArticleItem.vue";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { Article } from "@/global/types/entities";
 
-const articlesList = ref<Article[]>([
-  {
-    id: "1",
-    kind: ArticleKind.heading,
-    title: "title 1",
-    description: "description 1",
-  },
-  {
-    id: "2",
-    kind: ArticleKind.item,
-    title: "title 2",
-    description: "description 2",
-    unit: "unit 2",
-    price: 2.2,
-  },
-  {
-    id: "3",
-    kind: ArticleKind.heading,
-    title: "title 3",
-    description: "description 3",
-  },
-]);
+const articlesList = ref<Article[]>([]);
 onMounted(async () => {
-  console.log("huihuihui");
   const result = await getArticles();
   articlesList.value = result.data;
 });
