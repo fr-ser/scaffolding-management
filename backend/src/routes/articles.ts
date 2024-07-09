@@ -35,7 +35,7 @@ articlesRouter.get(
       ];
     }
 
-    console.log('aaa')
+   
 
     const result = await dataSource.manager.findAndCount(Article, {
       skip,
