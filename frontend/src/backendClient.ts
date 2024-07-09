@@ -38,7 +38,7 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-export async function getArticles(): Promise<Article[]> {
+export async function getArticles(): Promise<PaginationResponse<Article>> {
   const response = await axiosInstance.get(`/api/articles`);
   return response.data;
 }
