@@ -2,7 +2,9 @@
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import { ref } from "vue";
+import { onMounted } from "vue";
 
+import { getArticles } from "@/backendClient";
 import ArticlesItem from "@/components/articles/ArticleItem.vue";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { Article } from "@/global/types/entities";
@@ -29,7 +31,11 @@ const articlesList = ref<Article[]>([
     description: "description 3",
   },
 ]);
-
+onMounted(async () => {
+  console.log("huihuihui");
+  const result = await getArticles();
+  articlesList.value = result.data;
+});
 let value = ref();
 </script>
 

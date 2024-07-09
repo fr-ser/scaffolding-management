@@ -23,6 +23,8 @@ articlesRouter.get(
     const { skip = 0, take = 100 } = req.query as PaginationQueryParameters;
     const { search } = req.query as { search?: string };
     const dataSource = getAppDataSource();
+    console.log('aaa')
+
 
     let whereClause: FindOneOptions<Article>["where"] = undefined;
 
@@ -33,6 +35,8 @@ articlesRouter.get(
         { description: ILike(`%${search}%`) },
       ];
     }
+
+    console.log('aaa')
 
     const result = await dataSource.manager.findAndCount(Article, {
       skip,

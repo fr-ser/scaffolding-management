@@ -15,8 +15,8 @@ const props = defineProps<{
   article: Article;
 }>();
 
-const selectedArtikel = ref(null);
-const artikel = [{ article: ArticleKind.heading }, { article: ArticleKind.item }];
+const articlesType = Object.values(ArticleKind);
+// const artikel = [{ article: ArticleKind.heading }, { article: ArticleKind.item }];
 
 const editableArticle = ref(props.article);
 </script>
@@ -44,9 +44,8 @@ const editableArticle = ref(props.article);
           <div class="grid grid-cols-2 gap-2 mt-6">
             <FloatLabel>
               <Dropdown
-                v-model="selectedArtikel"
-                :options="artikel"
-                optionLabel="article"
+                v-model="editableArticle.kind"
+                :options="articlesType"
                 class="w-full"
                 id="select"
               />
