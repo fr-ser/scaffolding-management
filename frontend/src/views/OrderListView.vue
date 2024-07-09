@@ -4,7 +4,7 @@ import Card from "primevue/card";
 import InputText from "primevue/inputtext";
 import { ref } from "vue";
 
-import CreateOrderModel from "@/components/orders/CreateOrderModel.vue";
+import CreateOrderModal from "@/components/orders/CreateOrderModal.vue";
 
 const ordersList = ref([
   { id: 1, name: "Order 1" },
@@ -20,6 +20,9 @@ let visibility = ref(false);
 function toggleModal() {
   visibility.value = true;
 }
+function closeModal() {
+  visibility.value = false;
+}
 
 let value = ref();
 </script>
@@ -34,7 +37,7 @@ let value = ref();
         <InputText v-model="value" placeholder="Suche" class="pl-10 w-full" />
       </span>
       <Button @click="toggleModal" label="Neuen Auftrag erstellen" severity="secondary" outlined />
-      <CreateOrderModel v-if="visibility" />
+      <CreateOrderModal v-if="visibility" @closeModal="closeModal" />
     </div>
     <div class="grow overflow-auto">
       <Card class="my-2" v-for="order in ordersList" :key="order.id">
