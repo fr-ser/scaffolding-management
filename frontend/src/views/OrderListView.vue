@@ -36,9 +36,9 @@ let value = ref();
         />
         <InputText v-model="value" placeholder="Suche" class="pl-10 w-full" />
       </span>
-      <Button @click="toggleModal" label="Neuen Auftrag erstellen" severity="secondary" outlined />
-      <CreateOrderModal v-if="visibility" @closeModal="closeModal" />
+      <Button @click="toggleModal" icon="pi pi-plus" rounded aria-label="Filter" />
     </div>
+    <CreateOrderModal v-if="visibility" @closeModal="closeModal" />
     <div class="grow overflow-auto">
       <Card class="my-2" v-for="order in ordersList" :key="order.id">
         <template #content>
