@@ -6,7 +6,7 @@ import { onMounted } from "vue";
 
 import { getArticles } from "@/backendClient";
 import ArticlesItem from "@/components/articles/ArticleItem.vue";
-import { ArticleKind } from "@/global/types/appTypes";
+//
 import type { Article } from "@/global/types/entities";
 
 const articlesList = ref<Article[]>([]);
