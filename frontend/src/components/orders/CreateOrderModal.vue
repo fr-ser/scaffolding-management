@@ -25,7 +25,7 @@ let discountPeriod = ref(discountPeriodChoice[0]);
 let decription = ref();
 </script>
 <template>
-  <Dialog :visible="true" modal :closable="false" :style="{ width: '25rem' }" class="lg:">
+  <Dialog :visible="true" modal :closable="false" :style="{ width: '25rem' }">
     <div class="flex flex-col gap-y-4">
       <p class="font-bold">Daten</p>
       <FloatLabel>
