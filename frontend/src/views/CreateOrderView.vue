@@ -1,18 +1,20 @@
 <script setup>
 import Button from "primevue/button";
-import Dialog from "primevue/dialog";
 import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { ref } from "vue";
+import { useRoute } from "vue-router";
 
 import { OrderStatus } from "@/global/types/appTypes";
 
-const emit = defineEmits(["close-modal"]);
-function onModalClose() {
-  emit("close-modal");
-}
+const route = useRoute();
+
+// const emit = defineEmits(["close-modal"]);
+// function onModalClose() {
+//   emit("close-modal");
+// }
 const orderStatusTypes = Object.values(OrderStatus);
 let status = ref(OrderStatus.preparation);
 
@@ -25,7 +27,8 @@ let discountPeriod = ref(discountPeriodChoice[0]);
 let decription = ref();
 </script>
 <template>
-  <Dialog :visible="true" modal :closable="false" :style="{ width: '25rem' }">
+  <!-- <Dialog :visible="true" modal :closable="false" :style="{ width: '25rem' }"> -->
+  <form>
     <div class="flex flex-col gap-y-4">
       <p class="font-bold">Daten</p>
       <FloatLabel>
@@ -84,5 +87,5 @@ let decription = ref();
       <Button type="button" label="Löschen" severity="secondary" @click="onModalClose"></Button>
       <Button type="button" label="Auftrag Speichern" @click="onModalClose"></Button>
     </div>
-  </Dialog>
+  </form>
 </template>
