@@ -4,7 +4,7 @@ import Card from "primevue/card";
 import InputText from "primevue/inputtext";
 import { ref } from "vue";
 
-import CreateOrderModal from "@/components/orders/CreateOrderModal.vue";
+import { ROUTES } from "@/router";
 
 const ordersList = ref([
   { id: 1, name: "Order 1" },
@@ -15,15 +15,6 @@ const ordersList = ref([
   { id: 3, name: "Order 6" },
   { id: 4, name: "Order 7" },
 ]);
-
-let visibility = ref(false);
-function toggleModal() {
-  visibility.value = true;
-}
-function closeModal() {
-  visibility.value = false;
-}
-
 let value = ref();
 </script>
 
@@ -36,9 +27,10 @@ let value = ref();
         />
         <InputText v-model="value" placeholder="Suche" class="pl-10 w-full" />
       </span>
-      <Button @click="toggleModal" icon="pi pi-plus" rounded aria-label="Filter" />
+      <router-link :to="`${ROUTES.ORDER.path}/new`">
+        <Button icon="pi pi-plus" rounded aria-label="Filter" />
+      </router-link>
     </div>
-    <CreateOrderModal v-if="visibility" @closeModal="closeModal" />
     <div class="grow overflow-auto">
       <Card class="my-2" v-for="order in ordersList" :key="order.id">
         <template #content>
@@ -47,13 +39,15 @@ let value = ref();
               {{ order.name }}
             </div>
             <div class="flex flex-col gap-y-2">
-              <Button
-                label="Bearbeiten"
-                icon="pi pi-pencil"
-                severity="secondary"
-                outlined
-                size="small"
-              />
+              <router-link :to="`${ROUTES.ORDER.path}/:id`">
+                <Button
+                  label="Bearbeiten"
+                  icon="pi pi-pencil"
+                  severity="secondary"
+                  outlined
+                  size="small"
+                />
+              </router-link>
               <Button label="Löschen" icon="pi pi-times" severity="danger" size="small" />
             </div>
           </div>

@@ -30,7 +30,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- <Component :prop="userInfo"></Component> - modal with data -->
   <form>
     <div class="flex flex-row justify-between">
       <Button label="Aufträge anzeigen" severity="secondary" text raised />
