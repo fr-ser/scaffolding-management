@@ -22,8 +22,10 @@ const genders = Object.values(ClientSalutation);
 const route = useRoute();
 
 onMounted(async () => {
-  userInfo.value = await getClient(route.params.id as string);
-  birthdayDate.value = userInfo.value.birthday ? new Date(userInfo.value.birthday) : undefined;
+  if (route.params.id) {
+    userInfo.value = await getClient(route.params.id as string);
+    birthdayDate.value = userInfo.value.birthday ? new Date(userInfo.value.birthday) : undefined;
+  }
 });
 </script>
 

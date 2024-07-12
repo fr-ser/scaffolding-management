@@ -5,6 +5,7 @@ import ClientListView from "@/views/ClientListView.vue";
 import ClientView from "@/views/ClientView.vue";
 import DocumentView from "@/views/DocumentView.vue";
 import OrderListView from "@/views/OrderListView.vue";
+// import CreateClientModal from "@/components/clients/CreateClientModal.vue"
 
 export const ROUTES = {
   CLIENT: { name: "client", path: "/client", label: "Kunden" },
@@ -27,6 +28,11 @@ const router = createRouter({
     {
       path: `${ROUTES.CLIENT.path}/:id`,
       name: ROUTES.CLIENT.name,
+      component: ClientView,
+    },
+    {
+      path: `${ROUTES.CLIENT.path}/new`,
+      name: `${ROUTES.CLIENT.name}-new`,
       component: ClientView,
     },
     {

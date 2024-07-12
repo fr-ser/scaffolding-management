@@ -2,18 +2,20 @@
 import Button from "primevue/button";
 import Calendar from "primevue/calendar";
 import Card from "primevue/card";
-import Dialog from "primevue/dialog";
+// import Dialog from "primevue/dialog";
 import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
+// import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
-const emit = defineEmits(["close-modal"]);
-function onModalClose() {
-  emit("close-modal");
-}
+// const emit = defineEmits(["close-modal"]);
+// function onModalClose() {
+//   emit("close-modal");
+// }
+const route = useRoute();
 
 let genders = ["Frau", "Frau Dr", "Herr", "Herr Dr"];
 let userInfo = ref({
@@ -32,7 +34,7 @@ let salutation = ref(genders[0]);
 let birthdayDate = ref();
 </script>
 <template>
-  <Dialog :visible="true" modal :closable="false" :style="{ width: '25rem' }">
+  <form>
     <!-- <Copmonent></Copmonent> - empty modal, no data -->
     <div class="grid grid-cols-1 sm:grid-cols-2 sm:gap-2 xl:grid-cols-4 xl:gap-4">
       <Card class="my-2">
@@ -126,5 +128,5 @@ let birthdayDate = ref();
       </Card>
     </div>
     <button @click="onModalClose">> close modal</button>
-  </Dialog>
+  </form>
 </template>

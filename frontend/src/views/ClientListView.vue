@@ -6,7 +6,7 @@ import { onMounted } from "vue";
 import { ref } from "vue";
 
 import { getClients } from "@/backendClient";
-import CreateClientModal from "@/components/clients/CreateClientModal.vue";
+// import CreateClientModal from "@/components/clients/CreateClientModal.vue";
 import type { Client } from "@/global/types/entities";
 import { ROUTES } from "@/router";
 
@@ -37,18 +37,12 @@ onMounted(async () => {
         />
         <InputText v-model="value" placeholder="Kundensuche" class="pl-10 w-full" />
       </span>
-
-      <Button
-        @click="toggleModal"
-        class="md:hidden"
-        icon="pi pi-user"
-        size="small"
-        rounded
-        aria-label="Kunde"
-      />
+      <router-link :to="`${ROUTES.CLIENT.path}/new`">
+        <Button class="md:hidden" icon="pi pi-user" size="small" rounded aria-label="Kunde" />
+      </router-link>
       <!-- <Button class="hidden md:inline-block" label="Neuen Kunden erstellen" /> -->
     </div>
-    <CreateClientModal v-if="visibility" @closeModal="closeModal" />
+    <!-- <CreateClientModal v-if="visibility" @closeModal="closeModal" /> -->
     <div class="grow overflow-auto">
       <Card class="my-2" v-for="client in clientsList" :key="client.id">
         <template #content>
