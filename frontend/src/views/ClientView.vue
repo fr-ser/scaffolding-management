@@ -32,7 +32,7 @@ onMounted(async () => {
 <template>
   <form>
     <div class="flex flex-row justify-between">
-      <Button label="Aufträge anzeigen" severity="secondary" text raised />
+      <Button label="Kundenliste anzeigen" severity="secondary" text raised />
       <div class="flex gap-x-2">
         <Button label="Speichern" text raised />
         <Button label="Löschen" severity="danger" text raised />

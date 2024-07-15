@@ -5,11 +5,11 @@ import FloatLabel from "primevue/floatlabel";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { ref } from "vue";
-import { useRoute } from "vue-router";
 
+// import { useRoute } from "vue-router";
 import { OrderStatus } from "@/global/types/appTypes";
 
-const route = useRoute();
+// const route = useRoute();
 
 // const emit = defineEmits(["close-modal"]);
 // function onModalClose() {
@@ -60,7 +60,7 @@ let decription = ref();
             class="w-full"
             id="select"
           />
-          <label for="select"> Skontodauer</label>
+          <label for="select">Skontodauer</label>
         </FloatLabel>
         <FloatLabel>
           <InputText id="percent" class="w-full" />
@@ -68,8 +68,8 @@ let decription = ref();
         </FloatLabel>
       </div>
       <div>
-        <label for="Beschreibung" class="w-full my-3">Beschreibung</label>
-        <Textarea v-model="decription" rows="5" class="w-full" id="Beschreibung" />
+        <label for="description" class="w-full my-3">Beschreibung</label>
+        <Textarea v-model="decription" rows="5" class="w-full" id="description" />
       </div>
       <div class="my-1">
         <p class="font-bold">Kunde</p>

@@ -28,7 +28,7 @@ let value = ref();
         <InputText v-model="value" placeholder="Suche" class="pl-10 w-full" />
       </span>
       <router-link :to="`${ROUTES.ORDER.path}/new`">
-        <Button icon="pi pi-plus" rounded aria-label="Filter" />
+        <Button icon="pi pi-plus" rounded aria-label="Neuen Auftrag anlegen" />
       </router-link>
     </div>
     <div class="grow overflow-auto">
