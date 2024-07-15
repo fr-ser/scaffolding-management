@@ -7,11 +7,12 @@ import FloatLabel from "primevue/floatlabel";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
-import { getClient } from "@/backendClient";
+import { createClient, getClient } from "@/backendClient";
 import { ClientSalutation } from "@/global/types/appTypes";
 import type { ClientCreate, ClientUpdate } from "@/global/types/dataEditTypes";
+import { ROUTES } from "@/router";
 
 let userInfo = ref<ClientUpdate | ClientCreate>({});
 
@@ -19,10 +20,28 @@ let birthdayDate = ref<Date>();
 
 const genders = Object.values(ClientSalutation);
 
+const router = useRouter();
 const route = useRoute();
 
+/**
+ * We're in editing mode if client id is present.
+ */
+const isEditing = Boolean(route.params.id);
+
+const onSaveClient = async () => {
+  /**
+   * Check what do we want to do - update or create - depending on the route.
+   */
+  if (!isEditing) {
+    const client = await createClient(userInfo.value);
+
+    // Redirect to the client page
+    router.push(`${ROUTES.CLIENT.path}/${client.id}/edit`);
+  }
+};
+
 onMounted(async () => {
-  if (route.params.id) {
+  if (isEditing) {
     userInfo.value = await getClient(route.params.id as string);
     birthdayDate.value = userInfo.value.birthday ? new Date(userInfo.value.birthday) : undefined;
   }
@@ -34,7 +53,7 @@ onMounted(async () => {
     <div class="flex flex-row justify-between">
       <Button label="Kundenliste anzeigen" severity="secondary" text raised />
       <div class="flex gap-x-2">
-        <Button label="Speichern" text raised />
+        <Button @click="onSaveClient" label="Speichern" text raised />
         <Button label="Löschen" severity="danger" text raised />
       </div>
     </div>
