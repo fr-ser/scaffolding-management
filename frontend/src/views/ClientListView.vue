@@ -12,14 +12,14 @@ import { ROUTES } from "@/router";
 const clientsList = ref<Client[]>([]);
 
 const value = ref(null);
-let visibility = ref(false);
+// let visibility = ref(false);
 
-function toggleModal() {
-  visibility.value = true;
-}
-function closeModal() {
-  visibility.value = false;
-}
+// function toggleModal() {
+//   visibility.value = true;
+// }
+// function closeModal() {
+//   visibility.value = false;
+// }
 
 onMounted(async () => {
   const result = await getClients();
@@ -37,7 +37,13 @@ onMounted(async () => {
         <InputText v-model="value" placeholder="Kundensuche" class="pl-10 w-full" />
       </span>
       <router-link :to="`${ROUTES.CLIENT.path}/new`">
-        <Button class="md:hidden" icon="pi pi-user" size="small" rounded aria-label="Kunde" />
+        <Button
+          class="md:hidden"
+          icon="pi pi-user"
+          size="small"
+          rounded
+          aria-label="Neuen Kunden erstellen"
+        />
       </router-link>
     </div>
     <div class="grow overflow-auto">

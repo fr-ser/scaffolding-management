@@ -3,10 +3,10 @@ import { createRouter, createWebHistory } from "vue-router";
 import ArticleView from "@/views/ArticleView.vue";
 import ClientListView from "@/views/ClientListView.vue";
 import ClientView from "@/views/ClientView.vue";
+import CreateOrderView from "@/views/CreateOrderView.vue";
 import DocumentView from "@/views/DocumentView.vue";
 import OrderListView from "@/views/OrderListView.vue";
-import OrderView from "@/views/OrderView.vue"
-import CreateOrderView from "@/views/CreateOrderView.vue";
+import OrderView from "@/views/OrderView.vue";
 
 export const ROUTES = {
   CLIENT: { name: "client", path: "/client", label: "Kunden" },
