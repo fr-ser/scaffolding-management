@@ -27,23 +27,19 @@ let discountPeriod = ref(discountPeriodChoice[0]);
 let decription = ref();
 </script>
 <template>
-  <!-- <Dialog :visible="true" modal :closable="false" :style="{ width: '25rem' }"> -->
   <form>
-    <div class="flex flex-col gap-y-4">
+    <div class="flex flex-col gap-y-6">
       <p class="font-bold">Daten</p>
       <FloatLabel>
         <InputText id="constructionProject" class="w-full" />
         <label for="constructionProject">Bauvorhaben</label>
       </FloatLabel>
-      <Dropdown
-        v-model="status"
-        :options="orderStatusTypes"
-        placeholder="Status"
-        class="w-full"
-        id="select"
-      />
+      <FloatLabel>
+        <Dropdown v-model="status" :options="orderStatusTypes" class="w-full" id="select" />
+        <label for="select">Status</label>
+      </FloatLabel>
       <p class="font-bold">Skonto</p>
-      <div class="grid grid-cols-3 gap-1 mt-6">
+      <div class="grid grid-cols-3 gap-1 mt-3">
         <FloatLabel>
           <Dropdown
             v-model="discount"
@@ -84,8 +80,8 @@ let decription = ref();
     </div>
 
     <div class="flex justify-between gap-2">
-      <Button type="button" label="Löschen" severity="secondary" @click="onModalClose"></Button>
-      <Button type="button" label="Auftrag Speichern" @click="onModalClose"></Button>
+      <Button type="button" label="Löschen" severity="secondary"></Button>
+      <Button type="button" label="Auftrag Speichern"></Button>
     </div>
   </form>
 </template>
