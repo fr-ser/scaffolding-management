@@ -37,13 +37,7 @@ onMounted(async () => {
         <InputText v-model="value" placeholder="Kundensuche" class="pl-10 w-full" />
       </span>
       <router-link :to="`${ROUTES.CLIENT.path}/new`">
-        <Button
-          class="md:hidden"
-          icon="pi pi-user"
-          size="small"
-          rounded
-          aria-label="Neuen Kunden erstellen"
-        />
+        <Button icon="pi pi-user" size="small" rounded aria-label="Neuen Kunden erstellen" />
       </router-link>
     </div>
     <div class="grow overflow-auto">
@@ -54,7 +48,7 @@ onMounted(async () => {
               {{ `${client.first_name} ${client.last_name}` }}
             </div>
             <div class="flex flex-col gap-y-2">
-              <router-link :to="`${ROUTES.CLIENT.path}/${client.id}`">
+              <router-link :to="`${ROUTES.CLIENT.path}/${client.id}/edit`">
                 <Button
                   label="Bearbeiten"
                   icon="pi pi-pencil"

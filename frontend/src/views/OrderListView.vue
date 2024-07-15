@@ -39,7 +39,7 @@ let value = ref();
               {{ order.name }}
             </div>
             <div class="flex flex-col gap-y-2">
-              <router-link :to="`${ROUTES.ORDER.path}/:id`">
+              <router-link :to="`${ROUTES.ORDER.path}/:id/edit`">
                 <Button
                   label="Bearbeiten"
                   icon="pi pi-pencil"
