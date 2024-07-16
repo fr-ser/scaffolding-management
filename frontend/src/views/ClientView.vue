@@ -9,7 +9,7 @@ import Textarea from "primevue/textarea";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { createClient, getClient, updateClient } from "@/backendClient";
+import { createClient, deleteClient, getClient, updateClient } from "@/backendClient";
 import { ClientSalutation } from "@/global/types/appTypes";
 import type { ClientCreate, ClientUpdate } from "@/global/types/dataEditTypes";
 import { ROUTES } from "@/router";
@@ -22,7 +22,7 @@ const genders = Object.values(ClientSalutation);
 
 const router = useRouter();
 const route = useRoute();
-
+// let hidden = ref("hidden");
 /**
  * We're in editing mode if client id is present.
  */
@@ -39,7 +39,16 @@ const onSaveClient = async () => {
     router.push(`${ROUTES.CLIENT.path}/${client.id}/edit`);
   } else {
     const client = await updateClient(`${route.params.id}`, userInfo.value);
-    console.log("huihuuuiUHUI");
+  }
+};
+function onClientList() {
+  router.push(`${ROUTES.CLIENT.path}`);
+}
+const onDeleteClient = async () => {
+  if (isEditing) {
+    console.log("hhhhhhhhhh");
+    const client = await deleteClient(`${route.params.id}`);
+    router.push(`${ROUTES.CLIENT.path}`);
   }
 };
 onMounted(async () => {
@@ -53,10 +62,24 @@ onMounted(async () => {
 <template>
   <form>
     <div class="flex flex-row justify-between">
-      <Button label="Kundenliste anzeigen" severity="secondary" text raised />
+      <Button
+        @click="onClientList"
+        icon="pi pi-arrow-left"
+        size="small"
+        severity="secondary"
+        text
+        raised
+      />
       <div class="flex gap-x-2">
         <Button @click="onSaveClient" label="Speichern" text raised />
-        <Button label="Löschen" severity="danger" text raised />
+        <Button
+          @click="onDeleteClient"
+          v-if="isEditing"
+          label="Löschen"
+          severity="danger"
+          text
+          raised
+        />
       </div>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 sm:gap-2 xl:grid-cols-4 xl:gap-4">
