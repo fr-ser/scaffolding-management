@@ -9,7 +9,7 @@ import Textarea from "primevue/textarea";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { createClient, getClient } from "@/backendClient";
+import { createClient, getClient, updateClient } from "@/backendClient";
 import { ClientSalutation } from "@/global/types/appTypes";
 import type { ClientCreate, ClientUpdate } from "@/global/types/dataEditTypes";
 import { ROUTES } from "@/router";
@@ -37,9 +37,11 @@ const onSaveClient = async () => {
 
     // Redirect to the client page
     router.push(`${ROUTES.CLIENT.path}/${client.id}/edit`);
+  } else {
+    const client = await updateClient(`${route.params.id}`, userInfo.value);
+    console.log("huihuuuiUHUI");
   }
 };
-
 onMounted(async () => {
   if (isEditing) {
     userInfo.value = await getClient(route.params.id as string);

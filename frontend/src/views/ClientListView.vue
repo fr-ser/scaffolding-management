@@ -2,6 +2,7 @@
 import Button from "primevue/button";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
+import { on } from "stream";
 import { onMounted } from "vue";
 import { ref } from "vue";
 
@@ -50,6 +51,7 @@ onMounted(async () => {
                 />
               </router-link>
               <Button label="Löschen" icon="pi pi-times" severity="danger" size="small" />
+              <!-- @click="onDeleteClient" -->
             </div>
           </div>
         </template>
