@@ -8,6 +8,7 @@ import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { ref } from "vue";
 
+import { updateArticle } from "@/backendClient";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { Article } from "@/global/types/entities";
 
@@ -18,6 +19,11 @@ const props = defineProps<{
 const articlesType = Object.values(ArticleKind);
 
 const editableArticle = ref(props.article);
+
+const onUpdateArticle = async () => {
+  console.log("OOOO");
+  let correctArticle = await updateArticle(`${editableArticle.value.id}`, editableArticle.value);
+};
 </script>
 
 <template>
@@ -61,7 +67,7 @@ const editableArticle = ref(props.article);
             <InputNumber class="w-full" id="price" v-model="editableArticle.price" />
             <label for="price">Preis</label>
           </FloatLabel>
-          <Button icon="pi pi-check" text rounded aria-label="Filter" />
+          <Button @click="onUpdateArticle" icon="pi pi-check" text rounded aria-label="Filter" />
           <Button icon="pi pi-times" severity="danger" text rounded aria-label="Cancel" />
         </div>
       </form>
