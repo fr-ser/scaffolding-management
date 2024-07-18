@@ -22,7 +22,6 @@ const genders = Object.values(ClientSalutation);
 
 const router = useRouter();
 const route = useRoute();
-// let hidden = ref("hidden");
 /**
  * We're in editing mode if client id is present.
  */
@@ -46,7 +45,6 @@ function onClientList() {
 }
 const onDeleteClient = async () => {
   if (isEditing) {
-    console.log("hhhhhhhhhh");
     const client = await deleteClient(`${route.params.id}`);
     router.push(`${ROUTES.CLIENT.path}`);
   }

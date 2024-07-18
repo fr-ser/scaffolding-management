@@ -5,15 +5,26 @@ import InputText from "primevue/inputtext";
 import { on } from "stream";
 import { onMounted } from "vue";
 import { ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-import { getClients } from "@/backendClient";
+import { deleteClient, getClients } from "@/backendClient";
 import type { Client } from "@/global/types/entities";
 import { ROUTES } from "@/router";
 
+const route = useRoute();
+const router = useRouter();
 const clientsList = ref<Client[]>([]);
-
 const value = ref(null);
 
+function removeClient(client: Client) {
+  let indicator = client.id;
+  const onDeleteClient = async () => {
+    const response = await deleteClient(`${indicator}`);
+    router.go(0);
+    return response;
+  };
+  return onDeleteClient();
+}
 onMounted(async () => {
   const result = await getClients();
   clientsList.value = result.data;
@@ -50,8 +61,13 @@ onMounted(async () => {
                   size="small"
                 />
               </router-link>
-              <Button label="Löschen" icon="pi pi-times" severity="danger" size="small" />
-              <!-- @click="onDeleteClient" -->
+              <Button
+                @click="removeClient(client)"
+                label="Löschen"
+                icon="pi pi-times"
+                severity="danger"
+                size="small"
+              />
             </div>
           </div>
         </template>
