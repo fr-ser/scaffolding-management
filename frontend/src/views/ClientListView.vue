@@ -2,28 +2,30 @@
 import Button from "primevue/button";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
-import { on } from "stream";
 import { onMounted } from "vue";
 import { ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 
 import { deleteClient, getClients } from "@/backendClient";
 import type { Client } from "@/global/types/entities";
 import { ROUTES } from "@/router";
 
-const route = useRoute();
 const router = useRouter();
 const clientsList = ref<Client[]>([]);
 const value = ref(null);
 
-function removeClient(client: Client) {
-  let indicator = client.id;
-  const onDeleteClient = async () => {
-    const response = await deleteClient(`${indicator}`);
-    router.go(0);
-    return response;
-  };
-  return onDeleteClient();
+// function removeClient(client: Client) {
+//   let indicator = client.id;
+//   const onDeleteClient = async () => {
+//     const response = await deleteClient(`${indicator}`);
+//     router.go(0);
+//     return response;
+//   };
+//   return onDeleteClient();
+// }
+async function removeClient(client: Client) {
+  await deleteClient(client.id);
+  router.go(0);
 }
 onMounted(async () => {
   const result = await getClients();
