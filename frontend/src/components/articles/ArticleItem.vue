@@ -23,10 +23,10 @@ const articlesType = Object.values(ArticleKind);
 const editableArticle = ref(props.article);
 
 const onUpdateArticle = async () => {
-  let correctArticle = await updateArticle(`${editableArticle.value.id}`, editableArticle.value);
+  await updateArticle(`${editableArticle.value.id}`, editableArticle.value);
 };
 const onDeleteArticle = async () => {
-  let removeAricle = await deleteArticle(`${editableArticle.value.id}`);
+  await deleteArticle(`${editableArticle.value.id}`);
   router.go(0);
 };
 </script>

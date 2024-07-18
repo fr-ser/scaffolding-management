@@ -37,7 +37,7 @@ const onSaveClient = async () => {
     // Redirect to the client page
     router.push(`${ROUTES.CLIENT.path}/${client.id}/edit`);
   } else {
-    const client = await updateClient(`${route.params.id}`, userInfo.value);
+    await updateClient(`${route.params.id}`, userInfo.value);
   }
 };
 function onClientList() {
@@ -45,7 +45,7 @@ function onClientList() {
 }
 const onDeleteClient = async () => {
   if (isEditing) {
-    const client = await deleteClient(`${route.params.id}`);
+    await deleteClient(`${route.params.id}`);
     router.push(`${ROUTES.CLIENT.path}`);
   }
 };
