@@ -14,15 +14,7 @@ const router = useRouter();
 const clientsList = ref<Client[]>([]);
 const value = ref(null);
 
-// function removeClient(client: Client) {
-//   let indicator = client.id;
-//   const onDeleteClient = async () => {
-//     const response = await deleteClient(`${indicator}`);
-//     router.go(0);
-//     return response;
-//   };
-//   return onDeleteClient();
-// }
+// we should provide an argument in the place where we call the function
 async function removeClient(client: Client) {
   await deleteClient(client.id);
   router.go(0);
