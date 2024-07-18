@@ -7,22 +7,27 @@ import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
-import { updateArticle } from "@/backendClient";
+import { deleteArticle, updateArticle } from "@/backendClient";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { Article } from "@/global/types/entities";
 
 const props = defineProps<{
   article: Article;
 }>();
+const router = useRouter();
 
 const articlesType = Object.values(ArticleKind);
 
 const editableArticle = ref(props.article);
 
 const onUpdateArticle = async () => {
-  console.log("OOOO");
   let correctArticle = await updateArticle(`${editableArticle.value.id}`, editableArticle.value);
+};
+const onDeleteArticle = async () => {
+  let removeAricle = await deleteArticle(`${editableArticle.value.id}`);
+  router.go(0);
 };
 </script>
 
@@ -68,7 +73,14 @@ const onUpdateArticle = async () => {
             <label for="price">Preis</label>
           </FloatLabel>
           <Button @click="onUpdateArticle" icon="pi pi-check" text rounded aria-label="Filter" />
-          <Button icon="pi pi-times" severity="danger" text rounded aria-label="Cancel" />
+          <Button
+            @click="onDeleteArticle"
+            icon="pi pi-times"
+            severity="danger"
+            text
+            rounded
+            aria-label="Cancel"
+          />
         </div>
       </form>
     </template>
