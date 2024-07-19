@@ -31,23 +31,19 @@ const onSaveClient = async () => {
   /**
    * Check what do we want to do - update or create - depending on the route.
    */
-  if (!isEditing) {
-    const client = await createClient(userInfo.value);
-
-    // Redirect to the client page
-    router.push(`${ROUTES.CLIENT.path}/${client.id}/edit`);
-  } else {
+  if (isEditing) {
     await updateClient(`${route.params.id}`, userInfo.value);
+  } else {
+    const client = await createClient(userInfo.value);
+    router.push(`${ROUTES.CLIENT.path}/${client.id}/edit`);
   }
 };
 function onClientList() {
   router.push(`${ROUTES.CLIENT.path}`);
 }
 const onDeleteClient = async () => {
-  if (isEditing) {
-    await deleteClient(`${route.params.id}`);
-    router.push(`${ROUTES.CLIENT.path}`);
-  }
+  await deleteClient(`${route.params.id}`);
+  router.push(`${ROUTES.CLIENT.path}`);
 };
 onMounted(async () => {
   if (isEditing) {
