@@ -6,6 +6,8 @@ import FloatLabel from "primevue/floatlabel";
 import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
 
 import { deleteArticle, updateArticle } from "@/backendClient";
@@ -17,7 +19,8 @@ const emit = defineEmits(["reloadArticleView"]);
 const props = defineProps<{
   article: Article;
 }>();
-
+const confirm = useConfirm();
+const toast = useToast();
 const articlesType = Object.values(ArticleKind);
 
 const editableArticle = ref(props.article);
@@ -29,6 +32,24 @@ const onUpdateArticle = async () => {
 const onDeleteArticle = async () => {
   await deleteArticle(`${editableArticle.value.id}`);
   emit("reloadArticleView");
+};
+const confirmDelete = () => {
+  confirm.require({
+    message: "Are you sure you want to delete?",
+    header: "Confirmation",
+    icon: "pi pi-exclamation-triangle",
+    rejectLabel: "Cancel",
+    acceptLabel: "Delete",
+    accept: async () => {
+      await onDeleteArticle();
+      toast.add({
+        severity: "info",
+        summary: "Confirmed",
+        detail: "You have accepted",
+        life: 3000,
+      });
+    },
+  });
 };
 </script>
 
@@ -81,7 +102,7 @@ const onDeleteArticle = async () => {
             aria-label="Artikeländerung speichern"
           />
           <Button
-            @click="onDeleteArticle"
+            @click="confirmDelete"
             icon="pi pi-times"
             severity="danger"
             text
