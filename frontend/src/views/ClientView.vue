@@ -26,7 +26,7 @@ const onDeleteClient = async () => {
 };
 const confirmDelete = () => {
   confirm.require({
-    message: "Are you sure you want to proceed?",
+    message: "Are you sure you want to delete?",
     header: "Confirmation",
     icon: "pi pi-exclamation-triangle",
     rejectLabel: "Cancel",
