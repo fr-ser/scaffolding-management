@@ -9,6 +9,9 @@ import ArticlesItem from "@/components/articles/ArticleItem.vue";
 //
 import type { Article } from "@/global/types/entities";
 
+async function reloadPage() {
+  articlesList.value = (await getArticles()).data;
+}
 const articlesList = ref<Article[]>([]);
 onMounted(async () => {
   const result = await getArticles();
@@ -29,7 +32,12 @@ let value = ref();
       <Button label="Create" severity="secondary" outlined />
     </div>
     <div class="flex flex-col gap-2 grow overflow-auto">
-      <ArticlesItem v-for="article in articlesList" :article="article" :key="article.id" />
+      <ArticlesItem
+        v-for="article in articlesList"
+        :article="article"
+        :key="article.id"
+        @reload-article-view="reloadPage"
+      />
     </div>
   </div>
 </template>
