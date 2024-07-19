@@ -7,7 +7,6 @@ import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { ref } from "vue";
-import { useRouter } from "vue-router";
 
 import { deleteArticle, updateArticle } from "@/backendClient";
 import { ArticleKind } from "@/global/types/appTypes";
@@ -18,7 +17,6 @@ const emit = defineEmits(["reloadArticleView"]);
 const props = defineProps<{
   article: Article;
 }>();
-const router = useRouter();
 
 const articlesType = Object.values(ArticleKind);
 
