@@ -4,8 +4,9 @@ import InputText from "primevue/inputtext";
 import { ref } from "vue";
 import { onMounted } from "vue";
 
-import { getArticles } from "@/backendClient";
+import { createArticle, getArticles } from "@/backendClient";
 import ArticlesItem from "@/components/articles/ArticleItem.vue";
+import { ArticleKind } from "@/global/types/appTypes";
 //
 import type { Article } from "@/global/types/entities";
 
@@ -13,6 +14,16 @@ async function reloadPage() {
   articlesList.value = (await getArticles()).data;
 }
 const articlesList = ref<Article[]>([]);
+
+const createMockArticle = async () => {
+  await createArticle({
+    title: "mocked article",
+    kind: ArticleKind.heading,
+    description: "test",
+  });
+  reloadPage();
+};
+
 onMounted(async () => {
   const result = await getArticles();
   articlesList.value = result.data;
@@ -29,7 +40,7 @@ let value = ref();
         />
         <InputText v-model="value" placeholder="Suche" class="pl-10 w-full" />
       </span>
-      <Button label="Create" severity="secondary" outlined />
+      <Button label="Create" @click="createMockArticle" severity="secondary" outlined />
     </div>
     <div class="flex flex-col gap-2 grow overflow-auto">
       <ArticlesItem
