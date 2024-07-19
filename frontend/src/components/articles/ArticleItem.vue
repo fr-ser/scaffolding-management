@@ -39,9 +39,8 @@ const onDeleteArticle = async () => {
 };
 const confirmDelete = () => {
   confirm.require({
-    message: "Are you sure you want to delete?",
+    message: "Are you sure you want to delete this article?",
     header: "Confirmation",
-    icon: "pi pi-exclamation-triangle",
     rejectLabel: "Cancel",
     acceptLabel: "Delete",
     accept: async () => {
@@ -49,7 +48,7 @@ const confirmDelete = () => {
       toast.add({
         severity: "info",
         summary: "Confirmed",
-        detail: "You have deleted",
+        detail: "You have deleted this article",
         life: 3000,
       });
     },

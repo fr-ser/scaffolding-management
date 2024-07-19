@@ -24,9 +24,8 @@ const confirm = useConfirm();
 const toast = useToast();
 const confirmDelete = (client: Client) => {
   confirm.require({
-    message: "Are you sure you want to proceed?",
+    message: "Are you sure you want to delete this client?",
     header: "Confirmation",
-    icon: "pi pi-exclamation-triangle",
     rejectLabel: "Cancel",
     acceptLabel: "Delete",
     accept: async () => {
@@ -34,7 +33,7 @@ const confirmDelete = (client: Client) => {
       toast.add({
         severity: "info",
         summary: "Confirmed",
-        detail: "You have accepted",
+        detail: "You have deleted this client",
         life: 3000,
       });
     },
