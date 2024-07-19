@@ -2,6 +2,8 @@
 import Button from "primevue/button";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
 import { onMounted } from "vue";
 import { ref } from "vue";
 
@@ -18,6 +20,26 @@ async function removeClient(client: Client) {
 
   clientsList.value = (await getClients()).data;
 }
+const confirm = useConfirm();
+const toast = useToast();
+const confirmDelete = (client: Client) => {
+  confirm.require({
+    message: "Are you sure you want to proceed?",
+    header: "Confirmation",
+    icon: "pi pi-exclamation-triangle",
+    rejectLabel: "Cancel",
+    acceptLabel: "Delete",
+    accept: async () => {
+      await removeClient(client);
+      toast.add({
+        severity: "info",
+        summary: "Confirmed",
+        detail: "You have accepted",
+        life: 3000,
+      });
+    },
+  });
+};
 
 onMounted(async () => {
   const result = await getClients();
@@ -56,7 +78,7 @@ onMounted(async () => {
                 />
               </router-link>
               <Button
-                @click="removeClient(client)"
+                @click="confirmDelete(client)"
                 label="Löschen"
                 icon="pi pi-times"
                 severity="danger"

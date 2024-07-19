@@ -2,7 +2,7 @@
 import Button from "primevue/button";
 import Calendar from "primevue/calendar";
 import Card from "primevue/card";
-import ConfirmDialog from "primevue/confirmdialog";
+// import ConfirmDialog from "primevue/confirmdialog";
 import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import InputText from "primevue/inputtext";
@@ -10,6 +10,7 @@ import Textarea from "primevue/textarea";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
+import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { createClient, deleteClient, getClient, updateClient } from "@/backendClient";
@@ -23,7 +24,7 @@ const onDeleteClient = async () => {
   await deleteClient(`${route.params.id}`);
   router.push(`${ROUTES.CLIENT.path}`);
 };
-const confirm1 = () => {
+const confirmDelete = () => {
   confirm.require({
     message: "Are you sure you want to proceed?",
     header: "Confirmation",
@@ -60,14 +61,16 @@ const route = useRoute();
 /**
  * We're in editing mode if client id is present.
  */
-const isEditing = Boolean(route.params.id);
+const isEditing = computed(() => {
+  return Boolean(route.params.id);
+});
 
 const onSaveClient = async () => {
   // const confirm = useConfirm();
   /**
    * Check what do we want to do - update or create - depending on the route.
    */
-  if (isEditing) {
+  if (isEditing.value) {
     await updateClient(`${route.params.id}`, userInfo.value);
   } else {
     const client = await createClient(userInfo.value);
@@ -78,7 +81,7 @@ function onClientList() {
   router.push(`${ROUTES.CLIENT.path}`);
 }
 onMounted(async () => {
-  if (isEditing) {
+  if (isEditing.value) {
     userInfo.value = await getClient(route.params.id as string);
     birthdayDate.value = userInfo.value.birthday ? new Date(userInfo.value.birthday) : undefined;
   }
@@ -98,10 +101,17 @@ onMounted(async () => {
       />
       <div class="flex gap-x-2">
         <Button @click="onSaveClient" label="Speichern" text raised />
-        <Button @click="confirm1" v-if="isEditing" label="Löschen" severity="danger" text raised />
+        <Button
+          @click="confirmDelete"
+          v-if="isEditing"
+          label="Löschen"
+          severity="danger"
+          text
+          raised
+        />
       </div>
     </div>
-    <ConfirmDialog></ConfirmDialog>
+    <!-- <ConfirmDialog></ConfirmDialog> -->
     <div class="grid grid-cols-1 sm:grid-cols-2 sm:gap-2 xl:grid-cols-4 xl:gap-4">
       <Card class="my-2">
         <template #content>
