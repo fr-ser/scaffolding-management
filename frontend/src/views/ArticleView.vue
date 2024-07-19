@@ -7,7 +7,6 @@ import { onMounted } from "vue";
 import { createArticle, getArticles } from "@/backendClient";
 import ArticlesItem from "@/components/articles/ArticleItem.vue";
 import { ArticleKind } from "@/global/types/appTypes";
-//
 import type { Article } from "@/global/types/entities";
 
 async function reloadPage() {

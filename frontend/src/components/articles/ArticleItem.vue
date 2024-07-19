@@ -25,8 +25,12 @@ const articlesType = Object.values(ArticleKind);
 
 const editableArticle = ref(props.article);
 
+const updateArticleToast = () => {
+  toast.add({ severity: "info", summary: "Info", detail: "Article was updated", life: 3000 });
+};
 const onUpdateArticle = async () => {
   await updateArticle(`${editableArticle.value.id}`, editableArticle.value);
+  updateArticleToast();
 };
 
 const onDeleteArticle = async () => {
@@ -45,7 +49,7 @@ const confirmDelete = () => {
       toast.add({
         severity: "info",
         summary: "Confirmed",
-        detail: "You have accepted",
+        detail: "You have deleted",
         life: 3000,
       });
     },
