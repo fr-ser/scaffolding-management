@@ -36,18 +36,10 @@ const confirmDelete = () => {
       toast.add({
         severity: "info",
         summary: "Confirmed",
-        detail: "You have accepted",
+        detail: "You have deleted",
         life: 3000,
       });
     },
-    // reject: () => {
-    //   toast.add({
-    //     severity: "error",
-    //     summary: "Rejected",
-    //     detail: "You have rejected",
-    //     life: 3000,
-    //   });
-    // },
   });
 };
 
@@ -64,17 +56,23 @@ const route = useRoute();
 const isEditing = computed(() => {
   return Boolean(route.params.id);
 });
-
+const createClientToast = () => {
+  toast.add({ severity: "info", summary: "Info", detail: "Client was created", life: 3000 });
+};
+const updateClientToast = () => {
+  toast.add({ severity: "info", summary: "Info", detail: "Client was updated", life: 3000 });
+};
 const onSaveClient = async () => {
-  // const confirm = useConfirm();
   /**
    * Check what do we want to do - update or create - depending on the route.
    */
   if (isEditing.value) {
     await updateClient(`${route.params.id}`, userInfo.value);
+    updateClientToast();
   } else {
     const client = await createClient(userInfo.value);
     router.push(`${ROUTES.CLIENT.path}/${client.id}/edit`);
+    createClientToast();
   }
 };
 function onClientList() {
@@ -111,7 +109,6 @@ onMounted(async () => {
         />
       </div>
     </div>
-    <!-- <ConfirmDialog></ConfirmDialog> -->
     <div class="grid grid-cols-1 sm:grid-cols-2 sm:gap-2 xl:grid-cols-4 xl:gap-4">
       <Card class="my-2">
         <template #content>
