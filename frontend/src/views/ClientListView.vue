@@ -4,21 +4,21 @@ import Card from "primevue/card";
 import InputText from "primevue/inputtext";
 import { onMounted } from "vue";
 import { ref } from "vue";
-import { useRouter } from "vue-router";
 
 import { deleteClient, getClients } from "@/backendClient";
 import type { Client } from "@/global/types/entities";
 import { ROUTES } from "@/router";
 
-const router = useRouter();
 const clientsList = ref<Client[]>([]);
 const value = ref(null);
 
 // we should provide an argument in the place where we call the function
 async function removeClient(client: Client) {
   await deleteClient(client.id);
-  router.go(0);
+
+  clientsList.value = (await getClients()).data;
 }
+
 onMounted(async () => {
   const result = await getClients();
   clientsList.value = result.data;

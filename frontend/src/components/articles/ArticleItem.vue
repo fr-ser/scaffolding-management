@@ -13,6 +13,8 @@ import { deleteArticle, updateArticle } from "@/backendClient";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { Article } from "@/global/types/entities";
 
+const emit = defineEmits(["reloadArticleView"]);
+
 const props = defineProps<{
   article: Article;
 }>();
@@ -25,9 +27,10 @@ const editableArticle = ref(props.article);
 const onUpdateArticle = async () => {
   await updateArticle(`${editableArticle.value.id}`, editableArticle.value);
 };
+
 const onDeleteArticle = async () => {
   await deleteArticle(`${editableArticle.value.id}`);
-  router.go(0);
+  emit("reloadArticleView");
 };
 </script>
 
@@ -72,14 +75,20 @@ const onDeleteArticle = async () => {
             <InputNumber class="w-full" id="price" v-model="editableArticle.price" />
             <label for="price">Preis</label>
           </FloatLabel>
-          <Button @click="onUpdateArticle" icon="pi pi-check" text rounded aria-label="Filter" />
+          <Button
+            @click="onUpdateArticle"
+            icon="pi pi-check"
+            text
+            rounded
+            aria-label="Artikeländerung speichern"
+          />
           <Button
             @click="onDeleteArticle"
             icon="pi pi-times"
             severity="danger"
             text
             rounded
-            aria-label="Cancel"
+            aria-label="Artikel löschen"
           />
         </div>
       </form>
