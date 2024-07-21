@@ -3,11 +3,11 @@ import Button from "primevue/button";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
 import { useConfirm } from "primevue/useconfirm";
-import { useToast } from "primevue/usetoast";
 import { onMounted } from "vue";
 import { ref } from "vue";
 
 import { deleteClient, getClients } from "@/backendClient";
+import useNotifications from "@/compositions/useNotifications";
 import type { Client } from "@/global/types/entities";
 import { ROUTES } from "@/router";
 
@@ -21,7 +21,8 @@ async function removeClient(client: Client) {
   clientsList.value = (await getClients()).data;
 }
 const confirm = useConfirm();
-const toast = useToast();
+const notifications = useNotifications();
+
 const confirmDelete = (client: Client) => {
   confirm.require({
     message: "Are you sure you want to delete this client?",
@@ -30,12 +31,7 @@ const confirmDelete = (client: Client) => {
     acceptLabel: "Delete",
     accept: async () => {
       await removeClient(client);
-      toast.add({
-        severity: "info",
-        summary: "Confirmed",
-        detail: "You have deleted this client",
-        life: 3000,
-      });
+      notifications.showDeleteClientNotification();
     },
   });
 };
