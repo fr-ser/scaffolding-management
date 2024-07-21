@@ -13,30 +13,29 @@ import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { createClient, deleteClient, getClient, updateClient } from "@/backendClient";
+import useNotifications from "@/compositions/useNotifications";
 import { ClientSalutation } from "@/global/types/appTypes";
 import type { ClientCreate, ClientUpdate } from "@/global/types/dataEditTypes";
 import { ROUTES } from "@/router";
 
 const confirm = useConfirm();
 const toast = useToast();
+
+const notifications = useNotifications();
+
 const onDeleteClient = async () => {
   await deleteClient(`${route.params.id}`);
   router.push(`${ROUTES.CLIENT.path}`);
 };
 const confirmDelete = () => {
   confirm.require({
-    message: "Are you sure you want to delete this client?",
+    message: "Are you sure you want to delete this client?????",
     header: "Confirmation",
     rejectLabel: "Cancel",
     acceptLabel: "Delete",
     accept: async () => {
       await onDeleteClient();
-      toast.add({
-        severity: "info",
-        summary: "Confirmed",
-        detail: "You have deleted this client",
-        life: 3000,
-      });
+      notifications.showDeleteClientNotification();
     },
   });
 };
