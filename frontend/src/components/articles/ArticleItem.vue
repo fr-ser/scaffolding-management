@@ -7,7 +7,6 @@ import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { useConfirm } from "primevue/useconfirm";
-import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
 
 import { deleteArticle, updateArticle } from "@/backendClient";
@@ -21,7 +20,6 @@ const props = defineProps<{
   article: Article;
 }>();
 const confirm = useConfirm();
-const toast = useToast();
 const articlesType = Object.values(ArticleKind);
 
 const editableArticle = ref(props.article);
@@ -38,10 +36,10 @@ const onDeleteArticle = async () => {
 };
 const confirmDelete = () => {
   confirm.require({
-    message: "Are you sure you want to delete this article?",
-    header: "Confirmation",
-    rejectLabel: "Cancel",
-    acceptLabel: "Delete",
+    message: "Wollen Sie den Artikel sicher wirklich löschen?",
+    header: "Bestätigung",
+    rejectLabel: "Abbrechen",
+    acceptLabel: "Löschen",
     accept: async () => {
       await onDeleteArticle();
       notifications.showDeleteArticleNotification();
@@ -93,7 +91,7 @@ const confirmDelete = () => {
           </FloatLabel>
           <Button
             @click="onUpdateArticle"
-            icon="pi pi-check"
+            icon="pi pi-save"
             text
             rounded
             aria-label="Artikeländerung speichern"
