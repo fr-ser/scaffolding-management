@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// import ArticleList from "./ArticleList.vue";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import Dropdown from "primevue/dropdown";
@@ -32,14 +31,11 @@ const isEditing = computed(() => {
 });
 
 const onUpdateArticle = async () => {
-  // await updateArticle(`${editableArticle.value.id}`, editableArticle.value);
-  // notifications.showUpdateArticleNotification();
   if (props.article.id === "new") {
-    console.log("CREATE");
     await createArticle(editableArticle.value);
+    notifications.showCreateArticleNotification();
     emit("reloadArticleView");
   } else {
-    console.log("UPDATE");
     await updateArticle(`${editableArticle.value.id}`, editableArticle.value);
     notifications.showUpdateArticleNotification();
   }
