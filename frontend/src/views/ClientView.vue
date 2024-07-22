@@ -7,7 +7,6 @@ import FloatLabel from "primevue/floatlabel";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { useConfirm } from "primevue/useconfirm";
-import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -19,8 +18,6 @@ import type { ClientCreate, ClientUpdate } from "@/global/types/dataEditTypes";
 import { ROUTES } from "@/router";
 
 const confirm = useConfirm();
-const toast = useToast();
-
 const notifications = useNotifications();
 
 const onDeleteClient = async () => {
@@ -53,23 +50,17 @@ const route = useRoute();
 const isEditing = computed(() => {
   return Boolean(route.params.id);
 });
-const createClientToast = () => {
-  toast.add({ severity: "info", summary: "Info", detail: "Client was created", life: 3000 });
-};
-const updateClientToast = () => {
-  toast.add({ severity: "info", summary: "Info", detail: "Client was updated", life: 3000 });
-};
 const onSaveClient = async () => {
   /**
    * Check what do we want to do - update or create - depending on the route.
    */
   if (isEditing.value) {
     await updateClient(`${route.params.id}`, userInfo.value);
-    updateClientToast();
+    notifications.showUpdateClientNotification();
   } else {
     const client = await createClient(userInfo.value);
     router.push(`${ROUTES.CLIENT.path}/${client.id}/edit`);
-    createClientToast();
+    notifications.showCreateClientNotification();
   }
 };
 function onClientList() {

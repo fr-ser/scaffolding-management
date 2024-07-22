@@ -11,6 +11,7 @@ import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
 
 import { deleteArticle, updateArticle } from "@/backendClient";
+import useNotifications from "@/compositions/useNotifications";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { Article } from "@/global/types/entities";
 
@@ -24,13 +25,11 @@ const toast = useToast();
 const articlesType = Object.values(ArticleKind);
 
 const editableArticle = ref(props.article);
+const notifications = useNotifications();
 
-const updateArticleToast = () => {
-  toast.add({ severity: "info", summary: "Info", detail: "Article was updated", life: 3000 });
-};
 const onUpdateArticle = async () => {
   await updateArticle(`${editableArticle.value.id}`, editableArticle.value);
-  updateArticleToast();
+  notifications.showUpdateArticleNotification();
 };
 
 const onDeleteArticle = async () => {
@@ -45,12 +44,7 @@ const confirmDelete = () => {
     acceptLabel: "Delete",
     accept: async () => {
       await onDeleteArticle();
-      toast.add({
-        severity: "info",
-        summary: "Confirmed",
-        detail: "You have deleted this article",
-        life: 3000,
-      });
+      notifications.showDeleteArticleNotification();
     },
   });
 };
