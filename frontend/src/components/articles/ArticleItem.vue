@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// import ArticleList from "./ArticleList.vue";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import Dropdown from "primevue/dropdown";
@@ -7,9 +8,10 @@ import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { useConfirm } from "primevue/useconfirm";
+import { computed } from "vue";
 import { ref } from "vue";
 
-import { deleteArticle, updateArticle } from "@/backendClient";
+import { createArticle, deleteArticle, updateArticle } from "@/backendClient";
 import useNotifications from "@/compositions/useNotifications";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { Article } from "@/global/types/entities";
@@ -25,15 +27,29 @@ const articlesType = Object.values(ArticleKind);
 const editableArticle = ref(props.article);
 const notifications = useNotifications();
 
+const isEditing = computed(() => {
+  return Boolean(props.article.id !== "new");
+});
+
 const onUpdateArticle = async () => {
-  await updateArticle(`${editableArticle.value.id}`, editableArticle.value);
-  notifications.showUpdateArticleNotification();
+  // await updateArticle(`${editableArticle.value.id}`, editableArticle.value);
+  // notifications.showUpdateArticleNotification();
+  if (props.article.id === "new") {
+    console.log("CREATE");
+    await createArticle(editableArticle.value);
+    emit("reloadArticleView");
+  } else {
+    console.log("UPDATE");
+    await updateArticle(`${editableArticle.value.id}`, editableArticle.value);
+    notifications.showUpdateArticleNotification();
+  }
 };
 
 const onDeleteArticle = async () => {
   await deleteArticle(`${editableArticle.value.id}`);
   emit("reloadArticleView");
 };
+
 const confirmDelete = () => {
   confirm.require({
     message: "Wollen Sie den Artikel sicher wirklich löschen?",
@@ -98,6 +114,7 @@ const confirmDelete = () => {
           />
           <Button
             @click="confirmDelete"
+            v-if="isEditing"
             icon="pi pi-times"
             severity="danger"
             text
