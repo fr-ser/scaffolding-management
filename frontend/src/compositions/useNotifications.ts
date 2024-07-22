@@ -28,6 +28,14 @@ export default function useNotifications() {
       life: 3000,
     });
   };
+  const showCreateArticleNotification = () => {
+    toast.add({
+      severity: "info",
+      summary: "Info",
+      detail: "Ein neuer Artikel wurde erstellt",
+      life: 3000,
+    });
+  };
   const showUpdateArticleNotification = () => {
     toast.add({
       severity: "info",
@@ -51,5 +59,6 @@ export default function useNotifications() {
     showCreateClientNotification,
     showUpdateArticleNotification,
     showDeleteArticleNotification,
+    showCreateArticleNotification,
   };
 }

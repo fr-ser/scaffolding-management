@@ -4,9 +4,8 @@ import InputText from "primevue/inputtext";
 import { ref } from "vue";
 import { onMounted } from "vue";
 
-import { createArticle, getArticles } from "@/backendClient";
+import { getArticles } from "@/backendClient";
 import ArticlesItem from "@/components/articles/ArticleItem.vue";
-import ArticleList from "@/components/articles/ArticleList.vue";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { Article } from "@/global/types/entities";
 
@@ -15,22 +14,11 @@ async function reloadPage() {
 }
 const articlesList = ref<Article[]>([]);
 
-// temp solution
-// const createMockArticle = async () => {
-//   await createArticle({
-//     title: "mocked article",
-//     kind: ArticleKind.heading,
-//     description: "test",
-//   });
-//   reloadPage();
-// };
-
 onMounted(async () => {
   const result = await getArticles();
   articlesList.value = result.data;
 });
 function createNewArticle() {
-  // console.log("HHHHH");
   articlesList.value.unshift({
     id: "new",
     kind: ArticleKind.heading,
