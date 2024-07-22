@@ -25,10 +25,11 @@ const notifications = useNotifications();
 
 const confirmDelete = (client: Client) => {
   confirm.require({
-    message: "Are you sure you want to delete this client?",
-    header: "Confirmation",
-    rejectLabel: "Cancel",
-    acceptLabel: "Delete",
+    message: "Sind Sie sich sicher, dass der Kunde gelöscht werden soll?",
+    header: "Bestätigung",
+    rejectLabel: "Abbrechen",
+    rejectClass: "bg-transparent border text-red-500 border border-red-500 hover:bg-red-300/10",
+    acceptLabel: "Löschen",
     accept: async () => {
       await removeClient(client);
       notifications.showDeleteClientNotification();
