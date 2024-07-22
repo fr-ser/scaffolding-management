@@ -28,6 +28,15 @@ onMounted(async () => {
   const result = await getArticles();
   articlesList.value = result.data;
 });
+function createNewArticle() {
+  console.log("HHHHH");
+  articlesList.value.unshift({
+    id: "new",
+    kind: ArticleKind.heading,
+    title: "New Title",
+    description: "New Description",
+  });
+}
 let value = ref();
 </script>
 
@@ -40,7 +49,7 @@ let value = ref();
         />
         <InputText v-model="value" placeholder="Suche" class="pl-10 w-full" />
       </span>
-      <Button label="Create" @click="createMockArticle" severity="secondary" outlined />
+      <Button @click="createNewArticle" label="Create" severity="secondary" outlined />
     </div>
     <div class="flex flex-col gap-2 grow overflow-auto">
       <ArticlesItem
