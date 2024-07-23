@@ -15,8 +15,9 @@ import { ROUTES } from "@/router";
 const clientsList = ref<Client[]>([]);
 
 const search = ref(null);
-watch(search, (newValue) => {
+watch(search, async (newValue) => {
   console.log(`search is ${newValue}`);
+  clientsList.value = (await getClients(`${newValue}`)).data;
 });
 
 // we should provide an argument in the place where we call the function
