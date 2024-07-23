@@ -39,7 +39,7 @@ const axiosInstance = axios.create({
 });
 
 export async function getArticles(query?: string): Promise<PaginationResponse<Article>> {
-  const response = await axiosInstance.get(`/api/articles${query ? `?search=${query}` : ''}`);
+  const response = await axiosInstance.get(`/api/articles${query ? `?search=${query}` : ""}`);
   return response.data;
 }
 export async function updateArticle(id: string, article: ArticleUpdate): Promise<Article> {
@@ -55,7 +55,7 @@ export async function deleteArticle(id: string): Promise<void> {
 }
 
 export async function getClients(query?: string): Promise<PaginationResponse<Client>> {
-  const response = await axiosInstance.get(`/api/clients${query ? `?search=${query}` : ''}`);
+  const response = await axiosInstance.get(`/api/clients${query ? `?search=${query}` : ""}`);
   return response.data;
 }
 
