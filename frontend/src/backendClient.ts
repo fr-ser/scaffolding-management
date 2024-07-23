@@ -38,8 +38,8 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-export async function getArticles(): Promise<PaginationResponse<Article>> {
-  const response = await axiosInstance.get(`/api/articles`);
+export async function getArticles(query?: string): Promise<PaginationResponse<Article>> {
+  const response = await axiosInstance.get(`/api/articles${query ? `?search=${query}` : ''}`);
   return response.data;
 }
 export async function updateArticle(id: string, article: ArticleUpdate): Promise<Article> {
