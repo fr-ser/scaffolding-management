@@ -29,11 +29,7 @@ export function timeoutCheck(
 
 // eslint-disable-next-line  @typescript-eslint/no-unused-vars
 export function shouldLoggerSkip(req: express.Request, _: express.Response): boolean {
-  if (req.originalUrl.startsWith("/img")) return true;
-  else if (req.originalUrl.startsWith("/css")) return true;
-  else if (req.originalUrl.startsWith("/js")) return true;
-  else if (req.originalUrl.startsWith("/favicon")) return true;
-  else if (req.originalUrl.startsWith("/manifest.webmanifest")) return true;
+  if (req.originalUrl.startsWith("/assets")) return true;
   else if (req.originalUrl.startsWith("/health")) return true;
   else return false;
 }

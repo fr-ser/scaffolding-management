@@ -35,3 +35,13 @@ The backend and frontend have independent tests.
 In the overall repo you can also run e2e and unit tests, though.
 
 Run `make test-all` to run all available tests.
+
+## Deployment
+
+The application is manually deployed via the `make deploy` command.
+In order to do this SSH access to the target environment is required.
+
+These environment variables should be set:
+
+- PI_SSH_PORT
+- PI_SSH_ADDRESS

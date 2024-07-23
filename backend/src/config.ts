@@ -11,8 +11,6 @@ function getRequired(envKey: string): string {
   return process.env[envKey] as string;
 }
 
-export const APP_SECRET = getRequired("APP_SECRET"); // session secret
-
 export const PORT = process.env.PORT || 3001;
 export const STATIC_FILE_ROOT = process.env.STATIC_FILE_ROOT || "static";
 export const DROPBOX_ACCESS_TOKEN = getRequired("DROPBOX_ACCESS_TOKEN");

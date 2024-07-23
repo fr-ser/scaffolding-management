@@ -5,7 +5,6 @@ import "dotenv/config";
 import express from "express";
 import basicAuth from "express-basic-auth";
 import morgan from "morgan";
-import path from "path";
 import "source-map-support/register";
 
 import { STATIC_FILE_ROOT, USERS } from "@/config";
@@ -17,6 +16,11 @@ import { ordersRouter } from "@/routes/orders";
 
 export function getApp() {
   const app = express();
+
+  // this is a public endpoint (required for freshping)
+  app.get("/health", (_: express.Request, res: express.Response) => {
+    res.status(200).send("OK");
+  });
 
   app.use(
     basicAuth({
@@ -44,16 +48,6 @@ export function getApp() {
   app.use(bodyParser.text({ type: "text/plain", limit: "1mb" }));
   app.use(bodyParser.text({ type: "text/html", limit: "3mb" }));
   app.use(express.static(STATIC_FILE_ROOT));
-
-  app.get("/manifest.json", (_: express.Request, res: express.Response) => {
-    res.setHeader("Content-Type", "application/manifest+json");
-    res.sendFile(path.resolve("./manifest.webmanifest"));
-  });
-
-  app.get("/health", (_: express.Request, res: express.Response) => {
-    res.status(200).send("OK");
-  });
-
   app.use("/api/clients", clientsRouter);
   app.use("/api/orders", ordersRouter);
   app.use("/api/articles", articlesRouter);
