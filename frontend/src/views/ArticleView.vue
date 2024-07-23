@@ -10,27 +10,34 @@ import ArticlesItem from "@/components/articles/ArticleItem.vue";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { Article } from "@/global/types/entities";
 
-async function reloadPage() {
-  articlesList.value = (await getArticles()).data;
+interface EditableArticle extends Article {
+  isNew?: boolean;
 }
-const articlesList = ref<Article[]>([]);
 
-onMounted(async () => {
-  const result = await getArticles();
-  articlesList.value = result.data;
-});
+let search = ref<string>("");
+
+async function reloadPage() {
+  articlesList.value = (await getArticles(search.value)).data;
+}
+
+const articlesList = ref<EditableArticle[]>([]);
+
 function createNewArticle() {
   articlesList.value.unshift({
-    id: "new",
+    id: crypto.randomUUID(),
     kind: ArticleKind.heading,
     title: "New Title",
     description: "New Description",
+    isNew: true,
   });
 }
-let search = ref();
-watch(search, async (newValue) => {
-  console.log(`search is ${newValue}`);
-  articlesList.value = (await getArticles(`${newValue}`)).data;
+
+watch(search, async () => {
+  reloadPage();
+});
+
+onMounted(async () => {
+  reloadPage();
 });
 </script>
 
@@ -49,6 +56,7 @@ watch(search, async (newValue) => {
       <ArticlesItem
         v-for="article in articlesList"
         :article="article"
+        :is-new="article.isNew"
         :key="article.id"
         @reload-article-view="reloadPage"
       />

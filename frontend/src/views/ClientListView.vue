@@ -14,17 +14,16 @@ import { ROUTES } from "@/router";
 
 const clientsList = ref<Client[]>([]);
 
-const search = ref(null);
-watch(search, async (newValue) => {
-  console.log(`search is ${newValue}`);
-  clientsList.value = (await getClients(`${newValue}`)).data;
-});
+const search = ref<string>("");
+
+async function reloadPage() {
+  clientsList.value = (await getClients(search.value)).data;
+}
 
 // we should provide an argument in the place where we call the function
 async function removeClient(client: Client) {
   await deleteClient(client.id);
-
-  clientsList.value = (await getClients()).data;
+  reloadPage();
 }
 const confirm = useConfirm();
 const notifications = useNotifications();
@@ -43,9 +42,12 @@ const confirmDelete = (client: Client) => {
   });
 };
 
+watch(search, async () => {
+  reloadPage();
+});
+
 onMounted(async () => {
-  const result = await getClients();
-  clientsList.value = result.data;
+  reloadPage();
 });
 </script>
 

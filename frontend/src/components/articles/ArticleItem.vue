@@ -7,7 +7,6 @@ import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { useConfirm } from "primevue/useconfirm";
-import { computed } from "vue";
 import { ref } from "vue";
 
 import { createArticle, deleteArticle, updateArticle } from "@/backendClient";
@@ -19,19 +18,18 @@ const emit = defineEmits(["reloadArticleView"]);
 
 const props = defineProps<{
   article: Article;
+  isNew?: boolean;
 }>();
+
 const confirm = useConfirm();
+const notifications = useNotifications();
+
 const articlesType = Object.values(ArticleKind);
 
 const editableArticle = ref(props.article);
-const notifications = useNotifications();
-
-const isEditing = computed(() => {
-  return Boolean(props.article.id !== "new");
-});
 
 const onUpdateArticle = async () => {
-  if (props.article.id === "new") {
+  if (props.isNew) {
     await createArticle(editableArticle.value);
     notifications.showCreateArticleNotification();
     emit("reloadArticleView");
@@ -75,7 +73,7 @@ const confirmDelete = () => {
               v-model="editableArticle.description"
               class="w-full"
               autoResize
-              rows="5"
+              rows="3"
               cols="30"
             />
             <label for="text">Bezeichnung</label>
@@ -110,7 +108,7 @@ const confirmDelete = () => {
           />
           <Button
             @click="confirmDelete"
-            v-if="isEditing"
+            v-if="!isNew"
             icon="pi pi-times"
             severity="danger"
             text
