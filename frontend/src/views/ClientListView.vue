@@ -5,6 +5,7 @@ import InputText from "primevue/inputtext";
 import { useConfirm } from "primevue/useconfirm";
 import { onMounted } from "vue";
 import { ref } from "vue";
+import { watch } from "vue";
 
 import { deleteClient, getClients } from "@/backendClient";
 import useNotifications from "@/compositions/useNotifications";
@@ -12,7 +13,11 @@ import type { Client } from "@/global/types/entities";
 import { ROUTES } from "@/router";
 
 const clientsList = ref<Client[]>([]);
-const value = ref(null);
+
+const search = ref(null);
+watch(search, (newValue) => {
+  console.log(`search is ${newValue}`);
+});
 
 // we should provide an argument in the place where we call the function
 async function removeClient(client: Client) {
@@ -50,7 +55,7 @@ onMounted(async () => {
         <i
           class="pi pi-search absolute top-2/4 -mt-2 left-3 text-surface-400 dark:text-surface-600"
         />
-        <InputText v-model="value" placeholder="Kundensuche" class="pl-10 w-full" />
+        <InputText v-model="search" placeholder="Kundensuche" class="pl-10 w-full" />
       </span>
       <router-link :to="`${ROUTES.CLIENT.path}/new`">
         <Button icon="pi pi-user" size="small" rounded aria-label="Neuen Kunden erstellen" />
