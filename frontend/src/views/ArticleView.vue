@@ -3,6 +3,7 @@ import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import { ref } from "vue";
 import { onMounted } from "vue";
+import { watch } from "vue";
 
 import { getArticles } from "@/backendClient";
 import ArticlesItem from "@/components/articles/ArticleItem.vue";
@@ -26,7 +27,11 @@ function createNewArticle() {
     description: "New Description",
   });
 }
-let value = ref();
+let search = ref();
+watch(search, async (newValue) => {
+  console.log(`search is ${newValue}`);
+  articlesList.value = (await getArticles(`${newValue}`)).data;
+});
 </script>
 
 <template>
@@ -36,7 +41,7 @@ let value = ref();
         <i
           class="pi pi-search absolute top-2/4 -mt-2 left-3 text-surface-400 dark:text-surface-600"
         />
-        <InputText v-model="value" placeholder="Suche" class="pl-10 w-full" />
+        <InputText v-model="search" placeholder="Suche" class="pl-10 w-full" />
       </span>
       <Button @click="createNewArticle" label="Create" severity="secondary" outlined />
     </div>
