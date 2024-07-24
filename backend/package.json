@@ -9,6 +9,7 @@
     "start:email-task": "npm run build && CONFIG_PATH=local.env node ./dist/src/tasks/email_notification/task.js",
     "start:server": "npm run build && CONFIG_PATH=local.env node ./dist/src/index.js",
     "db:seed": "CONFIG_PATH=local.env npx ts-node -r tsconfig-paths/register scripts/seed-local-data.ts",
+    "db:seed:overwrite": "CONFIG_PATH=local.env npx ts-node -r tsconfig-paths/register scripts/seed-local-data.ts --overwrite",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
     "format": "npm run lint -- --fix && prettier --write src/",
     "test:code": "CONFIG_PATH=local.env vitest run",

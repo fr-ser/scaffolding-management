@@ -17,6 +17,7 @@ interface EditableArticle extends Article {
 let search = ref<string>("");
 
 async function reloadPage() {
+  // TODO: use pagination
   articlesList.value = (await getArticles(search.value)).data;
 }
 
@@ -33,6 +34,7 @@ function createNewArticle() {
 }
 
 watch(search, async () => {
+  // TODO: add debounce
   reloadPage();
 });
 
