@@ -62,6 +62,7 @@ const confirmDelete = () => {
   <Card>
     <template #content>
       <form class="flex flex-col gap-y-3">
+        <div v-if="isNew" class="flex justify-center mb-3 py-1.5 bg-green-100">NEU</div>
         <div>
           <FloatLabel class="mb-6 mt-2">
             <InputText id="titel" v-model="editableArticle.title" class="w-full" />
