@@ -17,10 +17,10 @@ const clientsList = ref<Client[]>([]);
 const search = ref<string>("");
 
 async function reloadPage() {
+  // TODO: use pagination
   clientsList.value = (await getClients(search.value)).data;
 }
 
-// we should provide an argument in the place where we call the function
 async function removeClient(client: Client) {
   await deleteClient(client.id);
   reloadPage();
@@ -43,6 +43,7 @@ const confirmDelete = (client: Client) => {
 };
 
 watch(search, async () => {
+  // TODO: add debounce
   reloadPage();
 });
 

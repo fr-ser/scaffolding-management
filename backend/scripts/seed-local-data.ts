@@ -231,9 +231,20 @@ async function insertData(dataSource: DataSource) {
 }
 
 async function main() {
+  const backupPath = `${DB_PATH}.backup`;
+
   if (fs.existsSync(DB_PATH)) {
-    console.log("database already exists");
-    return;
+    if (process.argv.includes("--overwrite")) {
+      if (fs.existsSync(backupPath)) {
+        console.log("deleting existing database backup");
+        fs.unlinkSync(backupPath);
+      }
+      console.log("Moving the previous database to: ", backupPath);
+      fs.renameSync(DB_PATH, backupPath);
+    } else {
+      console.log("database already exists");
+      return;
+    }
   }
 
   const dataSource = await initializeAppDataSource(DB_PATH);

@@ -8,3 +8,4 @@ dist
 # local development artifacts
 .envrc
 *.db
+*.db.backup
