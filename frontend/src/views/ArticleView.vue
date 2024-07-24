@@ -50,7 +50,7 @@ onMounted(async () => {
         />
         <InputText v-model="search" placeholder="Suche" class="pl-10 w-full" />
       </span>
-      <Button @click="createNewArticle" label="Create" severity="secondary" outlined />
+      <Button @click="createNewArticle" icon="pi pi-plus" rounded outlined aria-label="Filter" />
     </div>
     <div class="flex flex-col gap-2 grow overflow-auto">
       <ArticlesItem
