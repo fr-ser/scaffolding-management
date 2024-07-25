@@ -1,23 +1,69 @@
-<script setup>
+<script setup lang="ts">
+import AutoComplete from "primevue/autocomplete";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 
+import { getClients } from "@/backendClient";
 import { OrderStatus } from "@/global/types/appTypes";
+import type { Client } from "@/global/types/entities";
+
+interface ExtendedClient extends Client {
+  full_name?: string;
+}
 
 const orderStatusTypes = Object.values(OrderStatus);
 let status = ref(OrderStatus.preparation);
 
 const discountChoice = ["ja", "nein"];
-let discount = ref(discountChoice[0]);
+let discount = ref<string>(discountChoice[0]);
 
 const discountPeriodChoice = ["7", "14"];
-let discountPeriod = ref(discountPeriodChoice[0]);
+let discountPeriod = ref<string>(discountPeriodChoice[0]);
 
-let decription = ref();
+let decription = ref<string>();
+
+const selectedClient = ref<ExtendedClient>();
+
+const filteredClients = ref<ExtendedClient[]>([]);
+const clientsList = ref<ExtendedClient[]>([]);
+
+const searchClient = (event: any) => {
+  setTimeout(() => {
+    if (!event.query.trim().length) {
+      filteredClients.value = [...clientsList.value];
+    } else {
+      filteredClients.value = clientsList.value.filter((client: Client) => {
+        return (
+          client.last_name?.toLowerCase().startsWith(event.query.toLowerCase()) ||
+          client.first_name?.toLowerCase().startsWith(event.query.toLowerCase())
+        );
+      });
+    }
+  }, 250);
+};
+
+onMounted(async () => {
+  clientsList.value = (await getClients()).data.map((client: Client) => {
+    let full_name: string = "";
+
+    if (client.first_name) full_name += client.first_name + " ";
+
+    if (client.last_name) full_name += client.last_name;
+
+    return {
+      ...client,
+      full_name,
+    };
+  });
+});
+
+const countries = ref();
+const selectedCountry = ref();
+const filteredCountries = ref();
 </script>
 <template>
   <form>
@@ -63,6 +109,13 @@ let decription = ref();
       <div class="my-1">
         <p class="font-bold">Kunde</p>
         <Button class="my-2" type="button" label="Kunden Zuordnen" severity="secondary"></Button>
+        <AutoComplete
+          v-model="selectedClient"
+          optionLabel="full_name"
+          :suggestions="filteredClients"
+          @complete="searchClient"
+          dropdown
+        />
       </div>
     </div>
 
