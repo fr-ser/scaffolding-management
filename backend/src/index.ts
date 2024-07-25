@@ -1,4 +1,3 @@
-import express from "express";
 import fs from "node:fs";
 import https from "node:https";
 import { AddressInfo } from "node:net";
@@ -14,7 +13,7 @@ import {
 } from "@/config";
 import { closeDatabase, initializeAppDataSource } from "@/db";
 import { log } from "@/helpers/logging";
-import { getApp } from "@/main";
+import { getApp, getHttpRedirectApp } from "@/main";
 
 async function main() {
   log("Starting application");
@@ -37,11 +36,7 @@ async function main() {
         log(`HTTPS app started on port ${(server.address() as AddressInfo).port}`);
       });
 
-    const httpApp = express();
-
-    httpApp.use(function (request, response, _) {
-      return response.redirect("https://" + request.hostname + request.url);
-    });
+    const httpApp = getHttpRedirectApp();
 
     const httpServer = httpApp.listen(HTTP_PORT, () => {
       log(`HTTP app started on port ${(httpServer.address() as AddressInfo).port}`);
