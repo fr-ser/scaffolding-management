@@ -1,8 +1,17 @@
+import express from "express";
 import fs from "node:fs";
 import https from "node:https";
 import { AddressInfo } from "node:net";
 
-import { DB_PATH, HTTPS_CA_PATH, HTTPS_CERT_PATH, HTTPS_KEY_PATH, PORT, USE_HTTPS } from "@/config";
+import {
+  DB_PATH,
+  HTTPS_CA_PATH,
+  HTTPS_CERT_PATH,
+  HTTPS_KEY_PATH,
+  HTTPS_PORT,
+  HTTP_PORT,
+  USE_HTTPS,
+} from "@/config";
 import { closeDatabase, initializeAppDataSource } from "@/db";
 import { log } from "@/helpers/logging";
 import { getApp } from "@/main";
@@ -24,12 +33,22 @@ async function main() {
         },
         app,
       )
-      .listen(PORT, () => {
-        log(`Node app started on port ${(server.address() as AddressInfo).port} with https`);
+      .listen(HTTPS_PORT, () => {
+        log(`HTTPS app started on port ${(server.address() as AddressInfo).port}`);
       });
+
+    const httpApp = express();
+
+    httpApp.use(function (request, response, _) {
+      return response.redirect("https://" + request.hostname + request.url);
+    });
+
+    const httpServer = httpApp.listen(HTTP_PORT, () => {
+      log(`HTTP app started on port ${(httpServer.address() as AddressInfo).port}`);
+    });
   } else {
-    const server = app.listen(PORT, () => {
-      log(`Node app started on port ${(server.address() as AddressInfo).port}`);
+    const server = app.listen(HTTP_PORT, () => {
+      log(`app started on port ${(server.address() as AddressInfo).port}`);
     });
   }
 }

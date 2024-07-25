@@ -15,13 +15,15 @@ export const USE_HTTPS = process.env.USE_HTTPS === "true";
 export const HTTPS_KEY_PATH = process.env.HTTPS_KEY_PATH;
 export const HTTPS_CERT_PATH = process.env.HTTPS_CERT_PATH;
 export const HTTPS_CA_PATH = process.env.HTTPS_CA_PATH;
+export const HTTPS_PORT = process.env.HTTPS_PORT;
 if (USE_HTTPS) {
-  if (!HTTPS_KEY_PATH) getRequired("HTTPS_KEY_PATH");
-  if (!HTTPS_CERT_PATH) getRequired("HTTPS_CERT_PATH");
-  if (!HTTPS_CA_PATH) getRequired("HTTPS_CA_PATH");
+  getRequired("HTTPS_KEY_PATH");
+  getRequired("HTTPS_KEY_PATH");
+  getRequired("HTTPS_CERT_PATH");
+  getRequired("HTTPS_PORT");
 }
 
-export const PORT = process.env.PORT || 3001;
+export const HTTP_PORT = process.env.HTTP_PORT || 3001;
 export const STATIC_FILE_ROOT = process.env.STATIC_FILE_ROOT || "static";
 export const DROPBOX_ACCESS_TOKEN = getRequired("DROPBOX_ACCESS_TOKEN");
 export const DAILY_BACKUP_COUNT = parseInt(getRequired("DAILY_BACKUP_COUNT"));
