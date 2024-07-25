@@ -18,7 +18,7 @@ export function getApp() {
   const app = express();
 
   // this is a public endpoint (required for freshping)
-  app.get("/health", (_: express.Request, res: express.Response) => {
+  app.get("/api/health", (_: express.Request, res: express.Response) => {
     res.status(200).send("OK");
   });
 
