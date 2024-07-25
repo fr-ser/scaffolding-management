@@ -1,7 +1,8 @@
-import { Order } from "./order";
 import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
 
 import { ClientSalutation } from "@/global/types/appTypes";
+
+import { Order } from "./order";
 
 @Entity()
 export class Client {

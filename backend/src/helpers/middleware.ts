@@ -1,4 +1,5 @@
 import express from "express";
+import morgan from "morgan";
 import { setTimeout } from "timers";
 
 import { ErrorCode } from "@/global/types/backendTypes";
@@ -27,12 +28,17 @@ export function timeoutCheck(
   next();
 }
 
-// eslint-disable-next-line  @typescript-eslint/no-unused-vars
-export function shouldLoggerSkip(req: express.Request, _: express.Response): boolean {
-  if (req.originalUrl.startsWith("/assets")) return true;
-  else if (req.originalUrl.startsWith("/health")) return true;
-  else return false;
-}
+export const requestLogger = morgan(
+  ":date[iso] :method :url :status :res[content-length] - :response-time ms",
+  {
+    // eslint-disable-next-line  @typescript-eslint/no-unused-vars
+    skip: function shouldLoggerSkip(req: express.Request, _: express.Response): boolean {
+      if (req.originalUrl.startsWith("/assets")) return true;
+      else if (req.originalUrl.startsWith("/api/health")) return true;
+      else return false;
+    },
+  },
+);
 
 export function apiErrorHandler(
   err: any, // eslint-disable-line @typescript-eslint/no-explicit-any
