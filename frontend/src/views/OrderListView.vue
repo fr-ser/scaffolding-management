@@ -2,20 +2,21 @@
 import Button from "primevue/button";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 
+import { getOrders } from "@/backendClient";
+import type { Order } from "@/global/types/entities";
 import { ROUTES } from "@/router";
 
-const ordersList = ref([
-  { id: 1, name: "Order 1" },
-  { id: 2, name: "Order 2" },
-  { id: 3, name: "Order 3" },
-  { id: 4, name: "Order 4" },
-  { id: 2, name: "Order 5" },
-  { id: 3, name: "Order 6" },
-  { id: 4, name: "Order 7" },
-]);
+const ordersList = ref<Order[]>([]);
+const search = ref<string>("");
+async function reloadPage() {
+  ordersList.value = (await getOrders()).data;
+}
 let value = ref();
+onMounted(async () => {
+  reloadPage();
+});
 </script>
 
 <template>
@@ -36,7 +37,7 @@ let value = ref();
         <template #content>
           <div class="flex flex-row justify-between items-center">
             <div>
-              {{ order.name }}
+              {{ `${order.id} ${order.title}` }}
             </div>
             <div class="flex flex-col gap-y-2">
               <router-link :to="`${ROUTES.ORDER.path}/:id/edit`">
