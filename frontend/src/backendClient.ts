@@ -82,7 +82,9 @@ export async function updateClient(id: string, client: ClientUpdate): Promise<Cl
   return response.data;
 }
 
-export async function getOrders(options: { clientId?: string } = {}): Promise<PaginationResponse<Order>> {
+export async function getOrders(
+  options: { clientId?: string } = {},
+): Promise<PaginationResponse<Order>> {
   const params: any = {};
   if (options.clientId) {
     params.client_id = options.clientId;

@@ -30,18 +30,15 @@ let orderInfo = ref<OrderUpdate | OrderCreate>({
 });
 
 const orderStatusTypes = Object.values(OrderStatus);
-let status = ref(OrderStatus.preparation);
 
 const discountChoice = [
   { value: true, label: "ja" },
   { value: false, label: "nein" },
 ];
-let discount = ref(discountChoice[0]);
 const isEditing = computed(() => {
   return Boolean(route.params.id);
 });
 const discountPeriodChoice = [7, 14];
-let decription = ref<string>();
 
 const selectedClient = ref<ExtendedClient>();
 
