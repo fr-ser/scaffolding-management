@@ -1,6 +1,7 @@
+import { setTimeout } from "node:timers";
+
 import express from "express";
 import morgan from "morgan";
-import { setTimeout } from "timers";
 
 import { ErrorCode } from "@/global/types/backendTypes";
 import { log } from "@/helpers/logging";
