@@ -24,8 +24,11 @@ async function reloadPage() {
 const articlesList = ref<EditableArticle[]>([]);
 
 function createNewArticle() {
+  // TODO: user the createArticle type
   articlesList.value.unshift({
     id: crypto.randomUUID(),
+    updated_at: 1,
+    created_at: 1,
     kind: ArticleKind.heading,
     title: "New Title",
     description: "New Description",

@@ -31,6 +31,7 @@ async function insertData(dataSource: DataSource) {
       Array.from(Array(10)).map((_: unknown, index: number) => {
         return {
           id: `K${index + 1}`,
+          created_at: (Date.now() + 100 * index) / 1000,
           first_name: `First Name ${index + 1}`,
           last_name: `Last Name ${index + 1}`,
           salutation: ClientSalutation.mister_doctor,
@@ -57,6 +58,7 @@ async function insertData(dataSource: DataSource) {
         const isEven = index % 2 === 0;
         return {
           id: `Art${index + 1}`,
+          created_at: (Date.now() + 100 * index) / 1000,
           kind: isEven ? ArticleKind.item : ArticleKind.heading,
           title: `Title ${index + 1}`,
           description: `Description ${index + 1}`,
@@ -78,6 +80,7 @@ async function insertData(dataSource: DataSource) {
 
         return {
           id: `A${index + 1}`,
+          created_at: (Date.now() + 100 * index) / 1000,
           status: anyOrderStatus,
           title: `Title ${index + 1}`,
           client_id: `K${index + 1}`,

@@ -9,6 +9,13 @@ export class Invoice {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ type: "real", default: () => "unixepoch('subsec')" })
+  created_at: number;
+
+  // TODO: Add onUpdate trigger (and for all other entities)
+  @Column({ type: "real", default: () => "unixepoch('subsec')" })
+  updated_at: number;
+
   @Column({ type: "text" })
   order_id: string;
 

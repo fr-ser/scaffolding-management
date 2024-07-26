@@ -59,7 +59,7 @@ export async function deleteArticle(id: string): Promise<void> {
 export async function getClients(query?: string): Promise<PaginationResponse<Client>> {
   const params: Record<string, string> = {};
   if (query) params.search = query;
-  const response = await axiosInstance.get("/api/articles", { params });
+  const response = await axiosInstance.get("/api/clients", { params });
   return response.data;
 }
 

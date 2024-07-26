@@ -8,7 +8,12 @@ import {
   PaymentStatus,
 } from "./appTypes";
 
-export interface Article {
+interface CreatedAtUpdatedAt {
+  created_at: number;
+  updated_at: number;
+}
+
+export interface Article extends CreatedAtUpdatedAt {
   id: string;
   kind: ArticleKind;
   title: string;
@@ -16,7 +21,7 @@ export interface Article {
   unit?: string;
   price?: number;
 }
-export interface Client {
+export interface Client extends CreatedAtUpdatedAt {
   id: string;
   salutation?: ClientSalutation;
   email?: string;
@@ -33,7 +38,7 @@ export interface Client {
   orders?: Order[];
 }
 
-export interface Order {
+export interface Order extends CreatedAtUpdatedAt {
   id: string;
   client_id: string;
   client: Client;
@@ -48,7 +53,7 @@ export interface Order {
   discount_percentage: number;
 }
 
-export interface Invoice {
+export interface Invoice extends CreatedAtUpdatedAt {
   id: number;
   order_id: string;
   order: Order;
@@ -81,7 +86,7 @@ export interface InvoiceItem extends OrderItem {
   invoice: Invoice;
 }
 
-export interface Offer {
+export interface Offer extends CreatedAtUpdatedAt {
   id: number;
   order_id: string;
   order: Order;
@@ -93,7 +98,7 @@ export interface Offer {
   documents: OfferDocument[];
 }
 
-interface BaseDocument {
+interface BaseDocument extends CreatedAtUpdatedAt {
   id: string;
   creation_date: string;
   client_id: string;
@@ -158,7 +163,7 @@ export interface InvoiceDocumentItem extends DocumentItem {
   invoice_document: InvoiceDocument;
 }
 
-export interface OverdueNotice {
+export interface OverdueNotice extends CreatedAtUpdatedAt {
   id: number;
   order_id: string;
   order: Order;

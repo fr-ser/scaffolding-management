@@ -11,6 +11,16 @@ export class Order {
   @PrimaryColumn({ type: "text" })
   id: string;
 
+  @Column({ type: "real", default: () => "unixepoch('subsec')" })
+  created_at: number;
+
+  @Column({
+    type: "real",
+    default: () => "unixepoch('subsec')",
+    onUpdate: "unixepoch('subsec')",
+  })
+  updated_at: number;
+
   @Column({ type: "text" })
   client_id: string;
 

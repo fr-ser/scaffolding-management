@@ -27,30 +27,30 @@ documentsRouter.get(
     // "regular" pagination will not work with this endpoint that returns data from
     // multiple tables.
     interface QueryParams {
-      start_date?: string;
+      start_timestamp?: number;
       take?: number;
     }
     const { take = 300 } = req.query as QueryParams;
-    let { start_date } = req.query as QueryParams;
-    if (start_date == null) {
-      start_date = new Date().toISOString().split("T")[0];
+    let { start_timestamp } = req.query as QueryParams;
+    if (start_timestamp == null) {
+      start_timestamp = Date.now() / 1000;
     }
 
     const dataSource = getAppDataSource();
     const allDataResult = await Promise.all([
       dataSource.manager.find(InvoiceDocument, {
-        where: { creation_date: LessThanOrEqual(start_date) },
-        order: { creation_date: "DESC" },
+        where: { created_at: LessThanOrEqual(start_timestamp) },
+        order: { created_at: "DESC" },
         take: take,
       }),
       dataSource.manager.find(OfferDocument, {
-        where: { creation_date: LessThanOrEqual(start_date) },
-        order: { creation_date: "DESC" },
+        where: { created_at: LessThanOrEqual(start_timestamp) },
+        order: { created_at: "DESC" },
         take: take,
       }),
       dataSource.manager.find(OverdueNoticeDocument, {
-        where: { creation_date: LessThanOrEqual(start_date) },
-        order: { creation_date: "DESC" },
+        where: { created_at: LessThanOrEqual(start_timestamp) },
+        order: { created_at: "DESC" },
         take: take,
       }),
     ]);
