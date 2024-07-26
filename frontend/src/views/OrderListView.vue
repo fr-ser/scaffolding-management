@@ -9,7 +9,6 @@ import type { Order } from "@/global/types/entities";
 import { ROUTES } from "@/router";
 
 const ordersList = ref<Order[]>([]);
-const search = ref<string>("");
 async function reloadPage() {
   ordersList.value = (await getOrders()).data;
 }
