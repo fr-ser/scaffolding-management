@@ -1,26 +1,36 @@
 <script setup lang="ts">
 import AutoComplete from "primevue/autocomplete";
 import Button from "primevue/button";
+import Card from "primevue/card";
 import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
+import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-import { getClients } from "@/backendClient";
+import { createOrder, getClients } from "@/backendClient";
 import { OrderStatus } from "@/global/types/appTypes";
+import type { OrderCreate, OrderUpdate } from "@/global/types/dataEditTypes";
 import type { Client } from "@/global/types/entities";
+import { ROUTES } from "@/router";
 
 interface ExtendedClient extends Client {
   full_name?: string;
 }
-
+let orderInfo = ref<OrderUpdate | OrderCreate>({});
 const orderStatusTypes = Object.values(OrderStatus);
 let status = ref(OrderStatus.preparation);
 
-const discountChoice = ["ja", "nein"];
-let discount = ref<string>(discountChoice[0]);
-
+const discountChoice = [
+  { value: true, label: "ja" },
+  { value: false, label: "nein" },
+];
+let discount = ref(discountChoice[0]);
+const isEditing = computed(() => {
+  return Boolean(route.params.id);
+});
 const discountPeriodChoice = ["7", "14"];
 let discountPeriod = ref<string>(discountPeriodChoice[0]);
 
@@ -45,6 +55,23 @@ const searchClient = (event: any) => {
     }
   }, 250);
 };
+const router = useRouter();
+const route = useRoute();
+function onOrdersList() {
+  router.push(`${ROUTES.ORDER.path}`);
+}
+
+const onSaveOrder = async () => {
+  const payload: OrderCreate = orderInfo.value as OrderCreate;
+
+  if (selectedClient.value) {
+    payload.client_id = selectedClient.value.id;
+  }
+
+  const order = await createOrder(payload);
+  router.push(`${ROUTES.ORDER.path}/${order.id}/edit`);
+  s;
+};
 
 onMounted(async () => {
   clientsList.value = (await getClients()).data.map((client: Client) => {
@@ -60,68 +87,82 @@ onMounted(async () => {
     };
   });
 });
-
-const countries = ref();
-const selectedCountry = ref();
-const filteredCountries = ref();
 </script>
 <template>
   <form>
-    <div class="flex flex-col gap-y-6">
-      <p class="font-bold">Daten</p>
-      <FloatLabel>
-        <InputText id="constructionProject" class="w-full" />
-        <label for="constructionProject">Bauvorhaben</label>
-      </FloatLabel>
-      <FloatLabel>
-        <Dropdown v-model="status" :options="orderStatusTypes" class="w-full" id="select" />
-        <label for="select">Status</label>
-      </FloatLabel>
-      <p class="font-bold">Skonto</p>
-      <div class="grid grid-cols-3 gap-1 mt-3">
-        <FloatLabel>
-          <Dropdown
-            v-model="discount"
-            :options="discountChoice"
-            class="w-full"
-            id="selectDiscount"
-          />
-          <label for="selectDiscount">Skontoberechtig</label>
-        </FloatLabel>
-        <FloatLabel>
-          <Dropdown
-            v-model="discountPeriod"
-            :options="discountPeriodChoice"
-            class="w-full"
-            id="select"
-          />
-          <label for="select">Skontodauer</label>
-        </FloatLabel>
-        <FloatLabel>
-          <InputText id="percent" class="w-full" />
-          <label for="percent">Skonto(%)</label>
-        </FloatLabel>
-      </div>
-      <div>
-        <label for="description" class="w-full my-3">Beschreibung</label>
-        <Textarea v-model="decription" rows="5" class="w-full" id="description" />
-      </div>
-      <div class="my-1">
-        <p class="font-bold">Kunde</p>
-        <Button class="my-2" type="button" label="Kunden Zuordnen" severity="secondary"></Button>
-        <AutoComplete
-          v-model="selectedClient"
-          optionLabel="full_name"
-          :suggestions="filteredClients"
-          @complete="searchClient"
-          dropdown
-        />
-      </div>
+    <div class="flex flex-row justify-between mb-3">
+      <Button
+        @click="onOrdersList"
+        icon="pi pi-arrow-left"
+        size="small"
+        severity="secondary"
+        text
+        raised
+      />
+      <Button @click="onSaveOrder" type="button" label="Auftrag Speichern"></Button>
+      <Button v-if="isEditing" type="button" label="Löschen" severity="danger" text raised></Button>
     </div>
+    <Card>
+      <template #content>
+        <div class="flex flex-col gap-y-5">
+          <p class="font-bold">Daten</p>
+          <FloatLabel>
+            <InputText id="constructionProject" v-model="orderInfo.title" class="w-full" />
+            <label for="constructionProject">Bauvorhaben</label>
+          </FloatLabel>
+          <FloatLabel>
+            <Dropdown
+              v-model="orderInfo.status"
+              :options="orderStatusTypes"
+              class="w-full mt-3"
+              id="select"
+            />
+            <label for="select" class="mt-3">Status</label>
+          </FloatLabel>
+          <p class="font-bold">Skonto</p>
+          <div class="grid grid-cols-2 gap-1 mt-3">
+            <FloatLabel>
+              <Dropdown
+                v-model="orderInfo.can_have_cash_discount"
+                :options="discountChoice"
+                class="w-full"
+                id="selectDiscount"
+                optionLabel="label"
+                optionValue="value"
+              />
+              <label for="selectDiscount">Skontoberechtig</label>
+            </FloatLabel>
+            <FloatLabel>
+              <Dropdown
+                v-model="orderInfo.discount_duration"
+                :options="discountPeriodChoice"
+                class="w-full"
+                id="select"
+              />
+              <label for="select">Skontodauer</label>
+            </FloatLabel>
+          </div>
+          <FloatLabel>
+            <InputNumber id="percent" v-model="orderInfo.discount_percentage" class="w-full" />
+            <label for="percent">Skonto(%)</label>
+          </FloatLabel>
 
-    <div class="flex justify-between gap-2">
-      <Button type="button" label="Löschen" severity="secondary"></Button>
-      <Button type="button" label="Auftrag Speichern"></Button>
-    </div>
+          <div>
+            <label for="description" class="w-full font-bold my-3">Beschreibung</label>
+            <Textarea v-model="orderInfo.description" rows="3" class="w-full" id="description" />
+          </div>
+          <div class="my-1">
+            <p class="font-bold">Kunde</p>
+            <AutoComplete
+              v-model="selectedClient"
+              optionLabel="full_name"
+              :suggestions="filteredClients"
+              @complete="searchClient"
+              dropdown
+            />
+          </div>
+        </div>
+      </template>
+    </Card>
   </form>
 </template>
