@@ -41,14 +41,20 @@ const isEditing = computed(() => {
   return Boolean(route.params.id);
 });
 const discountPeriodChoice = [7, 14];
-// let discountPeriod = ref<string>(discountPeriodChoice[0]);
-
 let decription = ref<string>();
 
 const selectedClient = ref<ExtendedClient>();
 
 const filteredClients = ref<ExtendedClient[]>([]);
 const clientsList = ref<ExtendedClient[]>([]);
+
+const isButtonDisabled = computed(() => {
+  if (orderInfo.value.title && selectedClient.value?.id && orderInfo.value.description) {
+    return false;
+  } else {
+    return true;
+  }
+});
 
 const searchClient = (event: any) => {
   setTimeout(() => {
@@ -76,10 +82,8 @@ const onSaveOrder = async () => {
   if (selectedClient.value) {
     payload.client_id = selectedClient.value.id;
   }
-
   const order = await createOrder(payload);
   router.push(`${ROUTES.ORDER.path}/${order.id}/edit`);
-  s;
 };
 
 onMounted(async () => {
@@ -108,7 +112,12 @@ onMounted(async () => {
         text
         raised
       />
-      <Button @click="onSaveOrder" type="button" label="Auftrag Speichern"></Button>
+      <Button
+        @click="onSaveOrder"
+        type="button"
+        label="Auftrag Speichern"
+        :disabled="isButtonDisabled"
+      ></Button>
       <Button v-if="isEditing" type="button" label="Löschen" severity="danger" text raised></Button>
     </div>
     <Card>
