@@ -31,7 +31,7 @@ ordersRouter.get(
     const result = await dataSource.manager.findAndCount(Order, {
       skip,
       take,
-      order: { id: "ASC" },
+      order: { created_at: "DESC" },
     });
 
     res.json({ data: result[0], totalCount: result[1] } as PaginationResponse<Order>);

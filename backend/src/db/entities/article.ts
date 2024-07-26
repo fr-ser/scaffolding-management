@@ -7,6 +7,13 @@ export class Article {
   @PrimaryColumn({ type: "text" })
   id: string;
 
+  @Column({ type: "real", default: () => "unixepoch('subsec')" })
+  created_at: number;
+
+  // TODO: Add onUpdate trigger (and for all other entities)
+  @Column({ type: "real", default: () => "unixepoch('subsec')" })
+  updated_at: number;
+
   @Column({ type: "text" })
   kind: ArticleKind;
 

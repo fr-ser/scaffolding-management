@@ -86,6 +86,8 @@ export function getOfferDocument() {
 export function getOverdueNoticeDocument() {
   return {
     id: "document_id",
+    created_at: 1,
+    updated_at: 1,
     creation_date: "1992-12-12",
     client_id: "client_id",
     client_email: "client@mail.com",
@@ -112,6 +114,8 @@ export function getOverdueNoticeDocument() {
 export function getClient(clientOverride: Partial<Client> = {}): Client {
   const client = {
     id: `K${Date.now() + Math.random()}`,
+    created_at: 1,
+    updated_at: 1,
     first_name: `First Name`,
     last_name: `Last Name`,
     salutation: ClientSalutation.mister_doctor,

@@ -32,7 +32,7 @@ clientsRouter.get(
       result = await dataSource.manager.findAndCount(Client, {
         skip,
         take,
-        order: { id: "ASC" },
+        order: { created_at: "DESC" },
       });
     } else {
       const baseQuery = dataSource.manager

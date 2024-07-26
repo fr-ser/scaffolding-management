@@ -37,7 +37,7 @@ articlesRouter.get(
     const result = await dataSource.manager.findAndCount(Article, {
       skip,
       take,
-      order: { id: "ASC" },
+      order: { created_at: "DESC" },
       where: whereClause,
     });
 

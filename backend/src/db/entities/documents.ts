@@ -22,6 +22,13 @@ abstract class BaseDocument {
   @Column({ type: "text" })
   creation_date: string;
 
+  @Column({ type: "real", default: () => "unixepoch('subsec')" })
+  created_at: number;
+
+  // TODO: Add onUpdate trigger (and for all other entities)
+  @Column({ type: "real", default: () => "unixepoch('subsec')" })
+  updated_at: number;
+
   // The below data duplicates the data in their source entities.
   // It is duplicated to be historically consistent. I.e. it will stay the same in the
   // document even when the client data is updated (after the document is created)
