@@ -19,7 +19,16 @@ import { ROUTES } from "@/router";
 interface ExtendedClient extends Client {
   full_name?: string;
 }
-let orderInfo = ref<OrderUpdate | OrderCreate>({});
+let orderInfo = ref<OrderUpdate | OrderCreate>({
+  client_id: "",
+  status: OrderStatus.preparation,
+  title: "",
+  description: "",
+  discount_percentage: 0,
+  discount_duration: 7,
+  can_have_cash_discount: false,
+});
+
 const orderStatusTypes = Object.values(OrderStatus);
 let status = ref(OrderStatus.preparation);
 
@@ -31,8 +40,8 @@ let discount = ref(discountChoice[0]);
 const isEditing = computed(() => {
   return Boolean(route.params.id);
 });
-const discountPeriodChoice = ["7", "14"];
-let discountPeriod = ref<string>(discountPeriodChoice[0]);
+const discountPeriodChoice = [7, 14];
+// let discountPeriod = ref<string>(discountPeriodChoice[0]);
 
 let decription = ref<string>();
 
