@@ -16,9 +16,6 @@ import type { OrderCreate, OrderUpdate } from "@/global/types/dataEditTypes";
 import type { Client } from "@/global/types/entities";
 import { ROUTES } from "@/router";
 
-interface ExtendedClient extends Client {
-  full_name?: string;
-}
 let orderInfo = ref<OrderUpdate | OrderCreate>({
   client_id: "",
   status: OrderStatus.preparation,
@@ -40,10 +37,20 @@ const isEditing = computed(() => {
 });
 const discountPeriodChoice = [7, 14];
 
-const selectedClient = ref<ExtendedClient>();
+const selectedClient = ref<Client>();
 
-const filteredClients = ref<ExtendedClient[]>([]);
-const clientsList = ref<ExtendedClient[]>([]);
+const filteredClients = ref<Client[]>([]);
+const clientsList = ref<Client[]>([]);
+
+const getClientFullName = (client: Client) => {
+  let full_name: string = "";
+
+  if (client.first_name) full_name += client.first_name + " ";
+
+  if (client.last_name) full_name += client.last_name;
+
+  return full_name;
+};
 
 const isButtonDisabled = computed(() => {
   if (orderInfo.value.title && selectedClient.value?.id && orderInfo.value.description) {
@@ -84,18 +91,7 @@ const onSaveOrder = async () => {
 };
 
 onMounted(async () => {
-  clientsList.value = (await getClients()).data.map((client: Client) => {
-    let full_name: string = "";
-
-    if (client.first_name) full_name += client.first_name + " ";
-
-    if (client.last_name) full_name += client.last_name;
-
-    return {
-      ...client,
-      full_name,
-    };
-  });
+  clientsList.value = (await getClients()).data;
 });
 </script>
 <template>
@@ -170,7 +166,7 @@ onMounted(async () => {
             <p class="font-bold">Kunde</p>
             <AutoComplete
               v-model="selectedClient"
-              optionLabel="full_name"
+              :optionLabel="getClientFullName"
               :suggestions="filteredClients"
               @complete="searchClient"
               dropdown
