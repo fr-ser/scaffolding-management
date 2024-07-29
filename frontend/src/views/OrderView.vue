@@ -84,7 +84,7 @@ const onSaveOrder = async () => {
     payload.client_id = selectedClient.value.id;
   }
   const order = await createOrder(payload);
-  router.push(`${ROUTES.ORDER.path}/${order.id}/edit`);
+  router.push(`${ROUTES.ORDER.path}`);
   notifications.showCreateOrderNotification();
 };
 
