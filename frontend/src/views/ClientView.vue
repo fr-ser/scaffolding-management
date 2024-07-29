@@ -59,7 +59,7 @@ const onSaveClient = async () => {
     await updateClient(`${route.params.id}`, userInfo.value);
     notifications.showUpdateClientNotification();
   } else {
-    const client = await createClient(userInfo.value);
+    await createClient(userInfo.value);
     router.push(`${ROUTES.CLIENT.path}`);
     notifications.showCreateClientNotification();
   }

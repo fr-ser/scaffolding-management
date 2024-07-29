@@ -48,11 +48,11 @@ export default function useNotifications() {
   };
 
   const showCreateOrderNotification = () => {
-      toast.add({
-        severity: "info",
-        summary: "Ein neuer Auftrag wurde erstellt",
-        life: 3000,
-      });
+    toast.add({
+      severity: "info",
+      summary: "Ein neuer Auftrag wurde erstellt",
+      life: 3000,
+    });
   };
 
   return {
