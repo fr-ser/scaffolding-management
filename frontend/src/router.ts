@@ -25,7 +25,7 @@ const router = createRouter({
       name: `${ROUTES.CLIENT.name}-list`,
       component: ClientListView,
       meta: {
-        label: "Clients",
+        label: "Kunden",
       },
     },
     {
