@@ -54,6 +54,13 @@ export default function useNotifications() {
       life: 3000,
     });
   };
+  const showDeleteOrderNotification = () => {
+    toast.add({
+      severity: "info",
+      summary: "Der Auftrag wurde gelöscht",
+      life: 3000,
+    });
+  };
 
   return {
     showDeleteClientNotification,
@@ -63,5 +70,6 @@ export default function useNotifications() {
     showDeleteArticleNotification,
     showCreateArticleNotification,
     showCreateOrderNotification,
+    showDeleteOrderNotification
   };
 }
