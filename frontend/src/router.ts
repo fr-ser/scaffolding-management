@@ -25,64 +25,64 @@ const router = createRouter({
       name: `${ROUTES.CLIENT.name}-list`,
       component: ClientListView,
       meta: {
-        label: 'Clients'
-      }
+        label: "Clients",
+      },
     },
     {
       path: `${ROUTES.CLIENT.path}/:id/edit`,
       name: ROUTES.CLIENT.name,
       component: ClientView,
       meta: {
-        label: 'View/Edit Client'
-      }
+        label: "View/Edit Client",
+      },
     },
     {
       path: `${ROUTES.CLIENT.path}/new`,
       name: `${ROUTES.CLIENT.name}-new`,
       component: ClientView,
       meta: {
-        label: 'New Client'
-      }
+        label: "New Client",
+      },
     },
     {
       path: ROUTES.ORDER.path,
       name: `${ROUTES.ORDER.name}-list`,
       component: OrderListView,
       meta: {
-        label: 'Order'
-      }
+        label: "Orders",
+      },
     },
     {
       path: `${ROUTES.ORDER.path}/:id/edit`,
       name: ROUTES.ORDER.name,
       component: OrderView,
       meta: {
-        label: 'View/Edit Order'
-      }
+        label: "View/Edit Order",
+      },
     },
     {
       path: `${ROUTES.ORDER.path}/new`,
       name: `${ROUTES.ORDER.name}-new`,
       component: OrderView,
       meta: {
-        label: 'New Order'
-      }
+        label: "New Order",
+      },
     },
     {
       path: ROUTES.DOCUMENTS.path,
       name: ROUTES.DOCUMENTS.name,
       component: DocumentView,
       meta: {
-        label: 'Documents'
-      }
+        label: "Documents",
+      },
     },
     {
       path: ROUTES.ARTICLES.path,
       name: ROUTES.ARTICLES.name,
       component: ArticleView,
       meta: {
-        label: 'Articles'
-      }
+        label: "Articles",
+      },
     },
   ],
 });
