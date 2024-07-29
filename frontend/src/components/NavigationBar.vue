@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import Menubar from "primevue/menubar";
 import { ref } from "vue";
+import { useRoute } from "vue-router";
 
 import { ROUTES } from "@/router";
+
+const route = useRoute();
 
 const items = ref([
   {
@@ -39,6 +42,9 @@ const items = ref([
           </a>
         </router-link>
       </template>
+      <template #end
+        ><h1>{{ route.meta?.label }}</h1></template
+      >
     </Menubar>
   </div>
 </template>
