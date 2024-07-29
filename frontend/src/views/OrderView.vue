@@ -7,11 +7,11 @@ import FloatLabel from "primevue/floatlabel";
 import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
-import { useConfirm } from "primevue/useconfirm";
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { createOrder, deleteOrder, getClients, updateOrder } from "@/backendClient";
+import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { OrderStatus } from "@/global/types/appTypes";
 import type { OrderCreate, OrderUpdate } from "@/global/types/dataEditTypes";
@@ -77,7 +77,7 @@ const route = useRoute();
 function onOrdersList() {
   router.push(`${ROUTES.ORDER.path}`);
 }
-const confirm = useConfirm();
+const confirm = useConfirmations();
 const notifications = useNotifications();
 
 const onSaveOrder = async () => {
@@ -96,22 +96,14 @@ const onSaveOrder = async () => {
   }
 };
 
-async function removeOrder() {
+const removeOrder = async () => {
   await deleteOrder(`${route.params.id}`);
   router.push(`${ROUTES.ORDER.path}`);
-}
+  notifications.showDeleteOrderNotification();
+};
+
 const confirmDelete = () => {
-  confirm.require({
-    message: "Sind Sie sich sicher, dass der Auftrag gelöscht werden soll?",
-    header: "Bestätigung",
-    rejectLabel: "Abbrechen",
-    rejectClass: "bg-transparent border text-red-500 border border-red-500 hover:bg-red-300/10",
-    acceptLabel: "Löschen",
-    accept: async () => {
-      await removeOrder();
-      notifications.showDeleteOrderNotification();
-    },
-  });
+  confirm.showDeleteOrderConfirmation(removeOrder);
 };
 
 onMounted(async () => {
