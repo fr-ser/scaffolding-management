@@ -76,7 +76,7 @@ export default function useNotifications() {
     showDeleteArticleNotification,
     showCreateArticleNotification,
     showCreateOrderNotification,
-    showDeleteOrderNotification, 
-    showUpdateOrderNotification
+    showDeleteOrderNotification,
+    showUpdateOrderNotification,
   };
 }
