@@ -33,7 +33,7 @@ const router = createRouter({
       name: ROUTES.CLIENT.name,
       component: ClientView,
       meta: {
-        label: "View/Edit Client",
+        label: "Kunden anschauen/bearbeiten",
       },
     },
     {
@@ -41,7 +41,7 @@ const router = createRouter({
       name: `${ROUTES.CLIENT.name}-new`,
       component: ClientView,
       meta: {
-        label: "New Client",
+        label: "Neuen Kunden erstellen",
       },
     },
     {
@@ -49,7 +49,7 @@ const router = createRouter({
       name: `${ROUTES.ORDER.name}-list`,
       component: OrderListView,
       meta: {
-        label: "Orders",
+        label: "Aufträge",
       },
     },
     {
@@ -57,7 +57,7 @@ const router = createRouter({
       name: ROUTES.ORDER.name,
       component: OrderView,
       meta: {
-        label: "View/Edit Order",
+        label: "Auftrag anschauen/bearbeiten",
       },
     },
     {
@@ -65,7 +65,7 @@ const router = createRouter({
       name: `${ROUTES.ORDER.name}-new`,
       component: OrderView,
       meta: {
-        label: "New Order",
+        label: "Neuen Auftrag erstellen",
       },
     },
     {
@@ -73,7 +73,7 @@ const router = createRouter({
       name: ROUTES.DOCUMENTS.name,
       component: DocumentView,
       meta: {
-        label: "Documents",
+        label: "Dokumente",
       },
     },
     {
@@ -81,7 +81,7 @@ const router = createRouter({
       name: ROUTES.ARTICLES.name,
       component: ArticleView,
       meta: {
-        label: "Articles",
+        label: "Artikel",
       },
     },
   ],
