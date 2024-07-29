@@ -11,6 +11,7 @@ import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { createOrder, getClients } from "@/backendClient";
+import useNotifications from "@/compositions/useNotifications";
 import { OrderStatus } from "@/global/types/appTypes";
 import type { OrderCreate, OrderUpdate } from "@/global/types/dataEditTypes";
 import type { Client } from "@/global/types/entities";
@@ -52,12 +53,8 @@ const getClientFullName = (client: Client) => {
   return full_name;
 };
 
-const isButtonDisabled = computed(() => {
-  if (orderInfo.value.title && selectedClient.value?.id && orderInfo.value.description) {
-    return false;
-  } else {
-    return true;
-  }
+const isSaveButtonDisabled = computed(() => {
+  return !(orderInfo.value.title && selectedClient.value?.id && orderInfo.value.description);
 });
 
 const searchClient = (event: any) => {
@@ -79,7 +76,7 @@ const route = useRoute();
 function onOrdersList() {
   router.push(`${ROUTES.ORDER.path}`);
 }
-
+const notifications = useNotifications();
 const onSaveOrder = async () => {
   const payload: OrderCreate = orderInfo.value as OrderCreate;
 
@@ -88,6 +85,7 @@ const onSaveOrder = async () => {
   }
   const order = await createOrder(payload);
   router.push(`${ROUTES.ORDER.path}/${order.id}/edit`);
+  notifications.showCreateOrderNotification();
 };
 
 onMounted(async () => {
@@ -109,7 +107,7 @@ onMounted(async () => {
         @click="onSaveOrder"
         type="button"
         label="Auftrag Speichern"
-        :disabled="isButtonDisabled"
+        :disabled="isSaveButtonDisabled"
       ></Button>
       <Button v-if="isEditing" type="button" label="Löschen" severity="danger" text raised></Button>
     </div>
@@ -118,8 +116,8 @@ onMounted(async () => {
         <div class="flex flex-col gap-y-5">
           <p class="font-bold">Daten</p>
           <FloatLabel>
-            <InputText id="constructionProject" v-model="orderInfo.title" class="w-full" />
-            <label for="constructionProject">Bauvorhaben</label>
+            <InputText id="order-title" v-model="orderInfo.title" class="w-full" />
+            <label for="order-title">Bauvorhaben</label>
           </FloatLabel>
           <FloatLabel>
             <Dropdown
@@ -137,11 +135,11 @@ onMounted(async () => {
                 v-model="orderInfo.can_have_cash_discount"
                 :options="discountChoice"
                 class="w-full"
-                id="selectDiscount"
+                id="select-discount"
                 optionLabel="label"
                 optionValue="value"
               />
-              <label for="selectDiscount">Skontoberechtig</label>
+              <label for="select-discount">Skontoberechtigt</label>
             </FloatLabel>
             <FloatLabel>
               <Dropdown

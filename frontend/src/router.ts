@@ -40,31 +40,49 @@ const router = createRouter({
       path: `${ROUTES.CLIENT.path}/new`,
       name: `${ROUTES.CLIENT.name}-new`,
       component: ClientView,
+      meta: {
+        label: 'New Client'
+      }
     },
     {
       path: ROUTES.ORDER.path,
       name: `${ROUTES.ORDER.name}-list`,
       component: OrderListView,
+      meta: {
+        label: 'Order'
+      }
     },
     {
       path: `${ROUTES.ORDER.path}/:id/edit`,
       name: ROUTES.ORDER.name,
       component: OrderView,
+      meta: {
+        label: 'View/Edit Order'
+      }
     },
     {
       path: `${ROUTES.ORDER.path}/new`,
       name: `${ROUTES.ORDER.name}-new`,
       component: OrderView,
+      meta: {
+        label: 'New Order'
+      }
     },
     {
       path: ROUTES.DOCUMENTS.path,
       name: ROUTES.DOCUMENTS.name,
       component: DocumentView,
+      meta: {
+        label: 'Documents'
+      }
     },
     {
       path: ROUTES.ARTICLES.path,
       name: ROUTES.ARTICLES.name,
       component: ArticleView,
+      meta: {
+        label: 'Articles'
+      }
     },
   ],
 });
