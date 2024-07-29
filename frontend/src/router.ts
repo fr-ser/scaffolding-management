@@ -24,11 +24,17 @@ const router = createRouter({
       path: ROUTES.CLIENT.path,
       name: `${ROUTES.CLIENT.name}-list`,
       component: ClientListView,
+      meta: {
+        label: 'Clients'
+      }
     },
     {
       path: `${ROUTES.CLIENT.path}/:id/edit`,
       name: ROUTES.CLIENT.name,
       component: ClientView,
+      meta: {
+        label: 'View/Edit Client'
+      }
     },
     {
       path: `${ROUTES.CLIENT.path}/new`,
