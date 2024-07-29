@@ -36,6 +36,9 @@ const confirmDelete = (order: Order) => {
     },
   });
 };
+async function updateOrder() {
+  await console.log("HHHHHH");
+}
 
 onMounted(async () => {
   reloadPage();
@@ -68,7 +71,7 @@ onMounted(async () => {
                 {{ `${order.id} ${order.title}` }}
               </div>
               <div class="flex flex-col gap-y-2">
-                <router-link :to="`${ROUTES.ORDER.path}/:id/edit`">
+                <router-link :to="`${ROUTES.ORDER.path}/${order.id}/edit`">
                   <Button
                     label="Bearbeiten"
                     icon="pi pi-pencil"

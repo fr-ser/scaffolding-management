@@ -7,10 +7,11 @@ import FloatLabel from "primevue/floatlabel";
 import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
+import { useConfirm } from "primevue/useconfirm";
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { createOrder, getClients } from "@/backendClient";
+import { createOrder, deleteOrder, getClients, updateOrder } from "@/backendClient";
 import useNotifications from "@/compositions/useNotifications";
 import { OrderStatus } from "@/global/types/appTypes";
 import type { OrderCreate, OrderUpdate } from "@/global/types/dataEditTypes";
@@ -76,16 +77,41 @@ const route = useRoute();
 function onOrdersList() {
   router.push(`${ROUTES.ORDER.path}`);
 }
+const confirm = useConfirm();
 const notifications = useNotifications();
+
 const onSaveOrder = async () => {
   const payload: OrderCreate = orderInfo.value as OrderCreate;
 
   if (selectedClient.value) {
     payload.client_id = selectedClient.value.id;
   }
-  await createOrder(payload);
+  if (isEditing.value) {
+    console.log("UPDATE");
+    await updateOrder(`${route.params.id}`, orderInfo.value);
+  } else {
+    await createOrder(payload);
+    router.push(`${ROUTES.ORDER.path}`);
+    notifications.showCreateOrderNotification();
+  }
+};
+
+async function removeOrder() {
+  await deleteOrder(`${route.params.id}`);
   router.push(`${ROUTES.ORDER.path}`);
-  notifications.showCreateOrderNotification();
+}
+const confirmDelete = () => {
+  confirm.require({
+    message: "Sind Sie sich sicher, dass der Auftrag gelöscht werden soll?",
+    header: "Bestätigung",
+    rejectLabel: "Abbrechen",
+    rejectClass: "bg-transparent border text-red-500 border border-red-500 hover:bg-red-300/10",
+    acceptLabel: "Löschen",
+    accept: async () => {
+      await removeOrder();
+      notifications.showDeleteOrderNotification();
+    },
+  });
 };
 
 onMounted(async () => {
@@ -109,7 +135,15 @@ onMounted(async () => {
         label="Auftrag Speichern"
         :disabled="isSaveButtonDisabled"
       ></Button>
-      <Button v-if="isEditing" type="button" label="Löschen" severity="danger" text raised></Button>
+      <Button
+        v-if="isEditing"
+        @click="confirmDelete"
+        type="button"
+        label="Löschen"
+        severity="danger"
+        text
+        raised
+      ></Button>
     </div>
     <Card>
       <template #content>
