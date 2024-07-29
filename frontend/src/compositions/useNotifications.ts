@@ -61,7 +61,13 @@ export default function useNotifications() {
       life: 3000,
     });
   };
-
+  const showUpdateOrderNotification = () => {
+    toast.add({
+      severity: "info",
+      summary: "Der Auftrag wurden gespeichert",
+      life: 3000,
+    });
+  };
   return {
     showDeleteClientNotification,
     showUpdateClientNotification,
@@ -70,6 +76,7 @@ export default function useNotifications() {
     showDeleteArticleNotification,
     showCreateArticleNotification,
     showCreateOrderNotification,
-    showDeleteOrderNotification
+    showDeleteOrderNotification, 
+    showUpdateOrderNotification
   };
 }
