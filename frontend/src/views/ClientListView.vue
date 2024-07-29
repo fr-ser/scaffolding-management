@@ -66,33 +66,39 @@ onMounted(async () => {
       </router-link>
     </div>
     <div class="grow overflow-auto">
-      <Card class="my-2" v-for="client in clientsList" :key="client.id">
-        <template #content>
-          <div class="flex gap-2 flex-row justify-between items-center">
-            <div>
-              {{ `${client.first_name} ${client.last_name}` }}
-            </div>
-            <div class="flex flex-col gap-y-2">
-              <router-link :to="`${ROUTES.CLIENT.path}/${client.id}/edit`">
+      <router-link
+        :to="`${ROUTES.CLIENT.path}/${client.id}/edit`"
+        v-for="client in clientsList"
+        :key="client.id"
+      >
+        <Card class="my-2">
+          <template #content>
+            <div class="flex gap-2 flex-row justify-between items-center">
+              <div>
+                {{ `${client.first_name} ${client.last_name}` }}
+              </div>
+              <div class="flex flex-col gap-y-2">
+                <router-link :to="`${ROUTES.CLIENT.path}/${client.id}/edit`">
+                  <Button
+                    label="Bearbeiten"
+                    icon="pi pi-pencil"
+                    severity="secondary"
+                    outlined
+                    size="small"
+                  />
+                </router-link>
                 <Button
-                  label="Bearbeiten"
-                  icon="pi pi-pencil"
-                  severity="secondary"
-                  outlined
+                  @click.stop.prevent="confirmDelete(client)"
+                  label="Löschen"
+                  icon="pi pi-times"
+                  severity="danger"
                   size="small"
                 />
-              </router-link>
-              <Button
-                @click="confirmDelete(client)"
-                label="Löschen"
-                icon="pi pi-times"
-                severity="danger"
-                size="small"
-              />
+              </div>
             </div>
-          </div>
-        </template>
-      </Card>
+          </template>
+        </Card>
+      </router-link>
     </div>
   </div>
 </template>

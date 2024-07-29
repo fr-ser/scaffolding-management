@@ -43,7 +43,7 @@ const items = ref([
         </router-link>
       </template>
       <template #end
-        ><h1>{{ route.meta?.label }}</h1></template
+        ><h1 class="font-semibold">{{ route.meta?.label }}</h1></template
       >
     </Menubar>
   </div>

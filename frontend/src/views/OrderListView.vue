@@ -16,9 +16,6 @@ let value = ref();
 onMounted(async () => {
   reloadPage();
 });
-function showConsole() {
-  console.log("HHHHHHH");
-}
 </script>
 
 <template>
@@ -35,15 +32,18 @@ function showConsole() {
       </router-link>
     </div>
     <div class="grow overflow-auto">
-      <router-link :to="`${ROUTES.ORDER.path}/:id/edit`">
-        <Card class="my-2" v-for="order in ordersList" :key="order.id">
+      <router-link
+        :to="`${ROUTES.ORDER.path}/${order.id}/edit`"
+        v-for="order in ordersList"
+        :key="order.id"
+      >
+        <Card class="my-2">
           <template #content>
             <div class="flex flex-row justify-between items-center">
               <div>
                 {{ `${order.id} ${order.title}` }}
               </div>
               <div class="flex flex-col gap-y-2">
-                <Button label="View" icon="pi pi-eye" severity="secondary" outlined size="small" />
                 <router-link :to="`${ROUTES.ORDER.path}/:id/edit`">
                   <Button
                     label="Bearbeiten"
@@ -54,7 +54,7 @@ function showConsole() {
                   />
                 </router-link>
                 <Button
-                  @click.stop.prevent="showConsole"
+                  @click.stop.prevent=""
                   label="Löschen"
                   icon="pi pi-times"
                   severity="danger"
