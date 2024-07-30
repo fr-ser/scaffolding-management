@@ -6,10 +6,11 @@ import FloatLabel from "primevue/floatlabel";
 import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
-import { useConfirm } from "primevue/useconfirm";
+// import { useConfirm } from "primevue/useconfirm";
 import { ref } from "vue";
 
 import { createArticle, deleteArticle, updateArticle } from "@/backendClient";
+import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { Article } from "@/global/types/entities";
@@ -21,7 +22,7 @@ const props = defineProps<{
   isNew?: boolean;
 }>();
 
-const confirm = useConfirm();
+const confirm = useConfirmations();
 const notifications = useNotifications();
 
 const articlesType = Object.values(ArticleKind);
@@ -42,20 +43,24 @@ const onUpdateArticle = async () => {
 const onDeleteArticle = async () => {
   await deleteArticle(`${editableArticle.value.id}`);
   emit("reloadArticleView");
+  notifications.showDeleteArticleNotification();
+};
+const confirmDelete = () => {
+  confirm.showDeleteArticleConfirmation(onDeleteArticle);
 };
 
-const confirmDelete = () => {
-  confirm.require({
-    message: "Wollen Sie den Artikel sicher wirklich löschen?",
-    header: "Bestätigung",
-    rejectLabel: "Abbrechen",
-    acceptLabel: "Löschen",
-    accept: async () => {
-      await onDeleteArticle();
-      notifications.showDeleteArticleNotification();
-    },
-  });
-};
+// const confirmDelete = () => {
+//   confirm.require({
+//     message: "Wollen Sie den Artikel sicher wirklich löschen?",
+//     header: "Bestätigung",
+//     rejectLabel: "Abbrechen",
+//     acceptLabel: "Löschen",
+//     accept: async () => {
+//       await onDeleteArticle();
+//       notifications.showDeleteArticleNotification();
+//     },
+//   });
+// };
 </script>
 
 <template>

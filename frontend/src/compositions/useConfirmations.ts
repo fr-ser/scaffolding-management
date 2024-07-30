@@ -1,5 +1,6 @@
 import { useConfirm } from "primevue/useconfirm";
 
+
 export default function useConfirmation() {
   const confirm = useConfirm();
 
@@ -23,8 +24,18 @@ export default function useConfirmation() {
       accept: acceptCallback,
   })
 };
+const showDeleteArticleConfirmation = (acceptCallback: () => void) => {
+  confirm.require({
+    message: "Wollen Sie den Artikel sicher wirklich löschen?",
+    header: "Bestätigung",
+    rejectLabel: "Abbrechen",
+    acceptLabel: "Löschen",
+    accept: acceptCallback,
+})
+};
   return {
     showDeleteOrderConfirmation,
     showDeleteClientConfirmation,
+    showDeleteArticleConfirmation, 
   };
 }
