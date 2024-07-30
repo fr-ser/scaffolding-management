@@ -2,10 +2,10 @@
 import Button from "primevue/button";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
-import { useConfirm } from "primevue/useconfirm";
 import { onMounted, ref } from "vue";
 
 import { deleteOrder, getOrders } from "@/backendClient";
+import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import type { Order } from "@/global/types/entities";
 import { ROUTES } from "@/router";
@@ -16,29 +16,23 @@ async function reloadPage() {
 }
 let value = ref();
 
-const confirm = useConfirm();
+const confirm = useConfirmations();
 const notifications = useNotifications();
 
 async function removeOrder(order: Order) {
   await deleteOrder(order.id);
   reloadPage();
+  notifications.showDeleteOrderNotification();
 }
 const confirmDelete = (order: Order) => {
-  confirm.require({
-    message: "Sind Sie sich sicher, dass der Kunde gelöscht werden soll?",
-    header: "Bestätigung",
-    rejectLabel: "Abbrechen",
-    rejectClass: "bg-transparent border text-red-500 border border-red-500 hover:bg-red-300/10",
-    acceptLabel: "Löschen",
-    accept: async () => {
-      await removeOrder(order);
-      notifications.showDeleteOrderNotification();
-    },
+  confirm.showDeleteOrderConfirmation(async () => {
+    removeOrder(order);
   });
 };
-async function updateOrder() {
-  await console.log("HHHHHH");
-}
+
+// async function updateOrder() {
+//   await console.log("HHHHHH");
+// }
 
 onMounted(async () => {
   reloadPage();
