@@ -6,36 +6,27 @@ import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
-import { useConfirm } from "primevue/useconfirm";
 import { onMounted, ref } from "vue";
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { createClient, deleteClient, getClient, updateClient } from "@/backendClient";
+import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { ClientSalutation } from "@/global/types/appTypes";
 import type { ClientCreate, ClientUpdate } from "@/global/types/dataEditTypes";
 import { ROUTES } from "@/router";
 
-const confirm = useConfirm();
+const confirm = useConfirmations();
 const notifications = useNotifications();
 
 const onDeleteClient = async () => {
   await deleteClient(`${route.params.id}`);
   router.push(`${ROUTES.CLIENT.path}`);
+  notifications.showDeleteClientNotification();
 };
 const confirmDelete = () => {
-  confirm.require({
-    message: "Sind Sie sich sicher, dass der Kunde gelöscht werden soll?",
-    header: "Bestätigung",
-    rejectLabel: "Abbrechen",
-    rejectClass: "bg-transparent border text-red-500 border border-red-500 hover:bg-red-300/10",
-    acceptLabel: "Löschen",
-    accept: async () => {
-      await onDeleteClient();
-      notifications.showDeleteClientNotification();
-    },
-  });
+  confirm.showDeleteClientConfirmation(onDeleteClient);
 };
 
 let userInfo = ref<ClientUpdate | ClientCreate>({});
@@ -45,16 +36,11 @@ const genders = Object.values(ClientSalutation);
 
 const router = useRouter();
 const route = useRoute();
-/**
- * We're in editing mode if client id is present.
- */
+
 const isEditing = computed(() => {
   return Boolean(route.params.id);
 });
 const onSaveClient = async () => {
-  /**
-   * Check what do we want to do - update or create - depending on the route.
-   */
   if (isEditing.value) {
     await updateClient(`${route.params.id}`, userInfo.value);
     notifications.showUpdateClientNotification();

@@ -8,9 +8,13 @@ import { ref } from "vue";
 import { watch } from "vue";
 
 import { deleteClient, getClients } from "@/backendClient";
+import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import type { Client } from "@/global/types/entities";
 import { ROUTES } from "@/router";
+
+const confirm = useConfirmations();
+const notifications = useNotifications();
 
 const clientsList = ref<Client[]>([]);
 
@@ -24,21 +28,12 @@ async function reloadPage() {
 async function removeClient(client: Client) {
   await deleteClient(client.id);
   reloadPage();
+  notifications.showDeleteClientNotification();
 }
-const confirm = useConfirm();
-const notifications = useNotifications();
 
 const confirmDelete = (client: Client) => {
-  confirm.require({
-    message: "Sind Sie sich sicher, dass der Kunde gelöscht werden soll?",
-    header: "Bestätigung",
-    rejectLabel: "Abbrechen",
-    rejectClass: "bg-transparent border text-red-500 border border-red-500 hover:bg-red-300/10",
-    acceptLabel: "Löschen",
-    accept: async () => {
-      await removeClient(client);
-      notifications.showDeleteClientNotification();
-    },
+  confirm.showDeleteClientConfirmation(async () => {
+    removeClient(client);
   });
 };
 
