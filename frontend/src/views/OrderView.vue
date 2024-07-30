@@ -10,7 +10,7 @@ import Textarea from "primevue/textarea";
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { createOrder, deleteOrder, getClients, updateOrder } from "@/backendClient";
+import { createOrder, deleteOrder, getClients, getOrder, updateOrder } from "@/backendClient";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { OrderStatus } from "@/global/types/appTypes";
@@ -108,6 +108,10 @@ const confirmDelete = () => {
 
 onMounted(async () => {
   clientsList.value = (await getClients()).data;
+  if (isEditing.value) {
+    orderInfo.value = await getOrder(route.params.id as string);
+    // birthdayDate.value = userInfo.value.birthday ? new Date(userInfo.value.birthday) : undefined;
+  }
 });
 </script>
 <template>
