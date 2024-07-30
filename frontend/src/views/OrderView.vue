@@ -89,6 +89,7 @@ const onSaveOrder = async () => {
   if (isEditing.value) {
     console.log("UPDATE");
     await updateOrder(`${route.params.id}`, orderInfo.value);
+    notifications.showUpdateOrderNotification();
   } else {
     await createOrder(payload);
     router.push(`${ROUTES.ORDER.path}`);
