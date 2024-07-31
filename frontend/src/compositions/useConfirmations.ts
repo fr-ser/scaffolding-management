@@ -1,6 +1,5 @@
 import { useConfirm } from "primevue/useconfirm";
 
-
 export default function useConfirmation() {
   const confirm = useConfirm();
 
@@ -22,20 +21,22 @@ export default function useConfirmation() {
       rejectClass: "bg-transparent border text-red-500 border border-red-500 hover:bg-red-300/10",
       acceptLabel: "Löschen",
       accept: acceptCallback,
-  });
+    });
   };
-const showDeleteArticleConfirmation = (acceptCallback: () => void) => {
-  confirm.require({
-    message: "Wollen Sie den Artikel sicher wirklich löschen?",
-    header: "Bestätigung",
-    rejectLabel: "Abbrechen",
-    acceptLabel: "Löschen",
-    accept: acceptCallback,
-})
-};
+
+  const showDeleteArticleConfirmation = (acceptCallback: () => void) => {
+    confirm.require({
+      message: "Wollen Sie den Artikel sicher wirklich löschen?",
+      header: "Bestätigung",
+      rejectLabel: "Abbrechen",
+      acceptLabel: "Löschen",
+      accept: acceptCallback,
+    });
+  };
+
   return {
     showDeleteOrderConfirmation,
     showDeleteClientConfirmation,
-    showDeleteArticleConfirmation, 
+    showDeleteArticleConfirmation,
   };
 }
