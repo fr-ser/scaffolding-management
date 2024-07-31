@@ -83,8 +83,6 @@ const notifications = useNotifications();
 
 const onSaveOrder = async () => {
   const payload: OrderCreate = orderInfo.value as OrderCreate;
-  // console.log(orderInfo);
-  // console.log(orderInfo.value.client_id);
 
   if (selectedClient.value) {
     payload.client_id = selectedClient.value.id;
@@ -110,16 +108,15 @@ const confirmDelete = () => {
 };
 const findClientById = () => {
   const foundClient = clientsList.value.find((client) => client[id] === orderInfo.value.client_id);
-  console.log(foundClient);
+
   return foundClient;
 };
 onMounted(async () => {
   clientsList.value = (await getClients()).data;
   if (isEditing.value) {
     orderInfo.value = await getOrder(route.params.id as string);
-    console.log(findClientById());
+
     selectedClient.value = findClientById();
-    // birthdayDate.value = userInfo.value.birthday ? new Date(userInfo.value.birthday) : undefined;
   }
 });
 </script>
