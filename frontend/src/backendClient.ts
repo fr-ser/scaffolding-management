@@ -83,11 +83,15 @@ export async function updateClient(id: string, client: ClientUpdate): Promise<Cl
 }
 
 export async function getOrders(
-  options: { clientId?: string } = {},
+  options: { clientId?: string; query?: string } = {},
 ): Promise<PaginationResponse<Order>> {
   const params: any = {};
   if (options.clientId) {
     params.client_id = options.clientId;
+  }
+
+  if (options.query) {
+    params.search = options.query;
   }
   const response = await axiosInstance.get(`/api/orders`, { params });
   return response.data;
