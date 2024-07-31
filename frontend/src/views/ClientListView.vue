@@ -2,7 +2,6 @@
 import Button from "primevue/button";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
-import { useConfirm } from "primevue/useconfirm";
 import { onMounted } from "vue";
 import { ref } from "vue";
 import { watch } from "vue";
@@ -11,6 +10,7 @@ import { deleteClient, getClients } from "@/backendClient";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import type { Client } from "@/global/types/entities";
+import { debounce } from "@/helpers/utils";
 import { ROUTES } from "@/router";
 
 const confirm = useConfirmations();
@@ -37,10 +37,7 @@ const confirmDelete = (client: Client) => {
   });
 };
 
-watch(search, async () => {
-  // TODO: add debounce
-  reloadPage();
-});
+watch(search, debounce(reloadPage, 500));
 
 onMounted(async () => {
   reloadPage();

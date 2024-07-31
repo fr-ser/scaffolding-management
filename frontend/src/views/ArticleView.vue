@@ -9,6 +9,7 @@ import { getArticles } from "@/backendClient";
 import ArticlesItem from "@/components/articles/ArticleItem.vue";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { Article } from "@/global/types/entities";
+import { debounce } from "@/helpers/utils";
 
 interface EditableArticle extends Article {
   isNew?: boolean;
@@ -36,10 +37,7 @@ function createNewArticle() {
   });
 }
 
-watch(search, async () => {
-  // TODO: add debounce
-  reloadPage();
-});
+watch(search, debounce(reloadPage));
 
 onMounted(async () => {
   reloadPage();

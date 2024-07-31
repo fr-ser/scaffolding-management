@@ -16,6 +16,7 @@ import useNotifications from "@/compositions/useNotifications";
 import { OrderStatus } from "@/global/types/appTypes";
 import type { OrderCreate, OrderUpdate } from "@/global/types/dataEditTypes";
 import type { Client } from "@/global/types/entities";
+import { debounce } from "@/helpers/utils";
 import { ROUTES } from "@/router";
 
 let orderInfo = ref<OrderUpdate | OrderCreate>({
@@ -59,7 +60,7 @@ const isSaveButtonDisabled = computed(() => {
 });
 
 const searchClient = (event: any) => {
-  setTimeout(() => {
+  debounce(() => {
     if (!event.query.trim().length) {
       filteredClients.value = [...clientsList.value];
     } else {
@@ -70,7 +71,7 @@ const searchClient = (event: any) => {
         );
       });
     }
-  }, 250);
+  }, 2000)();
 };
 const router = useRouter();
 const route = useRoute();
