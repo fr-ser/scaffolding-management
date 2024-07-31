@@ -71,7 +71,7 @@ onMounted(async () => {
         v-for="client in clientsList"
         :key="client.id"
       >
-        <Card class="my-2">
+        <Card class="my-2" data-testid="client-card">
           <template #content>
             <div class="flex gap-2 flex-row justify-between items-center">
               <div>

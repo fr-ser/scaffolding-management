@@ -79,6 +79,7 @@ onMounted(async () => {
   <form>
     <div class="flex flex-row justify-between">
       <Button
+        data-testid="return-button"
         @click="onClientList"
         icon="pi pi-arrow-left"
         size="small"
@@ -135,7 +136,7 @@ onMounted(async () => {
             </FloatLabel>
             <FloatLabel>
               <InputText id="city" v-model="userInfo.city" class="w-full" />
-              <label for="city font-bold">Stadt</label>
+              <label for="city">Stadt</label>
             </FloatLabel>
           </div>
         </template>

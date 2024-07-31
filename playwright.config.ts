@@ -1,5 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const PORT = process.env.PLAYWRIGHT_BACKEND_PORT || "3001";
+
 export default defineConfig({
   testDir: "./tests/e2e",
   /* Run tests in files in parallel */
@@ -9,7 +11,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: "html",
   use: {
-    baseURL: "http://127.0.0.1:3001",
+    baseURL: `http://localhost:${PORT}`,
     httpCredentials: {
       username: "admin",
       password: "local1",
@@ -25,7 +27,7 @@ export default defineConfig({
   ],
   webServer: {
     command: "make build run-server-production",
-    url: "http://127.0.0.1:3001",
+    url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     stdout: process.env.CI ? "pipe" : "ignore",
   },
