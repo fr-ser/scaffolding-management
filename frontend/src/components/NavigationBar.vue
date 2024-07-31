@@ -33,7 +33,7 @@ const items = ref([
 
 <template>
   <div class="card">
-    <Menubar :model="items" data-testid="navigation-bar">
+    <Menubar :model="items">
       <template #item="{ item, props }">
         <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
           <a :href="href" v-bind="props.action" @click="navigate">

@@ -36,6 +36,15 @@ In the overall repo you can also run e2e and unit tests, though.
 
 Run `make test-all` to run all available tests.
 
+#### E2E Tests
+
+The following hints can help running e2e tests:
+
+- in order to run the tests against a running development environment use:
+  `PLAYWRIGHT_BACKEND_PORT=5173 npm run test:e2e`
+- in order to run tests with a UI use:
+  `PLAYWRIGHT_BACKEND_PORT=5173 npm run test:e2e -- --ui`
+
 ## Deployment
 
 The application is manually deployed via the `make deploy` command.
