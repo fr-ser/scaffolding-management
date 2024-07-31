@@ -84,28 +84,26 @@ ordersRouter.patch(
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
-    const order = await dataSource.manager.findOne(Order, {
-      relations: {
-        client: true,
-        offer: { items: true },
-        overdue_notices: { invoice_documents: { items: true } },
-        invoices: { items: true },
-      },
-      where: { id: req.params.id },
-    });
-    if (!order) {
-      next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
+    let order: Order | null = null;
+
+    try {
+      await dataSource.manager.update(Order, req.params.id, req.body);
+      order = await dataSource.manager.findOne(Order, {
+        relations: {
+          client: true,
+          offer: { items: true },
+          overdue_notices: { invoice_documents: { items: true } },
+          invoices: { items: true },
+        },
+        where: { id: req.params.id },
+      });
+    } catch (error) {
+      next(error);
       return;
     }
 
-    for (const [key, value] of Object.entries(req.body)) {
-      (order as any)[key] = value; // eslint-disable-line @typescript-eslint/no-explicit-any
-    }
-    try {
-      res.json(await dataSource.manager.save(Order, order));
-    } catch (error) {
-      next(error);
-    }
+    if (order != null) res.json(order);
+    else next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
   },
 );
 
