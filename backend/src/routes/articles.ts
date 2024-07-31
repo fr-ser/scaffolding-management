@@ -50,22 +50,20 @@ articlesRouter.patch(
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
-    const article = await dataSource.manager.findOneBy(Article, {
-      id: req.params.id,
-    });
-    if (!article) {
-      next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
+    let article: Article | null = null;
+
+    try {
+      await dataSource.manager.update(Article, req.params.id, req.body);
+      article = await dataSource.manager.findOneBy(Article, {
+        id: req.params.id,
+      });
+    } catch (error) {
+      next(error);
       return;
     }
 
-    for (const [key, value] of Object.entries(req.body)) {
-      (article as any)[key] = value; // eslint-disable-line @typescript-eslint/no-explicit-any
-    }
-    try {
-      res.json(await dataSource.manager.save(Article, article));
-    } catch (error) {
-      next(error);
-    }
+    if (article != null) res.json(article);
+    else next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
   },
 );
 

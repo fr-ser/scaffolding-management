@@ -70,22 +70,20 @@ offersRouter.patch(
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
-    const offer = await dataSource.manager.findOne(Offer, {
-      where: { id: parseInt(req.params.id) },
-    });
-    if (!offer) {
-      next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
+    let offer: Offer | null = null;
+
+    try {
+      await dataSource.manager.update(Offer, req.params.id, req.body);
+      offer = await dataSource.manager.findOne(Offer, {
+        where: { id: parseInt(req.params.id) },
+      });
+    } catch (error) {
+      next(error);
       return;
     }
 
-    for (const [key, value] of Object.entries(req.body)) {
-      (offer as any)[key] = value; // eslint-disable-line @typescript-eslint/no-explicit-any
-    }
-    try {
-      res.json(await dataSource.manager.save(Offer, offer));
-    } catch (error) {
-      next(error);
-    }
+    if (offer != null) res.json(offer);
+    else next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
   },
 );
 

@@ -103,22 +103,20 @@ clientsRouter.patch(
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
-    const client = await dataSource.manager.findOneBy(Client, {
-      id: req.params.id,
-    });
-    if (!client) {
-      next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
+    let client: Client | null = null;
+
+    try {
+      await dataSource.manager.update(Client, req.params.id, req.body);
+      client = await dataSource.manager.findOneBy(Client, {
+        id: req.params.id,
+      });
+    } catch (error) {
+      next(error);
       return;
     }
 
-    for (const [key, value] of Object.entries(req.body)) {
-      (client as any)[key] = value; // eslint-disable-line @typescript-eslint/no-explicit-any
-    }
-    try {
-      res.json(await dataSource.manager.save(Client, client));
-    } catch (error) {
-      next(error);
-    }
+    if (client != null) res.json(client);
+    else next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
   },
 );
 

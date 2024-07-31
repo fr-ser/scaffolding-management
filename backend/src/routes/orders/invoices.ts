@@ -54,22 +54,20 @@ invoicesRouter.patch(
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
-    const invoice = await dataSource.manager.findOne(Invoice, {
-      where: { id: parseInt(req.params.id) },
-    });
-    if (!invoice) {
-      next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
+    let invoice: Invoice | null = null;
+
+    try {
+      await dataSource.manager.update(Invoice, req.params.id, req.body);
+      invoice = await dataSource.manager.findOne(Invoice, {
+        where: { id: parseInt(req.params.id) },
+      });
+    } catch (error) {
+      next(error);
       return;
     }
 
-    for (const [key, value] of Object.entries(req.body)) {
-      (invoice as any)[key] = value; // eslint-disable-line @typescript-eslint/no-explicit-any
-    }
-    try {
-      res.json(await dataSource.manager.save(Invoice, invoice));
-    } catch (error) {
-      next(error);
-    }
+    if (invoice != null) res.json(invoice);
+    else next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
   },
 );
 
