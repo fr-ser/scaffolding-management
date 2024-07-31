@@ -27,7 +27,7 @@ let orderInfo = ref<OrderUpdate | OrderCreate>({
   discount_duration: 7,
   can_have_cash_discount: false,
 });
-
+const id = "id";
 const orderStatusTypes = Object.values(OrderStatus);
 
 const discountChoice = [
@@ -39,7 +39,7 @@ const isEditing = computed(() => {
 });
 const discountPeriodChoice = [7, 14];
 
-const selectedClient = ref<Client>();
+let selectedClient = ref<Client>();
 
 const filteredClients = ref<Client[]>([]);
 const clientsList = ref<Client[]>([]);
@@ -82,12 +82,13 @@ const notifications = useNotifications();
 
 const onSaveOrder = async () => {
   const payload: OrderCreate = orderInfo.value as OrderCreate;
+  // console.log(orderInfo);
+  // console.log(orderInfo.value.client_id);
 
   if (selectedClient.value) {
     payload.client_id = selectedClient.value.id;
   }
   if (isEditing.value) {
-    console.log("UPDATE");
     await updateOrder(`${route.params.id}`, orderInfo.value);
     notifications.showUpdateOrderNotification();
   } else {
@@ -106,11 +107,17 @@ const removeOrder = async () => {
 const confirmDelete = () => {
   confirm.showDeleteOrderConfirmation(removeOrder);
 };
-
+const findClientById = () => {
+  const foundClient = clientsList.value.find((client) => client[id] === orderInfo.value.client_id);
+  console.log(foundClient);
+  return foundClient;
+};
 onMounted(async () => {
   clientsList.value = (await getClients()).data;
   if (isEditing.value) {
     orderInfo.value = await getOrder(route.params.id as string);
+    console.log(findClientById());
+    selectedClient.value = findClientById();
     // birthdayDate.value = userInfo.value.birthday ? new Date(userInfo.value.birthday) : undefined;
   }
 });
