@@ -48,7 +48,6 @@ const onSaveClient = async () => {
     await createClient(userInfo.value);
     router.push(`${ROUTES.CLIENT.path}`);
     notifications.showCreateClientNotification();
-    console.log(userInfo);
   }
 };
 function onClientList() {

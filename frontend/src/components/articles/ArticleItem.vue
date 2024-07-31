@@ -6,7 +6,6 @@ import FloatLabel from "primevue/floatlabel";
 import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
-// import { useConfirm } from "primevue/useconfirm";
 import { ref } from "vue";
 
 import { createArticle, deleteArticle, updateArticle } from "@/backendClient";
@@ -48,19 +47,6 @@ const onDeleteArticle = async () => {
 const confirmDelete = () => {
   confirm.showDeleteArticleConfirmation(onDeleteArticle);
 };
-
-// const confirmDelete = () => {
-//   confirm.require({
-//     message: "Wollen Sie den Artikel sicher wirklich löschen?",
-//     header: "Bestätigung",
-//     rejectLabel: "Abbrechen",
-//     acceptLabel: "Löschen",
-//     accept: async () => {
-//       await onDeleteArticle();
-//       notifications.showDeleteArticleNotification();
-//     },
-//   });
-// };
 </script>
 
 <template>

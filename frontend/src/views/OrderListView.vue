@@ -29,11 +29,6 @@ const confirmDelete = (order: Order) => {
     removeOrder(order);
   });
 };
-
-// async function updateOrder() {
-//   await console.log("HHHHHH");
-// }
-
 onMounted(async () => {
   reloadPage();
 });
