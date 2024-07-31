@@ -71,7 +71,7 @@ const searchClient = (event: any) => {
         );
       });
     }
-  }, 2000)();
+  }, 250)();
 };
 const router = useRouter();
 const route = useRoute();
