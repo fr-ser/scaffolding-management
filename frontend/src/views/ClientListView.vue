@@ -37,7 +37,7 @@ const confirmDelete = (client: Client) => {
   });
 };
 
-watch(search, debounce(reloadPage, 500));
+watch(search, debounce(reloadPage, 250));
 
 onMounted(async () => {
   reloadPage();
