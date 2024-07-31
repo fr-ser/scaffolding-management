@@ -37,7 +37,7 @@ function createNewArticle() {
   });
 }
 
-watch(search, debounce(reloadPage));
+watch(search, debounce(reloadPage, 250));
 
 onMounted(async () => {
   reloadPage();
