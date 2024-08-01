@@ -28,7 +28,7 @@ let orderInfo = ref<OrderUpdate | OrderCreate>({
   discount_duration: 7,
   can_have_cash_discount: false,
 });
-const id = "id";
+// const id = "id";
 const orderStatusTypes = Object.values(OrderStatus);
 
 const discountChoice = [
@@ -107,7 +107,7 @@ const confirmDelete = () => {
   confirm.showDeleteOrderConfirmation(removeOrder);
 };
 const findClientById = () => {
-  const foundClient = clientsList.value.find((client) => client[id] === orderInfo.value.client_id);
+  const foundClient = clientsList.value.find((client) => client.id === orderInfo.value.client_id);
 
   return foundClient;
 };
