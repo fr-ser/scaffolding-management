@@ -21,6 +21,7 @@ async function reloadPage() {
 
 const confirm = useConfirmations();
 const notifications = useNotifications();
+const search = ref("");
 
 async function removeOrder(order: Order) {
   await deleteOrder(order.id);
@@ -47,11 +48,7 @@ onMounted(async () => {
         <i
           class="pi pi-search absolute top-2/4 -mt-2 left-3 text-surface-400 dark:text-surface-600"
         />
-        <InputText
-          v-model="search"
-          placeholder="Suche (ID oder Bauvorhaben)"
-          class="pl-10 w-full"
-        />
+        <InputText v-model="search" placeholder="Suche (ID oder Bauvorhaben)" class="pl-10 w-full" />
       </span>
       <router-link :to="`${ROUTES.ORDER.path}/new`">
         <Button icon="pi pi-plus" rounded aria-label="Neuen Auftrag anlegen" />
