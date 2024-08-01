@@ -51,7 +51,11 @@ onMounted(async () => {
         <i
           class="pi pi-search absolute top-2/4 -mt-2 left-3 text-surface-400 dark:text-surface-600"
         />
-        <InputText v-model="search" placeholder="Suche" class="pl-10 w-full" />
+        <InputText
+          v-model="search"
+          placeholder="Suche (ID, Titel oder Beschreibung)"
+          class="pl-10 w-full"
+        />
       </span>
       <Button @click="createNewArticle" icon="pi pi-plus" rounded outlined aria-label="Filter" />
     </div>
