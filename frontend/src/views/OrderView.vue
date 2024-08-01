@@ -2,7 +2,6 @@
 import AutoComplete from "primevue/autocomplete";
 import Button from "primevue/button";
 import Card from "primevue/card";
-import Dialog from "primevue/dialog";
 import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import InputNumber from "primevue/inputnumber";
@@ -12,6 +11,7 @@ import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { createOrder, deleteOrder, getClients, getOrder, updateOrder } from "@/backendClient";
+import OrderDocuments from "@/components/orders/OrderDocuments.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { OrderStatus } from "@/global/types/appTypes";
@@ -208,43 +208,9 @@ onMounted(async () => {
             />
           </div>
         </div>
-        <section v-if="isEditing">
-          <div class="font-bold my-2">Documente</div>
-          <div>
-            <Button
-              @click="visible = true"
-              label="Alle auftragsdocument(e) anzeigen"
-              severity="secondary"
-              outlined
-              size="small"
-            />
-          </div>
+        <section>
+          <OrderDocuments v-if="isEditing"></OrderDocuments>
         </section>
-        <Dialog
-          v-model:visible="visible"
-          modal
-          header="Order documents"
-          :style="{ width: '25rem' }"
-        >
-          <span class="text-surface-500 dark:text-surface-400 block mb-8">Order documents.</span>
-          <!-- <div class="flex items-center gap-4 mb-4">
-                <label for="username" class="font-semibold w-24">Username</label>
-                <InputText id="username" class="flex-auto" autocomplete="off" />
-            </div>
-            <div class="flex items-center gap-4 mb-8">
-                <label for="email" class="font-semibold w-24">Email</label>
-                <InputText id="email" class="flex-auto" autocomplete="off" />
-            </div> -->
-          <!-- <div class="flex justify-end gap-2">
-            <Button
-              type="button"
-              label="Cancel"
-              severity="secondary"
-              @click="visible = false"
-            ></Button>
-            <Button type="button" label="Save" @click="visible = false"></Button> -->
-          <!-- </div> -->
-        </Dialog>
       </template>
     </Card>
   </form>
