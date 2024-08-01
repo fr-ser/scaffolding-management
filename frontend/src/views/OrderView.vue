@@ -2,6 +2,7 @@
 import AutoComplete from "primevue/autocomplete";
 import Button from "primevue/button";
 import Card from "primevue/card";
+import Dialog from "primevue/dialog";
 import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import InputNumber from "primevue/inputnumber";
@@ -30,7 +31,7 @@ let orderInfo = ref<OrderUpdate | OrderCreate>({
 });
 // const id = "id";
 const orderStatusTypes = Object.values(OrderStatus);
-
+let visible = ref(false);
 const discountChoice = [
   { value: true, label: "ja" },
   { value: false, label: "nein" },
@@ -207,6 +208,43 @@ onMounted(async () => {
             />
           </div>
         </div>
+        <section v-if="isEditing">
+          <div class="font-bold my-2">Documente</div>
+          <div>
+            <Button
+              @click="visible = true"
+              label="Alle auftragsdocument(e) anzeigen"
+              severity="secondary"
+              outlined
+              size="small"
+            />
+          </div>
+        </section>
+        <Dialog
+          v-model:visible="visible"
+          modal
+          header="Order documents"
+          :style="{ width: '25rem' }"
+        >
+          <span class="text-surface-500 dark:text-surface-400 block mb-8">Order documents.</span>
+          <!-- <div class="flex items-center gap-4 mb-4">
+                <label for="username" class="font-semibold w-24">Username</label>
+                <InputText id="username" class="flex-auto" autocomplete="off" />
+            </div>
+            <div class="flex items-center gap-4 mb-8">
+                <label for="email" class="font-semibold w-24">Email</label>
+                <InputText id="email" class="flex-auto" autocomplete="off" />
+            </div> -->
+          <!-- <div class="flex justify-end gap-2">
+            <Button
+              type="button"
+              label="Cancel"
+              severity="secondary"
+              @click="visible = false"
+            ></Button>
+            <Button type="button" label="Save" @click="visible = false"></Button> -->
+          <!-- </div> -->
+        </Dialog>
       </template>
     </Card>
   </form>
