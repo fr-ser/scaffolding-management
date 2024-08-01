@@ -64,7 +64,7 @@ export default function useNotifications() {
   const showUpdateOrderNotification = () => {
     toast.add({
       severity: "info",
-      summary: "Der Auftrag wurden gespeichert",
+      summary: "Der Auftrag wurde gespeichert",
       life: 3000,
     });
   };

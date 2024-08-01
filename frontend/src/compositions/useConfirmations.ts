@@ -26,9 +26,10 @@ export default function useConfirmation() {
 
   const showDeleteArticleConfirmation = (acceptCallback: () => void) => {
     confirm.require({
-      message: "Wollen Sie den Artikel sicher wirklich löschen?",
+      message: "Sind Sie sich sicher, dass der Artikel gelöscht werden soll?",
       header: "Bestätigung",
       rejectLabel: "Abbrechen",
+      rejectClass: "bg-transparent border text-red-500 border border-red-500 hover:bg-red-300/10",
       acceptLabel: "Löschen",
       accept: acceptCallback,
     });
