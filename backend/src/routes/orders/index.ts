@@ -1,4 +1,5 @@
 import express from "express";
+import { FindOneOptions, ILike } from "typeorm";
 
 import { getAppDataSource } from "@/db";
 import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/db/entities/documents";
@@ -27,11 +28,21 @@ ordersRouter.get(
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response) => {
     const { skip = 0, take = 100 } = req.query as PaginationQueryParameters;
+    const { search } = req.query as { search?: string };
+
     const dataSource = getAppDataSource();
+
+    let whereClause: FindOneOptions<Order>["where"] = undefined;
+
+    if (search) {
+      whereClause = [{ id: ILike(`%${search}%`) }, { title: ILike(`%${search}%`) }];
+    }
+
     const result = await dataSource.manager.findAndCount(Order, {
       skip,
       take,
       order: { created_at: "DESC" },
+      where: whereClause,
     });
 
     res.json({ data: result[0], totalCount: result[1] } as PaginationResponse<Order>);

@@ -2,19 +2,22 @@
 import Button from "primevue/button";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 import { deleteOrder, getOrders } from "@/backendClient";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import type { Order } from "@/global/types/entities";
+import { debounce } from "@/helpers/utils";
 import { ROUTES } from "@/router";
 
 const ordersList = ref<Order[]>([]);
+const search = ref<string>("");
+
 async function reloadPage() {
-  ordersList.value = (await getOrders()).data;
+  // TODO: use pagination
+  ordersList.value = (await getOrders({ query: search.value })).data;
 }
-let value = ref();
 
 const confirm = useConfirmations();
 const notifications = useNotifications();
@@ -29,6 +32,9 @@ const confirmDelete = (order: Order) => {
     removeOrder(order);
   });
 };
+
+watch(search, debounce(reloadPage, 250));
+
 onMounted(async () => {
   reloadPage();
 });
@@ -41,7 +47,11 @@ onMounted(async () => {
         <i
           class="pi pi-search absolute top-2/4 -mt-2 left-3 text-surface-400 dark:text-surface-600"
         />
-        <InputText v-model="value" placeholder="Suche" class="pl-10 w-full" />
+        <InputText
+          v-model="search"
+          placeholder="Suche (ID oder Bauvorhaben)"
+          class="pl-10 w-full"
+        />
       </span>
       <router-link :to="`${ROUTES.ORDER.path}/new`">
         <Button icon="pi pi-plus" rounded aria-label="Neuen Auftrag anlegen" />
