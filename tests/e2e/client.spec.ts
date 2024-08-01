@@ -5,8 +5,8 @@ test("create, edit and delete a client", async ({ page }) => {
 
   const timestamp = String(Date.now());
 
-  // create client
-  await page.getByLabel("Neuen Kunden erstellen").click();
+  // create
+  await page.getByTestId("client-create-button").click();
 
   await page.getByLabel("Anrede").click();
   await page.getByRole("option", { name: "Herr Dr." }).click();
@@ -22,7 +22,7 @@ test("create, edit and delete a client", async ({ page }) => {
   const firstClientCard = page.getByTestId("client-card").first();
   await expect(firstClientCard).toContainText(timestamp);
 
-  // edit client
+  // edit
   await firstClientCard.click();
   await page.getByLabel("Kommentar").fill("edit comment");
   await page.getByLabel("Speichern").click();
@@ -31,10 +31,14 @@ test("create, edit and delete a client", async ({ page }) => {
   await page.reload();
   await expect(page.getByLabel("Kommentar")).toHaveValue("edit comment");
 
-  // delete client
+  // check filtering
   await page.getByTestId("return-button").click();
+  await page.getByTestId("client-search-input").fill(timestamp);
+  await page.waitForTimeout(300); // debounce time
   await expect(page.getByText(timestamp)).toBeVisible();
+  expect(await page.getByTestId("client-card").count()).toBe(1);
 
+  // delete
   await page
     .getByTestId("client-card")
     .filter({ hasText: timestamp })

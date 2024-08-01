@@ -51,10 +51,21 @@ onMounted(async () => {
         <i
           class="pi pi-search absolute top-2/4 -mt-2 left-3 text-surface-400 dark:text-surface-600"
         />
-        <InputText v-model="search" placeholder="Suche (Name oder Firma)" class="pl-10 w-full" />
+        <InputText
+          v-model="search"
+          placeholder="Suche (Name oder Firma)"
+          class="pl-10 w-full"
+          data-testid="client-search-input"
+        />
       </span>
       <router-link :to="`${ROUTES.CLIENT.path}/new`">
-        <Button icon="pi pi-user" size="small" rounded aria-label="Neuen Kunden erstellen" />
+        <Button
+          icon="pi pi-user"
+          size="small"
+          rounded
+          aria-label="Neuen Kunden erstellen"
+          data-testid="client-create-button"
+        />
       </router-link>
     </div>
     <div class="grow overflow-auto">

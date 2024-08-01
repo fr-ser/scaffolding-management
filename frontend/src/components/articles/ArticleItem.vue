@@ -88,7 +88,12 @@ const confirmDelete = () => {
         </div>
         <div class="flex flex-row justify-end gap-4 mt-4">
           <FloatLabel class="grow">
-            <InputNumber class="w-full" id="price" v-model="editableArticle.price" />
+            <InputNumber
+              class="w-full"
+              id="price"
+              v-model="editableArticle.price"
+              data-testid="price-input"
+            />
             <label for="price">Preis</label>
           </FloatLabel>
           <Button
@@ -96,7 +101,8 @@ const confirmDelete = () => {
             icon="pi pi-save"
             text
             rounded
-            aria-label="Artikeländerung speichern"
+            aria-label="Artikel speichern"
+            data-testid="article-save-button"
           />
           <Button
             @click="confirmDelete"
@@ -106,6 +112,7 @@ const confirmDelete = () => {
             text
             rounded
             aria-label="Artikel löschen"
+            data-testid="article-delete-button"
           />
         </div>
       </form>
