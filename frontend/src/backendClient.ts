@@ -129,6 +129,14 @@ export async function getDocuments(): Promise<
   const response = await axiosInstance.get(`/api/documents`);
   return response.data;
 }
+
+export async function getDocumentsByOrder(
+  id: string,
+): Promise<(OfferDocument | OverdueNoticeDocument | InvoiceDocument)[]> {
+  const response = await axiosInstance.get(`/api/orders/${id}/documents`);
+  return response.data;
+}
+
 export async function getInvoiceDocument(id: string): Promise<InvoiceDocument> {
   const response = await axiosInstance.get(`/api/documents/invoices/${id}`);
   return response.data;
