@@ -25,16 +25,14 @@ async function reloadPage() {
 const articlesList = ref<EditableArticle[]>([]);
 
 function createNewArticle() {
-  // TODO: user the createArticle type
+  // TODO: use the createArticle type
   articlesList.value.unshift({
     id: crypto.randomUUID(),
-    updated_at: 1,
-    created_at: 1,
     kind: ArticleKind.heading,
     title: "New Title",
     description: "New Description",
     isNew: true,
-  });
+  } as any);
 }
 
 watch(search, debounce(reloadPage, 250));
@@ -55,9 +53,17 @@ onMounted(async () => {
           v-model="search"
           placeholder="Suche (ID, Titel oder Beschreibung)"
           class="pl-10 w-full"
+          data-testid="article-search-input"
         />
       </span>
-      <Button @click="createNewArticle" icon="pi pi-plus" rounded outlined aria-label="Filter" />
+      <Button
+        @click="createNewArticle"
+        icon="pi pi-plus"
+        rounded
+        outlined
+        aria-label="Neuen Artikel erstellen"
+        data-testid="create-article-button"
+      />
     </div>
     <div class="flex flex-col gap-2 grow overflow-auto">
       <ArticlesItem
@@ -66,6 +72,7 @@ onMounted(async () => {
         :is-new="article.isNew"
         :key="article.id"
         @reload-article-view="reloadPage"
+        data-testid="article-card"
       />
     </div>
   </div>

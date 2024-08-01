@@ -79,7 +79,7 @@ articlesRouter.post(
         )
       )[0].max_id;
 
-      const article = await dataSource.manager.create(Article, {
+      const article = dataSource.manager.create(Article, {
         ...req.body,
         id: `Art${maxId + 1}`,
       });
