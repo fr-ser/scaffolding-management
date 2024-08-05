@@ -217,6 +217,10 @@ onMounted(async () => {
               :inputStyle="{ width: '100%' }"
             />
           </div>
+          <div>
+            <p class="font-bold">Unteraufträge</p>
+            <Button v-if="isEditing" label="Create offer"></Button>
+          </div>
         </div>
         <section>
           <OrderDocuments v-if="isEditing" :id="(orderInfo as Order).id"></OrderDocuments>
