@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import AutoComplete from "primevue/autocomplete";
 import Button from "primevue/button";
-import Card from "primevue/card";
 import Dialog from "primevue/dialog";
 import InputText from "primevue/inputtext";
 import { computed, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 
 import { getDocumentsByOrder } from "@/backendClient";
 import {
@@ -57,7 +55,7 @@ const filteredDocuments = computed(() => {
         <InputText v-model="search" placeholder="Suche" class="pl-10 w-full" />
       </span>
     </div>
-    <div v-for="document in filteredDocuments">
+    <div v-for="document in filteredDocuments" :key="document.id">
       <div class="border border-slate-300 hover:border-primary ps-4 py-1">{{ document.id }}</div>
     </div>
   </Dialog>

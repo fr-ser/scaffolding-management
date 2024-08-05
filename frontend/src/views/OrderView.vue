@@ -31,7 +31,6 @@ let orderInfo = ref<OrderUpdate | OrderCreate>({
 });
 // const id = "id";
 const orderStatusTypes = Object.values(OrderStatus);
-let visible = ref(false);
 const discountChoice = [
   { value: true, label: "ja" },
   { value: false, label: "nein" },
