@@ -41,7 +41,7 @@ async function openDocumentsList() {
       size="small"
     />
   </div>
-  <Dialog class="w-5/6 sm:w-max" v-model:visible="visible" modal header="Auftragsdokumente">
+  <Dialog class="w-full sm:w-4/6" v-model:visible="visible" modal header="Auftragsdokumente">
     <div v-if="isLoading" class="flex justify-center">
       <ProgressSpinner />
     </div>
