@@ -54,6 +54,14 @@ onMounted(async () => {
         <div>
           <span class="font-bold">Skonto: </span>
           <span>{{ orderInfo.can_have_cash_discount ? "Ja" : "Nein" }}</span>
+          <div v-if="orderInfo.can_have_cash_discount">
+            <div>
+              <span class="font-bold">Skontodauer: </span> {{ orderInfo.discount_duration }}
+            </div>
+            <div>
+              <span class="font-bold"> Skonto(%): </span>{{ orderInfo.discount_percentage }}
+            </div>
+          </div>
         </div>
       </template>
     </Card>
