@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
-import InputText from "primevue/inputtext";
 import ProgressSpinner from "primevue/progressspinner";
-import { computed, ref } from "vue";
-import { useRoute } from "vue-router";
+import { ref } from "vue";
 
 import { getDocumentsByOrder } from "@/backendClient";
 import {
