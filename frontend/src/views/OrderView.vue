@@ -6,6 +6,7 @@ import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
+import ProgressSpinner from "primevue/progressspinner";
 import Textarea from "primevue/textarea";
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -29,6 +30,8 @@ let orderInfo = ref<OrderCreate | Order>({
   discount_duration: 7,
   can_have_cash_discount: false,
 });
+
+let isLoading = ref<boolean>(true);
 
 const orderStatusTypes = Object.values(OrderStatus);
 const discountChoice = [
@@ -111,17 +114,24 @@ const findClientById = () => {
 
   return foundClient;
 };
+
 onMounted(async () => {
   clientsList.value = (await getClients()).data;
+
   if (isEditing.value) {
     orderInfo.value = await getOrder(route.params.id as string);
 
     selectedClient.value = findClientById();
   }
+
+  isLoading.value = false;
 });
 </script>
 <template>
-  <form>
+  <div v-if="isLoading" class="flex justify-center">
+    <ProgressSpinner />
+  </div>
+  <form v-else>
     <div class="flex flex-row justify-between mb-3">
       <Button
         @click="onOrdersList"

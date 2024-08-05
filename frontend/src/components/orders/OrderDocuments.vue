@@ -2,6 +2,7 @@
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import InputText from "primevue/inputtext";
+import ProgressSpinner from "primevue/progressspinner";
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 
@@ -18,9 +19,12 @@ const props = defineProps<{
 
 let visible = ref(false);
 let documents = ref<(OfferDocument | OverdueNoticeDocument | InvoiceDocument)[]>([]);
+let isLoading = ref<boolean>(false);
 
 async function getDocuments() {
+  isLoading.value = true;
   documents.value = await getDocumentsByOrder(props.id as string);
+  isLoading.value = false;
 }
 async function openDocumentsList() {
   visible.value = true;
@@ -39,8 +43,11 @@ async function openDocumentsList() {
       size="small"
     />
   </div>
-  <Dialog v-model:visible="visible" modal header="Auftragsdokumente" :style="{ width: '25rem' }">
-    <div v-for="document in documents" :key="document.id">
+  <Dialog class="w-5/6 sm:w-max" v-model:visible="visible" modal header="Auftragsdokumente">
+    <div v-if="isLoading" class="flex justify-center">
+      <ProgressSpinner />
+    </div>
+    <div v-else v-for="document in documents" :key="document.id">
       <div class="border border-slate-300 hover:border-primary ps-4 py-1">{{ document.id }}</div>
     </div>
   </Dialog>
