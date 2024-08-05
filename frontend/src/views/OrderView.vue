@@ -217,9 +217,11 @@ onMounted(async () => {
               :inputStyle="{ width: '100%' }"
             />
           </div>
-          <div>
+          <div v-if="isEditing">
             <p class="font-bold">Unteraufträge</p>
-            <Button v-if="isEditing" label="Create offer"></Button>
+            <router-link :to="`${ROUTES.ORDER.path}/${route.params.id}/edit/offer/new`">
+              <Button label="Create offer"></Button>
+            </router-link>
           </div>
         </div>
         <section>
