@@ -15,12 +15,12 @@ import OrderDocuments from "@/components/orders/OrderDocuments.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { OrderStatus } from "@/global/types/appTypes";
-import type { OrderCreate, OrderUpdate } from "@/global/types/dataEditTypes";
-import type { Client } from "@/global/types/entities";
+import type { OrderCreate } from "@/global/types/dataEditTypes";
+import type { Client, Order } from "@/global/types/entities";
 import { debounce } from "@/helpers/utils";
 import { ROUTES } from "@/router";
 
-let orderInfo = ref<OrderUpdate | OrderCreate>({
+let orderInfo = ref<OrderCreate | Order>({
   client_id: "",
   status: OrderStatus.preparation,
   title: "",
@@ -29,7 +29,7 @@ let orderInfo = ref<OrderUpdate | OrderCreate>({
   discount_duration: 7,
   can_have_cash_discount: false,
 });
-// const id = "id";
+
 const orderStatusTypes = Object.values(OrderStatus);
 const discountChoice = [
   { value: true, label: "ja" },
@@ -196,7 +196,7 @@ onMounted(async () => {
             <label for="description" class="w-full font-bold my-3">Beschreibung</label>
             <Textarea v-model="orderInfo.description" rows="3" class="w-full" id="description" />
           </div>
-          <div class="my-1">
+          <div class="my-1 w-full flex flex-col">
             <p class="font-bold">Kunde</p>
             <AutoComplete
               v-model="selectedClient"
@@ -204,11 +204,12 @@ onMounted(async () => {
               :suggestions="filteredClients"
               @complete="searchClient"
               dropdown
+              :inputStyle="{ width: '100%' }"
             />
           </div>
         </div>
         <section>
-          <OrderDocuments v-if="isEditing"></OrderDocuments>
+          <OrderDocuments v-if="isEditing" :id="(orderInfo as Order).id"></OrderDocuments>
         </section>
       </template>
     </Card>
