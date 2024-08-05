@@ -1,17 +1,24 @@
 <script setup lang="ts">
 import AutoComplete from "primevue/autocomplete";
 import Button from "primevue/button";
+import Card from "primevue/card";
 import Dialog from "primevue/dialog";
 import InputText from "primevue/inputtext";
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { getDocumentsByOrder } from "@/backendClient";
+import {
+  type InvoiceDocument,
+  type OfferDocument,
+  type OverdueNoticeDocument,
+} from "@/global/types/entities";
 
 const route = useRoute();
 let visible = ref(false);
 let search = ref("");
-let documents = ref([]);
+let documents = ref<(OfferDocument | OverdueNoticeDocument | InvoiceDocument)[]>([]);
+
 async function getDocuments() {
   documents.value = await getDocumentsByOrder(route.params.id as string);
 }
@@ -51,7 +58,7 @@ const filteredDocuments = computed(() => {
       </span>
     </div>
     <div v-for="document in filteredDocuments">
-      <div>{{ document.id }}</div>
+      <div class="border border-slate-300 hover:border-primary ps-4 py-1">{{ document.id }}</div>
     </div>
   </Dialog>
 </template>
