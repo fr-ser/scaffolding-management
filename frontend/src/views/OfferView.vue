@@ -10,17 +10,19 @@ import { useRoute } from "vue-router";
 import { useRouter } from "vue-router";
 
 import { getOrder } from "@/backendClient";
+import OfferItem from "@/components/orders/OfferItem.vue";
 import { OfferStatus } from "@/global/types/appTypes";
 import type { OfferCreate } from "@/global/types/dataEditTypes";
-import type { Offer } from "@/global/types/entities";
-import type { Order } from "@/global/types/entities";
+import type { Offer, Order, OrderItem } from "@/global/types/entities";
 import { ROUTES } from "@/router";
 
+let id = 1;
 const route = useRoute();
 const offersType = Object.values(OfferStatus);
 let orderInfo = ref<Order | undefined>();
 let offerDate = ref();
 let validityDate = ref();
+
 let offerInfo = ref<OfferCreate | Offer>({
   order_id: "",
   order: orderInfo.value,
@@ -30,7 +32,12 @@ let offerInfo = ref<OfferCreate | Offer>({
   offer_valid_until: "",
   items: [],
 });
-const router = useRouter();
+
+let offerItemsArray = ref<any>([]);
+
+function addOfferItem() {
+  offerItemsArray.value.push({ id: id++ });
+}
 
 onMounted(async () => {
   orderInfo.value = await getOrder(route.params.order_id as string);
@@ -128,25 +135,18 @@ onMounted(async () => {
         <div>
           <span class="font-bold">Position: </span>
         </div>
-        <!-- <div class="card flex flex-col justify-center gap-y-5">
-          <span class="font-bold">Angebots-beschreibung: </span>
-          <FloatLabel>
-            <Textarea
-              id="text"
-              v-model="offerInfo.description"
-              class="w-full"
-              autoResize
-              rows="5"
-              cols="30"
-            />
-            <label for="text">Beschreibung</label>
-          </FloatLabel> -->
         <div class="grid grid-cols-2 gap-4 mt-3">
           <Button label="Add note" severity="secondary" outlined size="small"></Button>
-          <Button label="Add position" severity="success" outlined size="small"></Button>
+          <Button
+            @click="addOfferItem"
+            label="Add position"
+            severity="success"
+            outlined
+            size="small"
+          ></Button>
         </div>
-        <!-- </div> -->
       </template>
     </Card>
+    <OfferItem v-for="(item, idx) in offerItemsArray" :id="idx + 1" :key="item.id"></OfferItem>
   </div>
 </template>
