@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import Button from "primevue/button";
 import Calendar from "primevue/calendar";
 import Card from "primevue/card";
 import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
+import Textarea from "primevue/textarea";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 
 import { getOrder } from "@/backendClient";
 import { OfferStatus } from "@/global/types/appTypes";
@@ -16,7 +19,6 @@ import { ROUTES } from "@/router";
 const route = useRoute();
 const offersType = Object.values(OfferStatus);
 let orderInfo = ref<Order | undefined>();
-
 let offerDate = ref();
 let validityDate = ref();
 let offerInfo = ref<OfferCreate | Offer>({
@@ -28,6 +30,7 @@ let offerInfo = ref<OfferCreate | Offer>({
   offer_valid_until: "",
   items: [],
 });
+const router = useRouter();
 
 onMounted(async () => {
   orderInfo.value = await getOrder(route.params.order_id as string);
@@ -35,6 +38,15 @@ onMounted(async () => {
 </script>
 
 <template>
+  <div class="flex flex-row justify-between">
+    <router-link :to="`${ROUTES.ORDER.path}/${orderInfo?.id}/edit`">
+      <Button icon="pi pi-arrow-left" size="small" severity="secondary" text raised />
+    </router-link>
+    <div class="flex gap-x-2">
+      <Button label="Speichern" text raised />
+      <Button label="Löschen" severity="danger" text raised />
+    </div>
+  </div>
   <div v-if="orderInfo" class="my-2">
     <Card class="my-2">
       <template #content>
@@ -93,8 +105,47 @@ onMounted(async () => {
           v-model="offerInfo.status"
           :options="offersType"
           placeholder="Anrede"
-          class="w-full md:w-[14rem]"
+          class="w-full md:w-[14rem] mb-3"
         />
+        <div class="card flex flex-col justify-center gap-y-5">
+          <span class="font-bold">Angebots-beschreibung: </span>
+          <FloatLabel>
+            <Textarea
+              id="text"
+              v-model="offerInfo.description"
+              class="w-full"
+              autoResize
+              rows="5"
+              cols="30"
+            />
+            <label for="text">Beschreibung</label>
+          </FloatLabel>
+        </div>
+      </template>
+    </Card>
+    <Card class="my-2">
+      <template #content>
+        <div>
+          <span class="font-bold">Position: </span>
+        </div>
+        <!-- <div class="card flex flex-col justify-center gap-y-5">
+          <span class="font-bold">Angebots-beschreibung: </span>
+          <FloatLabel>
+            <Textarea
+              id="text"
+              v-model="offerInfo.description"
+              class="w-full"
+              autoResize
+              rows="5"
+              cols="30"
+            />
+            <label for="text">Beschreibung</label>
+          </FloatLabel> -->
+        <div class="grid grid-cols-2 gap-4 mt-3">
+          <Button label="Add note" severity="secondary" outlined size="small"></Button>
+          <Button label="Add position" severity="success" outlined size="small"></Button>
+        </div>
+        <!-- </div> -->
       </template>
     </Card>
   </div>
