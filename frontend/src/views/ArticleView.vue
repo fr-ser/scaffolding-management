@@ -62,7 +62,7 @@ onMounted(async () => {
         rounded
         outlined
         aria-label="Neuen Artikel erstellen"
-        data-testid="create-article-button"
+        data-testid="article-create-button"
       />
     </div>
     <div class="flex flex-col gap-2 grow overflow-auto">

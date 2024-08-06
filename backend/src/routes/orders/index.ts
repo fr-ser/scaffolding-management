@@ -97,6 +97,12 @@ ordersRouter.patch(
     const dataSource = getAppDataSource();
     let order: Order | null = null;
 
+    delete req.body.overdue_notices;
+    delete req.body.invoices;
+    delete req.body.offer;
+    delete req.body.client;
+    delete req.body.id;
+
     try {
       await dataSource.manager.update(Order, req.params.id, req.body);
       order = await dataSource.manager.findOne(Order, {
