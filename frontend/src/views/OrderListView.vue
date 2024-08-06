@@ -51,10 +51,16 @@ onMounted(async () => {
           v-model="search"
           placeholder="Suche (ID oder Bauvorhaben)"
           class="pl-10 w-full"
+          data-testid="order-search-input"
         />
       </span>
       <router-link :to="`${ROUTES.ORDER.path}/new`">
-        <Button icon="pi pi-plus" rounded aria-label="Neuen Auftrag anlegen" />
+        <Button
+          icon="pi pi-plus"
+          rounded
+          aria-label="Neuen Auftrag anlegen"
+          data-testid="order-create-button"
+        />
       </router-link>
     </div>
     <div class="grow overflow-auto">
@@ -63,7 +69,7 @@ onMounted(async () => {
         v-for="order in ordersList"
         :key="order.id"
       >
-        <Card class="my-2">
+        <Card class="my-2" data-testid="order-card">
           <template #content>
             <div class="flex flex-row justify-between items-center">
               <div>
@@ -85,6 +91,7 @@ onMounted(async () => {
                   icon="pi pi-times"
                   severity="danger"
                   size="small"
+                  data-testid="order-delete-button"
                 />
               </div>
             </div>

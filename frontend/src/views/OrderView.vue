@@ -140,13 +140,15 @@ onMounted(async () => {
         severity="secondary"
         text
         raised
+        data-testid="order-return-button"
       />
       <Button
         @click="onSaveOrder"
         type="button"
         label="Auftrag Speichern"
         :disabled="isSaveButtonDisabled"
-      ></Button>
+        data-testid="order-save-button"
+      />
       <Button
         v-if="isEditing"
         @click="confirmDelete"
@@ -155,7 +157,7 @@ onMounted(async () => {
         severity="danger"
         text
         raised
-      ></Button>
+      />
     </div>
     <Card>
       <template #content>
@@ -215,6 +217,7 @@ onMounted(async () => {
               @complete="searchClient"
               dropdown
               :inputStyle="{ width: '100%' }"
+              data-testid="order-client-select"
             />
           </div>
           <div v-if="isEditing">

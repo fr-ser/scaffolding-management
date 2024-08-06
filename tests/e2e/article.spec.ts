@@ -6,7 +6,7 @@ test("create, edit and delete an article", async ({ page }) => {
   const timestamp = String(Date.now());
 
   // create
-  await page.getByTestId("create-article-button").click();
+  await page.getByTestId("article-create-button").click();
 
   const newArticleCard = page.getByTestId("article-card").filter({ hasText: "NEU" });
 
