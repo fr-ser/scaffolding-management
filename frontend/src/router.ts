@@ -1,10 +1,10 @@
-import OfferView from "./views/OfferView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 import ArticleView from "@/views/ArticleView.vue";
 import ClientListView from "@/views/ClientListView.vue";
 import ClientView from "@/views/ClientView.vue";
 import DocumentView from "@/views/DocumentView.vue";
+import OfferView from "@/views/OfferView.vue";
 import OrderListView from "@/views/OrderListView.vue";
 import OrderView from "@/views/OrderView.vue";
 
@@ -13,7 +13,6 @@ export const ROUTES = {
   ORDER: { name: "order", path: "/order", label: "Aufträge" },
   DOCUMENTS: { name: "documents", path: "/documents", label: "Dokumente" },
   ARTICLES: { name: "articles", path: "/articles", label: "Artikel" },
-  OFFER: { name: "offer", path: "/offer", label: "Offer" },
 };
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -63,8 +62,8 @@ const router = createRouter({
       },
     },
     {
-      path: `${ROUTES.ORDER.path}/:order_id/edit${ROUTES.OFFER.path}/new`,
-      name: ROUTES.OFFER.name,
+      path: `${ROUTES.ORDER.path}/:order_id/edit/offer/new`,
+      name: `${ROUTES.ORDER.name}-newOffer`,
       component: OfferView,
       meta: {
         label: "Unteraufträge anschauen/bearbeiten",

@@ -17,7 +17,7 @@ const route = useRoute();
 const offersType = Object.values(OfferStatus);
 let orderInfo = ref<Order | undefined>();
 
-let discountDate = ref();
+let offerDate = ref();
 let validityDate = ref();
 let offerInfo = ref<OfferCreate | Offer>({
   order_id: "",
@@ -38,10 +38,11 @@ onMounted(async () => {
   <div v-if="orderInfo" class="my-2">
     <Card class="my-2">
       <template #content>
-        <div class="mb-4 font-bold">Daten</div>
+        <div class="mb-4 font-bold">Auftragsdaten</div>
+        <div><span class="font-bold"> Bauvorhaben: </span>{{ orderInfo.title }}</div>
         <div>
-          <span class="font-bold"> Bauvorhaben: </span>{{ orderInfo.title }}
-          {{ orderInfo.client_id }}
+          <span class="font-bold"> Auftrags-Nr.: </span>
+          {{ orderInfo.id }}
         </div>
         <div><span class="font-bold">Status: </span> {{ orderInfo.status }}</div>
         <div>
@@ -71,7 +72,7 @@ onMounted(async () => {
         <FloatLabel class="my-6">
           <Calendar
             id="calendar"
-            v-model="discountDate"
+            v-model="offerDate"
             dateFormat="dd/mm/yy"
             showIcon
             iconDisplay="input"
@@ -80,7 +81,7 @@ onMounted(async () => {
         </FloatLabel>
         <FloatLabel class="my-6">
           <Calendar
-            id="calendar"
+            id="offered-at-input"
             v-model="validityDate"
             dateFormat="dd/mm/yy"
             showIcon
