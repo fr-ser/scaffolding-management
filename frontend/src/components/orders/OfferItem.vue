@@ -1,18 +1,26 @@
 <script setup lang="ts">
+import Button from "primevue/button";
 import Card from "primevue/card";
+import Dialog from "primevue/dialog";
 import FloatLabel from "primevue/floatlabel";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { ref } from "vue";
 
+import { getArticles } from "@/backendClient";
+
 const props = defineProps<{
   id: string;
-
-  //   item: [];
   valueOfferItem: Boolean;
 }>();
+let visible = ref(false);
+let search = ref<string>("");
+const articlesList = ref<EditableArticle[]>([]);
 
-//сделать объект с данными, обращаться к клбчзначниеэ////////////////////////
+async function openArticlesList() {
+  visible.value = true;
+  articlesList.value = (await getArticles(search.value)).data;
+}
 let offerInfo = ref({
   titel: "",
   description: "",
@@ -25,9 +33,19 @@ let offerInfo = ref({
 <template>
   <Card class="my-2">
     <template #content>
-      <!-- <span v-if="valueOfferItem"> HALLO ARTEM!</span> -->
       <div class="flex flex-col gap-y-6">
-        <p class="font-bold">Position {{ id }}</p>
+        <div class="flex flex-row justify-between">
+          <p class="font-bold">Position {{ id }}</p>
+          <Button
+            @click="openArticlesList"
+            icon="pi pi-search"
+            size="small"
+            severity="secondary"
+            text
+            raised
+          />
+        </div>
+
         <FloatLabel>
           <InputText id="titel" v-model="offerInfo.titel" class="w-full" />
           <label for="titel">Titel</label>
@@ -61,4 +79,11 @@ let offerInfo = ref({
       </div>
     </template>
   </Card>
+  <Dialog class="w-full sm:w-4/6" v-model:visible="visible" modal header="Artikel">
+    <div v-for="article in articlesList" :key="article.id">
+      <div class="border border-slate-300 hover:border-primary ps-4 py-1 my-2">
+        {{ article.title }}
+      </div>
+    </div>
+  </Dialog>
 </template>
