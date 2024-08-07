@@ -12,6 +12,7 @@ import { useRouter } from "vue-router";
 import { getOrder } from "@/backendClient";
 import OfferItem from "@/components/orders/OfferItem.vue";
 import { OfferStatus } from "@/global/types/appTypes";
+import { ArticleKind } from "@/global/types/appTypes";
 import type { OfferCreate } from "@/global/types/dataEditTypes";
 import type { Offer, Order, OrderItem } from "@/global/types/entities";
 import { ROUTES } from "@/router";
@@ -35,9 +36,8 @@ let offerInfo = ref<OfferCreate | Offer>({
 
 let offerItemsArray = ref<any>([]);
 
-let valueOfferItem = Boolean;
-function addOfferItem(hui) {
-  offerItemsArray.value.push({ id: id++, valueOfferItem: hui });
+function addOfferItem(type: ArticleKind) {
+  offerItemsArray.value.push({ id: id++, type: type });
 }
 
 onMounted(async () => {
@@ -138,14 +138,14 @@ onMounted(async () => {
         </div>
         <div class="grid grid-cols-2 gap-4 mt-3">
           <Button
-            @click="addOfferItem(true)"
+            @click="addOfferItem(ArticleKind.heading)"
             label="Add note"
             severity="secondary"
             outlined
             size="small"
           ></Button>
           <Button
-            @click="addOfferItem(false)"
+            @click="addOfferItem(ArticleKind.item)"
             label="Add position"
             severity="success"
             outlined
@@ -158,7 +158,7 @@ onMounted(async () => {
       v-for="(item, idx) in offerItemsArray"
       :id="`${idx + 1}`"
       :key="item.id"
-      :valueOfferItem="item.valueOfferItem"
+      :type="item.type"
     ></OfferItem>
   </div>
 </template>

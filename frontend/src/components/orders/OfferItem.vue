@@ -9,11 +9,12 @@ import Textarea from "primevue/textarea";
 import { ref } from "vue";
 
 import { getArticles } from "@/backendClient";
+import { ArticleKind } from "@/global/types/appTypes";
 import type { Article, OfferItem } from "@/global/types/entities";
 
 const props = defineProps<{
   id: string;
-  valueOfferItem: Boolean;
+  type: ArticleKind;
 }>();
 
 let isArticlesListVisible = ref(false);
@@ -64,7 +65,7 @@ let offerInfo = ref({
           />
           <label for="text">Bezeichnung</label>
         </FloatLabel>
-        <div v-if="valueOfferItem" class="flex flex-col gap-y-6">
+        <div v-if="type === ArticleKind.item" class="flex flex-col gap-y-6">
           <FloatLabel>
             <InputNumber id="number" v-model="offerInfo.number" class="w-full" />
             <label for="number">Anzahl</label>
