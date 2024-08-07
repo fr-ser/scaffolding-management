@@ -10,9 +10,9 @@ import { ref } from "vue";
 
 import { getArticles } from "@/backendClient";
 import { ArticleKind } from "@/global/types/appTypes";
-import type { Article, OfferItem } from "@/global/types/entities";
+import type { Article } from "@/global/types/entities";
 
-const props = defineProps<{
+defineProps<{
   id: string;
   type: ArticleKind;
 }>();
