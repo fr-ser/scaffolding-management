@@ -7,14 +7,13 @@ import FloatLabel from "primevue/floatlabel";
 import Textarea from "primevue/textarea";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import { useRouter } from "vue-router";
 
 import { getOrder } from "@/backendClient";
 import OfferItem from "@/components/orders/OfferItem.vue";
 import { OfferStatus } from "@/global/types/appTypes";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { OfferCreate } from "@/global/types/dataEditTypes";
-import type { Offer, Order, OrderItem } from "@/global/types/entities";
+import type { Offer, Order } from "@/global/types/entities";
 import { ROUTES } from "@/router";
 
 let id = 1;
