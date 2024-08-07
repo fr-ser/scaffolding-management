@@ -16,7 +16,6 @@ import type { OfferCreate } from "@/global/types/dataEditTypes";
 import type { Offer, Order, OrderItem } from "@/global/types/entities";
 import { ROUTES } from "@/router";
 
-// let valueOfferItem = Boolean;
 let id = 1;
 const route = useRoute();
 const offersType = Object.values(OfferStatus);
@@ -39,8 +38,6 @@ let offerItemsArray = ref<any>([]);
 let valueOfferItem = Boolean;
 function addOfferItem(hui) {
   offerItemsArray.value.push({ id: id++, valueOfferItem: hui });
-
-  // console.log(item.valueOfferItem);
 }
 
 onMounted(async () => {

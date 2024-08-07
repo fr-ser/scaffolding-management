@@ -3,29 +3,32 @@ import Button from "primevue/button";
 import Card from "primevue/card";
 import Dialog from "primevue/dialog";
 import FloatLabel from "primevue/floatlabel";
+import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { ref } from "vue";
 
 import { getArticles } from "@/backendClient";
+import type { Article, OfferItem } from "@/global/types/entities";
 
 const props = defineProps<{
   id: string;
   valueOfferItem: Boolean;
 }>();
-let visible = ref(false);
-let search = ref<string>("");
-const articlesList = ref<EditableArticle[]>([]);
+
+let isArticlesListVisible = ref(false);
+const articlesList = ref<Article[]>([]);
 
 async function openArticlesList() {
-  visible.value = true;
-  articlesList.value = (await getArticles(search.value)).data;
+  isArticlesListVisible.value = true;
+  articlesList.value = (await getArticles()).data;
 }
+
 let offerInfo = ref({
-  titel: "",
+  title: "",
   description: "",
   number: 0,
-  unit: null,
+  unit: "",
   price: 0,
 });
 </script>
@@ -47,7 +50,7 @@ let offerInfo = ref({
         </div>
 
         <FloatLabel>
-          <InputText id="titel" v-model="offerInfo.titel" class="w-full" />
+          <InputText id="titel" v-model="offerInfo.title" class="w-full" />
           <label for="titel">Titel</label>
         </FloatLabel>
         <FloatLabel>
@@ -63,7 +66,7 @@ let offerInfo = ref({
         </FloatLabel>
         <div v-if="valueOfferItem" class="flex flex-col gap-y-6">
           <FloatLabel>
-            <InputText id="number" v-model="offerInfo.number" class="w-full" />
+            <InputNumber id="number" v-model="offerInfo.number" class="w-full" />
             <label for="number">Anzahl</label>
           </FloatLabel>
           <FloatLabel>
@@ -71,7 +74,7 @@ let offerInfo = ref({
             <label for="unit">Einheit</label>
           </FloatLabel>
           <FloatLabel>
-            <InputText id="price" v-model="offerInfo.price" class="w-full" />
+            <InputNumber id="price" v-model="offerInfo.price" class="w-full" />
             <label for="unit">Preis</label>
           </FloatLabel>
           <div>Brutto:</div>
@@ -79,7 +82,7 @@ let offerInfo = ref({
       </div>
     </template>
   </Card>
-  <Dialog class="w-full sm:w-4/6" v-model:visible="visible" modal header="Artikel">
+  <Dialog class="w-full sm:w-4/6" v-model:visible="isArticlesListVisible" modal header="Artikel">
     <div v-for="article in articlesList" :key="article.id">
       <div class="border border-slate-300 hover:border-primary ps-4 py-1 my-2">
         {{ article.title }}
