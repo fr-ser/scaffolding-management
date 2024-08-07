@@ -16,6 +16,7 @@ import type { OfferCreate } from "@/global/types/dataEditTypes";
 import type { Offer, Order, OrderItem } from "@/global/types/entities";
 import { ROUTES } from "@/router";
 
+// let valueOfferItem = Boolean;
 let id = 1;
 const route = useRoute();
 const offersType = Object.values(OfferStatus);
@@ -35,8 +36,11 @@ let offerInfo = ref<OfferCreate | Offer>({
 
 let offerItemsArray = ref<any>([]);
 
-function addOfferItem() {
-  offerItemsArray.value.push({ id: id++ });
+let valueOfferItem = Boolean;
+function addOfferItem(hui) {
+  offerItemsArray.value.push({ id: id++, valueOfferItem: hui });
+
+  // console.log(item.valueOfferItem);
 }
 
 onMounted(async () => {
@@ -136,9 +140,15 @@ onMounted(async () => {
           <span class="font-bold">Position: </span>
         </div>
         <div class="grid grid-cols-2 gap-4 mt-3">
-          <Button label="Add note" severity="secondary" outlined size="small"></Button>
           <Button
-            @click="addOfferItem"
+            @click="addOfferItem(true)"
+            label="Add note"
+            severity="secondary"
+            outlined
+            size="small"
+          ></Button>
+          <Button
+            @click="addOfferItem(false)"
             label="Add position"
             severity="success"
             outlined
@@ -147,6 +157,11 @@ onMounted(async () => {
         </div>
       </template>
     </Card>
-    <OfferItem v-for="(item, idx) in offerItemsArray" :id="idx + 1" :key="item.id"></OfferItem>
+    <OfferItem
+      v-for="(item, idx) in offerItemsArray"
+      :id="`${idx + 1}`"
+      :key="item.id"
+      :valueOfferItem="item.valueOfferItem"
+    ></OfferItem>
   </div>
 </template>
