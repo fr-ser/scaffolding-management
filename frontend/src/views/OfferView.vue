@@ -58,7 +58,7 @@ onMounted(async () => {
       <Button label="Löschen" severity="danger" text raised />
     </div>
   </div>
-  <div v-if="orderInfo" class="my-2">
+  <div v-if="orderInfo" class="grid grid-cols-1 sm:grid-cols-2 sm:gap-2 xl:grid-cols-3 xl:gap-4">
     <Card class="my-2">
       <template #content>
         <div class="mb-4 font-bold">Auftragsdaten</div>
@@ -89,7 +89,7 @@ onMounted(async () => {
         </div>
       </template>
     </Card>
-    <Card>
+    <Card class="my-2">
       <template #content>
         <div class="mb-4 font-bold">Angebot</div>
         <FloatLabel class="my-6">
