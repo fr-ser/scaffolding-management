@@ -13,7 +13,7 @@ import { ArticleKind } from "@/global/types/appTypes";
 import type { Article } from "@/global/types/entities";
 
 defineProps<{
-  id: string;
+  index: string;
   type: ArticleKind;
 }>();
 
@@ -25,7 +25,7 @@ async function openArticlesList() {
   articlesList.value = (await getArticles()).data;
 }
 
-let offerInfo = ref({
+let offerItemInfo = ref({
   title: "",
   description: "",
   number: 0,
@@ -39,7 +39,7 @@ let offerInfo = ref({
     <template #content>
       <div class="flex flex-col gap-y-6">
         <div class="flex flex-row justify-between">
-          <p class="font-bold">Position {{ id }}</p>
+          <p class="font-bold">Position {{ index }}</p>
           <Button
             @click="openArticlesList"
             icon="pi pi-search"
@@ -51,13 +51,13 @@ let offerInfo = ref({
         </div>
 
         <FloatLabel>
-          <InputText id="titel" v-model="offerInfo.title" class="w-full" />
+          <InputText id="titel" v-model="offerItemInfo.title" class="w-full" />
           <label for="titel">Titel</label>
         </FloatLabel>
         <FloatLabel>
           <Textarea
             id="text"
-            v-model="offerInfo.description"
+            v-model="offerItemInfo.description"
             class="w-full"
             autoResize
             rows="3"
@@ -67,15 +67,15 @@ let offerInfo = ref({
         </FloatLabel>
         <div v-if="type === ArticleKind.item" class="flex flex-col gap-y-6">
           <FloatLabel>
-            <InputNumber id="number" v-model="offerInfo.number" class="w-full" />
+            <InputNumber id="number" v-model="offerItemInfo.number" class="w-full" />
             <label for="number">Anzahl</label>
           </FloatLabel>
           <FloatLabel>
-            <InputText id="unit" v-model="offerInfo.unit" class="w-full" />
+            <InputText id="unit" v-model="offerItemInfo.unit" class="w-full" />
             <label for="unit">Einheit</label>
           </FloatLabel>
           <FloatLabel>
-            <InputNumber id="price" v-model="offerInfo.price" class="w-full" />
+            <InputNumber id="price" v-model="offerItemInfo.price" class="w-full" />
             <label for="unit">Preis</label>
           </FloatLabel>
           <div>Brutto:</div>
