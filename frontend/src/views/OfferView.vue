@@ -115,7 +115,7 @@ onMounted(async () => {
           class="w-full md:w-[14rem] mb-3"
         />
         <div class="card flex flex-col justify-center gap-y-5">
-          <span class="font-bold">Angebots-beschreibung: </span>
+          <span class="font-bold">Angebotsbeschreibung: </span>
           <FloatLabel>
             <Textarea
               id="text"
@@ -155,7 +155,7 @@ onMounted(async () => {
     </Card>
     <OfferItem
       v-for="(item, idx) in offerItemsArray"
-      :id="`${idx + 1}`"
+      :index="`${idx + 1}`"
       :key="item.id"
       :type="item.type"
     ></OfferItem>
