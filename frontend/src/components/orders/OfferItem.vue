@@ -12,7 +12,7 @@ import { getArticles } from "@/backendClient";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { Article } from "@/global/types/entities";
 
-defineProps<{
+const props = defineProps<{
   index: string;
   type: ArticleKind;
 }>();
@@ -28,9 +28,9 @@ async function openArticlesList() {
 let offerItemInfo = ref({
   title: "",
   description: "",
-  number: 0,
-  unit: "",
-  price: 0,
+  number: props.type === ArticleKind.item ? 0 : null,
+  unit: props.type === ArticleKind.item ? "" : null,
+  price: props.type === ArticleKind.item ? 0 : null,
 });
 </script>
 
