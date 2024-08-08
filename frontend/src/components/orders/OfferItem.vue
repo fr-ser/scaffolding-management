@@ -13,7 +13,7 @@ import { ArticleKind } from "@/global/types/appTypes";
 import type { Article } from "@/global/types/entities";
 
 const props = defineProps<{
-  index: string;
+  index: number;
   type: ArticleKind;
 }>();
 
