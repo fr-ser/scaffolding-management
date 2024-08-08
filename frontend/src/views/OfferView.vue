@@ -16,7 +16,7 @@ import type { OfferCreate } from "@/global/types/dataEditTypes";
 import type { Offer, Order } from "@/global/types/entities";
 import { ROUTES } from "@/router";
 
-let id = 1;
+let itemCount = 1;
 const route = useRoute();
 const offersType = Object.values(OfferStatus);
 let orderInfo = ref<Order | undefined>();
@@ -36,7 +36,7 @@ let offerInfo = ref<OfferCreate | Offer>({
 let offerItemsArray = ref<any>([]);
 
 function addOfferItem(type: ArticleKind) {
-  offerItemsArray.value.push({ id: id++, type: type });
+  offerItemsArray.value.push({ id: itemCount++, type: type });
 }
 
 onMounted(async () => {
