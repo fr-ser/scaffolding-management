@@ -155,7 +155,7 @@ onMounted(async () => {
     </Card>
     <OfferItem
       v-for="(item, idx) in offerItemsArray"
-      :index="`${idx + 1}`"
+      :index="idx + 1"
       :key="item.id"
       :type="item.type"
     ></OfferItem>
