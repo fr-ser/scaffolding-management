@@ -43,6 +43,15 @@ let offerItemInfo = ref({
   unit: props.type === ArticleKind.item ? "" : null,
   price: props.type === ArticleKind.item ? 0 : null,
 });
+function handleClick(article: Article) {
+  offerItemInfo.value.title = article.title;
+  offerItemInfo.value.description = article.description;
+  if (article.kind === ArticleKind.item) {
+    offerItemInfo.value.unit = article.unit ?? null;
+    offerItemInfo.value.price = article.price ?? null;
+  }
+  isArticlesListVisible.value = false;
+}
 </script>
 
 <template>
@@ -96,7 +105,10 @@ let offerItemInfo = ref({
   </Card>
   <Dialog class="w-full sm:w-4/6" v-model:visible="isArticlesListVisible" modal header="Artikel">
     <div v-for="article in filteredArticles" :key="article.id">
-      <div class="border border-slate-300 hover:border-primary ps-4 py-1 my-2">
+      <div
+        @click="handleClick(article)"
+        class="border border-slate-300 hover:border-primary ps-4 py-1 my-2"
+      >
         {{ article.title }}
       </div>
     </div>
