@@ -69,7 +69,6 @@ function handleClick(article: Article) {
             raised
           />
         </div>
-
         <FloatLabel>
           <InputText id="titel" v-model="offerItemInfo.title" class="w-full" />
           <label for="titel">Titel</label>
@@ -98,7 +97,7 @@ function handleClick(article: Article) {
             <InputNumber id="price" v-model="offerItemInfo.price" class="w-full" />
             <label for="unit">Preis</label>
           </FloatLabel>
-          <div>Brutto: {{ bruttoValue }}</div>
+          <div>Brutto: {{ bruttoValue ?? 0 }} €</div>
         </div>
       </div>
     </template>

@@ -4,7 +4,9 @@ import Calendar from "primevue/calendar";
 import Card from "primevue/card";
 import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
+import SplitButton from "primevue/splitbutton";
 import Textarea from "primevue/textarea";
+import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
@@ -37,6 +39,23 @@ let offerItemsArray = ref<any>([]);
 function addOfferItem(type: ArticleKind) {
   offerItemsArray.value.push({ id: itemCount++, type: type });
 }
+const toast = useToast();
+const items = [
+  {
+    label: "Add note",
+    command: () => {
+      addOfferItem(ArticleKind.heading);
+      toast.add({ severity: "success", detail: "Note added", life: 3000 });
+    },
+  },
+  {
+    label: "Add position",
+    command: () => {
+      addOfferItem(ArticleKind.item),
+        toast.add({ severity: "success", detail: "Position added", life: 3000 });
+    },
+  },
+];
 
 onMounted(async () => {
   orderInfo.value = await getOrder(route.params.order_id as string);
@@ -53,7 +72,7 @@ onMounted(async () => {
       <Button label="Löschen" severity="danger" text raised />
     </div>
   </div>
-  <div v-if="orderInfo" class="grid grid-cols-1 sm:grid-cols-2 sm:gap-2 xl:grid-cols-3 xl:gap-4">
+  <div v-if="orderInfo" class="grid grid-cols-1">
     <Card class="my-2">
       <template #content>
         <div class="mb-4 font-bold">Auftragsdaten</div>
@@ -126,29 +145,13 @@ onMounted(async () => {
             />
             <label for="text">Beschreibung</label>
           </FloatLabel>
-        </div>
-      </template>
-    </Card>
-    <Card class="my-2">
-      <template #content>
-        <div>
-          <span class="font-bold">Position: </span>
-        </div>
-        <div class="grid grid-cols-2 gap-4 mt-3">
-          <Button
-            @click="addOfferItem(ArticleKind.heading)"
-            label="Add note"
-            severity="secondary"
-            outlined
-            size="small"
-          ></Button>
-          <Button
-            @click="addOfferItem(ArticleKind.item)"
-            label="Add position"
-            severity="success"
-            outlined
-            size="small"
-          ></Button>
+          <div class="font-bold">Summe:</div>
+          <div class="flex flex-row gap-10">
+            <span>Netto: </span>
+            <span>USt: </span>
+            <span>Brutto: </span>
+          </div>
+          <SplitButton label="Add" :model="items" :class="'w-full'" />
         </div>
       </template>
     </Card>
