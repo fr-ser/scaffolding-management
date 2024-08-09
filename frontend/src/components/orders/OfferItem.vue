@@ -6,7 +6,7 @@ import FloatLabel from "primevue/floatlabel";
 import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 import { getArticles } from "@/backendClient";
 import { ArticleKind } from "@/global/types/appTypes";
@@ -16,14 +16,25 @@ const props = defineProps<{
   index: number;
   type: ArticleKind;
 }>();
-
+let filteredArticles = ref<Article[]>([]);
 let isArticlesListVisible = ref(false);
-const articlesList = ref<Article[]>([]);
 
-async function openArticlesList() {
+async function openArticlesList(articleType: ArticleKind) {
   isArticlesListVisible.value = true;
-  articlesList.value = (await getArticles()).data;
+  const articlesList = (await getArticles()).data;
+  filteredArticles.value = articlesList.filter((article) => article.kind === articleType);
 }
+
+let taxIndex = 0.19;
+
+const bruttoValue = computed(() => {
+  if (offerItemInfo.value.number && offerItemInfo.value.price) {
+    let number = (offerItemInfo.value.number * offerItemInfo.value.price * (1 + taxIndex)).toFixed(
+      2,
+    );
+    return number;
+  }
+});
 
 let offerItemInfo = ref({
   title: "",
@@ -41,7 +52,7 @@ let offerItemInfo = ref({
         <div class="flex flex-row justify-between">
           <p class="font-bold">Position {{ index }}</p>
           <Button
-            @click="openArticlesList"
+            @click="openArticlesList(props.type)"
             icon="pi pi-search"
             size="small"
             severity="secondary"
@@ -78,13 +89,13 @@ let offerItemInfo = ref({
             <InputNumber id="price" v-model="offerItemInfo.price" class="w-full" />
             <label for="unit">Preis</label>
           </FloatLabel>
-          <div>Brutto:</div>
+          <div>Brutto: {{ bruttoValue }}</div>
         </div>
       </div>
     </template>
   </Card>
   <Dialog class="w-full sm:w-4/6" v-model:visible="isArticlesListVisible" modal header="Artikel">
-    <div v-for="article in articlesList" :key="article.id">
+    <div v-for="article in filteredArticles" :key="article.id">
       <div class="border border-slate-300 hover:border-primary ps-4 py-1 my-2">
         {{ article.title }}
       </div>
