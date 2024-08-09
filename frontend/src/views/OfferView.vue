@@ -32,7 +32,6 @@ let offerInfo = ref<OfferCreate | Offer>({
   offer_valid_until: "",
   items: [],
 });
-
 let offerItemsArray = ref<any>([]);
 
 function addOfferItem(type: ArticleKind) {
