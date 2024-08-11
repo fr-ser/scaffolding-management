@@ -16,7 +16,9 @@ import type { Article } from "@/global/types/entities";
 const props = defineProps<{
   index: number;
   type: ArticleKind;
+  offerDate: string;
 }>();
+
 let filteredArticles = ref<Article[]>([]);
 let isArticlesListVisible = ref(false);
 
@@ -31,7 +33,7 @@ const bruttoValue = computed(() => {
     let number = (
       offerItemInfo.value.number *
       offerItemInfo.value.price *
-      (1 + getVatRate({ isoDate: "" }))
+      (1 + getVatRate({ isoDate: props.offerDate }))
     ).toFixed(2);
     return number;
   }
