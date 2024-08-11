@@ -42,15 +42,15 @@ async function openArticlesList(articleType: ArticleKind) {
   filteredArticles.value = articlesList.filter((article) => article.kind === articleType);
 }
 
-const bruttoValue = computed(() => {
+const bruttoValue = computed<string>(() => {
   if (offerItemInfo.value.amount && offerItemInfo.value.price) {
-    let number = (
+    return (
       offerItemInfo.value.amount *
       offerItemInfo.value.price *
       (1 + getVatRate({ isoDate: props.offerDate }))
     ).toFixed(2);
-
-    return number;
+  } else {
+    return "0";
   }
 });
 
