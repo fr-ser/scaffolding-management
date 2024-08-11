@@ -1,4 +1,4 @@
-import type { Article, Client, Invoice, Offer, Order } from "./entities";
+import type { Article, Client, Invoice, Offer, OfferItem, Order } from "./entities";
 
 export type ClientCreate = Omit<Client, "id" | "created_at" | "updated_at">;
 export type ClientUpdate = Partial<Omit<Client, "id">>;
@@ -12,6 +12,13 @@ export type OrderCreate = Omit<
 >;
 export type OrderUpdate = Partial<OrderCreate>;
 
-export type OfferCreate = Omit<Offer, "id" | "order" | "documents" | "created_at" | "updated_at">;
+export type OfferItemCreate = Omit<OfferItem, "id" | "offer_id" | "offer">;
+
+export type OfferCreate = Omit<
+  Offer,
+  "id" | "order" | "documents" | "created_at" | "updated_at" | "items"
+> & {
+  items: OfferItemCreate[];
+};
 
 export type InvoiceUpdate = Partial<Omit<Invoice, "id">>;
