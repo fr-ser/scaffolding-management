@@ -9,6 +9,7 @@ import Textarea from "primevue/textarea";
 import { computed, ref } from "vue";
 
 import { getArticles } from "@/backendClient";
+import { getVatRate } from "@/global/helpers";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { Article } from "@/global/types/entities";
 
@@ -25,13 +26,13 @@ async function openArticlesList(articleType: ArticleKind) {
   filteredArticles.value = articlesList.filter((article) => article.kind === articleType);
 }
 
-let taxIndex = 0.19;
-
 const bruttoValue = computed(() => {
   if (offerItemInfo.value.number && offerItemInfo.value.price) {
-    let number = (offerItemInfo.value.number * offerItemInfo.value.price * (1 + taxIndex)).toFixed(
-      2,
-    );
+    let number = (
+      offerItemInfo.value.number *
+      offerItemInfo.value.price *
+      (1 + getVatRate({ isoDate: "" }))
+    ).toFixed(2);
     return number;
   }
 });
