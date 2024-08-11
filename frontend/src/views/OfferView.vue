@@ -9,7 +9,7 @@ import SplitButton from "primevue/splitbutton";
 import Textarea from "primevue/textarea";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import { createOffer, getOrder } from "@/backendClient";
 import OfferItem from "@/components/orders/OfferItem.vue";
@@ -21,6 +21,8 @@ import { ROUTES } from "@/router";
 
 let itemCount = 1;
 const route = useRoute();
+const router = useRouter();
+
 const offersType = Object.values(OfferStatus);
 let orderInfo = ref<Order | undefined>();
 let offerDate = ref<Date>();
@@ -79,6 +81,8 @@ async function onSaveOffer() {
     ...offerInfo.value,
     items: items,
   });
+
+  router.push(`${ROUTES.ORDER.path}/${route.params.order_id}/edit`);
 }
 
 watch(offerDate, () => {
@@ -105,7 +109,7 @@ onMounted(async () => {
 
 <template>
   <div class="flex flex-row justify-between">
-    <router-link :to="`${ROUTES.ORDER.path}/${orderInfo?.id}/edit`">
+    <router-link :to="`${ROUTES.ORDER.path}/${route.params.order_id}/edit`">
       <Button icon="pi pi-arrow-left" size="small" severity="secondary" text raised />
     </router-link>
     <div class="flex gap-x-2">
