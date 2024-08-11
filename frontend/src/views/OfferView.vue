@@ -19,6 +19,10 @@ import type { OfferCreate, OfferItemCreate } from "@/global/types/dataEditTypes"
 import type { Offer, Order } from "@/global/types/entities";
 import { ROUTES } from "@/router";
 
+type OfferItemLocal = OfferItemCreate & {
+  id: number | string;
+};
+
 let itemCount = 1;
 const route = useRoute();
 const router = useRouter();
@@ -37,20 +41,15 @@ let offerInfo = ref<OfferCreate | Offer>({
   items: [],
 });
 
-let offerItemsArray = ref<
-  {
-    id: number;
-    type: ArticleKind;
-  }[]
->([]);
+let offerItemsArray = ref<OfferItemLocal[]>([]);
 
 /**
  * Store information about sub-items in the object so we can easily update them.
  */
 const itemsMap = ref<Record<string, OfferItemCreate>>({});
 
-function addOfferItem(type: ArticleKind) {
-  offerItemsArray.value.push({ id: itemCount++, type: type });
+function addOfferItem(kind: ArticleKind) {
+  offerItemsArray.value.push({ id: itemCount++, kind, title: "", description: "" });
 }
 
 const toast = useToast();
@@ -203,10 +202,10 @@ onMounted(async () => {
     <OfferItem
       v-for="(item, idx) in offerItemsArray"
       :index="idx + 1"
+      :item="item"
       :key="item.id"
-      :type="item.type"
       :offer-date="offerInfo.offered_at"
-      @item-updated="
+      @updated="
         (updatedItem) => {
           /**
            * Update itemsMap each time a child item is updated

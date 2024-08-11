@@ -16,37 +16,30 @@ import type { Article } from "@/global/types/entities";
 
 const props = defineProps<{
   index: number;
-  type: ArticleKind;
+  item: OfferItemCreate;
   offerDate: string;
 }>();
 
 const emit = defineEmits<{
-  (e: "itemUpdated", item: OfferItemCreate): void;
+  (e: "updated", item: OfferItemCreate): void;
 }>();
 
 let filteredArticles = ref<Article[]>([]);
 let isArticlesListVisible = ref(false);
 
-let offerItemInfo = ref<OfferItemCreate>({
-  title: "",
-  description: "",
-  kind: props.type,
-  amount: props.type === ArticleKind.item ? 0 : undefined,
-  unit: props.type === ArticleKind.item ? "" : undefined,
-  price: props.type === ArticleKind.item ? 0 : undefined,
-});
+let editableItem = ref<OfferItemCreate>(props.item);
 
-async function openArticlesList(articleType: ArticleKind) {
+async function openArticlesList(kind: ArticleKind) {
   isArticlesListVisible.value = true;
   const articlesList = (await getArticles()).data;
-  filteredArticles.value = articlesList.filter((article) => article.kind === articleType);
+  filteredArticles.value = articlesList.filter((article) => article.kind === kind);
 }
 
 const bruttoValue = computed<string>(() => {
-  if (offerItemInfo.value.amount && offerItemInfo.value.price) {
+  if (editableItem.value.amount && editableItem.value.price) {
     return (
-      offerItemInfo.value.amount *
-      offerItemInfo.value.price *
+      editableItem.value.amount *
+      editableItem.value.price *
       (1 + getVatRate({ isoDate: props.offerDate }))
     ).toFixed(2);
   } else {
@@ -55,19 +48,19 @@ const bruttoValue = computed<string>(() => {
 });
 
 function handleClick(article: Article) {
-  offerItemInfo.value.title = article.title;
-  offerItemInfo.value.description = article.description;
+  editableItem.value.title = article.title;
+  editableItem.value.description = article.description;
   if (article.kind === ArticleKind.item) {
-    offerItemInfo.value.unit = article.unit ?? undefined;
-    offerItemInfo.value.price = article.price ?? undefined;
+    editableItem.value.unit = article.unit ?? undefined;
+    editableItem.value.price = article.price ?? undefined;
   }
   isArticlesListVisible.value = false;
 }
 
 watch(
-  offerItemInfo,
+  editableItem,
   () => {
-    emit("itemUpdated", offerItemInfo.value);
+    emit("updated", editableItem.value);
   },
   { deep: true },
 );
@@ -80,7 +73,7 @@ watch(
         <div class="flex flex-row justify-between">
           <p class="font-bold">Position {{ index }}</p>
           <Button
-            @click="openArticlesList(props.type)"
+            @click="openArticlesList(props.item.kind)"
             icon="pi pi-search"
             size="small"
             severity="secondary"
@@ -89,13 +82,13 @@ watch(
           />
         </div>
         <FloatLabel>
-          <InputText id="titel" v-model="offerItemInfo.title" class="w-full" />
+          <InputText id="titel" v-model="editableItem.title" class="w-full" />
           <label for="titel">Titel</label>
         </FloatLabel>
         <FloatLabel>
           <Textarea
             id="text"
-            v-model="offerItemInfo.description"
+            v-model="editableItem.description"
             class="w-full"
             autoResize
             rows="3"
@@ -103,17 +96,17 @@ watch(
           />
           <label for="text">Bezeichnung</label>
         </FloatLabel>
-        <div v-if="type === ArticleKind.item" class="flex flex-col gap-y-6">
+        <div v-if="item.kind === ArticleKind.item" class="flex flex-col gap-y-6">
           <FloatLabel>
-            <InputNumber id="number" v-model="offerItemInfo.amount" class="w-full" />
+            <InputNumber id="number" v-model="editableItem.amount" class="w-full" />
             <label for="number">Anzahl</label>
           </FloatLabel>
           <FloatLabel>
-            <InputText id="unit" v-model="offerItemInfo.unit" class="w-full" />
+            <InputText id="unit" v-model="editableItem.unit" class="w-full" />
             <label for="unit">Einheit</label>
           </FloatLabel>
           <FloatLabel>
-            <InputNumber id="price" v-model="offerItemInfo.price" class="w-full" />
+            <InputNumber id="price" v-model="editableItem.price" class="w-full" />
             <label for="unit">Preis</label>
           </FloatLabel>
           <div>Brutto: {{ bruttoValue ?? 0 }} €</div>
