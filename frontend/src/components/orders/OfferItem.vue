@@ -6,11 +6,12 @@ import FloatLabel from "primevue/floatlabel";
 import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 
 import { getArticles } from "@/backendClient";
 import { getVatRate } from "@/global/helpers";
 import { ArticleKind } from "@/global/types/appTypes";
+import type { OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Article } from "@/global/types/entities";
 
 const props = defineProps<{
@@ -19,8 +20,21 @@ const props = defineProps<{
   offerDate: string;
 }>();
 
+const emit = defineEmits<{
+  (e: "itemUpdated", item: OfferItemCreate): void;
+}>();
+
 let filteredArticles = ref<Article[]>([]);
 let isArticlesListVisible = ref(false);
+
+let offerItemInfo = ref<OfferItemCreate>({
+  title: "",
+  description: "",
+  kind: props.type,
+  amount: props.type === ArticleKind.item ? 0 : undefined,
+  unit: props.type === ArticleKind.item ? "" : undefined,
+  price: props.type === ArticleKind.item ? 0 : undefined,
+});
 
 async function openArticlesList(articleType: ArticleKind) {
   isArticlesListVisible.value = true;
@@ -29,32 +43,34 @@ async function openArticlesList(articleType: ArticleKind) {
 }
 
 const bruttoValue = computed(() => {
-  if (offerItemInfo.value.number && offerItemInfo.value.price) {
+  if (offerItemInfo.value.amount && offerItemInfo.value.price) {
     let number = (
-      offerItemInfo.value.number *
+      offerItemInfo.value.amount *
       offerItemInfo.value.price *
       (1 + getVatRate({ isoDate: props.offerDate }))
     ).toFixed(2);
+
     return number;
   }
 });
 
-let offerItemInfo = ref({
-  title: "",
-  description: "",
-  number: props.type === ArticleKind.item ? 0 : null,
-  unit: props.type === ArticleKind.item ? "" : null,
-  price: props.type === ArticleKind.item ? 0 : null,
-});
 function handleClick(article: Article) {
   offerItemInfo.value.title = article.title;
   offerItemInfo.value.description = article.description;
   if (article.kind === ArticleKind.item) {
-    offerItemInfo.value.unit = article.unit ?? null;
-    offerItemInfo.value.price = article.price ?? null;
+    offerItemInfo.value.unit = article.unit ?? undefined;
+    offerItemInfo.value.price = article.price ?? undefined;
   }
   isArticlesListVisible.value = false;
 }
+
+watch(
+  offerItemInfo,
+  () => {
+    emit("itemUpdated", offerItemInfo.value);
+  },
+  { deep: true },
+);
 </script>
 
 <template>
@@ -89,7 +105,7 @@ function handleClick(article: Article) {
         </FloatLabel>
         <div v-if="type === ArticleKind.item" class="flex flex-col gap-y-6">
           <FloatLabel>
-            <InputNumber id="number" v-model="offerItemInfo.number" class="w-full" />
+            <InputNumber id="number" v-model="offerItemInfo.amount" class="w-full" />
             <label for="number">Anzahl</label>
           </FloatLabel>
           <FloatLabel>

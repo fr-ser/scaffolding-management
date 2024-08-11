@@ -15,7 +15,7 @@ import { createOffer, getOrder } from "@/backendClient";
 import OfferItem from "@/components/orders/OfferItem.vue";
 import { OfferStatus } from "@/global/types/appTypes";
 import { ArticleKind } from "@/global/types/appTypes";
-import type { OfferCreate } from "@/global/types/dataEditTypes";
+import type { OfferCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Offer, Order } from "@/global/types/entities";
 import { ROUTES } from "@/router";
 
@@ -35,11 +35,22 @@ let offerInfo = ref<OfferCreate | Offer>({
   items: [],
 });
 
-let offerItemsArray = ref<any>([]);
+let offerItemsArray = ref<
+  {
+    id: number;
+    type: ArticleKind;
+  }[]
+>([]);
+
+/**
+ * Store information about sub-items in the object so we can easily update them.
+ */
+const itemsMap = ref<Record<string, OfferItemCreate>>({});
 
 function addOfferItem(type: ArticleKind) {
   offerItemsArray.value.push({ id: itemCount++, type: type });
 }
+
 const toast = useToast();
 const items = [
   {
@@ -59,8 +70,15 @@ const items = [
 ];
 
 async function onSaveOffer() {
-  console.log(offerInfo.value);
-  // await createOffer(offerInfo.value);
+  const items = Object.values(itemsMap.value);
+
+  /**
+   * Add items from the itemsMap
+   */
+  await createOffer({
+    ...offerInfo.value,
+    items: items,
+  });
 }
 
 watch(offerDate, () => {
@@ -184,6 +202,14 @@ onMounted(async () => {
       :key="item.id"
       :type="item.type"
       :offer-date="offerInfo.offered_at"
+      @item-updated="
+        (updatedItem) => {
+          /**
+           * Update itemsMap each time a child item is updated
+           */
+          itemsMap[item.id] = updatedItem;
+        }
+      "
     ></OfferItem>
   </div>
 </template>
