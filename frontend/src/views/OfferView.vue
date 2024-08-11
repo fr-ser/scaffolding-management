@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { format } from "date-fns";
 import Button from "primevue/button";
 import Calendar from "primevue/calendar";
 import Card from "primevue/card";
@@ -7,10 +8,10 @@ import FloatLabel from "primevue/floatlabel";
 import SplitButton from "primevue/splitbutton";
 import Textarea from "primevue/textarea";
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
-import { getOrder } from "@/backendClient";
+import { createOffer, getOrder } from "@/backendClient";
 import OfferItem from "@/components/orders/OfferItem.vue";
 import { OfferStatus } from "@/global/types/appTypes";
 import { ArticleKind } from "@/global/types/appTypes";
@@ -22,8 +23,8 @@ let itemCount = 1;
 const route = useRoute();
 const offersType = Object.values(OfferStatus);
 let orderInfo = ref<Order | undefined>();
-let offerDate = ref();
-let validityDate = ref();
+let offerDate = ref<Date>();
+let validityDate = ref<Date>();
 
 let offerInfo = ref<OfferCreate | Offer>({
   order_id: "",
@@ -34,6 +35,7 @@ let offerInfo = ref<OfferCreate | Offer>({
   offer_valid_until: "",
   items: [],
 });
+
 let offerItemsArray = ref<any>([]);
 
 function addOfferItem(type: ArticleKind) {
@@ -57,6 +59,27 @@ const items = [
   },
 ];
 
+async function onSaveOffer() {
+  console.log(offerInfo.value);
+  // await createOffer(offerInfo.value);
+}
+
+watch(offerDate, () => {
+  if (offerDate.value) {
+    offerInfo.value.offered_at = format(offerDate.value, "yyyy-MM-dd");
+  } else {
+    offerInfo.value.offered_at = "";
+  }
+});
+
+watch(validityDate, () => {
+  if (validityDate.value) {
+    offerInfo.value.offer_valid_until = format(validityDate.value, "yyyy-MM-dd");
+  } else {
+    offerInfo.value.offer_valid_until = "";
+  }
+});
+
 onMounted(async () => {
   orderInfo.value = await getOrder(route.params.order_id as string);
 });
@@ -68,7 +91,7 @@ onMounted(async () => {
       <Button icon="pi pi-arrow-left" size="small" severity="secondary" text raised />
     </router-link>
     <div class="flex gap-x-2">
-      <Button label="Speichern" text raised />
+      <Button label="Speichern" text raised @click="onSaveOffer" />
       <Button label="Löschen" severity="danger" text raised />
     </div>
   </div>
