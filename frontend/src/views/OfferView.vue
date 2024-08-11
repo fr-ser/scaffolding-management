@@ -183,6 +183,7 @@ onMounted(async () => {
       :index="idx + 1"
       :key="item.id"
       :type="item.type"
+      :offer-date="offerInfo.offered_at"
     ></OfferItem>
   </div>
 </template>
