@@ -19,10 +19,6 @@ import type { OfferCreate, OfferItemCreate } from "@/global/types/dataEditTypes"
 import type { Offer, Order } from "@/global/types/entities";
 import { ROUTES } from "@/router";
 
-type OfferItemLocal = OfferItemCreate & {
-  id: number | string;
-};
-
 let itemCount = 1;
 const route = useRoute();
 const router = useRouter();
@@ -41,14 +37,19 @@ let offerInfo = ref<OfferCreate | Offer>({
   items: [],
 });
 
-let offerItemsArray = ref<OfferItemLocal[]>([]);
+let offerItemsArray = ref<OfferItemCreate[]>([]);
 
-/**
- * Store information about sub-items in the object so we can easily update them.
- */
-const itemsMap = ref<Record<string, OfferItemCreate>>({});
+function onItemUpdate(item: OfferItemCreate) {
+  offerItemsArray.value = offerItemsArray.value.map((element) => {
+    if (element.id === item.id) {
+      return item;
+    } else {
+      return element;
+    }
+  });
+}
 
-function addOfferItem(kind: ArticleKind) {
+function onItemCreate(kind: ArticleKind) {
   offerItemsArray.value.push({ id: itemCount++, kind, title: "", description: "" });
 }
 
@@ -57,28 +58,23 @@ const items = [
   {
     label: "Add note",
     command: () => {
-      addOfferItem(ArticleKind.heading);
+      onItemCreate(ArticleKind.heading);
       toast.add({ severity: "success", detail: "Note added", life: 3000 });
     },
   },
   {
     label: "Add position",
     command: () => {
-      addOfferItem(ArticleKind.item),
+      onItemCreate(ArticleKind.item),
         toast.add({ severity: "success", detail: "Position added", life: 3000 });
     },
   },
 ];
 
 async function onSaveOffer() {
-  const items = Object.values(itemsMap.value);
-
-  /**
-   * Add items from the itemsMap
-   */
   await createOffer({
     ...offerInfo.value,
-    items: items,
+    items: offerItemsArray.value,
   });
 
   router.push(`${ROUTES.ORDER.path}/${route.params.order_id}/edit`);
@@ -206,11 +202,8 @@ onMounted(async () => {
       :key="item.id"
       :offer-date="offerInfo.offered_at"
       @updated="
-        (updatedItem) => {
-          /**
-           * Update itemsMap each time a child item is updated
-           */
-          itemsMap[item.id] = updatedItem;
+        (item) => {
+          onItemUpdate(item);
         }
       "
     ></OfferItem>
