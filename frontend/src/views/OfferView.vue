@@ -28,7 +28,6 @@ let validityDate = ref<Date>();
 
 let offerInfo = ref<OfferCreate | Offer>({
   order_id: "",
-  order: orderInfo.value,
   status: OfferStatus.initial,
   description: "",
   offered_at: "",
@@ -82,6 +81,7 @@ watch(validityDate, () => {
 
 onMounted(async () => {
   orderInfo.value = await getOrder(route.params.order_id as string);
+  offerInfo.value.order_id = orderInfo.value.id;
 });
 </script>
 
