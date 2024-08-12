@@ -56,14 +56,14 @@ function onItemCreate(kind: ArticleKind) {
 const toast = useToast();
 const items = [
   {
-    label: "Add note",
+    label: "Hinweis hinzugefügen",
     command: () => {
       onItemCreate(ArticleKind.heading);
       toast.add({ severity: "success", detail: "Hinweis hinzugefügt", life: 3000 });
     },
   },
   {
-    label: "Add position",
+    label: "Position hinzugefügen",
     command: () => {
       onItemCreate(ArticleKind.item),
         toast.add({ severity: "success", detail: "Position hinzugefügt", life: 3000 });
