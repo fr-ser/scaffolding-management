@@ -39,9 +39,6 @@ let offerInfo = ref<OfferCreate | Offer>({
 });
 
 let offerItemsArray = ref<OfferItemCreate[]>([]);
-// let itemPreis = 0;
-// let allItemsBrutto = 0;
-// let allUst = 0;
 function onItemUpdate(item: OfferItemCreate) {
   offerItemsArray.value = offerItemsArray.value.map((element) => {
     if (element.id === item.id) {
@@ -50,19 +47,6 @@ function onItemUpdate(item: OfferItemCreate) {
       return element;
     }
   });
-  // let itemPreis = 0;
-  // let allItemsBrutto = 0;
-  // let allUst = 0;
-
-  // function calculateSum() {
-  //   if (item.amount) {
-  //     return (itemPreis = itemPreis + item.amount);
-  //   }
-  // }
-  // calculateSum();
-  // console.log(itemPreis);
-  // console.log(item.amount);
-  // console.log(item.price);
 }
 
 function onItemCreate(kind: ArticleKind) {
