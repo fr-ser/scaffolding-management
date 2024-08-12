@@ -41,7 +41,7 @@ const grossValue = computed<string>(() => {
       editableItem.value.amount *
       editableItem.value.price *
       (1 + getVatRate({ isoDate: props.offerDate }));
-    return formatNumber(result);
+    return formatNumber(result, { decimals: 2, currency: true });
   } else {
     return "-";
   }
@@ -108,7 +108,7 @@ watch(
             <InputNumber id="price" v-model="editableItem.price" class="w-full" />
             <label for="unit">Preis</label>
           </FloatLabel>
-          <div>Brutto: {{ grossValue ?? 0 }} €</div>
+          <div>Brutto: {{ grossValue ?? 0 }}</div>
         </div>
       </div>
     </template>
