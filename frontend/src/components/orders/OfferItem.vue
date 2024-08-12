@@ -9,7 +9,7 @@ import Textarea from "primevue/textarea";
 import { computed, ref, watch } from "vue";
 
 import { getArticles } from "@/backendClient";
-import { getVatRate } from "@/global/helpers";
+import { formatNumber, getVatRate } from "@/global/helpers";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Article } from "@/global/types/entities";
@@ -35,24 +35,23 @@ async function openArticlesList(kind: ArticleKind) {
   filteredArticles.value = articlesList.filter((article) => article.kind === kind);
 }
 
-const bruttoValue = computed<string>(() => {
+const grossValue = computed<string>(() => {
   if (editableItem.value.amount && editableItem.value.price) {
-    return (
+    let result =
       editableItem.value.amount *
       editableItem.value.price *
-      (1 + getVatRate({ isoDate: props.offerDate }))
-    ).toFixed(2);
+      (1 + getVatRate({ isoDate: props.offerDate }));
+    return formatNumber(result);
   } else {
-    return "0";
+    return "-";
   }
 });
-
-function handleClick(article: Article) {
+function chooseArticle(article: Article) {
   editableItem.value.title = article.title;
   editableItem.value.description = article.description;
   if (article.kind === ArticleKind.item) {
-    editableItem.value.unit = article.unit ?? undefined;
-    editableItem.value.price = article.price ?? undefined;
+    editableItem.value.unit = article.unit;
+    editableItem.value.price = article.price;
   }
   isArticlesListVisible.value = false;
 }
@@ -109,7 +108,7 @@ watch(
             <InputNumber id="price" v-model="editableItem.price" class="w-full" />
             <label for="unit">Preis</label>
           </FloatLabel>
-          <div>Brutto: {{ bruttoValue ?? 0 }} €</div>
+          <div>Brutto: {{ grossValue ?? 0 }} €</div>
         </div>
       </div>
     </template>
@@ -117,7 +116,7 @@ watch(
   <Dialog class="w-full sm:w-4/6" v-model:visible="isArticlesListVisible" modal header="Artikel">
     <div v-for="article in filteredArticles" :key="article.id">
       <div
-        @click="handleClick(article)"
+        @click="chooseArticle(article)"
         class="border border-slate-300 hover:border-primary ps-4 py-1 my-2"
       >
         {{ article.title }}

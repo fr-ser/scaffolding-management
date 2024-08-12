@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { format } from "date-fns";
 import Button from "primevue/button";
 import Calendar from "primevue/calendar";
 import Card from "primevue/card";
@@ -13,6 +12,7 @@ import { useRoute, useRouter } from "vue-router";
 
 import { createOffer, getOrder } from "@/backendClient";
 import OfferItem from "@/components/orders/OfferItem.vue";
+import { formatDateToIsoString } from "@/global/helpers";
 import { OfferStatus } from "@/global/types/appTypes";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { OfferCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
@@ -59,14 +59,14 @@ const items = [
     label: "Add note",
     command: () => {
       onItemCreate(ArticleKind.heading);
-      toast.add({ severity: "success", detail: "Note added", life: 3000 });
+      toast.add({ severity: "success", detail: "Hinweis hinzugefügt", life: 3000 });
     },
   },
   {
     label: "Add position",
     command: () => {
       onItemCreate(ArticleKind.item),
-        toast.add({ severity: "success", detail: "Position added", life: 3000 });
+        toast.add({ severity: "success", detail: "Position hinzugefügt", life: 3000 });
     },
   },
 ];
@@ -82,7 +82,7 @@ async function onSaveOffer() {
 
 watch(offerDate, () => {
   if (offerDate.value) {
-    offerInfo.value.offered_at = format(offerDate.value, "yyyy-MM-dd");
+    offerInfo.value.offered_at = formatDateToIsoString(offerDate.value);
   } else {
     offerInfo.value.offered_at = "";
   }
@@ -90,7 +90,7 @@ watch(offerDate, () => {
 
 watch(validityDate, () => {
   if (validityDate.value) {
-    offerInfo.value.offer_valid_until = format(validityDate.value, "yyyy-MM-dd");
+    offerInfo.value.offer_valid_until = formatDateToIsoString(validityDate.value);
   } else {
     offerInfo.value.offer_valid_until = "";
   }
@@ -191,7 +191,7 @@ onMounted(async () => {
             <span>USt: </span>
             <span>Brutto: </span>
           </div>
-          <SplitButton label="Add" :model="items" :class="'w-full'" />
+          <SplitButton label="Hinzufügen" :model="items" :class="'w-full'" />
         </div>
       </template>
     </Card>
