@@ -56,16 +56,6 @@ function chooseArticle(article: Article) {
   }
   isArticlesListVisible.value = false;
 }
-// const onDeleteOfferItem = async () => {
-//   await deleteArticle(`${editableArticle.value.id}`);
-//   emit("reloadArticleView");
-//   notifications.showDeleteArticleNotification();
-// };
-// const confirmDelete = () => {
-//   confirm.showDeleteArticleConfirmation(onDeleteArticle);
-// };
-// const emit = defineEmits(["deleteOfferItem"]);
-
 function onDeleteOfferItem() {
   emit("deleted", editableItem.value);
 }

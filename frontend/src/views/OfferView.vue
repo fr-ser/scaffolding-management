@@ -7,11 +7,12 @@ import FloatLabel from "primevue/floatlabel";
 import SplitButton from "primevue/splitbutton";
 import Textarea from "primevue/textarea";
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { createOffer, getOrder } from "@/backendClient";
 import OfferItem from "@/components/orders/OfferItem.vue";
+import { formatNumber, getVatRate } from "@/global/helpers";
 import { OfferStatus } from "@/global/types/appTypes";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { OfferCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
@@ -38,7 +39,9 @@ let offerInfo = ref<OfferCreate | Offer>({
 });
 
 let offerItemsArray = ref<OfferItemCreate[]>([]);
-
+// let itemPreis = 0;
+// let allItemsBrutto = 0;
+// let allUst = 0;
 function onItemUpdate(item: OfferItemCreate) {
   offerItemsArray.value = offerItemsArray.value.map((element) => {
     if (element.id === item.id) {
@@ -47,6 +50,19 @@ function onItemUpdate(item: OfferItemCreate) {
       return element;
     }
   });
+  // let itemPreis = 0;
+  // let allItemsBrutto = 0;
+  // let allUst = 0;
+
+  // function calculateSum() {
+  //   if (item.amount) {
+  //     return (itemPreis = itemPreis + item.amount);
+  //   }
+  // }
+  // calculateSum();
+  // console.log(itemPreis);
+  // console.log(item.amount);
+  // console.log(item.price);
 }
 
 function onItemCreate(kind: ArticleKind) {
@@ -82,7 +98,26 @@ async function onSaveOffer() {
 function onItemDelete(item: OfferItemCreate) {
   offerItemsArray.value = offerItemsArray.value.filter((element) => element.id !== item.id);
 }
+const allItemsSum = computed(() => {
+  let resultNetto = 0;
+  let resultBrutto = 0;
+  let resultUst = 0;
 
+  for (let i = 0; i < offerItemsArray.value.length; i++) {
+    const amount = offerItemsArray.value[i].amount ?? 0;
+    const price = offerItemsArray.value[i].price ?? 0;
+
+    resultNetto += amount * price;
+    resultBrutto += amount * price * (1 + getVatRate({ isoDate: offerInfo.value.offered_at }));
+    resultUst = resultBrutto - resultNetto;
+  }
+
+  return {
+    calculatedResultNetto: formatNumber(resultNetto, { decimals: 2, currency: true }),
+    calculatedResultBrutto: formatNumber(resultBrutto, { decimals: 2, currency: true }),
+    calculatedResultUst: formatNumber(resultUst, { decimals: 2, currency: true }),
+  };
+});
 watch(offerDate, () => {
   if (offerDate.value) {
     offerInfo.value.offered_at = formatDateToIsoString(offerDate.value);
@@ -190,9 +225,9 @@ onMounted(async () => {
           </FloatLabel>
           <div class="font-bold">Summe:</div>
           <div class="flex flex-row gap-10">
-            <span>Netto: </span>
-            <span>USt: </span>
-            <span>Brutto: </span>
+            <span>Netto: {{ allItemsSum.calculatedResultNetto }} </span>
+            <span>USt: {{ allItemsSum.calculatedResultUst }} </span>
+            <span>Brutto: {{ allItemsSum.calculatedResultBrutto }}</span>
           </div>
           <SplitButton label="Hinzufügen" :model="items" :class="'w-full'" />
         </div>
