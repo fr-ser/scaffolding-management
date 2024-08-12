@@ -12,7 +12,7 @@ export type OrderCreate = Omit<
 >;
 export type OrderUpdate = Partial<OrderCreate>;
 
-export type OfferItemCreate = Omit<OfferItem, "id" | "offer_id" | "offer">;
+export type OfferItemCreate = Omit<OfferItem, "offer_id" | "offer">;
 
 export type OfferCreate = Omit<
   Offer,
