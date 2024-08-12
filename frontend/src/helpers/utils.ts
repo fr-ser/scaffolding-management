@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 import { round } from "@/global/helpers";
 
 export function debounce<F extends Function>(func: F, wait: number): F {
@@ -75,4 +77,8 @@ export function parseJSONsafe(presumedJSON: string): any | null {
   } catch (error) {
     return null;
   }
+}
+
+export function formatDateToIsoString(dateToIsoString: Date) {
+  return format(dateToIsoString, "yyyy-MM-dd");
 }

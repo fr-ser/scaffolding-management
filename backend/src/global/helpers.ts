@@ -1,5 +1,3 @@
-import { format } from "date-fns";
-
 /**
  * This function is for compile time checking of completeness of if statements
  * It needs to be passed the parameter, that has been checked exhaustively
@@ -71,8 +69,4 @@ export function round(number: number, decimals: number = 0): number {
 
 export function formatIsoDateString(isoDate: string): string {
   return new Date(isoDate).toLocaleDateString("de-DE");
-}
-
-export function formatDateToIsoString(dateToIsoString: Date) {
-  return format(dateToIsoString, "yyyy-MM-dd");
 }
