@@ -21,7 +21,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "updated", item: OfferItemCreate): void;
+  updated: [item: OfferItemCreate];
+  deleted: [item: OfferItemCreate];
 }>();
 
 let filteredArticles = ref<Article[]>([]);
@@ -55,6 +56,19 @@ function chooseArticle(article: Article) {
   }
   isArticlesListVisible.value = false;
 }
+// const onDeleteOfferItem = async () => {
+//   await deleteArticle(`${editableArticle.value.id}`);
+//   emit("reloadArticleView");
+//   notifications.showDeleteArticleNotification();
+// };
+// const confirmDelete = () => {
+//   confirm.showDeleteArticleConfirmation(onDeleteArticle);
+// };
+// const emit = defineEmits(["deleteOfferItem"]);
+
+function onDeleteOfferItem() {
+  emit("deleted", editableItem.value);
+}
 
 watch(
   editableItem,
@@ -71,14 +85,18 @@ watch(
       <div class="flex flex-col gap-y-6">
         <div class="flex flex-row justify-between">
           <p class="font-bold">Position {{ index }}</p>
-          <Button
-            @click="openArticlesList(props.item.kind)"
-            icon="pi pi-search"
-            size="small"
-            severity="secondary"
-            text
-            raised
-          />
+          <div>
+            <Button
+              @click="openArticlesList(props.item.kind)"
+              class="mr-3"
+              icon="pi pi-search"
+              size="small"
+              severity="secondary"
+              text
+              raised
+            />
+            <Button @click="onDeleteOfferItem" icon="pi pi-times" severity="danger" text raised />
+          </div>
         </div>
         <FloatLabel>
           <InputText id="titel" v-model="editableItem.title" class="w-full" />
