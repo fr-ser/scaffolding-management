@@ -108,7 +108,7 @@ watch(
             <InputNumber id="price" v-model="editableItem.price" class="w-full" />
             <label for="unit">Preis</label>
           </FloatLabel>
-          <div>Brutto: {{ grossValue ?? 0 }}</div>
+          <div>Brutto: {{ grossValue }}</div>
         </div>
       </div>
     </template>
