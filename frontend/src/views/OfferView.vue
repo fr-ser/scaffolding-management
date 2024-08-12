@@ -79,6 +79,9 @@ async function onSaveOffer() {
 
   router.push(`${ROUTES.ORDER.path}/${route.params.order_id}/edit`);
 }
+function onItemDelete(item: OfferItemCreate) {
+  offerItemsArray.value = offerItemsArray.value.filter((element) => element.id !== item.id);
+}
 
 watch(offerDate, () => {
   if (offerDate.value) {
@@ -201,6 +204,7 @@ onMounted(async () => {
       :item="item"
       :key="item.id"
       :offer-date="offerInfo.offered_at"
+      @deleted="onItemDelete"
       @updated="
         (item) => {
           onItemUpdate(item);
