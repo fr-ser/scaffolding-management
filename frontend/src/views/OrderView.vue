@@ -7,6 +7,8 @@ import FloatLabel from "primevue/floatlabel";
 import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import ProgressSpinner from "primevue/progressspinner";
+import TabPanel from "primevue/tabpanel";
+import TabView from "primevue/tabview";
 import Textarea from "primevue/textarea";
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -223,19 +225,20 @@ onMounted(async () => {
               data-testid="order-client-select"
             />
           </div>
-          <div v-if="isEditing">
+          <div v-if="isEditing" class="flex flex-row justify-between items-center">
             <p class="font-bold">Unteraufträge</p>
             <router-link :to="`${ROUTES.ORDER.path}/${route.params.id}/edit/offer/new`">
               <Button label="Create offer"></Button>
             </router-link>
           </div>
         </div>
-        <section>
-          <!-- new component  -->
-          <OfferSummary
-            v-if="(orderInfo as Order).offer"
-            :offer="(orderInfo as Order).offer"
-          ></OfferSummary>
+        <section v-if="(orderInfo as Order).offer">
+          <TabView>
+            <TabPanel header="Angebot">
+              <!-- new component  -->
+              <OfferSummary :offer="(orderInfo as Order).offer"></OfferSummary>
+            </TabPanel>
+          </TabView>
           <OrderDocuments v-if="isEditing" :id="(orderInfo as Order).id"></OrderDocuments>
         </section>
       </template>

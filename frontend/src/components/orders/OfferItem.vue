@@ -9,7 +9,6 @@ import Textarea from "primevue/textarea";
 import { computed, ref, watch } from "vue";
 
 import { getArticles } from "@/backendClient";
-import { formatNumber, getVatRate } from "@/global/helpers";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Article } from "@/global/types/entities";
