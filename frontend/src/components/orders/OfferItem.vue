@@ -22,7 +22,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   updated: [item: OfferItemCreate];
-  deleted: [item: OfferItemCreate];
+  deleted: [id: number];
 }>();
 
 let filteredArticles = ref<Article[]>([]);
@@ -57,7 +57,7 @@ function chooseArticle(article: Article) {
   isArticlesListVisible.value = false;
 }
 function onDeleteOfferItem() {
-  emit("deleted", editableItem.value);
+  emit("deleted", editableItem.value.id);
 }
 
 watch(

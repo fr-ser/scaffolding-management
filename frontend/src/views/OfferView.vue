@@ -12,6 +12,7 @@ import { useRoute, useRouter } from "vue-router";
 
 import { createOffer, getOrder } from "@/backendClient";
 import OfferItem from "@/components/orders/OfferItem.vue";
+import { round } from "@/global/helpers";
 import { formatNumber, getVatRate } from "@/global/helpers";
 import { OfferStatus } from "@/global/types/appTypes";
 import { ArticleKind } from "@/global/types/appTypes";
@@ -79,27 +80,27 @@ async function onSaveOffer() {
 
   router.push(`${ROUTES.ORDER.path}/${route.params.order_id}/edit`);
 }
-function onItemDelete(item: OfferItemCreate) {
-  offerItemsArray.value = offerItemsArray.value.filter((element) => element.id !== item.id);
+function onItemDelete(id: number) {
+  offerItemsArray.value = offerItemsArray.value.filter((element) => element.id !== id);
 }
 const allItemsSum = computed(() => {
-  let resultNetto = 0;
-  let resultBrutto = 0;
-  let resultUst = 0;
+  let amountNet = 0;
+  let amountGross = 0;
+  let amountVat = 0;
 
   for (let i = 0; i < offerItemsArray.value.length; i++) {
     const amount = offerItemsArray.value[i].amount ?? 0;
     const price = offerItemsArray.value[i].price ?? 0;
 
-    resultNetto += amount * price;
-    resultBrutto += amount * price * (1 + getVatRate({ isoDate: offerInfo.value.offered_at }));
-    resultUst = resultBrutto - resultNetto;
+    amountNet += round(amount * price, 2);
+    amountGross += amountNet * (1 + getVatRate({ isoDate: offerInfo.value.offered_at }));
+    amountVat = round(amountGross - amountNet, 2);
   }
 
   return {
-    calculatedResultNetto: formatNumber(resultNetto, { decimals: 2, currency: true }),
-    calculatedResultBrutto: formatNumber(resultBrutto, { decimals: 2, currency: true }),
-    calculatedResultUst: formatNumber(resultUst, { decimals: 2, currency: true }),
+    calculatedResultNetto: formatNumber(amountNet, { decimals: 2, currency: true }),
+    calculatedResultBrutto: formatNumber(amountGross, { decimals: 2, currency: true }),
+    calculatedResultUst: formatNumber(amountVat, { decimals: 2, currency: true }),
   };
 });
 watch(offerDate, () => {
