@@ -5,9 +5,8 @@ import { computed, ref, watch } from "vue";
 
 import { updateOffer } from "@/backendClient";
 import useNotifications from "@/compositions/useNotifications";
-// import { formatNumber, getVatRate, round } from "@/global/helpers";
-import { OfferStatus } from "@/global/types/appTypes";
-import type { Offer, OfferItem } from "@/global/types/entities";
+import { ArticleKind, OfferStatus } from "@/global/types/appTypes";
+import type { Offer } from "@/global/types/entities";
 import { calculateBrutto, calculatePrice } from "@/helpers/utils";
 
 const props = defineProps<{
@@ -21,15 +20,7 @@ let offerStatusValue = ref<OfferStatus>(props.offer.status);
 const allItemsSum = computed(() => {
   return calculatePrice(props.offer.items, props.offer.offered_at);
 });
-// function getBrutto(item: OfferItem, date: string) {
-//   let amountNet = 0;
-//   let amountGross = 0;
-//   const amount = item.amount ?? 0;
-//   const price = item.price ?? 0;
-//   amountNet += round(amount * price, 2);
-//   amountGross += round(amountNet * (1 + getVatRate({ isoDate: date })), 2);
-//   return formatNumber(amountGross, { decimals: 2, currency: true });
-// }
+
 watch(offerStatusValue, async () => {
   await updateOffer(props.offer.id, {
     status: offerStatusValue.value,
@@ -39,15 +30,16 @@ watch(offerStatusValue, async () => {
 });
 </script>
 <template>
-  <p class="font-bold">Angebot:</p>
-  <section class="flex flex-col gap-2 sm:flex-row sm:gap-8">
-    <span> Datum: {{ offer.offered_at }}</span>
-    <span> Gültigkeit: {{ offer.offer_valid_until }} </span>
+  <section class="flex flex-col gap-2 sm:flex-row sm:gap-8 items-center">
+    <p><span class="font-bold">Datum:</span> {{ offer.offered_at }}</p>
+    <p><span class="font-bold">Gültigkeit:</span> {{ offer.offer_valid_until }}</p>
+    <p class="font-bold">Status:</p>
+
     <Dropdown
       v-model="offerStatusValue"
       :options="offersType"
       placeholder="Anrede"
-      class="w-full md:w-[14rem] mb-3"
+      class="w-full md:w-[14rem]"
     />
   </section>
   <p class="font-bold">Preis:</p>
@@ -56,7 +48,7 @@ watch(offerStatusValue, async () => {
     <span>USt: {{ allItemsSum.calculatedResultUst }}</span>
     <span>Brutto: {{ allItemsSum.calculatedResultBrutto }} </span>
   </section>
-  <section v-for="(item, idx) in offer.items" class="my-2">
+  <section v-for="(item, idx) in offer.items" class="my-2" :key="item.id">
     <Card class="w-full">
       <template #content>
         <div class="grid grid-cols-1 sm:grid-cols-3 sm:gap-2">
@@ -65,7 +57,7 @@ watch(offerStatusValue, async () => {
             <div>{{ item.title }}</div>
             <div>{{ item.description }}</div>
           </div>
-          <div>
+          <div v-if="item.kind === ArticleKind.item">
             <div>Anzahl: {{ item.amount ?? "-" }}</div>
             <div>Einheit: {{ item.unit ?? "-" }}</div>
             <div>Preis: {{ item.price ?? "-" }}</div>

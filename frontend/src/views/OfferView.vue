@@ -12,8 +12,6 @@ import { useRoute, useRouter } from "vue-router";
 
 import { createOffer, getOrder } from "@/backendClient";
 import OfferItem from "@/components/orders/OfferItem.vue";
-import { round } from "@/global/helpers";
-import { formatNumber, getVatRate } from "@/global/helpers";
 import { OfferStatus } from "@/global/types/appTypes";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { OfferCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
