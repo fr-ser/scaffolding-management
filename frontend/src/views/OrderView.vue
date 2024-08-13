@@ -124,8 +124,6 @@ onMounted(async () => {
   if (isEditing.value) {
     orderInfo.value = await getOrder(route.params.id as string);
 
-    console.log((orderInfo.value as Order).offer);
-
     selectedClient.value = findClientById();
   }
 
