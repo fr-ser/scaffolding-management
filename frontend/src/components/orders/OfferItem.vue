@@ -13,6 +13,7 @@ import { formatNumber, getVatRate } from "@/global/helpers";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Article } from "@/global/types/entities";
+import { calculateBrutto } from "@/helpers/utils";
 
 const props = defineProps<{
   index: number;
@@ -35,17 +36,8 @@ async function openArticlesList(kind: ArticleKind) {
   const articlesList = (await getArticles()).data;
   filteredArticles.value = articlesList.filter((article) => article.kind === kind);
 }
-
-const grossValue = computed<string>(() => {
-  if (editableItem.value.amount && editableItem.value.price) {
-    let result =
-      editableItem.value.amount *
-      editableItem.value.price *
-      (1 + getVatRate({ isoDate: props.offerDate }));
-    return formatNumber(result, { decimals: 2, currency: true });
-  } else {
-    return "-";
-  }
+let grossValue = computed<string>(() => {
+  return calculateBrutto(editableItem.value, props.offerDate);
 });
 function chooseArticle(article: Article) {
   editableItem.value.title = article.title;

@@ -103,3 +103,11 @@ export function calculatePrice(arrayItems: Pick<OfferItem, "amount" | "price">[]
     calculatedResultUst: formatNumber(amountVat, { decimals: 2, currency: true }),
   };
 }
+export function calculateBrutto(item: Pick<OfferItem, "amount" | "price">, date: string) {
+  if (item.amount && item.price) {
+    const result = item.amount * item.price * (1 + getVatRate({ isoDate: date }));
+    return formatNumber(result, { decimals: 2, currency: true });
+  } else {
+    return "-";
+  }
+}

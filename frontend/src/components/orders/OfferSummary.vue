@@ -5,10 +5,10 @@ import { computed, ref, watch } from "vue";
 
 import { updateOffer } from "@/backendClient";
 import useNotifications from "@/compositions/useNotifications";
-import { formatNumber, getVatRate, round } from "@/global/helpers";
+// import { formatNumber, getVatRate, round } from "@/global/helpers";
 import { OfferStatus } from "@/global/types/appTypes";
 import type { Offer, OfferItem } from "@/global/types/entities";
-import { calculatePrice, formatDateToIsoString } from "@/helpers/utils";
+import { calculateBrutto, calculatePrice } from "@/helpers/utils";
 
 const props = defineProps<{
   offer: Offer;
@@ -21,15 +21,15 @@ let offerStatusValue = ref<OfferStatus>(props.offer.status);
 const allItemsSum = computed(() => {
   return calculatePrice(props.offer.items, props.offer.offered_at);
 });
-function getBrutto(item: OfferItem, date: string) {
-  let amountNet = 0;
-  let amountGross = 0;
-  const amount = item.amount ?? 0;
-  const price = item.price ?? 0;
-  amountNet += round(amount * price, 2);
-  amountGross += round(amountNet * (1 + getVatRate({ isoDate: date })), 2);
-  return formatNumber(amountGross, { decimals: 2, currency: true });
-}
+// function getBrutto(item: OfferItem, date: string) {
+//   let amountNet = 0;
+//   let amountGross = 0;
+//   const amount = item.amount ?? 0;
+//   const price = item.price ?? 0;
+//   amountNet += round(amount * price, 2);
+//   amountGross += round(amountNet * (1 + getVatRate({ isoDate: date })), 2);
+//   return formatNumber(amountGross, { decimals: 2, currency: true });
+// }
 watch(offerStatusValue, async () => {
   await updateOffer(props.offer.id, {
     status: offerStatusValue.value,
@@ -69,7 +69,7 @@ watch(offerStatusValue, async () => {
             <div>Anzahl: {{ item.amount ?? "-" }}</div>
             <div>Einheit: {{ item.unit ?? "-" }}</div>
             <div>Preis: {{ item.price ?? "-" }}</div>
-            <div>BruttoSumme: {{ getBrutto(item, props.offer.offered_at) }}</div>
+            <div>BruttoSumme: {{ calculateBrutto(item, props.offer.offered_at) }}</div>
           </div>
         </div>
       </template>
