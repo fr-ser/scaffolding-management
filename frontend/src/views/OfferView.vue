@@ -93,7 +93,7 @@ const allItemsSum = computed(() => {
     const price = offerItemsArray.value[i].price ?? 0;
 
     amountNet += round(amount * price, 2);
-    amountGross += round(amountNet * (1 + getVatRate({ isoDate: offerInfo.value.offered_at })),2);
+    amountGross += round(amountNet * (1 + getVatRate({ isoDate: offerInfo.value.offered_at })), 2);
     amountVat = round(amountGross - amountNet, 2);
   }
 
