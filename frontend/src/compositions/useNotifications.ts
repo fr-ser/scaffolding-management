@@ -68,6 +68,13 @@ export default function useNotifications() {
       life: 3000,
     });
   };
+  const showUpdateOfferStatusNotification = () => {
+    toast.add({
+      severity: "info",
+      summary: "Der Status wurde gespeichert",
+      life: 3000,
+    });
+  };
   return {
     showDeleteClientNotification,
     showUpdateClientNotification,
@@ -78,5 +85,6 @@ export default function useNotifications() {
     showCreateOrderNotification,
     showDeleteOrderNotification,
     showUpdateOrderNotification,
+    showUpdateOfferStatusNotification,
   };
 }
