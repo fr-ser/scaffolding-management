@@ -4,6 +4,7 @@ import Dropdown from "primevue/dropdown";
 import { computed, ref, watch } from "vue";
 
 import { updateOffer } from "@/backendClient";
+import useNotifications from "@/compositions/useNotifications";
 import { formatNumber, getVatRate, round } from "@/global/helpers";
 import { OfferStatus } from "@/global/types/appTypes";
 import type { Offer, OfferItem } from "@/global/types/entities";
@@ -12,6 +13,7 @@ import { calculatePrice, formatDateToIsoString } from "@/helpers/utils";
 const props = defineProps<{
   offer: Offer;
 }>();
+const notifications = useNotifications();
 
 const offersType = Object.values(OfferStatus);
 
@@ -33,7 +35,7 @@ watch(offerStatusValue, async () => {
     status: offerStatusValue.value,
   });
 
-  // show notification that Status was updated
+  notifications.showUpdateOfferStatusNotification();
 });
 </script>
 <template>
