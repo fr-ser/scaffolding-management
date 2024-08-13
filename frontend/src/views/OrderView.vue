@@ -12,6 +12,7 @@ import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { createOrder, deleteOrder, getClients, getOrder, updateOrder } from "@/backendClient";
+import OfferSummary from "@/components/orders/OfferSummary.vue";
 import OrderDocuments from "@/components/orders/OrderDocuments.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
@@ -121,6 +122,8 @@ onMounted(async () => {
   if (isEditing.value) {
     orderInfo.value = await getOrder(route.params.id as string);
 
+    console.log((orderInfo.value as Order).offer);
+
     selectedClient.value = findClientById();
   }
 
@@ -228,6 +231,11 @@ onMounted(async () => {
           </div>
         </div>
         <section>
+          <!-- new component  -->
+          <OfferSummary
+            v-if="(orderInfo as Order).offer"
+            :offer="(orderInfo as Order).offer"
+          ></OfferSummary>
           <OrderDocuments v-if="isEditing" :id="(orderInfo as Order).id"></OrderDocuments>
         </section>
       </template>
