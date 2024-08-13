@@ -18,7 +18,7 @@ import { OfferStatus } from "@/global/types/appTypes";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { OfferCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Offer, Order } from "@/global/types/entities";
-import { formatDateToIsoString } from "@/helpers/utils";
+import { calculatePrice, formatDateToIsoString } from "@/helpers/utils";
 import { ROUTES } from "@/router";
 
 let itemCount = 1;
@@ -84,25 +84,9 @@ function onItemDelete(id: number) {
   offerItemsArray.value = offerItemsArray.value.filter((element) => element.id !== id);
 }
 const allItemsSum = computed(() => {
-  let amountNet = 0;
-  let amountGross = 0;
-  let amountVat = 0;
-
-  for (let i = 0; i < offerItemsArray.value.length; i++) {
-    const amount = offerItemsArray.value[i].amount ?? 0;
-    const price = offerItemsArray.value[i].price ?? 0;
-
-    amountNet += round(amount * price, 2);
-    amountGross += round(amountNet * (1 + getVatRate({ isoDate: offerInfo.value.offered_at })), 2);
-    amountVat = round(amountGross - amountNet, 2);
-  }
-
-  return {
-    calculatedResultNetto: formatNumber(amountNet, { decimals: 2, currency: true }),
-    calculatedResultBrutto: formatNumber(amountGross, { decimals: 2, currency: true }),
-    calculatedResultUst: formatNumber(amountVat, { decimals: 2, currency: true }),
-  };
+  return calculatePrice(offerItemsArray.value, offerInfo.value.offered_at);
 });
+
 watch(offerDate, () => {
   if (offerDate.value) {
     offerInfo.value.offered_at = formatDateToIsoString(offerDate.value);

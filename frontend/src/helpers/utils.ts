@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 
-import { round } from "@/global/helpers";
+import { formatNumber, getVatRate, round } from "@/global/helpers";
+import type { OfferItem } from "@/global/types/entities";
 
 export function debounce<F extends Function>(func: F, wait: number): F {
   let timeoutID: number;
@@ -81,4 +82,24 @@ export function parseJSONsafe(presumedJSON: string): any | null {
 
 export function formatDateToIsoString(dateToIsoString: Date) {
   return format(dateToIsoString, "yyyy-MM-dd");
+}
+export function calculatePrice(arrayItems: Pick<OfferItem, "amount" | "price">[], date?: string) {
+  let amountNet = 0;
+  let amountGross = 0;
+  let amountVat = 0;
+
+  for (let i = 0; i < arrayItems.length; i++) {
+    const amount = arrayItems[i].amount ?? 0;
+    const price = arrayItems[i].price ?? 0;
+
+    amountNet += round(amount * price, 2);
+    amountGross += round(amountNet * (1 + getVatRate({ isoDate: date })), 2);
+    amountVat = round(amountGross - amountNet, 2);
+  }
+
+  return {
+    calculatedResultNetto: formatNumber(amountNet, { decimals: 2, currency: true }),
+    calculatedResultBrutto: formatNumber(amountGross, { decimals: 2, currency: true }),
+    calculatedResultUst: formatNumber(amountVat, { decimals: 2, currency: true }),
+  };
 }
