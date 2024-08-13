@@ -22,3 +22,5 @@ export type OfferCreate = Omit<
 };
 
 export type InvoiceUpdate = Partial<Omit<Invoice, "id">>;
+
+export type OfferUpdate = Partial<Pick<Offer, "status">>;

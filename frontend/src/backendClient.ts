@@ -10,6 +10,7 @@ import type {
   ClientUpdate,
   InvoiceUpdate,
   OfferCreate,
+  OfferUpdate,
   OrderCreate,
   OrderUpdate,
 } from "@/global/types/dataEditTypes";
@@ -115,6 +116,11 @@ export async function updateOrder(id: string, order: OrderUpdate): Promise<Order
 
 export async function createOffer(offer: OfferCreate): Promise<Offer> {
   const response = await axiosInstance.post(`/api/orders/offers/`, offer);
+  return response.data;
+}
+
+export async function updateOffer(id: number, offer: OfferUpdate): Promise<Offer> {
+  const response = await axiosInstance.patch(`/api/orders/offers/${id}`, offer);
   return response.data;
 }
 
