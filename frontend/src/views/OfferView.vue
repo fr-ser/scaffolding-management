@@ -192,9 +192,9 @@ onMounted(async () => {
           </FloatLabel>
           <div class="font-bold">Summe:</div>
           <div class="flex flex-row gap-10">
-            <span>Netto: {{ allItemsSum.calculatedResultNetto }} </span>
-            <span>USt: {{ allItemsSum.calculatedResultUst }} </span>
-            <span>Brutto: {{ allItemsSum.calculatedResultBrutto }}</span>
+            <span>Netto: {{ allItemsSum.amountNet }} </span>
+            <span>USt: {{ allItemsSum.amountVat }} </span>
+            <span>Brutto: {{ allItemsSum.amountGross }}</span>
           </div>
           <SplitButton label="Hinzufügen" :model="items" :class="'w-full'" />
         </div>
