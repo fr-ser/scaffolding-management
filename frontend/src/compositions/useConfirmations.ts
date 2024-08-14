@@ -34,10 +34,20 @@ export default function useConfirmation() {
       accept: acceptCallback,
     });
   };
-
+  const showUpdateOfferStatusConfirmation = (acceptCallback: () => void) => {
+    confirm.require({
+      message: "Möchten Sie den Angebotsstatus wirklich aktualisieren?",
+      header: "Bestätigung",
+      rejectLabel: "Abbrechen",
+      rejectClass: "bg-transparent border text-red-500 border border-red-500 hover:bg-red-300/10",
+      acceptLabel: "Löschen",
+      accept: acceptCallback,
+    });
+  };
   return {
     showDeleteOrderConfirmation,
     showDeleteClientConfirmation,
     showDeleteArticleConfirmation,
+    showUpdateOfferStatusConfirmation,
   };
 }

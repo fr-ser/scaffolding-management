@@ -16,7 +16,7 @@ import { OfferStatus } from "@/global/types/appTypes";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { OfferCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Offer, Order } from "@/global/types/entities";
-import { calculatePrice, formatDateToIsoString } from "@/helpers/utils";
+import { calculateItemSumPrice, formatDateToIsoString } from "@/helpers/utils";
 import { ROUTES } from "@/router";
 
 let itemCount = 1;
@@ -82,7 +82,7 @@ function onItemDelete(id: number) {
   offerItemsArray.value = offerItemsArray.value.filter((element) => element.id !== id);
 }
 const allItemsSum = computed(() => {
-  return calculatePrice(offerItemsArray.value, offerInfo.value.offered_at);
+  return calculateItemSumPrice(offerItemsArray.value, offerInfo.value.offered_at);
 });
 
 watch(offerDate, () => {

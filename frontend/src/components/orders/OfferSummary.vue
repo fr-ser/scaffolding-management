@@ -4,35 +4,42 @@ import Dropdown from "primevue/dropdown";
 import { computed, ref, watch } from "vue";
 
 import { updateOffer } from "@/backendClient";
+import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
+import { formatIsoDateString } from "@/global/helpers";
 import { ArticleKind, OfferStatus } from "@/global/types/appTypes";
 import type { Offer } from "@/global/types/entities";
-import { calculateBrutto, calculatePrice } from "@/helpers/utils";
+import { calculateItemSumPrice, getGrossAmount } from "@/helpers/utils";
 
 const props = defineProps<{
   offer: Offer;
 }>();
 const notifications = useNotifications();
 
+const confirm = useConfirmations();
+
 const offersType = Object.values(OfferStatus);
 
 let offerStatusValue = ref<OfferStatus>(props.offer.status);
 const allItemsSum = computed(() => {
-  return calculatePrice(props.offer.items, props.offer.offered_at);
+  return calculateItemSumPrice(props.offer.items, props.offer.offered_at);
 });
 
 watch(offerStatusValue, async () => {
-  await updateOffer(props.offer.id, {
-    status: offerStatusValue.value,
+  confirm.showUpdateOfferStatusConfirmation(async () => {
+    await updateOffer(props.offer.id, {
+      status: offerStatusValue.value,
+    });
+    notifications.showUpdateOfferStatusNotification();
   });
-
-  notifications.showUpdateOfferStatusNotification();
 });
 </script>
 <template>
   <section class="flex flex-col gap-2 sm:flex-row sm:gap-8 items-center">
-    <p><span class="font-bold">Datum:</span> {{ offer.offered_at }}</p>
-    <p><span class="font-bold">Gültigkeit:</span> {{ offer.offer_valid_until }}</p>
+    <p><span class="font-bold">Datum:</span> {{ formatIsoDateString(offer.offered_at) }}</p>
+    <p>
+      <span class="font-bold">Gültigkeit:</span> {{ formatIsoDateString(offer.offer_valid_until) }}
+    </p>
     <p class="font-bold">Status:</p>
 
     <Dropdown
@@ -61,7 +68,7 @@ watch(offerStatusValue, async () => {
             <div>Anzahl: {{ item.amount ?? "-" }}</div>
             <div>Einheit: {{ item.unit ?? "-" }}</div>
             <div>Preis: {{ item.price ?? "-" }}</div>
-            <div>BruttoSumme: {{ calculateBrutto(item, props.offer.offered_at) }}</div>
+            <div>BruttoSumme: {{ getGrossAmount(item, props.offer.offered_at) }}</div>
           </div>
         </div>
       </template>

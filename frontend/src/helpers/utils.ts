@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 
 import { formatNumber, getVatRate, round } from "@/global/helpers";
+import type { OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { OfferItem } from "@/global/types/entities";
 
 export function debounce<F extends Function>(func: F, wait: number): F {
@@ -83,7 +84,10 @@ export function parseJSONsafe(presumedJSON: string): any | null {
 export function formatDateToIsoString(dateToIsoString: Date) {
   return format(dateToIsoString, "yyyy-MM-dd");
 }
-export function calculatePrice(arrayItems: Pick<OfferItem, "amount" | "price">[], date?: string) {
+export function calculateItemSumPrice(
+  arrayItems: Pick<OfferItem, "amount" | "price">[],
+  date?: string,
+) {
   let amountNet = 0;
   let amountGross = 0;
   let amountVat = 0;
@@ -93,8 +97,8 @@ export function calculatePrice(arrayItems: Pick<OfferItem, "amount" | "price">[]
     const price = arrayItems[i].price ?? 0;
 
     amountNet += round(amount * price, 2);
-    amountGross += round(amountNet * (1 + getVatRate({ isoDate: date })), 2);
-    amountVat = round(amountGross - amountNet, 2);
+    amountVat += round(amountNet * getVatRate({ isoDate: date }), 2);
+    amountGross += round(amountNet + amountVat, 2);
   }
 
   return {
@@ -103,11 +107,9 @@ export function calculatePrice(arrayItems: Pick<OfferItem, "amount" | "price">[]
     calculatedResultUst: formatNumber(amountVat, { decimals: 2, currency: true }),
   };
 }
-export function calculateBrutto(item: Pick<OfferItem, "amount" | "price">, date: string) {
-  if (item.amount && item.price) {
-    const result = item.amount * item.price * (1 + getVatRate({ isoDate: date }));
-    return formatNumber(result, { decimals: 2, currency: true });
-  } else {
-    return "-";
-  }
+export function getGrossAmount(item: OfferItem | OfferItemCreate, date: string) {
+  if (!item.amount || !item.price) return "-";
+
+  const result = item.amount * item.price * (1 + getVatRate({ isoDate: date }));
+  return formatNumber(result, { decimals: 2, currency: true });
 }
