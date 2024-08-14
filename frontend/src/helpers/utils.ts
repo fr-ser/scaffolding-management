@@ -92,19 +92,18 @@ export function calculateItemSumPrice(
   let amountGross = 0;
   let amountVat = 0;
 
-  for (let i = 0; i < arrayItems.length; i++) {
-    const amount = arrayItems[i].amount ?? 0;
-    const price = arrayItems[i].price ?? 0;
-
+  for (const item of arrayItems) {
+    const amount = item.amount ?? 0;
+    const price = item.price ?? 0;
     amountNet += round(amount * price, 2);
-    amountVat += round(amountNet * getVatRate({ isoDate: date }), 2);
-    amountGross += round(amountNet + amountVat, 2);
+    amountGross += round(amountNet * (1 + getVatRate({ isoDate: date })), 2);
+    amountVat = round(amountGross - amountNet, 2);
   }
 
   return {
-    calculatedResultNetto: formatNumber(amountNet, { decimals: 2, currency: true }),
-    calculatedResultBrutto: formatNumber(amountGross, { decimals: 2, currency: true }),
-    calculatedResultUst: formatNumber(amountVat, { decimals: 2, currency: true }),
+    amountNet: formatNumber(amountNet, { decimals: 2, currency: true }),
+    amountGross: formatNumber(amountGross, { decimals: 2, currency: true }),
+    amountVat: formatNumber(amountVat, { decimals: 2, currency: true }),
   };
 }
 export function getGrossAmount(item: OfferItem | OfferItemCreate, date: string) {

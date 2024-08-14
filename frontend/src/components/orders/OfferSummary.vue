@@ -45,15 +45,15 @@ watch(offerStatusValue, async () => {
     <Dropdown
       v-model="offerStatusValue"
       :options="offersType"
-      placeholder="Anrede"
+      placeholder="Status"
       class="w-full md:w-[14rem]"
     />
   </section>
-  <p class="font-bold">Preis:</p>
+  <p class="font-bold">Angebotspreis:</p>
   <section class="flex flex-row gap-10">
-    <span cl> Netto: {{ allItemsSum.calculatedResultNetto }} </span>
-    <span>USt: {{ allItemsSum.calculatedResultUst }}</span>
-    <span>Brutto: {{ allItemsSum.calculatedResultBrutto }} </span>
+    <span cl> Netto: {{ allItemsSum.amountNet }} </span>
+    <span>USt: {{ allItemsSum.amountVat }}</span>
+    <span>Brutto: {{ allItemsSum.amountGross }} </span>
   </section>
   <section v-for="(item, idx) in offer.items" class="my-2" :key="item.id">
     <Card class="w-full">
@@ -68,7 +68,7 @@ watch(offerStatusValue, async () => {
             <div>Anzahl: {{ item.amount ?? "-" }}</div>
             <div>Einheit: {{ item.unit ?? "-" }}</div>
             <div>Preis: {{ item.price ?? "-" }}</div>
-            <div>BruttoSumme: {{ getGrossAmount(item, props.offer.offered_at) }}</div>
+            <div>Brutto: {{ getGrossAmount(item, props.offer.offered_at) }}</div>
           </div>
         </div>
       </template>
