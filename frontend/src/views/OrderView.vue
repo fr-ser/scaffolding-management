@@ -123,7 +123,6 @@ onMounted(async () => {
 
   if (isEditing.value) {
     orderInfo.value = await getOrder(route.params.id as string);
-
     selectedClient.value = findClientById();
   }
 
@@ -226,14 +225,13 @@ onMounted(async () => {
           <div v-if="isEditing" class="flex flex-row justify-between items-center">
             <p class="font-bold">Unteraufträge</p>
             <router-link :to="`${ROUTES.ORDER.path}/${route.params.id}/edit/offer/new`">
-              <Button label="Create offer"></Button>
+              <Button v-if="!(orderInfo as Order).offer" label="Create offer"></Button>
             </router-link>
           </div>
         </div>
         <section v-if="(orderInfo as Order).offer">
           <TabView>
             <TabPanel header="Angebot">
-              <!-- new component  -->
               <OfferSummary :offer="(orderInfo as Order).offer"></OfferSummary>
             </TabPanel>
           </TabView>

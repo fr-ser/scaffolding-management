@@ -12,7 +12,7 @@ import { getArticles } from "@/backendClient";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Article } from "@/global/types/entities";
-import { calculateBrutto } from "@/helpers/utils";
+import { getGrossAmount } from "@/helpers/utils";
 
 const props = defineProps<{
   index: number;
@@ -36,7 +36,7 @@ async function openArticlesList(kind: ArticleKind) {
   filteredArticles.value = articlesList.filter((article) => article.kind === kind);
 }
 let grossValue = computed<string>(() => {
-  return calculateBrutto(editableItem.value, props.offerDate);
+  return getGrossAmount(editableItem.value, props.offerDate);
 });
 function chooseArticle(article: Article) {
   editableItem.value.title = article.title;
