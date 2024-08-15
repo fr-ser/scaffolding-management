@@ -40,7 +40,7 @@ export default function useConfirmation() {
       header: "Bestätigung",
       rejectLabel: "Abbrechen",
       rejectClass: "bg-transparent border text-red-500 border border-red-500 hover:bg-red-300/10",
-      acceptLabel: "Löschen",
+      acceptLabel: "Bestätigen",
       accept: acceptCallback,
     });
   };
