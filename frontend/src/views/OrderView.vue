@@ -225,7 +225,7 @@ onMounted(async () => {
           <div v-if="isEditing" class="flex flex-row justify-between items-center">
             <p class="font-bold">Unteraufträge</p>
             <router-link :to="`${ROUTES.ORDER.path}/${route.params.id}/edit/offer/new`">
-              <Button v-if="!(orderInfo as Order).offer" label="Create offer"></Button>
+              <Button v-if="!(orderInfo as Order).offer" label="Angebot erstellen"></Button>
             </router-link>
           </div>
         </div>
