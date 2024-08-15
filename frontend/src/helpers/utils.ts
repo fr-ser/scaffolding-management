@@ -95,9 +95,13 @@ export function calculateItemSumPrice(
   for (const item of arrayItems) {
     const amount = item.amount ?? 0;
     const price = item.price ?? 0;
-    amountNet += round(amount * price, 2);
-    amountGross += round(amountNet * (1 + getVatRate({ isoDate: date })), 2);
-    amountVat = round(amountGross - amountNet, 2);
+
+    const netPrice = round(amount * price, 2);
+    const grossPrice = round(netPrice * (1 + getVatRate({ isoDate: date })), 2);
+
+    amountNet += netPrice;
+    amountGross += grossPrice;
+    amountVat += round(grossPrice - netPrice, 2);
   }
 
   return {
