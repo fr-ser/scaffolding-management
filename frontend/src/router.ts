@@ -4,6 +4,7 @@ import ArticleView from "@/views/ArticleView.vue";
 import ClientListView from "@/views/ClientListView.vue";
 import ClientView from "@/views/ClientView.vue";
 import DocumentView from "@/views/DocumentView.vue";
+import InvoiceView from "@/views/InvoiceView.vue";
 import OfferView from "@/views/OfferView.vue";
 import OrderListView from "@/views/OrderListView.vue";
 import OrderView from "@/views/OrderView.vue";
@@ -67,6 +68,14 @@ const router = createRouter({
       component: OfferView,
       meta: {
         label: "Unteraufträge anschauen/bearbeiten",
+      },
+    },
+    {
+      path: `${ROUTES.ORDER.path}/:order_id/edit/invoice/new`,
+      name: `${ROUTES.ORDER.name}-newInvoice`,
+      component: InvoiceView,
+      meta: {
+        label: "Invoice creation/updating",
       },
     },
     {
