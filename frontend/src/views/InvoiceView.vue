@@ -7,7 +7,7 @@ import FloatLabel from "primevue/floatlabel";
 import SplitButton from "primevue/splitbutton";
 import Textarea from "primevue/textarea";
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import { createOffer, getOrder } from "@/backendClient";
@@ -16,6 +16,7 @@ import { ArticleKind } from "@/global/types/appTypes";
 import { PaymentStatus } from "@/global/types/appTypes";
 import type { OfferCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Order } from "@/global/types/entities";
+import { calculateItemSumPrice, formatDateToIsoString } from "@/helpers/utils";
 import { ROUTES } from "@/router";
 
 const route = useRoute();
@@ -78,12 +79,23 @@ function onItemUpdate(item: OfferItemCreate) {
 function onItemCreate(kind: ArticleKind) {
   offerItemsArray.value.push({ id: itemCount++, kind, title: "", description: "" });
 }
-
+const allItemsSum = computed(() => {
+  return calculateItemSumPrice(offerItemsArray.value, invoiceInfo.value.offered_at);
+});
 onMounted(async () => {
   orderInfo.value = await getOrder(route.params.order_id as string);
 });
 </script>
 <template>
+  <div class="flex flex-row justify-between">
+    <router-link :to="`${ROUTES.ORDER.path}/${route.params.order_id}/edit`">
+      <Button icon="pi pi-arrow-left" size="small" severity="secondary" text raised />
+    </router-link>
+    <div class="flex gap-x-2">
+      <Button label="Speichern" text raised />
+      <Button label="Löschen" severity="danger" text raised />
+    </div>
+  </div>
   <Card class="my-2">
     <template #content>
       <div class="mb-4 font-bold">Auftragsdaten</div>
@@ -171,6 +183,13 @@ onMounted(async () => {
           />
           <label for="text">Beschreibung</label>
         </FloatLabel>
+        <div class="font-bold">Summe:</div>
+        <div class="flex flex-row gap-10 my-3">
+          <span>Netto: {{ allItemsSum.amountNet }} </span>
+          <span>USt: {{ allItemsSum.amountVat }} </span>
+          <span>Brutto: {{ allItemsSum.amountGross }}</span>
+        </div>
+        <!-- add sum -->
         <SplitButton label="Hinzufügen" :model="items" :class="'w-full'" />
       </section>
     </template>
