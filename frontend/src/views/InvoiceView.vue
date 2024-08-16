@@ -79,6 +79,9 @@ function onItemUpdate(item: OfferItemCreate) {
 function onItemCreate(kind: ArticleKind) {
   offerItemsArray.value.push({ id: itemCount++, kind, title: "", description: "" });
 }
+function onCalendarItemDelete(id: number) {
+  calendarsList.value = calendarsList.value.filter((element) => element.id !== id);
+}
 const allItemsSum = computed(() => {
   return calculateItemSumPrice(offerItemsArray.value, invoiceInfo.value.offered_at);
 });
@@ -156,7 +159,11 @@ onMounted(async () => {
         <div class="font-bold">Leistungsdatum:</div>
         <Button @click="onCalendarCreate" icon="pi pi-plus" rounded outlined />
       </div>
-      <div v-for="(item, idx) in calendarsList" :key="itemCount">
+      <div
+        class="flex flex-row justify-between items-center"
+        v-for="(item, idx) in calendarsList"
+        :key="itemCount"
+      >
         <FloatLabel class="my-6">
           <Calendar
             :id="item.id.toString()"
@@ -167,6 +174,13 @@ onMounted(async () => {
           />
           <label for="calendar"> Leistungsdatum {{ idx + 1 }} </label>
         </FloatLabel>
+        <Button
+          @click="onCalendarItemDelete(item.id)"
+          icon="pi pi-times"
+          severity="danger"
+          text
+          raised
+        />
       </div>
       <!-- <div>add calendars here</div> -->
 
