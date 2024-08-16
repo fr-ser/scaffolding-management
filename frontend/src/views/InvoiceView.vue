@@ -18,23 +18,28 @@ import type { OfferCreate, OfferItemCreate } from "@/global/types/dataEditTypes"
 import type { Order } from "@/global/types/entities";
 import { ROUTES } from "@/router";
 
-let offerItemsArray = ref<OfferItemCreate[]>([]);
-let itemCount = 1;
-function onItemUpdate(item: OfferItemCreate) {
-  offerItemsArray.value = offerItemsArray.value.map((element) => {
-    if (element.id === item.id) {
-      return item;
-    } else {
-      return element;
-    }
-  });
-}
-
-function onItemCreate(kind: ArticleKind) {
-  offerItemsArray.value.push({ id: itemCount++, kind, title: "", description: "" });
-}
-
+const route = useRoute();
 const toast = useToast();
+
+let itemCount = 1;
+let calendarCount = 1;
+
+let offerItemsArray = ref<OfferItemCreate[]>([]);
+
+let invoiceInfo = ref({
+  order_id: "",
+  status: PaymentStatus.initial,
+  description: "",
+  offered_at: "",
+  offer_valid_until: "",
+  items: [],
+});
+let orderInfo = ref<Order | undefined>();
+const invoiceType = Object.values(PaymentStatus);
+let paymentTarget = ref();
+let invoiceDate = ref();
+let calendarsList = ref<{ id: number; date?: Date }[]>([{ id: 0 }]);
+
 const items = [
   {
     label: "Hinweis hinzugefügen",
@@ -51,39 +56,34 @@ const items = [
     },
   },
 ];
+
+function onCalendarCreate() {
+  calendarsList.value.push({ id: calendarCount++ });
+}
+
 function onItemDelete(id: number) {
   offerItemsArray.value = offerItemsArray.value.filter((element) => element.id !== id);
 }
 
-const route = useRoute();
-let orderInfo = ref<Order | undefined>();
-const invoiceType = Object.values(PaymentStatus);
-let paymentTarget = ref();
-let invoiceDate = ref();
+function onItemUpdate(item: OfferItemCreate) {
+  offerItemsArray.value = offerItemsArray.value.map((element) => {
+    if (element.id === item.id) {
+      return item;
+    } else {
+      return element;
+    }
+  });
+}
 
-// let invoiceStatus = PaymentStatus.initial;
-let invoiceInfo = ref({
-  order_id: "",
-  status: PaymentStatus.initial,
-  description: "",
-  offered_at: "",
-  offer_valid_until: "",
-  items: [],
-});
-// async function onSaveOffer() {
-//   await createOffer({
-//     ...offerInfo.value,
-//     items: offerItemsArray.value,
-//   });
+function onItemCreate(kind: ArticleKind) {
+  offerItemsArray.value.push({ id: itemCount++, kind, title: "", description: "" });
+}
+
 onMounted(async () => {
   orderInfo.value = await getOrder(route.params.order_id as string);
 });
 </script>
 <template>
-  <!-- <div class="flex gap-x-2">
-    <Button label="Speichern" text raised @click="onSaveOffer" />
-    <Button label="Löschen" severity="danger" text raised />
-  </div> -->
   <Card class="my-2">
     <template #content>
       <div class="mb-4 font-bold">Auftragsdaten</div>
@@ -142,9 +142,22 @@ onMounted(async () => {
     <template #content>
       <div class="flex flex-row justify-between items-center mb-4">
         <div class="font-bold">Leistungsdatum:</div>
-        <Button icon="pi pi-plus" rounded outlined />
-        <!-- <div>add calendars here</div> -->
+        <Button @click="onCalendarCreate" icon="pi pi-plus" rounded outlined />
       </div>
+      <div v-for="(item, idx) in calendarsList" :key="itemCount">
+        <FloatLabel class="my-6">
+          <Calendar
+            :id="item.id.toString()"
+            v-model="item.date"
+            dateFormat="dd/mm/yy"
+            showIcon
+            iconDisplay="input"
+          />
+          <label for="calendar"> Leistungsdatum {{ idx + 1 }} </label>
+        </FloatLabel>
+      </div>
+      <!-- <div>add calendars here</div> -->
+
       <section>
         <p class="font-bold mb-5">Rechnungs-beschreibung:</p>
         <FloatLabel>
