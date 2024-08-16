@@ -4,25 +4,86 @@ import Calendar from "primevue/calendar";
 import Card from "primevue/card";
 import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
+import SplitButton from "primevue/splitbutton";
+import Textarea from "primevue/textarea";
+import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
-import { getOrder } from "@/backendClient";
+import { createOffer, getOrder } from "@/backendClient";
+import OfferItem from "@/components/orders/OfferItem.vue";
+import { ArticleKind } from "@/global/types/appTypes";
 import { PaymentStatus } from "@/global/types/appTypes";
+import type { OfferCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Order } from "@/global/types/entities";
 import { ROUTES } from "@/router";
+
+let offerItemsArray = ref<OfferItemCreate[]>([]);
+let itemCount = 1;
+function onItemUpdate(item: OfferItemCreate) {
+  offerItemsArray.value = offerItemsArray.value.map((element) => {
+    if (element.id === item.id) {
+      return item;
+    } else {
+      return element;
+    }
+  });
+}
+
+function onItemCreate(kind: ArticleKind) {
+  offerItemsArray.value.push({ id: itemCount++, kind, title: "", description: "" });
+}
+
+const toast = useToast();
+const items = [
+  {
+    label: "Hinweis hinzugefügen",
+    command: () => {
+      onItemCreate(ArticleKind.heading);
+      toast.add({ severity: "success", detail: "Hinweis hinzugefügt", life: 3000 });
+    },
+  },
+  {
+    label: "Position hinzugefügen",
+    command: () => {
+      onItemCreate(ArticleKind.item),
+        toast.add({ severity: "success", detail: "Position hinzugefügt", life: 3000 });
+    },
+  },
+];
+function onItemDelete(id: number) {
+  offerItemsArray.value = offerItemsArray.value.filter((element) => element.id !== id);
+}
 
 const route = useRoute();
 let orderInfo = ref<Order | undefined>();
 const invoiceType = Object.values(PaymentStatus);
 let paymentTarget = ref();
 let invoiceDate = ref();
-let invoiceStatus = PaymentStatus.initial;
+
+// let invoiceStatus = PaymentStatus.initial;
+let invoiceInfo = ref({
+  order_id: "",
+  status: PaymentStatus.initial,
+  description: "",
+  offered_at: "",
+  offer_valid_until: "",
+  items: [],
+});
+// async function onSaveOffer() {
+//   await createOffer({
+//     ...offerInfo.value,
+//     items: offerItemsArray.value,
+//   });
 onMounted(async () => {
   orderInfo.value = await getOrder(route.params.order_id as string);
 });
 </script>
 <template>
+  <!-- <div class="flex gap-x-2">
+    <Button label="Speichern" text raised @click="onSaveOffer" />
+    <Button label="Löschen" severity="danger" text raised />
+  </div> -->
   <Card class="my-2">
     <template #content>
       <div class="mb-4 font-bold">Auftragsdaten</div>
@@ -70,7 +131,7 @@ onMounted(async () => {
       </FloatLabel>
       <div class="mb-2">Zahlungstatus:</div>
       <Dropdown
-        v-model="invoiceStatus"
+        v-model="invoiceInfo.status"
         :options="invoiceType"
         placeholder="Anrede"
         class="w-full md:w-[14rem] mb-3"
@@ -79,10 +140,39 @@ onMounted(async () => {
   </Card>
   <Card class="my-2">
     <template #content>
-      <div class="flex flex-row justify-between">
-        <div class="mb-4 font-bold">Leistungsdatum:</div>
+      <div class="flex flex-row justify-between items-center mb-4">
+        <div class="font-bold">Leistungsdatum:</div>
         <Button icon="pi pi-plus" rounded outlined />
+        <!-- <div>add calendars here</div> -->
       </div>
+      <section>
+        <p class="font-bold mb-5">Rechnungs-beschreibung:</p>
+        <FloatLabel>
+          <Textarea
+            id="text"
+            v-model="invoiceInfo.description"
+            class="w-full"
+            autoResize
+            rows="5"
+            cols="30"
+          />
+          <label for="text">Beschreibung</label>
+        </FloatLabel>
+        <SplitButton label="Hinzufügen" :model="items" :class="'w-full'" />
+      </section>
     </template>
   </Card>
+  <OfferItem
+    v-for="(item, idx) in offerItemsArray"
+    :index="idx + 1"
+    :item="item"
+    :key="item.id"
+    :offer-date="invoiceInfo.offered_at"
+    @deleted="onItemDelete"
+    @updated="
+      (item) => {
+        onItemUpdate(item);
+      }
+    "
+  ></OfferItem>
 </template>
