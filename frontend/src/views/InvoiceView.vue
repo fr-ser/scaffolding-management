@@ -80,7 +80,7 @@ function onItemUpdate(item: InvoiceItemCreate) {
 function onItemCreate(kind: ArticleKind) {
   invoiceItemsArray.value.push({ id: itemCount++, kind, title: "", description: "" });
 }
-function onCalendarItemDelete(id: number) {
+function onServiceDateDelete(id: number) {
   serviceDates.value = serviceDates.value.filter((element) => element.id !== id);
 }
 const allItemsSum = computed(() => {
@@ -194,7 +194,7 @@ onMounted(async () => {
           <label for="calendar"> Leistungsdatum {{ idx + 1 }} </label>
         </FloatLabel>
         <Button
-          @click="onCalendarItemDelete(item.id)"
+          @click="onServiceDateDelete(item.id)"
           icon="pi pi-times"
           severity="danger"
           text
