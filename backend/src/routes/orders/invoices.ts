@@ -4,7 +4,9 @@ import { getAppDataSource } from "@/db";
 import { InvoiceDocumentItem } from "@/db/entities/document_items";
 import { InvoiceDocument } from "@/db/entities/documents";
 import { Invoice } from "@/db/entities/invoice";
+import { InvoiceItem } from "@/db/entities/order_items";
 import { ErrorCode, UserRole } from "@/global/types/backendTypes";
+import { InvoiceCreate } from "@/global/types/dataEditTypes";
 import { ApiError } from "@/helpers/apiErrors";
 import { noCache } from "@/helpers/middleware";
 import { checkAuth } from "@/helpers/roleManagement";
@@ -24,6 +26,42 @@ invoicesRouter.get(
 
     if (!invoice) next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
     else res.json(invoice);
+  },
+);
+
+invoicesRouter.post(
+  "",
+  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  async (req: express.Request, res: express.Response) => {
+    const dataSource = getAppDataSource();
+    const payload = req.body as InvoiceCreate;
+
+    const invoice = dataSource.manager.create(Invoice, { ...payload });
+
+    await dataSource.transaction(async (transactionalEntityManager) => {
+      await transactionalEntityManager.save(Invoice, invoice);
+
+      await transactionalEntityManager
+        .createQueryBuilder()
+        .insert()
+        .into(InvoiceItem)
+        .values(
+          payload.items.map((item) => {
+            return {
+              kind: item.kind,
+              title: item.title,
+              description: item.description,
+              unit: item.unit,
+              price: item.price,
+              amount: item.amount,
+              offer_id: invoice.id,
+            };
+          }),
+        )
+        .execute();
+    });
+
+    res.json(invoice);
   },
 );
 
