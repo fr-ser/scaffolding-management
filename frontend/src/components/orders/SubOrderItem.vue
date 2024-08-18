@@ -17,7 +17,7 @@ import { getGrossAmount } from "@/helpers/utils";
 const props = defineProps<{
   index: number;
   item: OfferItemCreate | InvoiceItemCreate;
-  offerDate: string;
+  conversionDate: string;
 }>();
 
 const emit = defineEmits<{
@@ -36,7 +36,7 @@ async function openArticlesList(kind: ArticleKind) {
   filteredArticles.value = articlesList.filter((article) => article.kind === kind);
 }
 let grossValue = computed<string>(() => {
-  return getGrossAmount(editableItem.value, props.offerDate);
+  return getGrossAmount(editableItem.value, props.conversionDate);
 });
 function chooseArticle(article: Article) {
   editableItem.value.title = article.title;
