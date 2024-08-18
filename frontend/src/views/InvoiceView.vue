@@ -59,7 +59,7 @@ const items = [
   },
 ];
 
-function onCalendarCreate() {
+function onServiceDateCreate() {
   serviceDates.value.push({ id: calendarCount++ });
 }
 
@@ -176,7 +176,7 @@ onMounted(async () => {
     <template #content>
       <div class="flex flex-row justify-between items-center mb-4">
         <div class="font-bold">Leistungsdatum:</div>
-        <Button @click="onCalendarCreate" icon="pi pi-plus" rounded outlined />
+        <Button @click="onServiceDateCreate" icon="pi pi-plus" rounded outlined />
       </div>
       <div
         class="flex flex-row justify-between items-center"
