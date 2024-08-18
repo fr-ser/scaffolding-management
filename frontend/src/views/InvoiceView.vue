@@ -31,15 +31,16 @@ let invoiceInfo = ref({
   order_id: "",
   status: PaymentStatus.initial,
   description: "",
-  offered_at: "",
-  offer_valid_until: "",
+  invoice_date: "",
+  payment_target: "",
   items: [],
 });
+
 let orderInfo = ref<Order | undefined>();
 const invoiceType = Object.values(PaymentStatus);
-let paymentTarget = ref();
-let invoiceDate = ref();
-let calendarsList = ref<{ id: number; date?: Date }[]>([{ id: 0 }]);
+let paymentTarget = ref<Date>();
+let invoiceDate = ref<Date>();
+let serviceDates = ref<{ id: number; date?: Date }[]>([{ id: 0 }]);
 
 const items = [
   {
@@ -59,7 +60,7 @@ const items = [
 ];
 
 function onCalendarCreate() {
-  calendarsList.value.push({ id: calendarCount++ });
+  serviceDates.value.push({ id: calendarCount++ });
 }
 
 function onItemDelete(id: number) {
@@ -80,10 +81,10 @@ function onItemCreate(kind: ArticleKind) {
   invoiceItemsArray.value.push({ id: itemCount++, kind, title: "", description: "" });
 }
 function onCalendarItemDelete(id: number) {
-  calendarsList.value = calendarsList.value.filter((element) => element.id !== id);
+  serviceDates.value = serviceDates.value.filter((element) => element.id !== id);
 }
 const allItemsSum = computed(() => {
-  return calculateItemSumPrice(invoiceItemsArray.value, invoiceInfo.value.offered_at);
+  return calculateItemSumPrice(invoiceItemsArray.value, invoiceInfo.value.invoice_date);
 });
 onMounted(async () => {
   orderInfo.value = await getOrder(route.params.order_id as string);
@@ -126,7 +127,7 @@ onMounted(async () => {
       <div class="mb-4 font-bold">Rechnung:</div>
       <FloatLabel class="my-6">
         <Calendar
-          id="calendar"
+          id="invoice-date-input"
           v-model="invoiceDate"
           dateFormat="dd/mm/yy"
           showIcon
@@ -136,7 +137,7 @@ onMounted(async () => {
       </FloatLabel>
       <FloatLabel class="my-6">
         <Calendar
-          id="offered-at-input"
+          id="payment-target-input"
           v-model="paymentTarget"
           dateFormat="dd/mm/yy"
           showIcon
@@ -161,7 +162,7 @@ onMounted(async () => {
       </div>
       <div
         class="flex flex-row justify-between items-center"
-        v-for="(item, idx) in calendarsList"
+        v-for="(item, idx) in serviceDates"
         :key="itemCount"
       >
         <FloatLabel class="my-6">
@@ -213,7 +214,7 @@ onMounted(async () => {
     :index="idx + 1"
     :item="item"
     :key="item.id"
-    :offer-date="invoiceInfo.offered_at"
+    :conversion-date="invoiceInfo.invoice_date"
     @deleted="onItemDelete"
     @updated="
       (item) => {
