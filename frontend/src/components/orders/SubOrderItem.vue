@@ -10,25 +10,25 @@ import { computed, ref, watch } from "vue";
 
 import { getArticles } from "@/backendClient";
 import { ArticleKind } from "@/global/types/appTypes";
-import type { OfferItemCreate } from "@/global/types/dataEditTypes";
+import type { InvoiceItemCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Article } from "@/global/types/entities";
 import { getGrossAmount } from "@/helpers/utils";
 
 const props = defineProps<{
   index: number;
-  item: OfferItemCreate;
+  item: OfferItemCreate | InvoiceItemCreate;
   offerDate: string;
 }>();
 
 const emit = defineEmits<{
-  updated: [item: OfferItemCreate];
+  updated: [item: OfferItemCreate | InvoiceItemCreate];
   deleted: [id: number];
 }>();
 
 let filteredArticles = ref<Article[]>([]);
 let isArticlesListVisible = ref(false);
 
-let editableItem = ref<OfferItemCreate>(props.item);
+let editableItem = ref<OfferItemCreate | InvoiceItemCreate>(props.item);
 
 async function openArticlesList(kind: ArticleKind) {
   isArticlesListVisible.value = true;
