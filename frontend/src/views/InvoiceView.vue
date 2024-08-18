@@ -7,7 +7,7 @@ import FloatLabel from "primevue/floatlabel";
 import SplitButton from "primevue/splitbutton";
 import Textarea from "primevue/textarea";
 import { useToast } from "primevue/usetoast";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { getOrder } from "@/backendClient";
@@ -38,8 +38,8 @@ let invoiceInfo = ref({
 
 let orderInfo = ref<Order | undefined>();
 const invoiceType = Object.values(PaymentStatus);
-let paymentTarget = ref<Date>();
 let invoiceDate = ref<Date>();
+let paymentTarget = ref<Date>();
 let serviceDates = ref<{ id: number; date?: Date }[]>([{ id: 0 }]);
 
 const items = [
@@ -86,8 +86,26 @@ function onCalendarItemDelete(id: number) {
 const allItemsSum = computed(() => {
   return calculateItemSumPrice(invoiceItemsArray.value, invoiceInfo.value.invoice_date);
 });
+
+watch(invoiceDate, () => {
+  if (invoiceDate.value) {
+    invoiceInfo.value.invoice_date = formatDateToIsoString(invoiceDate.value);
+  } else {
+    invoiceInfo.value.invoice_date = "";
+  }
+});
+
+watch(paymentTarget, () => {
+  if (paymentTarget.value) {
+    invoiceInfo.value.payment_target = formatDateToIsoString(paymentTarget.value);
+  } else {
+    invoiceInfo.value.payment_target = "";
+  }
+});
+
 onMounted(async () => {
   orderInfo.value = await getOrder(route.params.order_id as string);
+  invoiceInfo.value.order_id = orderInfo.value.id;
 });
 </script>
 <template>
