@@ -11,7 +11,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { createOffer, getOrder } from "@/backendClient";
-import OfferItem from "@/components/orders/OfferItem.vue";
+import SubOrderItem from "@/components/orders/SubOrderItem.vue";
 import { ArticleKind, OfferStatus } from "@/global/types/appTypes";
 import type { OfferCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Offer, Order } from "@/global/types/entities";
@@ -200,7 +200,7 @@ onMounted(async () => {
         </div>
       </template>
     </Card>
-    <OfferItem
+    <SubOrderItem
       v-for="(item, idx) in offerItemsArray"
       :index="idx + 1"
       :item="item"
@@ -212,6 +212,6 @@ onMounted(async () => {
           onItemUpdate(item);
         }
       "
-    ></OfferItem>
+    ></SubOrderItem>
   </div>
 </template>

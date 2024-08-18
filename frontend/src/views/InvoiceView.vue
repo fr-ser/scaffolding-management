@@ -10,11 +10,11 @@ import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
-import { createOffer, getOrder } from "@/backendClient";
-import OfferItem from "@/components/orders/OfferItem.vue";
+import { getOrder } from "@/backendClient";
+import SubOrderItem from "@/components/orders/SubOrderItem.vue";
 import { ArticleKind } from "@/global/types/appTypes";
 import { PaymentStatus } from "@/global/types/appTypes";
-import type { OfferCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
+import type { InvoiceItemCreate } from "@/global/types/dataEditTypes";
 import type { Order } from "@/global/types/entities";
 import { calculateItemSumPrice, formatDateToIsoString } from "@/helpers/utils";
 import { ROUTES } from "@/router";
@@ -25,7 +25,7 @@ const toast = useToast();
 let itemCount = 1;
 let calendarCount = 1;
 
-let offerItemsArray = ref<OfferItemCreate[]>([]);
+let invoiceItemsArray = ref<InvoiceItemCreate[]>([]);
 
 let invoiceInfo = ref({
   order_id: "",
@@ -63,11 +63,11 @@ function onCalendarCreate() {
 }
 
 function onItemDelete(id: number) {
-  offerItemsArray.value = offerItemsArray.value.filter((element) => element.id !== id);
+  invoiceItemsArray.value = invoiceItemsArray.value.filter((element) => element.id !== id);
 }
 
-function onItemUpdate(item: OfferItemCreate) {
-  offerItemsArray.value = offerItemsArray.value.map((element) => {
+function onItemUpdate(item: InvoiceItemCreate) {
+  invoiceItemsArray.value = invoiceItemsArray.value.map((element) => {
     if (element.id === item.id) {
       return item;
     } else {
@@ -77,13 +77,13 @@ function onItemUpdate(item: OfferItemCreate) {
 }
 
 function onItemCreate(kind: ArticleKind) {
-  offerItemsArray.value.push({ id: itemCount++, kind, title: "", description: "" });
+  invoiceItemsArray.value.push({ id: itemCount++, kind, title: "", description: "" });
 }
 function onCalendarItemDelete(id: number) {
   calendarsList.value = calendarsList.value.filter((element) => element.id !== id);
 }
 const allItemsSum = computed(() => {
-  return calculateItemSumPrice(offerItemsArray.value, invoiceInfo.value.offered_at);
+  return calculateItemSumPrice(invoiceItemsArray.value, invoiceInfo.value.offered_at);
 });
 onMounted(async () => {
   orderInfo.value = await getOrder(route.params.order_id as string);
@@ -208,8 +208,8 @@ onMounted(async () => {
       </section>
     </template>
   </Card>
-  <OfferItem
-    v-for="(item, idx) in offerItemsArray"
+  <SubOrderItem
+    v-for="(item, idx) in invoiceItemsArray"
     :index="idx + 1"
     :item="item"
     :key="item.id"
@@ -220,5 +220,5 @@ onMounted(async () => {
         onItemUpdate(item);
       }
     "
-  ></OfferItem>
+  ></SubOrderItem>
 </template>
