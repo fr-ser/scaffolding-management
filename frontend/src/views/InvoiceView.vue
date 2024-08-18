@@ -181,7 +181,7 @@ onMounted(async () => {
       <div
         class="flex flex-row justify-between items-center"
         v-for="(item, idx) in serviceDates"
-        :key="itemCount"
+        :key="item.id"
       >
         <FloatLabel class="my-6">
           <Calendar
