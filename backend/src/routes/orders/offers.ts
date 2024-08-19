@@ -8,16 +8,13 @@ import { OfferItem } from "@/db/entities/order_items";
 import { ErrorCode, UserRole } from "@/global/types/backendTypes";
 import { OfferCreate } from "@/global/types/dataEditTypes";
 import { ApiError } from "@/helpers/apiErrors";
-import { noCache } from "@/helpers/middleware";
 import { checkAuth } from "@/helpers/roleManagement";
 
 export const offersRouter = express.Router();
-offersRouter.use(noCache);
-// TODO: check here and everywhere in the backend that the user permissions are respected
 
 offersRouter.get(
   "/:id",
-  [checkAuth({ all: true })],
+  [checkAuth({ no: [UserRole.employee] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     const offer = await dataSource.manager.findOne(Offer, {
@@ -111,7 +108,7 @@ offersRouter.delete(
 
 offersRouter.get(
   "/:id/documents",
-  [checkAuth({ all: true })],
+  [checkAuth({ no: [UserRole.employee] })],
   async (req: express.Request, res: express.Response) => {
     const dataSource = getAppDataSource();
     res.json(
@@ -123,7 +120,7 @@ offersRouter.get(
 );
 
 offersRouter.post(
-  "/:id/documents/create",
+  "/:id/documents",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();

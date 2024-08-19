@@ -1,4 +1,5 @@
-import { mkdtempSync, rmdirSync } from "node:fs";
+import { mkdtempSync } from "node:fs";
+import { rm } from "node:fs/promises";
 import { Server } from "node:http";
 import os from "node:os";
 import path from "node:path";
@@ -32,7 +33,7 @@ describe("Clients routes", () => {
   afterAll(async () => {
     server.close();
     await closeDatabase();
-    rmdirSync(temporaryDirectory, { recursive: true });
+    await rm(temporaryDirectory, { recursive: true });
   });
 
   test("search for clients", async () => {

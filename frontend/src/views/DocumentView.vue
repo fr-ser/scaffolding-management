@@ -30,6 +30,7 @@ onMounted(async () => {
 </script>
 
 <template>
+  <!-- TODO: handle no documents for employees -->
   Offers:
   <ul v-if="documents">
     <li v-for="doc in documents" :key="doc.id">

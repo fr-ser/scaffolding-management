@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
-import { ref } from "vue";
-import { onMounted } from "vue";
-import { watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 import { getArticles } from "@/backendClient";
 import ArticlesItem from "@/components/articles/ArticleItem.vue";
@@ -25,13 +23,13 @@ async function reloadPage() {
 const articlesList = ref<EditableArticle[]>([]);
 
 function createNewArticle() {
-  // TODO: use the createArticle type
   articlesList.value.unshift({
     id: crypto.randomUUID(),
     kind: ArticleKind.heading,
     title: "New Title",
     description: "New Description",
     isNew: true,
+    // TODO: do not use "any"
   } as any);
 }
 

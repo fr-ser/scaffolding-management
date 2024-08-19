@@ -42,9 +42,9 @@ export interface Order extends CreatedAtUpdatedAt {
   id: string;
   client_id: string;
   client: Client;
-  offer: Offer;
-  invoices: Invoice[];
-  overdue_notices: OverdueNotice[];
+  offer?: Offer;
+  invoices?: Invoice[];
+  overdue_notices?: OverdueNotice[];
   status: OrderStatus;
   title: string;
   description: string;

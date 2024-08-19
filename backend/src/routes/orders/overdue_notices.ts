@@ -5,16 +5,13 @@ import { OverdueNoticeDocument } from "@/db/entities/documents";
 import { OverdueNotice } from "@/db/entities/overdue_notice";
 import { ErrorCode, UserRole } from "@/global/types/backendTypes";
 import { ApiError } from "@/helpers/apiErrors";
-import { noCache } from "@/helpers/middleware";
 import { checkAuth } from "@/helpers/roleManagement";
 
 export const overdueNoticesRouter = express.Router();
-overdueNoticesRouter.use(noCache);
-// TODO: check here and everywhere in the backend that the user permissions are respected
 
 overdueNoticesRouter.get(
   "/:id",
-  [checkAuth({ all: true })],
+  [checkAuth({ no: [UserRole.employee] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     const overdue_notice = await dataSource.manager.findOne(OverdueNotice, {
@@ -50,7 +47,7 @@ overdueNoticesRouter.delete(
 
 overdueNoticesRouter.get(
   "/:id/documents",
-  [checkAuth({ all: true })],
+  [checkAuth({ no: [UserRole.employee] })],
   async (req: express.Request, res: express.Response) => {
     const dataSource = getAppDataSource();
     res.json(
@@ -62,7 +59,7 @@ overdueNoticesRouter.get(
 );
 
 overdueNoticesRouter.post(
-  "/:id/documents/create",
+  "/:id/documents",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();

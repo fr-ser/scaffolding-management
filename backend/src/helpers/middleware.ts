@@ -6,16 +6,6 @@ import morgan from "morgan";
 import { ErrorCode } from "@/global/types/backendTypes";
 import { log } from "@/helpers/logging";
 
-// eslint-disable-next-line  @typescript-eslint/no-unused-vars
-export function noCache(_: express.Request, res: express.Response, next: express.NextFunction) {
-  res.set({
-    "Cache-Control": "private, no-cache, no-store, must-revalidate",
-    Expires: "-1",
-    Pragma: "no-cache",
-  });
-  next();
-}
-
 export function timeoutCheck(
   req: express.Request,
   res: express.Response,

@@ -4,15 +4,13 @@ import { getAppDataSource } from "@/db";
 import { OfferDocument } from "@/db/entities/documents";
 import { ErrorCode, UserRole } from "@/global/types/backendTypes";
 import { ApiError } from "@/helpers/apiErrors";
-import { noCache } from "@/helpers/middleware";
 import { checkAuth } from "@/helpers/roleManagement";
 
 export const offerDocumentsRouter = express.Router();
-offerDocumentsRouter.use(noCache);
 
 offerDocumentsRouter.get(
   "/:id",
-  [checkAuth({ all: true })],
+  [checkAuth({ no: [UserRole.employee] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     const document = await dataSource.manager.findOne(OfferDocument, {

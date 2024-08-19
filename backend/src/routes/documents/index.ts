@@ -12,17 +12,15 @@ import {
 } from "@/global/types/backendTypes";
 import { ApiError } from "@/helpers/apiErrors";
 import { log } from "@/helpers/logging";
-import { noCache } from "@/helpers/middleware";
 import { checkAuth } from "@/helpers/roleManagement";
 import { mergeSortedDocuments } from "@/helpers/utils";
 import { renderMultiplePDF } from "@/pdf/renderPDF";
 
 export const documentsRouter = express.Router();
-documentsRouter.use(noCache);
 
 documentsRouter.get(
   "",
-  [checkAuth({ all: true })],
+  [checkAuth({ no: [UserRole.employee] })],
   async (req: express.Request, res: express.Response) => {
     // "regular" pagination will not work with this endpoint that returns data from
     // multiple tables.

@@ -76,9 +76,9 @@ const confirmDelete = () => {
                 v-model="editableArticle.kind"
                 :options="articlesType"
                 class="w-full"
-                id="select"
+                id="article-kind"
               />
-              <label for="select">Art</label>
+              <label for="article-kind">Art</label>
             </FloatLabel>
             <FloatLabel>
               <InputText class="w-full" id="unit" v-model="editableArticle.unit" />

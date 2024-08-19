@@ -1,5 +1,6 @@
 import express from "express";
-import { FindOneOptions, ILike } from "typeorm";
+import basicAuth from "express-basic-auth";
+import { FindOneOptions, FindOptionsRelations, ILike } from "typeorm";
 
 import { getAppDataSource } from "@/db";
 import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/db/entities/documents";
@@ -14,14 +15,12 @@ import {
   UserRole,
 } from "@/global/types/backendTypes";
 import { ApiError, SQLITE_CONSTRAINT_ERROR_CODE } from "@/helpers/apiErrors";
-import { noCache } from "@/helpers/middleware";
-import { checkAuth } from "@/helpers/roleManagement";
+import { checkAuth, getRoleByUser } from "@/helpers/roleManagement";
 import { invoicesRouter } from "@/routes/orders/invoices";
 import { offersRouter } from "@/routes/orders/offers";
 import { overdueNoticesRouter } from "@/routes/orders/overdue_notices";
 
 export const ordersRouter = express.Router();
-ordersRouter.use(noCache);
 
 ordersRouter.get(
   "",
@@ -58,7 +57,7 @@ ordersRouter.post(
       const maxId = await dataSource.manager.query(
         `SELECT max(cast(substr(id,2) as integer)) as max_id from "order"`,
       );
-      const order = await dataSource.manager.create(Order, {
+      const order = dataSource.manager.create(Order, {
         ...req.body,
         id: `A${maxId[0].max_id + 1}`,
       });
@@ -75,13 +74,21 @@ ordersRouter.get(
   [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
-    const order = await dataSource.manager.findOne(Order, {
-      relations: {
-        client: true,
+
+    const role = getRoleByUser((req as basicAuth.IBasicAuthedRequest).auth.user);
+    let relations = {
+      client: true,
+    } as FindOptionsRelations<Order>;
+    if (role !== UserRole.employee) {
+      relations = {
         offer: { items: true },
         overdue_notices: { invoice_documents: { items: true } },
         invoices: { items: true },
-      },
+      };
+    }
+
+    const order = await dataSource.manager.findOne(Order, {
+      relations,
       where: { id: req.params.id },
     });
     if (!order) {
@@ -154,7 +161,7 @@ ordersRouter.delete(
 
 ordersRouter.get(
   "/:id/documents",
-  [checkAuth({ all: true })],
+  [checkAuth({ no: [UserRole.employee] })],
   async (req: express.Request, res: express.Response) => {
     const dataSource = getAppDataSource();
     const allDataResult = await Promise.all([

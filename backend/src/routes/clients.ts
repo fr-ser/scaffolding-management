@@ -10,11 +10,9 @@ import {
   UserRole,
 } from "@/global/types/backendTypes";
 import { ApiError, SQLITE_CONSTRAINT_ERROR_CODE } from "@/helpers/apiErrors";
-import { noCache } from "@/helpers/middleware";
 import { checkAuth } from "@/helpers/roleManagement";
 
 export const clientsRouter = express.Router();
-clientsRouter.use(noCache);
 
 clientsRouter.get(
   "/",
