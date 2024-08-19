@@ -6,8 +6,7 @@ import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
-import { onMounted, ref } from "vue";
-import { computed } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { createClient, deleteClient, getClient, updateClient } from "@/backendClient";
@@ -41,6 +40,7 @@ const isEditing = computed(() => {
   return Boolean(route.params.id);
 });
 const onSaveClient = async () => {
+  // TODO: add validation
   if (isEditing.value) {
     await updateClient(`${route.params.id}`, userInfo.value);
     notifications.showUpdateClientNotification();

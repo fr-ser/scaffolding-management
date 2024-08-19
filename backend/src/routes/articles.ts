@@ -10,15 +10,13 @@ import {
   UserRole,
 } from "@/global/types/backendTypes";
 import { ApiError } from "@/helpers/apiErrors";
-import { noCache } from "@/helpers/middleware";
 import { checkAuth } from "@/helpers/roleManagement";
 
 export const articlesRouter = express.Router();
-articlesRouter.use(noCache);
 
 articlesRouter.get(
   "",
-  [checkAuth({ all: true })],
+  [checkAuth({ no: [UserRole.employee] })],
   async (req: express.Request, res: express.Response) => {
     const { skip = 0, take = 100 } = req.query as PaginationQueryParameters;
     const { search } = req.query as { search?: string };

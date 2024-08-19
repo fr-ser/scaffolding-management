@@ -12,8 +12,7 @@ import { useRoute, useRouter } from "vue-router";
 
 import { createOffer, getOrder } from "@/backendClient";
 import OfferItem from "@/components/orders/OfferItem.vue";
-import { OfferStatus } from "@/global/types/appTypes";
-import { ArticleKind } from "@/global/types/appTypes";
+import { ArticleKind, OfferStatus } from "@/global/types/appTypes";
 import type { OfferCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Offer, Order } from "@/global/types/entities";
 import { calculateItemSumPrice, formatDateToIsoString } from "@/helpers/utils";
@@ -55,14 +54,14 @@ function onItemCreate(kind: ArticleKind) {
 const toast = useToast();
 const items = [
   {
-    label: "Hinweis hinzugefügen",
+    label: "Hinweis hinzufügen",
     command: () => {
       onItemCreate(ArticleKind.heading);
       toast.add({ severity: "success", detail: "Hinweis hinzugefügt", life: 3000 });
     },
   },
   {
-    label: "Position hinzugefügen",
+    label: "Position hinzufügen",
     command: () => {
       onItemCreate(ArticleKind.item),
         toast.add({ severity: "success", detail: "Position hinzugefügt", life: 3000 });
@@ -71,6 +70,7 @@ const items = [
 ];
 
 async function onSaveOffer() {
+  // TODO: add validation
   await createOffer({
     ...offerInfo.value,
     items: offerItemsArray.value,

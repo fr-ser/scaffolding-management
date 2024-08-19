@@ -8,16 +8,13 @@ import { InvoiceItem } from "@/db/entities/order_items";
 import { ErrorCode, UserRole } from "@/global/types/backendTypes";
 import { InvoiceCreate } from "@/global/types/dataEditTypes";
 import { ApiError } from "@/helpers/apiErrors";
-import { noCache } from "@/helpers/middleware";
 import { checkAuth } from "@/helpers/roleManagement";
 
 export const invoicesRouter = express.Router();
-invoicesRouter.use(noCache);
-// TODO: check here and everywhere in the backend that the user permissions are respected
 
 invoicesRouter.get(
   "/:id",
-  [checkAuth({ all: true })],
+  [checkAuth({ no: [UserRole.employee] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     const invoice = await dataSource.manager.findOne(Invoice, {
@@ -111,7 +108,7 @@ invoicesRouter.patch(
 
 invoicesRouter.get(
   "/:id/documents",
-  [checkAuth({ all: true })],
+  [checkAuth({ no: [UserRole.employee] })],
   async (req: express.Request, res: express.Response) => {
     const dataSource = getAppDataSource();
     const documents = await dataSource.manager.find(InvoiceDocument, {
@@ -122,7 +119,7 @@ invoicesRouter.get(
 );
 
 invoicesRouter.post(
-  "/:id/documents/create",
+  "/:id/documents",
   [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();

@@ -20,7 +20,7 @@ import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { OrderStatus } from "@/global/types/appTypes";
 import type { OrderCreate } from "@/global/types/dataEditTypes";
-import type { Client, Order } from "@/global/types/entities";
+import type { Client, Offer, Order } from "@/global/types/entities";
 import { debounce } from "@/helpers/utils";
 import { ROUTES } from "@/router";
 
@@ -88,6 +88,7 @@ const confirm = useConfirmations();
 const notifications = useNotifications();
 
 const onSaveOrder = async () => {
+  // TODO: add validation
   const payload: OrderCreate = orderInfo.value as OrderCreate;
 
   if (selectedClient.value) {
@@ -229,10 +230,11 @@ onMounted(async () => {
             </router-link>
           </div>
         </div>
+        <!-- TODO: handle no suborder for employees -->
         <section v-if="(orderInfo as Order).offer">
           <TabView>
             <TabPanel header="Angebot">
-              <OfferSummary :offer="(orderInfo as Order).offer"></OfferSummary>
+              <OfferSummary :offer="(orderInfo as Order).offer as Offer"></OfferSummary>
             </TabPanel>
           </TabView>
           <OrderDocuments v-if="isEditing" :id="(orderInfo as Order).id"></OrderDocuments>
