@@ -49,6 +49,7 @@ onMounted(async () => {
         />
         <InputText
           v-model="search"
+          name="article-search"
           placeholder="Suche (ID, Titel oder Beschreibung)"
           class="pl-10 w-full"
           data-testid="article-search-input"

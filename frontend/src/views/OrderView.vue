@@ -221,6 +221,15 @@ onMounted(async () => {
               dropdown
               :inputStyle="{ width: '100%' }"
               data-testid="order-client-select"
+              :pt="{
+                // fixes https://github.com/primefaces/primevue/issues/6141
+                // and https://github.com/primefaces/primevue/issues/6103
+                dropdownButton: {
+                  root: {
+                    ariaHidden: false,
+                  },
+                },
+              }"
             />
           </div>
           <div v-if="isEditing" class="flex flex-row justify-between items-center">
