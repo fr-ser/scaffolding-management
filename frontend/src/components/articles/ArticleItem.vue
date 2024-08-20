@@ -72,6 +72,11 @@ const confirmDelete = () => {
           </FloatLabel>
           <div class="grid grid-cols-2 gap-2 mt-6">
             <FloatLabel>
+              <!-- The following warning is logged in the browser console:
+              "Incorrect use of <label for=FORM_ELEMENT>"
+              It is because of this outstanding bug: 
+              https://github.com/primefaces/primevue/issues/2924
+              -->
               <Dropdown
                 v-model="editableArticle.kind"
                 :options="articlesType"
@@ -90,7 +95,7 @@ const confirmDelete = () => {
           <FloatLabel class="grow">
             <InputNumber
               class="w-full"
-              id="price"
+              inputId="price"
               v-model="editableArticle.price"
               data-testid="price-input"
             />
