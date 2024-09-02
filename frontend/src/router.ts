@@ -75,7 +75,7 @@ const router = createRouter({
       name: `${ROUTES.ORDER.name}-newInvoice`,
       component: InvoiceView,
       meta: {
-        label: "Invoice creation/updating",
+        label: "Rechnung anschauen/bearbeiten",
       },
     },
     {

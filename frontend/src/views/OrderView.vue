@@ -228,7 +228,6 @@ onMounted(async () => {
             <router-link :to="`${ROUTES.ORDER.path}/${route.params.id}/edit/offer/new`">
               <Button v-if="!(orderInfo as Order).offer" label="Angebot erstellen"></Button>
             </router-link>
-            <!-- TODO: hide button -->
             <router-link :to="`${ROUTES.ORDER.path}/${route.params.id}/edit/invoice/new`">
               <Button label="Rechnung  erstellen"></Button>
             </router-link>

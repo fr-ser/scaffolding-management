@@ -170,10 +170,6 @@ onMounted(async () => {
         placeholder="Anrede"
         class="w-full md:w-[14rem] mb-3"
       />
-    </template>
-  </Card>
-  <Card class="my-2">
-    <template #content>
       <div class="flex flex-row justify-between items-center mb-4">
         <div class="font-bold">Leistungsdatum:</div>
         <Button @click="onServiceDateCreate" icon="pi pi-plus" rounded outlined />
@@ -201,10 +197,8 @@ onMounted(async () => {
           raised
         />
       </div>
-      <!-- <div>add calendars here</div> -->
-
       <section>
-        <p class="font-bold mb-5">Rechnungs-beschreibung:</p>
+        <p class="font-bold mb-5">Rechnungsbeschreibung:</p>
         <FloatLabel>
           <Textarea
             id="text"
@@ -222,7 +216,6 @@ onMounted(async () => {
           <span>USt: {{ allItemsSum.amountVat }} </span>
           <span>Brutto: {{ allItemsSum.amountGross }}</span>
         </div>
-        <!-- add sum -->
         <SplitButton label="Hinzufügen" :model="items" :class="'w-full'" />
       </section>
     </template>
@@ -232,7 +225,7 @@ onMounted(async () => {
     :index="idx + 1"
     :item="item"
     :key="item.id"
-    :conversion-date="invoiceInfo.invoice_date"
+    :vat-date="invoiceInfo.invoice_date"
     @deleted="onItemDelete"
     @updated="
       (item) => {
