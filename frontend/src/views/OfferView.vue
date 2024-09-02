@@ -11,6 +11,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { createOffer, getOrder } from "@/backendClient";
+import OrderSummary from "@/components/orders/OrderSummary.vue";
 import SubOrderItem from "@/components/orders/SubOrderItem.vue";
 import { ArticleKind, OfferStatus } from "@/global/types/appTypes";
 import type { OfferCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
@@ -108,110 +109,83 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex flex-row justify-between">
-    <router-link :to="`${ROUTES.ORDER.path}/${route.params.order_id}/edit`">
-      <Button icon="pi pi-arrow-left" size="small" severity="secondary" text raised />
-    </router-link>
-    <div class="flex gap-x-2">
-      <Button label="Speichern" text raised @click="onSaveOffer" />
-      <Button label="Löschen" severity="danger" text raised />
+  <div v-if="orderInfo">
+    <div class="flex flex-row justify-between">
+      <router-link :to="`${ROUTES.ORDER.path}/${route.params.order_id}/edit`">
+        <Button icon="pi pi-arrow-left" size="small" severity="secondary" text raised />
+      </router-link>
+      <div class="flex gap-x-2">
+        <Button label="Speichern" text raised @click="onSaveOffer" />
+        <Button label="Löschen" severity="danger" text raised />
+      </div>
     </div>
-  </div>
-  <div v-if="orderInfo" class="grid grid-cols-1">
-    <Card class="my-2">
-      <template #content>
-        <div class="mb-4 font-bold">Auftragsdaten</div>
-        <div><span class="font-bold"> Bauvorhaben: </span>{{ orderInfo.title }}</div>
-        <div>
-          <span class="font-bold"> Auftrags-Nr.: </span>
-          {{ orderInfo.id }}
-        </div>
-        <div><span class="font-bold">Status: </span> {{ orderInfo.status }}</div>
-        <div>
-          <span class="font-bold">Kunde: </span>
-          <router-link class="underline" :to="`${ROUTES.CLIENT.path}/${orderInfo.client_id}/edit`">
-            {{ orderInfo.client.first_name }} {{ orderInfo.client.last_name }}
-            <i class="pi pi-external-link ml-1"></i>
-          </router-link>
-        </div>
-        <div>
-          <span class="font-bold">Skonto: </span>
-          <span>{{ orderInfo.can_have_cash_discount ? "Ja" : "Nein" }}</span>
-          <div v-if="orderInfo.can_have_cash_discount">
-            <div>
-              <span class="font-bold">Skontodauer: </span> {{ orderInfo.discount_duration }}
-            </div>
-            <div>
-              <span class="font-bold"> Skonto(%): </span>{{ orderInfo.discount_percentage }}
-            </div>
-          </div>
-        </div>
-      </template>
-    </Card>
-    <Card class="my-2">
-      <template #content>
-        <div class="mb-4 font-bold">Angebot</div>
-        <FloatLabel class="my-6">
-          <Calendar
-            id="calendar"
-            v-model="offerDate"
-            dateFormat="dd/mm/yy"
-            showIcon
-            iconDisplay="input"
-          />
-          <label for="calendar"> Angebotsdatum </label>
-        </FloatLabel>
-        <FloatLabel class="my-6">
-          <Calendar
-            id="offered-at-input"
-            v-model="validityDate"
-            dateFormat="dd/mm/yy"
-            showIcon
-            iconDisplay="input"
-          />
-          <label for="calendar"> Gültigkeit(Angebot) </label>
-        </FloatLabel>
-        <Dropdown
-          v-model="offerInfo.status"
-          :options="offersType"
-          placeholder="Anrede"
-          class="w-full md:w-[14rem] mb-3"
-        />
-        <div class="card flex flex-col justify-center gap-y-5">
-          <span class="font-bold">Angebotsbeschreibung: </span>
-          <FloatLabel>
-            <Textarea
-              id="text"
-              v-model="offerInfo.description"
-              class="w-full"
-              autoResize
-              rows="5"
-              cols="30"
+    <div class="grid grid-cols-1">
+      <OrderSummary :order-info="orderInfo" />
+      <Card class="my-2">
+        <template #content>
+          <div class="mb-4 font-bold">Angebot</div>
+          <FloatLabel class="my-6">
+            <Calendar
+              id="calendar"
+              v-model="offerDate"
+              dateFormat="dd/mm/yy"
+              showIcon
+              iconDisplay="input"
             />
-            <label for="text">Beschreibung</label>
+            <label for="calendar"> Angebotsdatum </label>
           </FloatLabel>
-          <div class="font-bold">Summe:</div>
-          <div class="flex flex-row gap-10">
-            <span>Netto: {{ allItemsSum.amountNet }} </span>
-            <span>USt: {{ allItemsSum.amountVat }} </span>
-            <span>Brutto: {{ allItemsSum.amountGross }}</span>
+          <FloatLabel class="my-6">
+            <Calendar
+              id="offered-at-input"
+              v-model="validityDate"
+              dateFormat="dd/mm/yy"
+              showIcon
+              iconDisplay="input"
+            />
+            <label for="calendar"> Gültigkeit(Angebot) </label>
+          </FloatLabel>
+          <Dropdown
+            v-model="offerInfo.status"
+            :options="offersType"
+            placeholder="Anrede"
+            class="w-full md:w-[14rem] mb-3"
+          />
+          <div class="card flex flex-col justify-center gap-y-5">
+            <span class="font-bold">Angebotsbeschreibung: </span>
+            <FloatLabel>
+              <Textarea
+                id="text"
+                v-model="offerInfo.description"
+                class="w-full"
+                autoResize
+                rows="5"
+                cols="30"
+              />
+              <label for="text">Beschreibung</label>
+            </FloatLabel>
+            <div class="font-bold">Summe:</div>
+            <div class="flex flex-row gap-10">
+              <span>Netto: {{ allItemsSum.amountNet }} </span>
+              <span>USt: {{ allItemsSum.amountVat }} </span>
+              <span>Brutto: {{ allItemsSum.amountGross }}</span>
+            </div>
+            <SplitButton label="Hinzufügen" :model="items" :class="'w-full'" />
           </div>
-          <SplitButton label="Hinzufügen" :model="items" :class="'w-full'" />
-        </div>
-      </template>
-    </Card>
-    <SubOrderItem
-      v-for="(item, idx) in offerItemsArray"
-      :index="idx + 1"
-      :item="item"
-      :key="item.id"
-      :vat-date="offerInfo.offered_at"
-      @deleted="onItemDelete"
-      @updated="
-        (item) => {
-          onItemUpdate(item);
-        }
-      "
-    ></SubOrderItem>
+        </template>
+      </Card>
+      <SubOrderItem
+        v-for="(item, idx) in offerItemsArray"
+        :index="idx + 1"
+        :item="item"
+        :key="item.id"
+        :vat-date="offerInfo.offered_at"
+        @deleted="onItemDelete"
+        @updated="
+          (item) => {
+            onItemUpdate(item);
+          }
+        "
+      ></SubOrderItem>
+    </div>
   </div>
 </template>
