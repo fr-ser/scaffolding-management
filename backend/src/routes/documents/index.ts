@@ -15,6 +15,7 @@ import { log } from "@/helpers/logging";
 import { checkAuth } from "@/helpers/roleManagement";
 import { mergeSortedDocuments } from "@/helpers/utils";
 import { renderMultiplePDF } from "@/pdf/renderPDF";
+import { invoiceDocumentsRouter } from "@/routes/documents/invoice_documents";
 
 export const documentsRouter = express.Router();
 
@@ -144,3 +145,4 @@ documentsRouter.post(
     }
   },
 );
+documentsRouter.use("/invoices", invoiceDocumentsRouter);

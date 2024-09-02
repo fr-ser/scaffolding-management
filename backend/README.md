@@ -28,3 +28,11 @@ The required configuration is provided by the `local.env` file.
 If, however, for development purposes you want to use different ones (i.e. to send a real email when working on the email task), you can use environment variables.
 
 A very nice tool for that is [direnv](https://direnv.net/).
+
+## Migrations
+
+In order to create migrations use the following command:
+`CONFIG_PATH=local.env NODE_OPTIONS='-r tsconfig-paths/register' npx typeorm-ts-node-commonjs migration:generate ./src/migrations/update-post-table -d ./src/db/dataSource.ts`.
+
+In order to run migrations use:
+`CONFIG_PATH=local.env NODE_OPTIONS='-r tsconfig-paths/register' npx typeorm-ts-node-commonjs migration:run -d ./src/db/dataSource.ts`.

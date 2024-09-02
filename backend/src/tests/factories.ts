@@ -1,6 +1,7 @@
 import { DataSource } from "typeorm";
 
 import { Client as DbClient } from "@/db/entities/client";
+import { InvoiceDocument as DbInvoiceDocument } from "@/db/entities/documents";
 import { Invoice as DbInvoice } from "@/db/entities/invoice";
 import { Offer as DbOffer } from "@/db/entities/offer";
 import { Order as DbOrder } from "@/db/entities/order";
@@ -25,49 +26,78 @@ import {
   OverdueNoticeDocument,
 } from "@/global/types/entities";
 
-export function getInvoiceDocument() {
-  return {
-    id: "document_id",
-    creation_date: "1992-12-12",
-    client_id: "client_id",
-    client_email: "client@mail.com",
-    client_company_name: "client_company_name",
-    client_first_name: "client_first_name",
-    client_last_name: "client_last_name",
-    client_street_and_number: "client_street_and_number",
-    client_postal_code: "client_postal_code",
-    client_city: "client_city",
-    order_title: "order_title",
-    invoice_id: 1,
-    invoice: {} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-    items: [
-      {
-        id: 1,
-        kind: ArticleKind.heading,
-        title: "title1",
-        description: "description1",
-      },
-      {
-        id: 2,
-        kind: ArticleKind.item,
-        title: "title2",
-        description: "description2",
-        unit: "unit",
-        price: 10,
-        amount: 100,
-      },
-    ],
-    service_dates: ["1993-12-12", "1994-12-13"],
-    payment_target: "1995-12-12",
-    can_have_cash_discount: false,
-    discount_duration: 0,
-    discount_percentage: 0,
-  } as InvoiceDocument;
+export async function getInvoiceDocument(
+  override: Partial<InvoiceDocument> = {},
+  saveInDb?: DataSource,
+): Promise<InvoiceDocument> {
+  let invoiceId: number;
+  let invoice: Invoice | undefined;
+
+  if (override.invoice_id) {
+    invoiceId = override.invoice_id;
+  } else {
+    invoice = await getInvoice({}, saveInDb);
+    invoiceId = invoice.id;
+  }
+
+  const invoiceDocument = {
+    ...{
+      id: "document_id",
+      created_at: 1,
+      updated_at: 1,
+      creation_date: "1992-12-12",
+      client_id: "client_id",
+      client_email: "client@mail.com",
+      client_company_name: "client_company_name",
+      client_first_name: "client_first_name",
+      client_last_name: "client_last_name",
+      client_street_and_number: "client_street_and_number",
+      client_postal_code: "client_postal_code",
+      client_city: "client_city",
+      order_title: "order_title",
+      invoice_id: invoiceId,
+      items: [
+        {
+          id: 1,
+          invoice_document_id: "document_id",
+          kind: ArticleKind.heading,
+          title: "title1",
+          description: "description1",
+        },
+        {
+          id: 2,
+          invoice_document_id: "document_id",
+          kind: ArticleKind.item,
+          title: "title2",
+          description: "description2",
+          unit: "unit",
+          price: 10,
+          amount: 100,
+        },
+      ],
+      service_dates: ["1993-12-12", "1994-12-13"],
+      payment_target: "1995-12-12",
+      can_have_cash_discount: false,
+      discount_duration: 0,
+      discount_percentage: 0,
+    },
+    ...override,
+  };
+
+  if (saveInDb) {
+    if (invoice) await saveInDb.getRepository(DbInvoice).save(invoice);
+
+    await saveInDb.getRepository(DbInvoiceDocument).save(invoiceDocument);
+  }
+
+  return invoiceDocument;
 }
 
-export function getOfferDocument() {
+export async function getOfferDocument(): Promise<OfferDocument> {
   return {
     id: "document_id",
+    created_at: 1,
+    updated_at: 1,
     creation_date: "1992-12-12",
     client_id: "client_id",
     client_email: "client@mail.com",
@@ -79,16 +109,17 @@ export function getOfferDocument() {
     client_city: "client_city",
     order_title: "order_title",
     offer_id: 1,
-    offer: {} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     items: [
       {
         id: 1,
+        offer_document_id: "document_id",
         kind: ArticleKind.heading,
         title: "title1",
         description: "description1",
       },
       {
         id: 2,
+        offer_document_id: "document_id",
         kind: ArticleKind.item,
         title: "title2",
         description: "description2",
@@ -99,10 +130,10 @@ export function getOfferDocument() {
     ],
     offered_at: "1993-12-12",
     offer_valid_until: "1995-12-12",
-  } as OfferDocument;
+  };
 }
 
-export function getOverdueNoticeDocument() {
+export async function getOverdueNoticeDocument(): Promise<OverdueNoticeDocument> {
   return {
     id: "document_id",
     created_at: 1,
@@ -118,16 +149,14 @@ export function getOverdueNoticeDocument() {
     client_city: "client_city",
     order_title: "order_title",
     overdue_notice_id: 1,
-    overdue_notice: {} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-    items: [],
     notice_level: OverdueNoticeLevel.first,
     notice_date: "1993-12-12",
     payments_until: "1994-12-12",
     payment_target: "1995-12-12",
     notice_costs: 55,
     default_interest: 2.5,
-    invoice_documents: [getInvoiceDocument()],
-  } as OverdueNoticeDocument;
+    invoice_documents: [await getInvoiceDocument()],
+  };
 }
 
 export function getClient(clientOverride: Partial<Client> = {}): Client {
@@ -275,6 +304,7 @@ export async function getInvoice(
   };
 
   if (saveInDb) {
+    await saveInDb.getRepository(DbOrder).save(invoice.order);
     await saveInDb.getRepository(DbInvoice).save(invoice);
   }
 

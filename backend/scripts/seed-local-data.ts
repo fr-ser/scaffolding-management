@@ -6,7 +6,7 @@ import { initializeAppDataSource } from "@/db";
 import { Article } from "@/db/entities/article";
 import { Client } from "@/db/entities/client";
 import { OfferDocumentItem } from "@/db/entities/document_items";
-import { OfferDocument } from "@/db/entities/documents";
+import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/db/entities/documents";
 import { Invoice } from "@/db/entities/invoice";
 import { Offer } from "@/db/entities/offer";
 import { Order } from "@/db/entities/order";
@@ -142,6 +142,7 @@ async function insertData(dataSource: DataSource) {
       Array.from(Array(10)).map((_: unknown, index: number) => {
         return {
           id: `A-2020-01-${index + 1}`,
+          creation_date: `2021-01-0${index + 1}`,
           client_id: `K${index + 1}`,
           client_email: `email${index}@test.com`,
           client_company_name: `Company ${index + 1}`,
@@ -152,14 +153,13 @@ async function insertData(dataSource: DataSource) {
           client_city: `city ${index + 1}`,
           order_title: `Order Title ${index + 1}`,
           offer_id: () => `(SELECT id from offer where order_id='A${index + 1}')`,
-          title: `Document Title ${index + 1}`,
-          creation_date: `2021-01-0${index + 1}`,
           offered_at: `2021-02-0${index + 1}`,
           offer_valid_until: `2021-03-0${index + 1}`,
         };
       }),
     )
     .execute();
+
   await dataSource
     .createQueryBuilder()
     .insert()
@@ -207,26 +207,85 @@ async function insertData(dataSource: DataSource) {
   await dataSource
     .createQueryBuilder()
     .insert()
-    .into(OverdueNotice)
+    .into(InvoiceDocument)
     .values(
       Array.from(Array(10)).map((_: unknown, index: number) => {
-        const anyPaymentStatus = Object.values(OverdueNoticePaymentStatus)[
-          index % Object.values(OverdueNoticePaymentStatus).length
-        ];
-        const anyNoticeLevel =
-          Object.values(OverdueNoticeLevel)[index % Object.values(OverdueNoticeLevel).length];
-
         return {
-          order_id: `A${index + 1}`,
-          sub_id: String(index),
-          payments_until: `2021-01-0${index + 1}`,
-          notice_date: `2023-01-0${index + 1}`,
+          id: `R-2020-01-${index + 1}`,
+          creation_date: `2021-01-0${index + 1}`,
+          client_id: `K${index + 1}`,
+          client_email: `email${index}@test.com`,
+          client_company_name: `Company ${index + 1}`,
+          client_first_name: `First Name ${index + 1}`,
+          client_last_name: `Last Name ${index + 1}`,
+          client_street_and_number: `street and number ${index + 1}`,
+          client_postal_code: `postal code ${index + 1}`,
+          client_city: `city ${index + 1}`,
+          order_title: `Order Title ${index + 1}`,
+          invoice_id: () => `(SELECT id from invoice where order_id='A${index + 1}')`,
+          service_dates: [`2021-01-0${index + 1}`, `2022-01-0${index + 1}`],
           payment_target: `2024-01-0${index + 1}`,
-          notice_level: anyNoticeLevel,
-          payment_status: anyPaymentStatus,
+          can_have_cash_discount: false,
+        };
+      }),
+    )
+    .execute();
+
+  for (let index = 0; index < 10; index++) {
+    const anyPaymentStatus = Object.values(OverdueNoticePaymentStatus)[
+      index % Object.values(OverdueNoticePaymentStatus).length
+    ];
+    const anyNoticeLevel =
+      Object.values(OverdueNoticeLevel)[index % Object.values(OverdueNoticeLevel).length];
+    const overdueNotice = await dataSource.manager.save(OverdueNotice, {
+      order_id: `A${index + 1}`,
+      sub_id: String(index),
+      payments_until: `2021-01-0${index + 1}`,
+      notice_date: `2023-01-0${index + 1}`,
+      payment_target: `2024-01-0${index + 1}`,
+      notice_level: anyNoticeLevel,
+      payment_status: anyPaymentStatus,
+      notice_costs: index + 1,
+      default_interest: index + 10,
+      description: `description ${index + 1}`,
+    });
+
+    // const invoiceDocument = await dataSource.manager.findOne(InvoiceDocument, {
+    //   where: { invoice: { order_id: `A${index + 1}` } },
+    // });
+    // console.log("invoiceDocument", invoiceDocument);
+
+    await dataSource
+      .createQueryBuilder()
+      .relation(OverdueNotice, "invoice_documents")
+      .of(overdueNotice)
+      .add(`R-2020-01-${index + 1}`);
+  }
+
+  await dataSource
+    .createQueryBuilder()
+    .insert()
+    .into(OverdueNoticeDocument)
+    .values(
+      Array.from(Array(10)).map((_: unknown, index: number) => {
+        return {
+          id: `R-2020-01-${index + 1}`,
+          creation_date: `2021-01-0${index + 1}`,
+          client_id: `K${index + 1}`,
+          client_email: `email${index}@test.com`,
+          client_company_name: `Company ${index + 1}`,
+          client_first_name: `First Name ${index + 1}`,
+          client_last_name: `Last Name ${index + 1}`,
+          client_street_and_number: `street and number ${index + 1}`,
+          client_postal_code: `postal code ${index + 1}`,
+          client_city: `city ${index + 1}`,
+          order_title: `Order Title ${index + 1}`,
+          overdue_notice_id: () => `(SELECT id from overdue_notice where order_id='A${index + 1}')`,
+          notice_level: OverdueNoticeLevel.first,
+          notice_date: `2023-01-0${index + 1}`,
+          payments_until: `2024-01-0${index + 1}`,
+          payment_target: `2025-01-0${index + 1}`,
           notice_costs: index + 1,
-          default_interest: index + 10,
-          description: `description ${index + 1}`,
         };
       }),
     )
@@ -251,7 +310,8 @@ async function main() {
   }
 
   const dataSource = await initializeAppDataSource(DB_PATH);
-  await dataSource.synchronize();
+
+  await dataSource.runMigrations({ transaction: "all" });
 
   await insertData(dataSource);
 
@@ -269,4 +329,5 @@ main()
       console.error("Error: ", err);
     }
     console.error("Error: ", err);
+    throw err;
   });

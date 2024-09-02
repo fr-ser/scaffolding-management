@@ -9,16 +9,17 @@ import { DataSource } from "typeorm";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 
 import { closeDatabase, initializeAppDataSource } from "@/db";
-import { Client } from "@/db/entities/client";
+import { ErrorCode } from "@/global/types/backendTypes";
 import { getApp } from "@/main";
 import { getRequest } from "@/tests/api-utils";
-import { getClient } from "@/tests/factories";
+import { getInvoiceDocument, getOverdueNotice } from "@/tests/factories";
 
-describe("Clients routes", () => {
+describe("invoiceDocuments routes", () => {
   let app: Express;
   let server: Server;
   let appDataSource: DataSource;
   const temporaryDirectory = mkdtempSync(path.join(os.tmpdir(), "test-"));
+  console.log("temporaryDirectory", temporaryDirectory);
 
   beforeAll(async () => {
     appDataSource = await initializeAppDataSource(path.join(temporaryDirectory, "test.db"));
@@ -36,26 +37,24 @@ describe("Clients routes", () => {
     await rm(temporaryDirectory, { recursive: true });
   });
 
-  test("search for clients", async () => {
-    await appDataSource
-      .getRepository(Client)
-      .save([getClient(), getClient({ first_name: "Test", last_name: "User" })]);
+  test("cannot delete not existing entity", async () => {
+    const response = await fetch(
+      getRequest(server, `api/documents/invoices/abc`, { method: "DELETE" }),
+    );
 
-    const fullResponse = await fetch(getRequest(server, "api/clients"));
+    expect(response.status).toBe(400);
+    expect((await response.json()).error.code).toBe(ErrorCode.ENTITY_NOT_FOUND);
+  });
 
-    expect(fullResponse.status).toBe(200);
+  test("cannot delete invoice document used in overdueNotice", async () => {
+    const invoiceDocument = await getInvoiceDocument({}, appDataSource);
+    await getOverdueNotice({ invoice_documents: [invoiceDocument] }, appDataSource);
 
-    const fullResponseData = await fullResponse.json();
-    expect(fullResponseData.data).toHaveLength(2);
-    expect(fullResponseData.totalCount).toBe(2);
+    const response = await fetch(
+      getRequest(server, `api/documents/invoices/${invoiceDocument.id}`, { method: "DELETE" }),
+    );
 
-    // search with a filter
-    const filteredResponse = await fetch(getRequest(server, "api/clients?search=st+us"));
-
-    expect(filteredResponse.status).toBe(200);
-
-    const filteredResponseData = await filteredResponse.json();
-    expect(filteredResponseData.data).toHaveLength(1);
-    expect(filteredResponseData.totalCount).toBe(1);
+    expect(response.status).toBe(400);
+    expect((await response.json()).error.code).toBe(ErrorCode.FK_CONSTRAINT_OVERDUE_NOTICE);
   });
 });
