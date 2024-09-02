@@ -10,7 +10,7 @@ import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { createOffer, getOrder } from "@/backendClient";
+import { createOffer, getClient, getOrder } from "@/backendClient";
 import SubOrderItem from "@/components/orders/SubOrderItem.vue";
 import { ArticleKind, OfferStatus } from "@/global/types/appTypes";
 import type { OfferCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
@@ -35,7 +35,7 @@ let offerInfo = ref<OfferCreate | Offer>({
   offer_valid_until: "",
   items: [],
 });
-
+let client = ref();
 let offerItemsArray = ref<OfferItemCreate[]>([]);
 function onItemUpdate(item: OfferItemCreate) {
   offerItemsArray.value = offerItemsArray.value.map((element) => {
@@ -103,7 +103,9 @@ watch(validityDate, () => {
 
 onMounted(async () => {
   orderInfo.value = await getOrder(route.params.order_id as string);
+  // get client info
   offerInfo.value.order_id = orderInfo.value.id;
+  client.value = await getClient(orderInfo.value.client_id);
 });
 </script>
 
@@ -117,7 +119,7 @@ onMounted(async () => {
       <Button label="Löschen" severity="danger" text raised />
     </div>
   </div>
-  <div v-if="orderInfo" class="grid grid-cols-1">
+  <div v-if="orderInfo && client" class="grid grid-cols-1">
     <Card class="my-2">
       <template #content>
         <div class="mb-4 font-bold">Auftragsdaten</div>
@@ -130,7 +132,7 @@ onMounted(async () => {
         <div>
           <span class="font-bold">Kunde: </span>
           <router-link class="underline" :to="`${ROUTES.CLIENT.path}/${orderInfo.client_id}/edit`">
-            {{ orderInfo.client.first_name }} {{ orderInfo.client.last_name }}
+            {{ client.first_name }} {{ client.last_name }}
             <i class="pi pi-external-link ml-1"></i>
           </router-link>
         </div>
