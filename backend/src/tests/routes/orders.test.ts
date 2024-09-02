@@ -22,7 +22,7 @@ describe("Orders routes", () => {
 
   beforeAll(async () => {
     appDataSource = await initializeAppDataSource(path.join(temporaryDirectory, "test.db"));
-    await appDataSource.synchronize();
+    await appDataSource.runMigrations({ transaction: "all" });
 
     app = getApp();
     server = await new Promise((resolve) => {
@@ -42,7 +42,9 @@ describe("Orders routes", () => {
     await getInvoice({ order }, appDataSource);
     await getOverdueNotice({ order }, appDataSource);
 
-    const adminResponse = await fetch(getRequest(server, `api/orders/${order.id}`, UserRole.admin));
+    const adminResponse = await fetch(
+      getRequest(server, `api/orders/${order.id}`, { userRole: UserRole.admin }),
+    );
 
     expect(adminResponse.status).toBe(200);
 
@@ -52,7 +54,7 @@ describe("Orders routes", () => {
     expect(adminResponseData.overdue_notices.length).toBeGreaterThan(0);
 
     const employeeResponse = await fetch(
-      getRequest(server, `api/orders/${order.id}`, UserRole.employee),
+      getRequest(server, `api/orders/${order.id}`, { userRole: UserRole.employee }),
     );
 
     expect(employeeResponse.status).toBe(200);

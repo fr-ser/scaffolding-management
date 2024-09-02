@@ -114,7 +114,6 @@ interface BaseDocument extends CreatedAtUpdatedAt {
 
 export interface OfferDocument extends BaseDocument {
   offer_id: number;
-  offer: Offer;
   items: OfferDocumentItem[];
   offered_at: string;
   offer_valid_until: string;
@@ -122,7 +121,6 @@ export interface OfferDocument extends BaseDocument {
 
 export interface InvoiceDocument extends BaseDocument {
   invoice_id: number;
-  invoice: Invoice;
   items: InvoiceDocumentItem[];
   service_dates: string[];
   payment_target: string;
@@ -133,7 +131,6 @@ export interface InvoiceDocument extends BaseDocument {
 
 export interface OverdueNoticeDocument extends BaseDocument {
   overdue_notice_id: number;
-  overdue_notice: OverdueNotice;
   notice_level: OverdueNoticeLevel;
   notice_date: string;
   payments_until: string;
@@ -155,12 +152,10 @@ interface DocumentItem {
 
 export interface OfferDocumentItem extends DocumentItem {
   offer_document_id: string;
-  offer_document: OfferDocument;
 }
 
 export interface InvoiceDocumentItem extends DocumentItem {
   invoice_document_id: string;
-  invoice_document: InvoiceDocument;
 }
 
 export interface OverdueNotice extends CreatedAtUpdatedAt {

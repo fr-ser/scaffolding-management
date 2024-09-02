@@ -42,7 +42,7 @@ export class OverdueNotice {
   })
   invoice_documents: InvoiceDocument[];
 
-  // TODO: this is only created for the migration. Delete it afterwards
+  // TODO: this is only created for the move from the old to the new app. Delete it afterwards
   @Column({ type: "text" })
   sub_id: string;
 

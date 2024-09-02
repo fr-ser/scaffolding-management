@@ -7,7 +7,7 @@ import { getInvoiceDocument, getOfferDocument, getOverdueNoticeDocument } from "
 
 test("invoice PDF generation", async () => {
   const resultPDF = await renderMultiplePDF([
-    { kind: DocumentKind.invoice, document: getInvoiceDocument() },
+    { kind: DocumentKind.invoice, document: await getInvoiceDocument() },
   ]);
   const pdfLines = String(resultPDF).split("\n");
   const snapshotLines = String(fs.readFileSync("src/tests/pdf/invoice_snapshot.pdf")).split("\n");
@@ -25,7 +25,7 @@ test("invoice PDF generation", async () => {
 
 test("offer PDF generation", async () => {
   const resultPDF = await renderMultiplePDF([
-    { kind: DocumentKind.offer, document: getOfferDocument() },
+    { kind: DocumentKind.offer, document: await getOfferDocument() },
   ]);
   const pdfLines = String(resultPDF).split("\n");
   const snapshotLines = String(fs.readFileSync("src/tests/pdf/offer_snapshot.pdf")).split("\n");
@@ -43,7 +43,7 @@ test("offer PDF generation", async () => {
 
 test("overdue notice PDF generation", async () => {
   const resultPDF = await renderMultiplePDF([
-    { kind: DocumentKind.overdueNotice, document: getOverdueNoticeDocument() },
+    { kind: DocumentKind.overdueNotice, document: await getOverdueNoticeDocument() },
   ]);
   const pdfLines = String(resultPDF).split("\n");
   const snapshotLines = String(fs.readFileSync("src/tests/pdf/overdue_notice_snapshot.pdf")).split(

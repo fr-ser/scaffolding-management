@@ -108,6 +108,9 @@ export class InvoiceDocument extends BaseDocument {
 
   @Column({ type: "numeric", nullable: true })
   discount_percentage: number;
+
+  @ManyToMany(() => OverdueNotice)
+  overdue_notices: OverdueNotice[];
 }
 
 @Entity()
