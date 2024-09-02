@@ -81,6 +81,7 @@ ordersRouter.get(
     } as FindOptionsRelations<Order>;
     if (role !== UserRole.employee) {
       relations = {
+        client: true,
         offer: { items: true },
         overdue_notices: { invoice_documents: { items: true } },
         invoices: { items: true },
