@@ -8,6 +8,7 @@ import type {
   ArticleUpdate,
   ClientCreate,
   ClientUpdate,
+  InvoiceCreate,
   InvoiceUpdate,
   OfferCreate,
   OfferUpdate,
@@ -121,6 +122,11 @@ export async function createOffer(offer: OfferCreate): Promise<Offer> {
 
 export async function updateOffer(id: number, offer: OfferUpdate): Promise<Offer> {
   const response = await axiosInstance.patch(`/api/orders/offers/${id}`, offer);
+  return response.data;
+}
+
+export async function createInvoice(invoice: InvoiceCreate): Promise<Invoice> {
+  const response = await axiosInstance.post(`/api/orders/invoices/`, invoice);
   return response.data;
 }
 
