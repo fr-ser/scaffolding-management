@@ -232,14 +232,16 @@ onMounted(async () => {
               }"
             />
           </div>
-          <div v-if="isEditing" class="flex flex-row justify-between items-center">
-            <p class="font-bold">Unteraufträge</p>
-            <router-link :to="`${ROUTES.ORDER.path}/${route.params.id}/edit/offer/new`">
-              <Button v-if="!(orderInfo as Order).offer" label="Angebot erstellen"></Button>
-            </router-link>
-            <router-link :to="`${ROUTES.ORDER.path}/${route.params.id}/edit/invoice/new`">
-              <Button label="Rechnung  erstellen"></Button>
-            </router-link>
+          <div v-if="isEditing">
+            <p class="font-bold mb-2">Unteraufträge</p>
+            <div class="flex flex-col gap-2">
+              <router-link :to="`${ROUTES.ORDER.path}/${route.params.id}/edit/offer/new`">
+                <Button v-if="!(orderInfo as Order).offer" label="Angebot erstellen"></Button>
+              </router-link>
+              <router-link :to="`${ROUTES.ORDER.path}/${route.params.id}/edit/invoice/new`">
+                <Button label="Rechnung erstellen"></Button>
+              </router-link>
+            </div>
           </div>
         </div>
         <!-- TODO: handle no suborder for employees -->
@@ -249,8 +251,8 @@ onMounted(async () => {
               <OfferSummary :offer="(orderInfo as Order).offer as Offer"></OfferSummary>
             </TabPanel>
           </TabView>
-          <OrderDocuments v-if="isEditing" :id="(orderInfo as Order).id"></OrderDocuments>
         </section>
+        <OrderDocuments v-if="isEditing" :id="(orderInfo as Order).id"></OrderDocuments>
       </template>
     </Card>
   </form>
