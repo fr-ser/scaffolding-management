@@ -75,6 +75,13 @@ export default function useNotifications() {
       life: 3000,
     });
   };
+  const showCreateInvoiceNotification = () => {
+    toast.add({
+      severity: "info",
+      summary: "New invoice was created",
+      life: 3000,
+    });
+  };
   return {
     showDeleteClientNotification,
     showUpdateClientNotification,
@@ -86,5 +93,6 @@ export default function useNotifications() {
     showDeleteOrderNotification,
     showUpdateOrderNotification,
     showUpdateOfferStatusNotification,
+    showCreateInvoiceNotification,
   };
 }

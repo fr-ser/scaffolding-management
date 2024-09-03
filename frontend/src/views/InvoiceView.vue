@@ -8,33 +8,38 @@ import SplitButton from "primevue/splitbutton";
 import Textarea from "primevue/textarea";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
-import { getOrder } from "@/backendClient";
+import { createInvoice, getOrder } from "@/backendClient";
 import OrderSummary from "@/components/orders/OrderSummary.vue";
 import SubOrderItem from "@/components/orders/SubOrderItem.vue";
+import useNotifications from "@/compositions/useNotifications";
 import { ArticleKind } from "@/global/types/appTypes";
 import { PaymentStatus } from "@/global/types/appTypes";
-import type { InvoiceItemCreate } from "@/global/types/dataEditTypes";
+import type { InvoiceCreate, InvoiceItemCreate } from "@/global/types/dataEditTypes";
 import type { Order } from "@/global/types/entities";
 import { calculateItemSumPrice, formatDateToIsoString } from "@/helpers/utils";
 import { ROUTES } from "@/router";
 
 const route = useRoute();
+const router = useRouter();
 const toast = useToast();
+const notifications = useNotifications();
 
 let itemCount = 1;
 let calendarCount = 1;
 
 let invoiceItemsArray = ref<InvoiceItemCreate[]>([]);
 
-let invoiceInfo = ref({
+let invoiceInfo = ref<InvoiceCreate>({
   order_id: "",
   status: PaymentStatus.initial,
   description: "",
   invoice_date: "",
   payment_target: "",
   items: [],
+  service_dates: [],
+  sub_id: "",
 });
 
 let orderInfo = ref<Order | undefined>();
@@ -88,6 +93,24 @@ const allItemsSum = computed(() => {
   return calculateItemSumPrice(invoiceItemsArray.value, invoiceInfo.value.invoice_date);
 });
 
+async function onCreateInvoice() {
+  await createInvoice({
+    ...invoiceInfo.value,
+    items: invoiceItemsArray.value,
+    service_dates: serviceDates.value
+      .filter(function (item) {
+        if (item.date) {
+          return true;
+        }
+      })
+      .map(function (element) {
+        return formatDateToIsoString(element.date as Date);
+      }),
+  });
+  router.push(`${ROUTES.ORDER.path}`);
+  notifications.showCreateInvoiceNotification();
+}
+
 watch(invoiceDate, () => {
   if (invoiceDate.value) {
     invoiceInfo.value.invoice_date = formatDateToIsoString(invoiceDate.value);
@@ -116,8 +139,9 @@ onMounted(async () => {
         <Button icon="pi pi-arrow-left" size="small" severity="secondary" text raised />
       </router-link>
       <div class="flex gap-x-2">
-        <Button label="Speichern" text raised />
-        <Button label="Löschen" severity="danger" text raised />
+        <Button @click="onCreateInvoice" label="Speichern" text raised />
+        <!-- TODO: add removal -->
+        <!-- <Button label="Löschen" severity="danger" text raised /> -->
       </div>
     </div>
     <OrderSummary :order-info="orderInfo" />
@@ -153,7 +177,7 @@ onMounted(async () => {
         />
         <div class="flex flex-row justify-between items-center mb-4">
           <div class="font-bold">Leistungsdatum:</div>
-          <Button @click="onServiceDateCreate" icon="pi pi-plus" rounded outlined />
+          <Button @click="onServiceDateCreate" icon="pi pi-plus" rounded text />
         </div>
         <div
           class="flex flex-row justify-between items-center"
@@ -170,13 +194,7 @@ onMounted(async () => {
             />
             <label for="calendar"> Leistungsdatum {{ idx + 1 }} </label>
           </FloatLabel>
-          <Button
-            @click="onServiceDateDelete(item.id)"
-            icon="pi pi-times"
-            severity="danger"
-            text
-            raised
-          />
+          <Button @click="onServiceDateDelete(item.id)" icon="pi pi-times" severity="danger" text />
         </div>
         <section>
           <p class="font-bold mb-5">Rechnungsbeschreibung:</p>

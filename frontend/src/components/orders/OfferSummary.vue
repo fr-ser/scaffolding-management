@@ -35,7 +35,7 @@ watch(offerStatusValue, async () => {
 });
 </script>
 <template>
-  <section class="flex flex-col gap-2 sm:flex-row sm:gap-8 items-center">
+  <section class="flex flex-col justify-items-start gap-2 sm:flex-row sm:gap-8 sm:items-center">
     <p><span class="font-bold">Datum:</span> {{ formatIsoDateString(offer.offered_at) }}</p>
     <p>
       <span class="font-bold">Gültigkeit:</span> {{ formatIsoDateString(offer.offer_valid_until) }}

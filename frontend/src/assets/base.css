@@ -67,3 +67,7 @@
     --primary-highlight-hover-opacity: 0.2;
   }
 }
+
+html {
+  font-size: 14px;
+}
