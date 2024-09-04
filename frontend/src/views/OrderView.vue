@@ -14,13 +14,14 @@ import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { createOrder, deleteOrder, getClients, getOrder, updateOrder } from "@/backendClient";
+import InvoiceSummary from "@/components/orders/InvoiceSummary.vue";
 import OfferSummary from "@/components/orders/OfferSummary.vue";
 import OrderDocuments from "@/components/orders/OrderDocuments.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { OrderStatus } from "@/global/types/appTypes";
-import type { OrderCreate } from "@/global/types/dataEditTypes";
-import type { Client, Offer, Order } from "@/global/types/entities";
+import type { InvoiceCreate, OrderCreate } from "@/global/types/dataEditTypes";
+import type { Client, Invoice, Offer, Order } from "@/global/types/entities";
 import { debounce } from "@/helpers/utils";
 import { ROUTES } from "@/router";
 
@@ -249,6 +250,12 @@ onMounted(async () => {
           <TabView>
             <TabPanel header="Angebot">
               <OfferSummary :offer="(orderInfo as Order).offer as Offer"></OfferSummary>
+            </TabPanel>
+            <TabPanel header="Invoice">
+              <InvoiceSummary
+                v-if="(orderInfo as Order).invoices?.[0]"
+                :invoice="(orderInfo as Order).invoices?.[0] as Invoice"
+              ></InvoiceSummary>
             </TabPanel>
           </TabView>
         </section>
