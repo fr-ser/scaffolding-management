@@ -1,53 +1,53 @@
 <script setup lang="ts">
-import Card from "primevue/card";
 import Dropdown from "primevue/dropdown";
 import { computed, ref, watch } from "vue";
 
-import { updateOffer } from "@/backendClient";
+import { updateInvoice } from "@/backendClient";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { formatIsoDateString } from "@/global/helpers";
-import { ArticleKind, OfferStatus } from "@/global/types/appTypes";
-import type { Offer } from "@/global/types/entities";
+import { ArticleKind, PaymentStatus } from "@/global/types/appTypes";
+import type { Invoice } from "@/global/types/entities";
 import { calculateItemSumPrice, getGrossAmount } from "@/helpers/utils";
 
 const props = defineProps<{
-  offer: Offer;
+  invoice: Invoice;
 }>();
+const invoiceType = Object.values(PaymentStatus);
+let invoiceStatusValue = ref<PaymentStatus>(props.invoice.status);
 const notifications = useNotifications();
 
 const confirm = useConfirmations();
-
-const offersType = Object.values(OfferStatus);
-
-let offerStatusValue = ref<OfferStatus>(props.offer.status);
 const allItemsSum = computed(() => {
-  return calculateItemSumPrice(props.offer.items, props.offer.offered_at);
+  return calculateItemSumPrice(props.invoice.items, props.invoice.invoice_date);
 });
-
-watch(offerStatusValue, async () => {
-  confirm.showUpdateOfferStatusConfirmation(async () => {
-    await updateOffer(props.offer.id, {
-      status: offerStatusValue.value,
+watch(invoiceStatusValue, async () => {
+  confirm.showUpdateInvoiceStatusConfirmation(async () => {
+    await updateInvoice(props.invoice.id, {
+      status: invoiceStatusValue.value,
     });
-    notifications.showUpdateOfferStatusNotification();
+    notifications.showUpdateInvoiceStatusNotification();
   });
 });
 </script>
 <template>
   <section class="flex flex-col justify-items-start gap-2 sm:flex-row sm:gap-8 sm:items-center">
-    <p><span class="font-bold">Datum:</span> {{ formatIsoDateString(offer.offered_at) }}</p>
     <p>
-      <span class="font-bold">Gültigkeit:</span> {{ formatIsoDateString(offer.offer_valid_until) }}
+      <span class="font-bold">Rechnungsdatum: </span>
+      {{ formatIsoDateString(invoice.invoice_date) }}
     </p>
-    <p class="font-bold">Status:</p>
-
+    <p>
+      <span class="font-bold">Zalungsziel:</span> {{ formatIsoDateString(invoice.payment_target) }}
+    </p>
+    <p class="font-bold">Zahlungstatus:</p>
     <Dropdown
-      v-model="offerStatusValue"
-      :options="offersType"
+      v-model="invoiceStatusValue"
+      :options="invoiceType"
       placeholder="Status"
       class="w-full md:w-[14rem]"
     />
+    <p><span class="font-bold">Leistungsdatum: </span></p>
+    <p><span class="font-bold">Rechnungsbeschreibung:</span> {{ invoice.description }}</p>
   </section>
   <p class="font-bold">Angebotspreis:</p>
   <section class="flex flex-row gap-10">
@@ -55,7 +55,7 @@ watch(offerStatusValue, async () => {
     <span>USt: {{ allItemsSum.amountVat }}</span>
     <span>Brutto: {{ allItemsSum.amountGross }} </span>
   </section>
-  <section v-for="(item, idx) in offer.items" class="my-2" :key="item.id">
+  <section v-for="(item, idx) in invoice.items" class="my-2" :key="item.id">
     <Card class="w-full">
       <template #content>
         <div class="grid grid-cols-1 sm:grid-cols-3 sm:gap-2">
@@ -68,7 +68,7 @@ watch(offerStatusValue, async () => {
             <div>Anzahl: {{ item.amount ?? "-" }}</div>
             <div>Einheit: {{ item.unit ?? "-" }}</div>
             <div>Preis: {{ item.price ?? "-" }}</div>
-            <div>Brutto: {{ getGrossAmount(item, props.offer.offered_at) }}</div>
+            <div>Brutto: {{ getGrossAmount(item, props.invoice.invoice_date) }}</div>
           </div>
         </div>
       </template>

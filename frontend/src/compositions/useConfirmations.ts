@@ -44,10 +44,21 @@ export default function useConfirmation() {
       accept: acceptCallback,
     });
   };
+  const showUpdateInvoiceStatusConfirmation = (acceptCallback: () => void) => {
+    confirm.require({
+      message: "Would you like to update the invoice status?",
+      header: "Bestätigung",
+      rejectLabel: "Abbrechen",
+      rejectClass: "bg-transparent border text-red-500 border border-red-500 hover:bg-red-300/10",
+      acceptLabel: "Bestätigen",
+      accept: acceptCallback,
+    });
+  };
   return {
     showDeleteOrderConfirmation,
     showDeleteClientConfirmation,
     showDeleteArticleConfirmation,
     showUpdateOfferStatusConfirmation,
+    showUpdateInvoiceStatusConfirmation,
   };
 }
