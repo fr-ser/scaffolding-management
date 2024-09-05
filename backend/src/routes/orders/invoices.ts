@@ -51,7 +51,7 @@ invoicesRouter.post(
               unit: item.unit,
               price: item.price,
               amount: item.amount,
-              offer_id: invoice.id,
+              invoice_id: invoice.id,
             };
           }),
         )
