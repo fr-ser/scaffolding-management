@@ -244,21 +244,26 @@ onMounted(async () => {
               </router-link>
             </div>
           </div>
+          <!-- TODO: handle no suborder for employees -->
+          <section>
+            <TabView>
+              <TabPanel v-if="(orderInfo as Order).offer" header="Angebot">
+                <OfferSummary :offer="(orderInfo as Order).offer as Offer"></OfferSummary>
+              </TabPanel>
+              <TabPanel
+                v-for="(item, idx) in (orderInfo as Order).invoices"
+                class="my-2"
+                :key="item.id"
+                :header="'Invoice ' + (idx + 1)"
+              >
+                <!-- v-if="(orderInfo as Order).invoices?.[0]"
+                :invoice="(orderInfo as Order).invoices?.[0] as Invoice" -->
+                <!-- :invoice="(orderInfo as Order).invoices.[item] as Invoice" -->
+                <InvoiceSummary :invoice="item as Invoice"> </InvoiceSummary>
+              </TabPanel>
+            </TabView>
+          </section>
         </div>
-        <!-- TODO: handle no suborder for employees -->
-        <section v-if="(orderInfo as Order).offer">
-          <TabView>
-            <TabPanel header="Angebot">
-              <OfferSummary :offer="(orderInfo as Order).offer as Offer"></OfferSummary>
-            </TabPanel>
-            <TabPanel header="Invoice">
-              <InvoiceSummary
-                v-if="(orderInfo as Order).invoices?.[0]"
-                :invoice="(orderInfo as Order).invoices?.[0] as Invoice"
-              ></InvoiceSummary>
-            </TabPanel>
-          </TabView>
-        </section>
         <OrderDocuments v-if="isEditing" :id="(orderInfo as Order).id"></OrderDocuments>
       </template>
     </Card>
