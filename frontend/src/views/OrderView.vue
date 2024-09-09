@@ -254,12 +254,9 @@ onMounted(async () => {
                 v-for="(item, idx) in (orderInfo as Order).invoices"
                 class="my-2"
                 :key="item.id"
-                :header="'Invoice ' + (idx + 1)"
+                :header="`Invoice ${idx + 1}`"
               >
-                <!-- v-if="(orderInfo as Order).invoices?.[0]"
-                :invoice="(orderInfo as Order).invoices?.[0] as Invoice" -->
-                <!-- :invoice="(orderInfo as Order).invoices.[item] as Invoice" -->
-                <InvoiceSummary :invoice="item as Invoice"> </InvoiceSummary>
+                <InvoiceSummary :invoice="item"> </InvoiceSummary>
               </TabPanel>
             </TabView>
           </section>
