@@ -98,14 +98,8 @@ async function onCreateInvoice() {
     ...invoiceInfo.value,
     items: invoiceItemsArray.value,
     service_dates: serviceDates.value
-      .filter(function (item) {
-        if (item.date) {
-          return true;
-        }
-      })
-      .map(function (element) {
-        return formatDateToIsoString(element.date as Date);
-      }),
+      .filter((item) => Boolean(item.date))
+      .map((element) => formatDateToIsoString(element.date as Date)),
   });
   router.push(`${ROUTES.ORDER.path}`);
   notifications.showCreateInvoiceNotification();
@@ -148,54 +142,72 @@ onMounted(async () => {
     <Card class="my-2">
       <template #content>
         <div class="mb-4 font-bold">Rechnung:</div>
-        <FloatLabel class="my-6">
-          <Calendar
-            id="invoice-date-input"
-            v-model="invoiceDate"
-            dateFormat="dd/mm/yy"
-            showIcon
-            iconDisplay="input"
-          />
-          <label for="calendar"> Rechnungsdatum </label>
-        </FloatLabel>
-        <FloatLabel class="my-6">
-          <Calendar
-            id="payment-target-input"
-            v-model="paymentTarget"
-            dateFormat="dd/mm/yy"
-            showIcon
-            iconDisplay="input"
-          />
-          <label for="calendar"> Zalungsziel </label>
-        </FloatLabel>
-        <div class="mb-2">Zahlungstatus:</div>
-        <Dropdown
-          v-model="invoiceInfo.status"
-          :options="invoiceType"
-          placeholder="Anrede"
-          class="w-full md:w-[14rem] mb-3"
-        />
-        <div class="flex flex-row justify-between items-center mb-4">
-          <div class="font-bold">Leistungsdatum:</div>
-          <Button @click="onServiceDateCreate" icon="pi pi-plus" rounded text />
-        </div>
-        <div
-          class="flex flex-row justify-between items-center"
-          v-for="(item, idx) in serviceDates"
-          :key="item.id"
+        <section
+          class="flex flex-col justify-items-start gap-2 sm:flex-row sm:gap-8 sm:items-center"
         >
           <FloatLabel class="my-6">
             <Calendar
-              :id="item.id.toString()"
-              v-model="item.date"
+              id="invoice-date-input"
+              v-model="invoiceDate"
               dateFormat="dd/mm/yy"
               showIcon
               iconDisplay="input"
             />
-            <label for="calendar"> Leistungsdatum {{ idx + 1 }} </label>
+            <label for="calendar"> Rechnungsdatum </label>
           </FloatLabel>
-          <Button @click="onServiceDateDelete(item.id)" icon="pi pi-times" severity="danger" text />
+          <FloatLabel class="my-6">
+            <Calendar
+              id="payment-target-input"
+              v-model="paymentTarget"
+              dateFormat="dd/mm/yy"
+              showIcon
+              iconDisplay="input"
+            />
+            <label for="calendar"> Zalungsziel </label>
+          </FloatLabel>
+          <!-- <div class="mb-2">Zahlungstatus:</div> -->
+          <FloatLabel>
+            <Dropdown
+              id="invoice-info-status"
+              v-model="invoiceInfo.status"
+              :options="invoiceType"
+              placeholder="Anrede"
+              class="w-full md:w-[14rem]"
+            />
+            <label for="invoice-info-status"> Zahlungstatus: </label>
+          </FloatLabel>
+        </section>
+        <div class="flex flex-row justify-start gap-2 items-center mb-4">
+          <div class="font-bold">Leistungsdatum:</div>
+          <Button @click="onServiceDateCreate" icon="pi pi-plus" rounded text />
         </div>
+        <section
+          class="flex flex-col justify-items-start gap-2 sm:flex-row sm:gap-8 sm:items-center flex-wrap"
+        >
+          <div
+            class="flex flex-row justify-start gap-2 items-center w-full sm:w-auto"
+            v-for="(item, idx) in serviceDates"
+            :key="item.id"
+          >
+            <FloatLabel class="my-6 w-full sm:w-auto">
+              <Calendar
+                :id="item.id.toString()"
+                v-model="item.date"
+                dateFormat="dd/mm/yy"
+                showIcon
+                iconDisplay="input"
+                class="w-full sm:w-auto"
+              />
+              <label for="calendar"> Leistungsdatum {{ idx + 1 }} </label>
+            </FloatLabel>
+            <Button
+              @click="onServiceDateDelete(item.id)"
+              icon="pi pi-times"
+              severity="danger"
+              text
+            />
+          </div>
+        </section>
         <section>
           <p class="font-bold mb-5">Rechnungsbeschreibung:</p>
           <FloatLabel>

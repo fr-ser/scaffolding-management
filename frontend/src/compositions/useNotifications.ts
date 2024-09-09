@@ -78,7 +78,7 @@ export default function useNotifications() {
   const showCreateInvoiceNotification = () => {
     toast.add({
       severity: "info",
-      summary: "New invoice was created",
+      summary: "Eine neue Rechung wurde erstellt",
       life: 3000,
     });
   };
