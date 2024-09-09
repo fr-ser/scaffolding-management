@@ -124,32 +124,40 @@ onMounted(async () => {
       <Card class="my-2">
         <template #content>
           <div class="mb-4 font-bold">Angebot</div>
-          <FloatLabel class="my-6">
-            <Calendar
-              id="calendar"
-              v-model="offerDate"
-              dateFormat="dd/mm/yy"
-              showIcon
-              iconDisplay="input"
-            />
-            <label for="calendar"> Angebotsdatum </label>
-          </FloatLabel>
-          <FloatLabel class="my-6">
-            <Calendar
-              id="offered-at-input"
-              v-model="validityDate"
-              dateFormat="dd/mm/yy"
-              showIcon
-              iconDisplay="input"
-            />
-            <label for="calendar"> Gültigkeit(Angebot) </label>
-          </FloatLabel>
-          <Dropdown
-            v-model="offerInfo.status"
-            :options="offersType"
-            placeholder="Anrede"
-            class="w-full md:w-[14rem] mb-3"
-          />
+          <section
+            class="flex flex-col justify-items-start items-center gap-2 sm:flex-row sm:gap-8 sm:items-center"
+          >
+            <FloatLabel class="my-6">
+              <Calendar
+                id="calendar"
+                v-model="offerDate"
+                dateFormat="dd/mm/yy"
+                showIcon
+                iconDisplay="input"
+              />
+              <label for="calendar"> Angebotsdatum </label>
+            </FloatLabel>
+            <FloatLabel class="my-6">
+              <Calendar
+                id="offered-at-input"
+                v-model="validityDate"
+                dateFormat="dd/mm/yy"
+                showIcon
+                iconDisplay="input"
+              />
+              <label for="offered-at-input"> Gültigkeit(Angebot) </label>
+            </FloatLabel>
+            <FloatLabel>
+              <Dropdown
+                id="offer-info-status"
+                v-model="offerInfo.status"
+                :options="offersType"
+                placeholder="Anrede"
+                class="w-full md:w-[14rem]"
+              />
+              <label for="offer-info-status"> Angebotstatus: </label>
+            </FloatLabel>
+          </section>
           <div class="card flex flex-col justify-center gap-y-5">
             <span class="font-bold">Angebotsbeschreibung: </span>
             <FloatLabel>
