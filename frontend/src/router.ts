@@ -3,16 +3,20 @@ import { createRouter, createWebHistory } from "vue-router";
 import ArticleView from "@/views/ArticleView.vue";
 import ClientListView from "@/views/ClientListView.vue";
 import ClientView from "@/views/ClientView.vue";
-import DocumentView from "@/views/DocumentView.vue";
+import DocumentListView from "@/views/DocumentListView.vue";
+import DocumentPdfView from "@/views/DocumentPdfView.vue";
 import InvoiceView from "@/views/InvoiceView.vue";
 import OfferView from "@/views/OfferView.vue";
 import OrderListView from "@/views/OrderListView.vue";
 import OrderView from "@/views/OrderView.vue";
+import OverdueView from "@/views/OverdueView.vue";
+import OverviewView from "@/views/OverviewView.vue";
 
 export const ROUTES = {
   CLIENT: { name: "client", path: "/client", label: "Kunden" },
   ORDER: { name: "order", path: "/order", label: "Aufträge" },
   DOCUMENTS: { name: "documents", path: "/documents", label: "Dokumente" },
+  OVERVIEW: { name: "overviews", path: "/overviews", label: "Übersicht" },
   ARTICLES: { name: "articles", path: "/articles", label: "Artikel" },
 };
 const router = createRouter({
@@ -55,6 +59,14 @@ const router = createRouter({
       },
     },
     {
+      path: ROUTES.OVERVIEW.path,
+      name: ROUTES.OVERVIEW.name,
+      component: OverviewView,
+      meta: {
+        label: "Übersicht",
+      },
+    },
+    {
       path: `${ROUTES.ORDER.path}/:id/edit`,
       name: ROUTES.ORDER.name,
       component: OrderView,
@@ -79,6 +91,14 @@ const router = createRouter({
       },
     },
     {
+      path: `${ROUTES.ORDER.path}/:order_id/edit/overdue/new`,
+      name: `${ROUTES.ORDER.name}-newOverdue`,
+      component: OverdueView,
+      meta: {
+        label: "Mahnung anschauen/bearbeiten",
+      },
+    },
+    {
       path: `${ROUTES.ORDER.path}/new`,
       name: `${ROUTES.ORDER.name}-new`,
       component: OrderView,
@@ -88,10 +108,18 @@ const router = createRouter({
     },
     {
       path: ROUTES.DOCUMENTS.path,
-      name: ROUTES.DOCUMENTS.name,
-      component: DocumentView,
+      name: `${ROUTES.DOCUMENTS.name}-list`,
+      component: DocumentListView,
       meta: {
         label: "Dokumente",
+      },
+    },
+    {
+      path: `${ROUTES.DOCUMENTS.path}/:id/pdf`,
+      name: ROUTES.DOCUMENTS.name,
+      component: DocumentPdfView,
+      meta: {
+        label: "Dokumente Pdf",
       },
     },
     {

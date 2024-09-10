@@ -16,6 +16,8 @@ import { checkAuth } from "@/helpers/roleManagement";
 import { mergeSortedDocuments } from "@/helpers/utils";
 import { renderMultiplePDF } from "@/pdf/renderPDF";
 import { invoiceDocumentsRouter } from "@/routes/documents/invoice_documents";
+import { offerDocumentsRouter } from "@/routes/documents/offer_documents";
+import { overdueNoticeDocumentsRouter } from "@/routes/documents/overdue_notice_documents";
 
 export const documentsRouter = express.Router();
 
@@ -145,4 +147,6 @@ documentsRouter.post(
     }
   },
 );
+documentsRouter.use("/offers", offerDocumentsRouter);
+documentsRouter.use("/overdue_notices", overdueNoticeDocumentsRouter);
 documentsRouter.use("/invoices", invoiceDocumentsRouter);
