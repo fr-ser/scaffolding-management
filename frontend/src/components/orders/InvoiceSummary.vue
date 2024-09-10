@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Card from "primevue/card";
 import Dropdown from "primevue/dropdown";
 import { computed, ref, watch } from "vue";
 
@@ -29,9 +30,12 @@ watch(invoiceStatusValue, async () => {
     notifications.showUpdateInvoiceStatusNotification();
   });
 });
+let serviceDates = props.invoice.service_dates.map(formatIsoDateString).join(", ");
 </script>
 <template>
-  <section class="flex flex-col justify-items-start gap-2 sm:flex-row sm:gap-8 sm:items-center">
+  <section
+    class="flex flex-col justify-items-start gap-2 sm:flex-row sm:gap-8 sm:items-center flex-wrap"
+  >
     <p>
       <span class="font-bold">Rechnungsdatum: </span>
       {{ formatIsoDateString(invoice.invoice_date) }}
@@ -46,10 +50,16 @@ watch(invoiceStatusValue, async () => {
       placeholder="Status"
       class="w-full md:w-[14rem]"
     />
-    <p><span class="font-bold">Leistungsdatum: </span></p>
+  </section>
+  <section class="mt-2">
+    <P class="font-bold">
+      Leistungsdatum: <span class="font-normal"> {{ serviceDates }}</span>
+    </P>
+  </section>
+  <section class="mt-2">
     <p><span class="font-bold">Rechnungsbeschreibung:</span> {{ invoice.description }}</p>
   </section>
-  <p class="font-bold">Angebotspreis:</p>
+  <p class="font-bold mt-1">Angebotspreis:</p>
   <section class="flex flex-row gap-10">
     <span> Netto: {{ allItemsSum.amountNet }} </span>
     <span>USt: {{ allItemsSum.amountVat }}</span>
