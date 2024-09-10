@@ -19,9 +19,10 @@ import OfferSummary from "@/components/orders/OfferSummary.vue";
 import OrderDocuments from "@/components/orders/OrderDocuments.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
+import { formatIsoDateString } from "@/global/helpers";
 import { OrderStatus } from "@/global/types/appTypes";
-import type { InvoiceCreate, OrderCreate } from "@/global/types/dataEditTypes";
-import type { Client, Invoice, Offer, Order } from "@/global/types/entities";
+import type { OrderCreate } from "@/global/types/dataEditTypes";
+import type { Client, Offer, Order } from "@/global/types/entities";
 import { debounce } from "@/helpers/utils";
 import { ROUTES } from "@/router";
 
@@ -251,10 +252,10 @@ onMounted(async () => {
                 <OfferSummary :offer="(orderInfo as Order).offer as Offer"></OfferSummary>
               </TabPanel>
               <TabPanel
-                v-for="(item, idx) in (orderInfo as Order).invoices"
+                v-for="item in (orderInfo as Order).invoices"
                 class="my-2"
                 :key="item.id"
-                :header="`Invoice ${idx + 1}`"
+                :header="`Invoice ${formatIsoDateString(item.invoice_date)}`"
               >
                 <InvoiceSummary :invoice="item"> </InvoiceSummary>
               </TabPanel>
