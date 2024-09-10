@@ -113,3 +113,10 @@ export function getGrossAmount(item: OfferItem | OfferItemCreate, date: string) 
   const result = item.amount * item.price * (1 + getVatRate({ isoDate: date }));
   return formatNumber(result, { decimals: 2, currency: true });
 }
+export function getNettAmount(item?: number, price?: number) {
+  if (item && price) {
+    return round(item * price, 2);
+  } else {
+    return "-";
+  }
+}

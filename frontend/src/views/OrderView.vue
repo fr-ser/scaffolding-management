@@ -17,6 +17,7 @@ import { createOrder, deleteOrder, getClients, getOrder, updateOrder } from "@/b
 import InvoiceSummary from "@/components/orders/InvoiceSummary.vue";
 import OfferSummary from "@/components/orders/OfferSummary.vue";
 import OrderDocuments from "@/components/orders/OrderDocuments.vue";
+import OverdueSummary from "@/components/orders/OverdueSummary.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { formatIsoDateString } from "@/global/helpers";
@@ -115,10 +116,53 @@ const removeOrder = async () => {
 const confirmDelete = () => {
   confirm.showDeleteOrderConfirmation(removeOrder);
 };
+
 const findClientById = () => {
   const foundClient = clientsList.value.find((client) => client.id === orderInfo.value.client_id);
 
   return foundClient;
+};
+
+const subItemsIds = computed(() => {
+  const result = [];
+
+  if ((orderInfo.value as Order).offer) {
+    result.push({
+      type: "OFFER",
+      id: (orderInfo.value as Order).offer?.id,
+    });
+  }
+
+  if ((orderInfo.value as Order).invoices?.length) {
+    (orderInfo.value as Order).invoices?.forEach((invoice) => {
+      result.push({
+        type: "INVOICE",
+        id: invoice.id,
+      });
+    });
+  }
+
+  if ((orderInfo.value as Order).overdue_notices?.length) {
+    (orderInfo.value as Order).overdue_notices?.forEach((overdue) => {
+      result.push({
+        type: "OVERDUE",
+        id: overdue.id,
+      });
+    });
+  }
+
+  return result;
+});
+
+const getActiveSubOrderIndex = () => {
+  const { sub_id, sub_type } = route.query;
+  // EQUAL TO:
+  // const sub_type = route.query.sub_type;
+  // const sub_id = route.query.sub_id;
+
+  return subItemsIds.value.findIndex((item) => {
+    return item.id === Number(sub_id) && item.type === sub_type;
+  });
 };
 
 onMounted(async () => {
@@ -243,21 +287,30 @@ onMounted(async () => {
               <router-link :to="`${ROUTES.ORDER.path}/${route.params.id}/edit/invoice/new`">
                 <Button label="Rechnung erstellen"></Button>
               </router-link>
+              <router-link :to="`${ROUTES.ORDER.path}/${route.params.id}/edit/overdue/new`">
+                <Button label="Mahnung erstellen"></Button>
+              </router-link>
             </div>
           </div>
           <!-- TODO: handle no suborder for employees -->
           <section>
-            <TabView>
+            <TabView :active-index="getActiveSubOrderIndex()">
               <TabPanel v-if="(orderInfo as Order).offer" header="Angebot">
                 <OfferSummary :offer="(orderInfo as Order).offer as Offer"></OfferSummary>
               </TabPanel>
               <TabPanel
                 v-for="item in (orderInfo as Order).invoices"
-                class="my-2"
                 :key="item.id"
                 :header="`Invoice ${formatIsoDateString(item.invoice_date)}`"
               >
                 <InvoiceSummary :invoice="item"> </InvoiceSummary>
+              </TabPanel>
+              <TabPanel
+                v-for="unit in (orderInfo as Order).overdue_notices"
+                :key="unit.id"
+                :header="`Mahnung ${formatIsoDateString(unit.notice_date)}`"
+              >
+                <OverdueSummary :overdue="unit"></OverdueSummary>
               </TabPanel>
             </TabView>
           </section>

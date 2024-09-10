@@ -101,7 +101,7 @@ async function onCreateInvoice() {
       .filter((item) => Boolean(item.date))
       .map((element) => formatDateToIsoString(element.date as Date)),
   });
-  router.push(`${ROUTES.ORDER.path}`);
+  router.push(`${ROUTES.ORDER.path}/${route.params.order_id}/edit`);
   notifications.showCreateInvoiceNotification();
 }
 
