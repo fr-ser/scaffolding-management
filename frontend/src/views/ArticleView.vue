@@ -57,9 +57,8 @@ onMounted(async () => {
       </span>
       <Button
         @click="createNewArticle"
-        icon="pi pi-plus"
+        label="Neu"
         rounded
-        outlined
         aria-label="Neuen Artikel erstellen"
         data-testid="article-create-button"
       />

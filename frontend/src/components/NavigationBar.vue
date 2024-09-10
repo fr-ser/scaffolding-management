@@ -3,30 +3,35 @@ import Menubar from "primevue/menubar";
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 
-import { ROUTES } from "@/router";
+import * as routes from "@/helpers/routes";
 
 const route = useRoute();
 
 const items = ref([
   {
-    label: ROUTES.CLIENT.label,
+    label: "Kunden",
     icon: "pi pi-user",
-    route: ROUTES.CLIENT.path,
+    route: routes.getClientListPath(),
   },
   {
-    label: ROUTES.ORDER.label,
+    label: "Aufträge",
     icon: "pi pi-shopping-cart",
-    route: ROUTES.ORDER.path,
+    route: routes.getOrderListPath(),
   },
   {
-    label: ROUTES.DOCUMENTS.label,
+    label: "Übersicht",
+    icon: "pi pi-clipboard",
+    route: routes.getOverviewPath(),
+  },
+  {
+    label: "Dokumente",
     icon: "pi pi-file",
-    route: ROUTES.DOCUMENTS.path,
+    route: routes.getDocumentListPath(),
   },
   {
-    label: ROUTES.ARTICLES.label,
+    label: "Artikel",
     icon: "pi pi-list",
-    route: ROUTES.ARTICLES.path,
+    route: routes.getArticleListPath(),
   },
 ]);
 </script>

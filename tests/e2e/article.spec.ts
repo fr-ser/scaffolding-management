@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
 
+import { getArticleListPath } from "../../frontend/src/helpers/routes";
+
 test("create, edit and delete an article", async ({ page }) => {
-  await page.goto("/articles");
+  await page.goto(getArticleListPath());
 
   const timestamp = String(Date.now());
 

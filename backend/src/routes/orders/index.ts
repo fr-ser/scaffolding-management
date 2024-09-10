@@ -38,6 +38,7 @@ ordersRouter.get(
     }
 
     const result = await dataSource.manager.findAndCount(Order, {
+      relations: ["invoices", "offer", "overdue_notices", "client"],
       skip,
       take,
       order: { created_at: "DESC" },

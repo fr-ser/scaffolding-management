@@ -16,8 +16,8 @@ import SubOrderItem from "@/components/orders/SubOrderItem.vue";
 import { ArticleKind, OfferStatus } from "@/global/types/appTypes";
 import type { OfferCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Offer, Order } from "@/global/types/entities";
+import { getOrderEditPath } from "@/helpers/routes";
 import { calculateItemSumPrice, formatDateToIsoString } from "@/helpers/utils";
-import { ROUTES } from "@/router";
 
 let itemCount = 1;
 const route = useRoute();
@@ -77,7 +77,7 @@ async function onSaveOffer() {
     items: offerItemsArray.value,
   });
 
-  router.push(`${ROUTES.ORDER.path}/${route.params.order_id}/edit`);
+  router.push(getOrderEditPath(route.params.order_id as string));
 }
 function onItemDelete(id: number) {
   offerItemsArray.value = offerItemsArray.value.filter((element) => element.id !== id);
@@ -103,7 +103,7 @@ watch(validityDate, () => {
 });
 
 onMounted(async () => {
-  orderInfo.value = await getOrder(route.params.order_id as string);
+  orderInfo.value = await getOrder(route.params.orderId as string);
   offerInfo.value.order_id = orderInfo.value.id;
 });
 </script>
@@ -111,7 +111,7 @@ onMounted(async () => {
 <template>
   <div v-if="orderInfo">
     <div class="flex flex-row justify-between">
-      <router-link :to="`${ROUTES.ORDER.path}/${route.params.order_id}/edit`">
+      <router-link :to="getOrderEditPath(route.params.orderId as string)">
         <Button icon="pi pi-arrow-left" size="small" severity="secondary" text raised />
       </router-link>
       <div class="flex gap-x-2">

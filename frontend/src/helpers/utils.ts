@@ -84,7 +84,10 @@ export function parseJSONsafe(presumedJSON: string): any | null {
 export function formatDateToIsoString(dateToIsoString: Date) {
   return format(dateToIsoString, "yyyy-MM-dd");
 }
-export function calculateItemSumPrice(arrayItems: (OfferItem | OfferItemCreate)[], date?: string) {
+export function calculateItemSumPrice(
+  arrayItems: (OfferItem | OfferItemCreate)[],
+  date: string = "",
+) {
   let amountNet = 0;
   let amountGross = 0;
   let amountVat = 0;
@@ -102,14 +105,22 @@ export function calculateItemSumPrice(arrayItems: (OfferItem | OfferItemCreate)[
   }
 
   return {
-    amountNet: formatNumber(amountNet, { decimals: 2, currency: true }),
-    amountGross: formatNumber(amountGross, { decimals: 2, currency: true }),
-    amountVat: formatNumber(amountVat, { decimals: 2, currency: true }),
+    amountNet: getFormatedAmount(amountNet),
+    amountGross: getFormatedAmount(amountGross),
+    amountVat: getFormatedAmount(amountVat),
   };
 }
 export function getGrossAmount(item: OfferItem | OfferItemCreate, date: string) {
-  if (!item.amount || !item.price) return "-";
-
-  const result = item.amount * item.price * (1 + getVatRate({ isoDate: date }));
-  return formatNumber(result, { decimals: 2, currency: true });
+  if (item.amount && item.price) {
+    return item.amount * item.price * (1 + getVatRate({ isoDate: date }));
+  } else {
+    return undefined;
+  }
+}
+export function getFormatedAmount(result?: number) {
+  if (result) {
+    return formatNumber(result, { decimals: 2, currency: true });
+  } else {
+    return "-";
+  }
 }

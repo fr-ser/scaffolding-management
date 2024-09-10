@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
 
+import { getOrderListPath } from "../../frontend/src/helpers/routes";
+
 test("create, edit and delete an order", async ({ page }) => {
-  await page.goto("/order");
+  await page.goto(getOrderListPath());
 
   const timestamp = String(Date.now());
 

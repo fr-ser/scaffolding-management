@@ -4,6 +4,7 @@ import { getAppDataSource } from "@/db";
 import { OverdueNoticeDocument } from "@/db/entities/documents";
 import { OverdueNotice } from "@/db/entities/overdue_notice";
 import { ErrorCode, UserRole } from "@/global/types/backendTypes";
+import { OverdueNoticeCreate } from "@/global/types/dataEditTypes";
 import { ApiError } from "@/helpers/apiErrors";
 import { checkAuth } from "@/helpers/roleManagement";
 
@@ -20,6 +21,48 @@ overdueNoticesRouter.get(
 
     if (!overdue_notice) next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
     else res.json(overdue_notice);
+  },
+);
+
+overdueNoticesRouter.post(
+  "",
+  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  async (req: express.Request, res: express.Response) => {
+    const dataSource = getAppDataSource();
+    const payload = req.body as OverdueNoticeCreate;
+
+    const overdueNotice = dataSource.manager.create(OverdueNotice, { ...payload });
+
+    await dataSource.transaction(async (transactionalEntityManager) => {
+      await transactionalEntityManager.save(OverdueNotice, overdueNotice);
+    });
+
+    res.json(overdueNotice);
+  },
+);
+
+overdueNoticesRouter.patch(
+  "/:id",
+  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const dataSource = getAppDataSource();
+    let overdueNotice: OverdueNotice | null = null;
+
+    delete req.body.id;
+    delete req.body.invoice_documents;
+
+    try {
+      await dataSource.manager.update(OverdueNotice, req.params.id, req.body);
+      overdueNotice = await dataSource.manager.findOne(OverdueNotice, {
+        where: { id: parseInt(req.params.id) },
+      });
+    } catch (error) {
+      next(error);
+      return;
+    }
+
+    if (overdueNotice != null) res.json(overdueNotice);
+    else next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
   },
 );
 

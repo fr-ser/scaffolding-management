@@ -2,16 +2,14 @@
 import Button from "primevue/button";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
-import { onMounted } from "vue";
-import { ref } from "vue";
-import { watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 import { deleteClient, getClients } from "@/backendClient";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import type { Client } from "@/global/types/entities";
+import { getClientCreatePath, getClientEditPath } from "@/helpers/routes";
 import { debounce } from "@/helpers/utils";
-import { ROUTES } from "@/router";
 
 const confirm = useConfirmations();
 const notifications = useNotifications();
@@ -58,10 +56,9 @@ onMounted(async () => {
           data-testid="client-search-input"
         />
       </span>
-      <router-link :to="`${ROUTES.CLIENT.path}/new`">
+      <router-link :to="getClientCreatePath()">
         <Button
-          icon="pi pi-user"
-          size="small"
+          label="Neu"
           rounded
           aria-label="Neuen Kunden erstellen"
           data-testid="client-create-button"
@@ -70,7 +67,7 @@ onMounted(async () => {
     </div>
     <div class="grow overflow-auto">
       <router-link
-        :to="`${ROUTES.CLIENT.path}/${client.id}/edit`"
+        :to="getClientEditPath(client.id)"
         v-for="client in clientsList"
         :key="client.id"
       >
@@ -81,7 +78,7 @@ onMounted(async () => {
                 {{ `${client.first_name} ${client.last_name}` }}
               </div>
               <div class="flex flex-col gap-y-2">
-                <router-link :to="`${ROUTES.CLIENT.path}/${client.id}/edit`">
+                <router-link :to="getClientEditPath(client.id)">
                   <Button
                     label="Bearbeiten"
                     icon="pi pi-pencil"

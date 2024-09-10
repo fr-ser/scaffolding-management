@@ -14,12 +14,11 @@ import { createInvoice, getOrder } from "@/backendClient";
 import OrderSummary from "@/components/orders/OrderSummary.vue";
 import SubOrderItem from "@/components/orders/SubOrderItem.vue";
 import useNotifications from "@/compositions/useNotifications";
-import { ArticleKind } from "@/global/types/appTypes";
-import { PaymentStatus } from "@/global/types/appTypes";
+import { ArticleKind, PaymentStatus } from "@/global/types/appTypes";
 import type { InvoiceCreate, InvoiceItemCreate } from "@/global/types/dataEditTypes";
 import type { Order } from "@/global/types/entities";
+import { getOrderEditPath } from "@/helpers/routes";
 import { calculateItemSumPrice, formatDateToIsoString } from "@/helpers/utils";
-import { ROUTES } from "@/router";
 
 const route = useRoute();
 const router = useRouter();
@@ -50,14 +49,14 @@ let serviceDates = ref<{ id: number; date?: Date }[]>([{ id: 0 }]);
 
 const items = [
   {
-    label: "Hinweis hinzugefügen",
+    label: "Hinweis hinzufügen",
     command: () => {
       onItemCreate(ArticleKind.heading);
       toast.add({ severity: "success", detail: "Hinweis hinzugefügt", life: 3000 });
     },
   },
   {
-    label: "Position hinzugefügen",
+    label: "Position hinzufügen",
     command: () => {
       onItemCreate(ArticleKind.item),
         toast.add({ severity: "success", detail: "Position hinzugefügt", life: 3000 });
@@ -101,7 +100,7 @@ async function onCreateInvoice() {
       .filter((item) => Boolean(item.date))
       .map((element) => formatDateToIsoString(element.date as Date)),
   });
-  router.push(`${ROUTES.ORDER.path}`);
+  router.push(getOrderEditPath(route.params.orderId as string));
   notifications.showCreateInvoiceNotification();
 }
 
@@ -122,14 +121,14 @@ watch(paymentTarget, () => {
 });
 
 onMounted(async () => {
-  orderInfo.value = await getOrder(route.params.order_id as string);
+  orderInfo.value = await getOrder(route.params.orderId as string);
   invoiceInfo.value.order_id = orderInfo.value.id;
 });
 </script>
 <template>
   <div v-if="orderInfo">
     <div class="flex flex-row justify-between">
-      <router-link :to="`${ROUTES.ORDER.path}/${route.params.order_id}/edit`">
+      <router-link :to="getOrderEditPath(route.params.orderId as string)">
         <Button icon="pi pi-arrow-left" size="small" severity="secondary" text raised />
       </router-link>
       <div class="flex gap-x-2">
@@ -163,9 +162,9 @@ onMounted(async () => {
               showIcon
               iconDisplay="input"
             />
-            <label for="calendar"> Zalungsziel </label>
+            <label for="calendar"> Zahlungsziel </label>
           </FloatLabel>
-          <!-- <div class="mb-2">Zahlungstatus:</div> -->
+          <!-- <div class="mb-2">Zahlungsstatus:</div> -->
           <FloatLabel>
             <Dropdown
               id="invoice-info-status"
@@ -174,7 +173,7 @@ onMounted(async () => {
               placeholder="Anrede"
               class="w-full md:w-[14rem]"
             />
-            <label for="invoice-info-status"> Zahlungstatus: </label>
+            <label for="invoice-info-status"> Zahlungsstatus: </label>
           </FloatLabel>
         </section>
         <div class="flex flex-row justify-start gap-2 items-center mb-4">

@@ -14,14 +14,14 @@ import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { ClientSalutation } from "@/global/types/appTypes";
 import type { ClientCreate, ClientUpdate } from "@/global/types/dataEditTypes";
-import { ROUTES } from "@/router";
+import { getClientListPath } from "@/helpers/routes";
 
 const confirm = useConfirmations();
 const notifications = useNotifications();
 
 const onDeleteClient = async () => {
   await deleteClient(`${route.params.id}`);
-  router.push(`${ROUTES.CLIENT.path}`);
+  router.push(getClientListPath());
   notifications.showDeleteClientNotification();
 };
 const confirmDelete = () => {
@@ -46,12 +46,12 @@ const onSaveClient = async () => {
     notifications.showUpdateClientNotification();
   } else {
     await createClient(userInfo.value);
-    router.push(`${ROUTES.CLIENT.path}`);
+    router.push(getClientListPath());
     notifications.showCreateClientNotification();
   }
 };
 function onClientList() {
-  router.push(`${ROUTES.CLIENT.path}`);
+  router.push(getClientListPath());
 }
 onMounted(async () => {
   if (isEditing.value) {
