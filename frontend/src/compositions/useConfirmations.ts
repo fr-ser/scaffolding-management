@@ -46,7 +46,7 @@ export default function useConfirmation() {
   };
   const showUpdateInvoiceStatusConfirmation = (acceptCallback: () => void) => {
     confirm.require({
-      message: "Would you like to update the invoice status?",
+      message: "Soll der Rechnungsstatus aktualisiert werden?",
       header: "Bestätigung",
       rejectLabel: "Abbrechen",
       rejectClass: "bg-transparent border text-red-500 border border-red-500 hover:bg-red-300/10",

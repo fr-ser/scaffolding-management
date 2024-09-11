@@ -14,7 +14,7 @@ import { calculateItemSumPrice, getGrossAmount } from "@/helpers/utils";
 const props = defineProps<{
   invoice: Invoice;
 }>();
-const invoiceType = Object.values(PaymentStatus);
+const paymentStatusOptions = Object.values(PaymentStatus);
 let invoiceStatusValue = ref<PaymentStatus>(props.invoice.status);
 const notifications = useNotifications();
 
@@ -46,7 +46,7 @@ let serviceDates = props.invoice.service_dates.map(formatIsoDateString).join(", 
     <p class="font-bold">Zahlungstatus:</p>
     <Dropdown
       v-model="invoiceStatusValue"
-      :options="invoiceType"
+      :options="paymentStatusOptions"
       placeholder="Status"
       class="w-full md:w-[14rem]"
     />
