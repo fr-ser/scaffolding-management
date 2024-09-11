@@ -85,7 +85,7 @@ export default function useNotifications() {
   const showUpdateInvoiceStatusNotification = () => {
     toast.add({
       severity: "info",
-      summary: "Invoice was updated",
+      summary: "Die Rechnung wurde aktualisiert",
       life: 3000,
     });
   };
