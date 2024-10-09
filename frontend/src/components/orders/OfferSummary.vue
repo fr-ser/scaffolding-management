@@ -4,10 +4,11 @@ import Dropdown from "primevue/dropdown";
 import { computed, ref, watch } from "vue";
 
 import { updateOffer } from "@/backendClient";
+import SubOrderItemButton from "@/components/orders/SubOrderItemButton.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { formatIsoDateString } from "@/global/helpers";
-import { ArticleKind, OfferStatus } from "@/global/types/appTypes";
+import { ArticleKind, DocumentKind, OfferStatus } from "@/global/types/appTypes";
 import type { Offer } from "@/global/types/entities";
 import { calculateItemSumPrice, getGrossAmount } from "@/helpers/utils";
 
@@ -74,4 +75,5 @@ watch(offerStatusValue, async () => {
       </template>
     </Card>
   </section>
+  <SubOrderItemButton :id="offer.id" :kind="DocumentKind.offer" />
 </template>

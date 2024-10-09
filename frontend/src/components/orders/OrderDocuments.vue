@@ -32,7 +32,7 @@ async function openDocumentsList() {
 
 <template>
   <div class="font-bold my-2">Dokumente</div>
-  <div>
+  <div class="flex flex-row gap-4">
     <Button
       @click="openDocumentsList"
       label="Alle Auftragsdokumente anzeigen"
@@ -40,6 +40,7 @@ async function openDocumentsList() {
       outlined
       size="small"
     />
+    <!-- <Button label="Dokument Erstellen" outlined size="small" /> -->
   </div>
   <Dialog class="w-full sm:w-4/6" v-model:visible="visible" modal header="Auftragsdokumente">
     <div v-if="isLoading" class="flex justify-center">

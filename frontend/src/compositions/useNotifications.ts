@@ -117,6 +117,13 @@ export default function useNotifications() {
       life: 3000,
     });
   };
+  const showCreateNewDocumentNotification = () => {
+    toast.add({
+      severity: "info",
+      summary: "New document was created",
+      life: 3000,
+    });
+  };
   return {
     showDeleteClientNotification,
     showUpdateClientNotification,
@@ -134,5 +141,6 @@ export default function useNotifications() {
     showUpdateOverdueNoticeLevelNotification,
     showUpdateOverduePaymentStatusNotification,
     showCreatePdfDocumentNotification,
+    showCreateNewDocumentNotification,
   };
 }

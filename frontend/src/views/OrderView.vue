@@ -160,9 +160,10 @@ const getActiveSubOrderIndex = () => {
   // const sub_type = route.query.sub_type;
   // const sub_id = route.query.sub_id;
 
-  return subItemsIds.value.findIndex((item) => {
+  const index = subItemsIds.value.findIndex((item) => {
     return item.id === Number(sub_id) && item.type === sub_type;
   });
+  return index !== -1 ? index : 0;
 };
 
 onMounted(async () => {

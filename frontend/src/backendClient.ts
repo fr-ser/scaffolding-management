@@ -187,7 +187,7 @@ export async function createDocumentBySubOrder(
   kind: DocumentKind,
 ): Promise<OverdueNoticeDocument | InvoiceDocument | OfferDocument> {
   const response = await axiosInstance.post(
-    `/api/orders/${getUrlEntityForKind(kind)}/${id}/documents/create`,
+    `/api/orders/${getUrlEntityForKind(kind)}/${id}/documents`,
   );
   return response.data;
 }
