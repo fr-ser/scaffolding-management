@@ -3,10 +3,15 @@ import Dropdown from "primevue/dropdown";
 import { ref, watch } from "vue";
 
 import { updateOverdueNotice } from "@/backendClient";
+import SubOrderItemButton from "@/components/orders/SubOrderItemButton.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { formatIsoDateString } from "@/global/helpers";
-import { OverdueNoticeLevel, OverdueNoticePaymentStatus } from "@/global/types/appTypes";
+import {
+  DocumentKind,
+  OverdueNoticeLevel,
+  OverdueNoticePaymentStatus,
+} from "@/global/types/appTypes";
 import type { OverdueNotice } from "@/global/types/entities";
 
 const props = defineProps<{
@@ -65,4 +70,5 @@ watch(noticeLevel, async () => {
     <p><span class="font-bold">Verzugszinsen: </span>{{ overdue.default_interest }}</p>
     <p><span class="font-bold">Beschreibung: </span>{{ overdue.description }}</p>
   </section>
+  <SubOrderItemButton :id="overdue.id" :kind="DocumentKind.overdueNotice" />
 </template>

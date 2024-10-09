@@ -4,13 +4,14 @@ import { useRoute } from "vue-router";
 
 import { getInvoiceDocument, getOfferDocument, getOverdueNoticeDocument } from "@/backendClient";
 import { getVatRate } from "@/global/helpers";
-import { DocumentKind } from "@/global/types/appTypes";
+import { ArticleKind, DocumentKind } from "@/global/types/appTypes";
 import type {
   InvoiceDocument,
   OfferDocument,
   OverdueNoticeDocument,
 } from "@/global/types/entities";
 import { calculateItemSumPrice, getGrossAmount, getNettAmount } from "@/helpers/utils";
+import DocumentTitlePdf from "@/views/DocumentTitlePdf.vue";
 
 const route = useRoute();
 let result = ref<OfferDocument | OverdueNoticeDocument | InvoiceDocument>();
@@ -43,13 +44,20 @@ const allItemsSum = computed(() => {
       (result.value as OfferDocument).offered_at,
     );
   }
-  //   if (kind === DocumentKind.invoice)
-  else {
-    // TODO: missing invoice_date?
-    return calculateItemSumPrice((result.value as InvoiceDocument).items);
+  if (kind === DocumentKind.invoice) {
+    return calculateItemSumPrice((result.value as OfferDocument).items);
   }
 });
 
+let filteredItems = computed(() => {
+  if (!(kind === DocumentKind.overdueNotice) && result.value) {
+    return (result.value as OfferDocument | InvoiceDocument).items.filter(function (item) {
+      return item.kind === ArticleKind.item;
+    });
+  } else {
+    return [];
+  }
+});
 onMounted(async () => {
   getDocument();
 });
@@ -60,42 +68,31 @@ onMounted(async () => {
       v-if="result"
       class="min-h-297 w-[60rem] px-[4rem] ml-auto mr-auto py-5 border-solid border-2 border-slate-500 box-border"
     >
-      <header class="flex flex-row justify-between mb-10">
-        <div class="text-xs">
-          <p>redacted &amp; redacted</p>
-          <p>redacted</p>
-          <p class="font-bold text-2xl pt-5">{{ kind }}</p>
-        </div>
-        <div>
-          <img class="h-32" src="http://redacted/img/logo.png" />
-        </div>
-      </header>
-      <section class="flex flex-row justify-between">
-        <div>
-          <p class="font-bold">Empfänger:</p>
-          <p class="font-bold">{{ result.client_company_name }}</p>
-          <p>{{ result.client_street_and_number }}</p>
-          <p>{{ result.client_postal_code }} {{ result.client_city }}</p>
-        </div>
-        <div class="">
-          <hr class="border-black border-1 mb-3" />
-          <p>Rechnungsdatum: {{ result.creation_date }}</p>
-          <p>KundensNummer: {{ result.client_id }}</p>
-          <p>Rechnungsnummer: {{ result.id }}</p>
-          <hr class="border-black border-1 mt-3" />
-        </div>
-      </section>
-      <section class="mb-10 mt-[4rem]">
+      <DocumentTitlePdf :result="result" :kind="kind" />
+
+      <section v-if="!(kind === DocumentKind.overdueNotice)" class="mb-10 mt-[4rem]">
         <p class="font-bold">BV:{{ result.client_id }} BV {{ result.client_last_name }}</p>
         <p>
           Sehr geehrte Damen und Herren,<br />
           vielen Dank für Ihren Auftrag, den wir wie folgt in Rechnung stellen.
         </p>
       </section>
-      <table
-        v-if="!(kind === DocumentKind.overdueNotice)"
-        class="border-solid border-1 border-black"
-      >
+      <section v-if="kind === DocumentKind.overdueNotice">
+        <p class="font-bold">BV:{{ result.client_id }} BV {{ result.client_last_name }}</p>
+        <p>
+          Sehr geehrte Damen und Herren,<br />
+          auf unsere u.a. Rechnung(en) haben wir noch keinen Zahlungseingang feststellen können.<br />
+          Wir bitten Sie, die Regulierung nachzuholen und sehen dem Eingang Ihrer Zahlung
+          entgegen.<br />
+          Sollten Sie zwischenzeitlich die Zahlung bereits geleistet haben, betrachten Sie dieses
+          Schreiben bitte als gegenstandslos.<br />
+          Es wurden ihre Zahlungen bis zum
+          {{ `${(result as OverdueNoticeDocument).notice_date}` }} berücksichtigt.<br />
+          Bitte zahlen Sie bis spätestens:
+          {{ `${(result as OverdueNoticeDocument).payments_until}` }}
+        </p>
+      </section>
+      <table class="border-solid border-1 border-black">
         <thead>
           <tr>
             <th class="pl-6">Bezeihnung</th>
@@ -108,9 +105,12 @@ onMounted(async () => {
             <th class="">Gesamt</th>
           </tr>
         </thead>
-        <tbody class="border-solid border-1 border-black">
+        <tbody
+          v-if="!(kind === DocumentKind.overdueNotice)"
+          class="border-solid border-1 border-black"
+        >
           <tr
-            v-for="item in (result as OfferDocument | InvoiceDocument).items"
+            v-for="item in filteredItems"
             :key="item.id"
             class="border-solid border-1 border-black"
           >
@@ -152,11 +152,8 @@ onMounted(async () => {
             </td>
           </tr>
         </tbody>
-        <tfoot>
-          <tr></tr>
-        </tfoot>
       </table>
-      <table class="mt-5">
+      <table v-if="!(kind === DocumentKind.overdueNotice)" class="mt-5">
         <tbody>
           <tr class="font-bold">
             <td>Netto:</td>
@@ -170,6 +167,36 @@ onMounted(async () => {
           </tr>
         </tbody>
       </table>
+      <div v-if="kind === DocumentKind.overdueNotice">
+        <section>
+          <p class="font-bold">
+            Zzgl. Mahnkosten in Höhe von:
+            {{ `${(result as OverdueNoticeDocument).notice_costs} €` }}
+          </p>
+          <p>
+            Zzgl. Verzugszinsen in Höhe von:
+            {{ `${(result as OverdueNoticeDocument).default_interest} €` }}
+          </p>
+        </section>
+        <table class="mt-5">
+          <tbody>
+            <tr class="font-bold">
+              <td>Netto:</td>
+              <td>Umsatzsteuer</td>
+              <td>Rechnungsbetrag</td>
+            </tr>
+            <tr class="font-bold">
+              <td>0,00 €</td>
+              <td>0,00 €</td>
+              <td>
+                {{
+                  `${(result as OverdueNoticeDocument).notice_costs + (result as OverdueNoticeDocument).default_interest} €`
+                }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <section>
         <p class="mt-5 leading-4">
           Überweisen Sie bitte den offenen Betrag auf das unten aufgeführte Geschäftskonto.<br />

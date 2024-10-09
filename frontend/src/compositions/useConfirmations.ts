@@ -84,6 +84,16 @@ export default function useConfirmation() {
       accept: acceptCallback,
     });
   };
+  const showCreateDocumentConfirmation = (acceptCallback: () => void) => {
+    confirm.require({
+      message: ` "Wollen Sie für die folgenden Dokumente erstellen?"`,
+      header: "Bestätigung",
+      rejectLabel: "Abbrechen",
+      rejectClass: "bg-transparent border text-red-500 border border-red-500 hover:bg-red-300/10",
+      acceptLabel: "Bestätigen",
+      accept: acceptCallback,
+    });
+  };
   return {
     showDeleteOrderConfirmation,
     showDeleteClientConfirmation,
@@ -93,5 +103,6 @@ export default function useConfirmation() {
     showUpdateOverduePaymentStatusConfirmation,
     showUpdateOverdueNoticeLevelConfirmation,
     showCreatePdfConfirmation,
+    showCreateDocumentConfirmation,
   };
 }

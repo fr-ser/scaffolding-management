@@ -4,9 +4,11 @@ import Dropdown from "primevue/dropdown";
 import { computed, ref, watch } from "vue";
 
 import { updateInvoice } from "@/backendClient";
+import SubOrderItemButton from "@/components/orders/SubOrderItemButton.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { formatIsoDateString } from "@/global/helpers";
+import { DocumentKind } from "@/global/types/appTypes";
 import { ArticleKind, PaymentStatus } from "@/global/types/appTypes";
 import type { Invoice } from "@/global/types/entities";
 import { calculateItemSumPrice, getGrossAmount } from "@/helpers/utils";
@@ -84,4 +86,5 @@ let serviceDates = props.invoice.service_dates.map(formatIsoDateString).join(", 
       </template>
     </Card>
   </section>
+  <SubOrderItemButton :id="invoice.id" :kind="DocumentKind.invoice" />
 </template>
