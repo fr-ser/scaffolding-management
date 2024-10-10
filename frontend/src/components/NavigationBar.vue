@@ -19,6 +19,11 @@ const items = ref([
     route: ROUTES.ORDER.path,
   },
   {
+    label: ROUTES.OVERVIEW.label,
+    icon: "pi pi-clipboard",
+    route: ROUTES.OVERVIEW.path,
+  },
+  {
     label: ROUTES.DOCUMENTS.label,
     icon: "pi pi-file",
     route: ROUTES.DOCUMENTS.path,

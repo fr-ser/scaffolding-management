@@ -51,12 +51,12 @@ let serviceDates = props.invoice.service_dates.map(formatIsoDateString).join(", 
       class="w-full md:w-[14rem]"
     />
   </section>
-  <section class="mt-2">
-    <P class="font-bold">
+  <section>
+    <p class="font-bold">
       Leistungsdatum: <span class="font-normal"> {{ serviceDates }}</span>
-    </P>
+    </p>
   </section>
-  <section class="mt-2">
+  <section>
     <p><span class="font-bold">Rechnungsbeschreibung:</span> {{ invoice.description }}</p>
   </section>
   <p class="font-bold mt-1">Angebotspreis:</p>

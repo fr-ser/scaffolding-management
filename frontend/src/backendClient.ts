@@ -14,6 +14,8 @@ import type {
   OfferUpdate,
   OrderCreate,
   OrderUpdate,
+  OverdueNoticeCreate,
+  OverdueNoticeUpdate,
 } from "@/global/types/dataEditTypes";
 import {
   type Article,
@@ -23,6 +25,7 @@ import {
   type Offer,
   type OfferDocument,
   type Order,
+  type OverdueNotice,
   type OverdueNoticeDocument,
 } from "@/global/types/entities";
 
@@ -135,10 +138,27 @@ export async function updateInvoice(id: number, invoice: InvoiceUpdate): Promise
   return response.data;
 }
 
-export async function getDocuments(): Promise<
-  (OfferDocument | OverdueNoticeDocument | InvoiceDocument)[]
-> {
-  const response = await axiosInstance.get(`/api/documents`);
+export async function createOverdueNotice(
+  overdue_notice: OverdueNoticeCreate,
+): Promise<OverdueNotice> {
+  const response = await axiosInstance.post(`/api/orders/overdue_notices/`, overdue_notice);
+  return response.data;
+}
+
+export async function updateOverdueNotice(
+  id: number,
+  overdueNotice: OverdueNoticeUpdate,
+): Promise<OverdueNotice> {
+  const response = await axiosInstance.patch(`/api/orders/overdue_notices/${id}`, overdueNotice);
+  return response.data;
+}
+
+export async function getDocuments(
+  query?: string,
+): Promise<(OfferDocument | OverdueNoticeDocument | InvoiceDocument)[]> {
+  const params: Record<string, string> = {};
+  if (query) params.search = query;
+  const response = await axiosInstance.get(`/api/documents`, { params });
   return response.data;
 }
 
