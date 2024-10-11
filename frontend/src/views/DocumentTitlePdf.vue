@@ -34,8 +34,8 @@ if (props.kind === DocumentKind.overdueNotice) {
 <template>
   <header class="flex flex-row justify-between mb-10">
     <div class="text-xs">
-      <p>Lorenz Gerüstbau &amp; Verleih</p>
-      <p>Silvanerweg 8B, 63906 Erlenbach am Main</p>
+      <p>redacted &amp; redacted</p>
+      <p>redacted</p>
       <p class="font-bold text-2xl pt-5">{{ kind }}</p>
     </div>
     <div>
