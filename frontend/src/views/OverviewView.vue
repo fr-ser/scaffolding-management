@@ -243,7 +243,9 @@ onMounted(async () => {
   reloadPage();
 });
 </script>
+
 <template>
+  <!-- TODO: assess if this page should be hidden for some user roles -->
   <div class="flex flex-col overflow-hidden">
     <div class="card flex w-full gap-x-6 mb-3">
       <span class="relative grow">

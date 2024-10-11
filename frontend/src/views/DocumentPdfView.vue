@@ -1,65 +1,39 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import { getInvoiceDocument, getOfferDocument, getOverdueNoticeDocument } from "@/backendClient";
-import { getVatRate } from "@/global/helpers";
-import { ArticleKind, DocumentKind } from "@/global/types/appTypes";
+import DocumentPdfFooter from "@/components/documents/DocumentPdfFooter.vue";
+import DocumentPdfTable from "@/components/documents/DocumentPdfTable.vue";
+import DocumentTextPdf from "@/components/documents/DocumentTextPdf.vue";
+import DocumentTitlePdf from "@/components/documents/DocumentTitlePdf.vue";
+import { DocumentKind } from "@/global/types/appTypes";
 import type {
   InvoiceDocument,
   OfferDocument,
   OverdueNoticeDocument,
 } from "@/global/types/entities";
-import { calculateItemSumPrice, getGrossAmount, getNettAmount } from "@/helpers/utils";
-import DocumentTitlePdf from "@/views/DocumentTitlePdf.vue";
 
 const route = useRoute();
 let result = ref<OfferDocument | OverdueNoticeDocument | InvoiceDocument>();
-// const pageId = route.query.sub_id;
 const kind = route.query.sub_type as unknown as DocumentKind;
 
 async function getDocument() {
   if (kind === DocumentKind.offer) {
     result.value = await getOfferDocument(route.params.id as string);
-    console.log(result);
     return result;
   }
   if (kind === DocumentKind.invoice) {
     result.value = await getInvoiceDocument(route.params.id as string);
-    console.log(result);
     return result;
   }
   if (kind === DocumentKind.overdueNotice) {
     result.value = await getOverdueNoticeDocument(route.params.id as string);
-    console.log(result);
     return result;
-  } else {
-    console.log("wrong type");
   }
 }
-const allItemsSum = computed(() => {
-  if (kind === DocumentKind.offer) {
-    return calculateItemSumPrice(
-      (result.value as OfferDocument).items,
-      (result.value as OfferDocument).offered_at,
-    );
-  }
-  if (kind === DocumentKind.invoice) {
-    return calculateItemSumPrice((result.value as OfferDocument).items);
-  }
-});
-
-let filteredItems = computed(() => {
-  if (!(kind === DocumentKind.overdueNotice) && result.value) {
-    return (result.value as OfferDocument | InvoiceDocument).items.filter(function (item) {
-      return item.kind === ArticleKind.item;
-    });
-  } else {
-    return [];
-  }
-});
 onMounted(async () => {
-  getDocument();
+  await getDocument();
 });
 </script>
 <template>
@@ -69,181 +43,9 @@ onMounted(async () => {
       class="min-h-297 w-[60rem] px-[4rem] ml-auto mr-auto py-5 border-solid border-2 border-slate-500 box-border"
     >
       <DocumentTitlePdf :result="result" :kind="kind" />
-
-      <section v-if="!(kind === DocumentKind.overdueNotice)" class="mb-10 mt-[4rem]">
-        <p class="font-bold">BV:{{ result.client_id }} BV {{ result.client_last_name }}</p>
-        <p>
-          Sehr geehrte Damen und Herren,<br />
-          vielen Dank für Ihren Auftrag, den wir wie folgt in Rechnung stellen.
-        </p>
-      </section>
-      <section v-if="kind === DocumentKind.overdueNotice">
-        <p class="font-bold">BV:{{ result.client_id }} BV {{ result.client_last_name }}</p>
-        <p>
-          Sehr geehrte Damen und Herren,<br />
-          auf unsere u.a. Rechnung(en) haben wir noch keinen Zahlungseingang feststellen können.<br />
-          Wir bitten Sie, die Regulierung nachzuholen und sehen dem Eingang Ihrer Zahlung
-          entgegen.<br />
-          Sollten Sie zwischenzeitlich die Zahlung bereits geleistet haben, betrachten Sie dieses
-          Schreiben bitte als gegenstandslos.<br />
-          Es wurden ihre Zahlungen bis zum
-          {{ `${(result as OverdueNoticeDocument).notice_date}` }} berücksichtigt.<br />
-          Bitte zahlen Sie bis spätestens:
-          {{ `${(result as OverdueNoticeDocument).payments_until}` }}
-        </p>
-      </section>
-      <table class="border-solid border-1 border-black">
-        <thead>
-          <tr>
-            <th class="pl-6">Bezeihnung</th>
-            <th class="pl-6">Anzeihl</th>
-            <th class="pl-6">Anheit</th>
-            <th class="pl-6">Preis</th>
-            <th class="pl-6">Netto</th>
-            <th class="pl-6">USt.%</th>
-            <th class="pl-6">USt.</th>
-            <th class="">Gesamt</th>
-          </tr>
-        </thead>
-        <tbody
-          v-if="!(kind === DocumentKind.overdueNotice)"
-          class="border-solid border-1 border-black"
-        >
-          <tr
-            v-for="item in filteredItems"
-            :key="item.id"
-            class="border-solid border-1 border-black"
-          >
-            <td>{{ item.description }}</td>
-            <td>{{ item.amount }}</td>
-            <td>{{ item.unit }}</td>
-            <td>{{ `${item.price} €` }}</td>
-            <td>{{ `${getNettAmount(item.amount, item.price)} €` }}</td>
-            <td>
-              <!-- TODO: MISSING INVOICEDATE -->
-              {{
-                `${
-                  getVatRate({
-                    isoDate: `${kind === DocumentKind.invoice ? "" : (result as OfferDocument).offered_at}`,
-                  }) *
-                    100 +
-                  " %"
-                }`
-              }}
-            </td>
-            <td>
-              {{
-                `${(
-                  ((getNettAmount(item.amount, item.price) as number) *
-                    getVatRate({
-                      isoDate: `${kind === DocumentKind.invoice ? "" : (result as OfferDocument).offered_at}`,
-                    })) as number
-                ).toFixed(2)} €`
-              }}
-            </td>
-            <td>
-              <!-- (item as InvoiceDocumentItem).invoiceDate -->
-              {{
-                getGrossAmount(
-                  item,
-                  `${kind === DocumentKind.invoice ? "" : (result as OfferDocument).offered_at}`,
-                )
-              }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <table v-if="!(kind === DocumentKind.overdueNotice)" class="mt-5">
-        <tbody>
-          <tr class="font-bold">
-            <td>Netto:</td>
-            <td>Umsatzsteuer</td>
-            <td>Rechnungsbetrag</td>
-          </tr>
-          <tr class="font-bold">
-            <td>{{ allItemsSum?.amountNet }}</td>
-            <td>{{ allItemsSum?.amountVat }}</td>
-            <td>{{ allItemsSum?.amountGross }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div v-if="kind === DocumentKind.overdueNotice">
-        <section>
-          <p class="font-bold">
-            Zzgl. Mahnkosten in Höhe von:
-            {{ `${(result as OverdueNoticeDocument).notice_costs} €` }}
-          </p>
-          <p>
-            Zzgl. Verzugszinsen in Höhe von:
-            {{ `${(result as OverdueNoticeDocument).default_interest} €` }}
-          </p>
-        </section>
-        <table class="mt-5">
-          <tbody>
-            <tr class="font-bold">
-              <td>Netto:</td>
-              <td>Umsatzsteuer</td>
-              <td>Rechnungsbetrag</td>
-            </tr>
-            <tr class="font-bold">
-              <td>0,00 €</td>
-              <td>0,00 €</td>
-              <td>
-                {{
-                  `${(result as OverdueNoticeDocument).notice_costs + (result as OverdueNoticeDocument).default_interest} €`
-                }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <section>
-        <p class="mt-5 leading-4">
-          Überweisen Sie bitte den offenen Betrag auf das unten aufgeführte Geschäftskonto.<br />
-          Sie sind verpflichtet, die Rechnung zu Steuerzwecken zwei Jahre lang aufzubewahren.
-        </p>
-        <p class="mt-5 leading-4">
-          Die aufgeführten Arbeiten wurden am 27.09.2024 ausgeführt.<br />
-          Zahlungsziel: Bitte zahlen Sie bis zum 09.10.2024 ohne Abzug.
-        </p>
-        <p class="mt-5">Mit freundlichen Grüßen</p>
-        <p class="mt-5">redacted</p>
-      </section>
-      <section class="text-xs">
-        <hr class="border-black border-1 mb-3" />
-        <div class="grid grid-cols-4 grid-rows-1 gap-1">
-          <div>
-            <p class="font-bold">redacted</p>
-            <p>redacted</p>
-            <p>redacted</p>
-            <p>St-Nr: redacted</p>
-            <p>USt-Id: redacted</p>
-          </div>
-          <div>
-            <p class="font-bold">Kontaktinformation</p>
-            <p>redacted</p>
-            <p>Phone: redacted</p>
-            <p>Mobil: redacted</p>
-            <p>E-Mail: redacted</p>
-          </div>
-          <div class="col-span-2 flex flex-col gap-2">
-            <p class="font-bold self-center">Bankverbindung</p>
-            <div class="flex flex-row">
-              <div>
-                <p>Bankverbindung redacted</p>
-                <p>IBAN: redacted</p>
-                <p>BIC: redacted</p>
-              </div>
-              <div>
-                <p>redacted</p>
-                <p>IBAN: redacted</p>
-                <p>BIC: redacted</p>
-              </div>
-            </div>
-            <p class="self-center">Web: redacted</p>
-          </div>
-        </div>
-      </section>
+      <DocumentPdfTable :result="result" :kind="kind"></DocumentPdfTable>
+      <DocumentTextPdf :result="result" :kind="kind"></DocumentTextPdf>
+      <DocumentPdfFooter></DocumentPdfFooter>
     </div>
   </div>
 </template>

@@ -44,16 +44,6 @@ async function removeDocument(doc: OfferDocument | OverdueNoticeDocument | Invoi
   await deleteDocument(doc.id, kind);
   reloadPage();
 }
-// async function getDocument(doc: OfferDocument | OverdueNoticeDocument | InvoiceDocument) {
-//   let kind = getDocumentType(doc);
-
-//   if (kind === DocumentKind.offer) {
-//     const result = await getOfferDocument(doc.id);
-//     console.log(result);
-//   } else {
-//     console.log("wrong type");
-//   }
-// }
 
 function getSelectedIds() {
   return selectedProduct.value.map(function (element) {

@@ -12,7 +12,6 @@ const emit = defineEmits<{
 let articlesList = ref<Article[]>([]);
 let isArticlesListVisible = ref(false);
 let selectedArticleId = ref();
-// let selectedArticleOrPosition = ref<Article | undefined>();
 async function openArticlesList() {
   isArticlesListVisible.value = true;
   articlesList.value = (await getArticles()).data;

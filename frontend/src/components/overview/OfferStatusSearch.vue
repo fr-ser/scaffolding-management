@@ -10,13 +10,9 @@ const emit = defineEmits<{
 }>();
 let offerStatus = ref();
 const offersType = Object.values(OfferStatus);
-watch(
-  offerStatus,
-  () => {
-    emit("findOfferStatus", offerStatus.value);
-  },
-  // { deep: true },
-);
+watch(offerStatus, () => {
+  emit("findOfferStatus", offerStatus.value);
+});
 </script>
 <template>
   <FloatLabel class="w-full md:w-1/4 mb-2 flex md:self-end">

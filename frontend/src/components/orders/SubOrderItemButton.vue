@@ -18,8 +18,7 @@ const props = defineProps<{
 }>();
 const confirm = useConfirmations();
 const notifications = useNotifications();
-// функция для создания документа компонента с бэкенда в которую надо передать тип и айди
-//
+
 let documents = ref<OfferDocument | OverdueNoticeDocument | InvoiceDocument>();
 async function createDocument() {
   documents.value = await createDocumentBySubOrder(props.id, props.kind);

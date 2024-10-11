@@ -4,6 +4,8 @@ import Dropdown from "primevue/dropdown";
 import { computed, ref, watch } from "vue";
 
 import { updateInvoice } from "@/backendClient";
+import OrderDocuments from "@/components/orders/OrderDocuments.vue";
+// import SubOrderDocumentButton from "@/components/orders/SubOrderDocumentButton.vue";
 import SubOrderItemButton from "@/components/orders/SubOrderItemButton.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
@@ -86,5 +88,8 @@ let serviceDates = props.invoice.service_dates.map(formatIsoDateString).join(", 
       </template>
     </Card>
   </section>
-  <SubOrderItemButton :id="invoice.id" :kind="DocumentKind.invoice" />
+  <section class="flex flex-row gap-4 mt-3">
+    <SubOrderItemButton :id="invoice.id" :kind="DocumentKind.invoice" />
+    <OrderDocuments :id="invoice.id" :kind="DocumentKind.invoice" />
+  </section>
 </template>
