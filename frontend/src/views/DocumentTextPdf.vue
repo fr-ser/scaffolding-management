@@ -30,7 +30,8 @@ if (props.kind === DocumentKind.overdueNotice) {
     Überweisen Sie bitte den offenen Betrag auf das unten aufgeführte Geschäftskonto.<br />
     Sie sind verpflichtet, die Rechnung zu Steuerzwecken zwei Jahre lang aufzubewahren.<br />
     Die aufgeführten Arbeiten wurden am
-    {{ (result as InvoiceDocument).service_dates }} ausgeführt.<br />
+    {{ (result as InvoiceDocument).service_dates.map(formatIsoDateString).join(", ") }}
+    ausgeführt.<br />
     Zahlungsziel: Bitte zahlen Sie bis zum
     {{ formatIsoDateString((result as InvoiceDocument).payment_target) }} ohne Abzug.<br />
     Mit freundlichen Grüßen <br />

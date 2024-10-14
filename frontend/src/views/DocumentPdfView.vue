@@ -11,6 +11,8 @@ import type {
   OverdueNoticeDocument,
 } from "@/global/types/entities";
 import { calculateItemSumPrice, getGrossAmount, getNettAmount } from "@/helpers/utils";
+import DocumentPdfFooter from "@/views/DocumentPdfFooter.vue";
+import DocumentPdfTable from "@/views/DocumentPdfTable.vue";
 import DocumentTextPdf from "@/views/DocumentTextPdf.vue";
 import DocumentTitlePdf from "@/views/DocumentTitlePdf.vue";
 
@@ -38,27 +40,27 @@ async function getDocument() {
     console.log("wrong type");
   }
 }
-const allItemsSum = computed(() => {
-  if (kind === DocumentKind.offer) {
-    return calculateItemSumPrice(
-      (result.value as OfferDocument).items,
-      (result.value as OfferDocument).offered_at,
-    );
-  }
-  if (kind === DocumentKind.invoice) {
-    return calculateItemSumPrice((result.value as InvoiceDocument).items);
-  }
-});
+// const allItemsSum = computed(() => {
+//   if (kind === DocumentKind.offer) {
+//     return calculateItemSumPrice(
+//       (result.value as OfferDocument).items,
+//       (result.value as OfferDocument).offered_at,
+//     );
+//   }
+//   if (kind === DocumentKind.invoice) {
+//     return calculateItemSumPrice((result.value as InvoiceDocument).items);
+//   }
+// });
 
-let filteredItems = computed(() => {
-  if (!(kind === DocumentKind.overdueNotice) && result.value) {
-    return (result.value as OfferDocument | InvoiceDocument).items.filter(function (item) {
-      return item.kind === ArticleKind.item;
-    });
-  } else {
-    return [];
-  }
-});
+// let filteredItems = computed(() => {
+//   if (!(kind === DocumentKind.overdueNotice) && result.value) {
+//     return (result.value as OfferDocument | InvoiceDocument).items.filter(function (item) {
+//       return item.kind === ArticleKind.item;
+//     });
+//   } else {
+//     return [];
+//   }
+// });
 onMounted(async () => {
   await getDocument();
 });
@@ -70,7 +72,8 @@ onMounted(async () => {
       class="min-h-297 w-[60rem] px-[4rem] ml-auto mr-auto py-5 border-solid border-2 border-slate-500 box-border"
     >
       <DocumentTitlePdf :result="result" :kind="kind" />
-      <table class="border-solid border-1 border-black">
+      <DocumentPdfTable :result="result" :kind="kind"></DocumentPdfTable>
+      <!-- <table class="border-solid border-1 border-black">
         <thead>
           <tr>
             <th class="pl-6">Bezeihnung</th>
@@ -82,8 +85,8 @@ onMounted(async () => {
             <th class="pl-6">USt.</th>
             <th class="">Gesamt</th>
           </tr>
-        </thead>
-        <tbody
+        </thead> -->
+      <!-- <tbody
           v-if="!(kind === DocumentKind.overdueNotice)"
           class="border-solid border-1 border-black"
         >
@@ -97,9 +100,9 @@ onMounted(async () => {
             <td>{{ item.unit }}</td>
             <td>{{ `${item.price} €` }}</td>
             <td>{{ `${getNettAmount(item.amount, item.price)} €` }}</td>
-            <td>
-              <!-- TODO: MISSING INVOICEDATE -->
-              {{
+            <td> -->
+      <!-- TODO: MISSING INVOICEDATE -->
+      <!-- {{
                 `${
                   getVatRate({
                     isoDate: `${kind === DocumentKind.invoice ? "" : (result as OfferDocument).offered_at}`,
@@ -120,8 +123,8 @@ onMounted(async () => {
               }}
             </td>
             <td>
-              <!-- (item as InvoiceDocumentItem).invoiceDate -->
-              {{
+            (item as InvoiceDocumentItem).invoiceDate -->
+      <!-- {{
                 getGrossAmount(
                   item,
                   `${kind === DocumentKind.invoice ? "" : (result as OfferDocument).offered_at}`,
@@ -130,8 +133,8 @@ onMounted(async () => {
             </td>
           </tr>
         </tbody>
-      </table>
-      <table v-if="!(kind === DocumentKind.overdueNotice)" class="mt-5">
+      </table> -->
+      <!-- <table v-if="!(kind === DocumentKind.overdueNotice)" class="mt-5">
         <tbody>
           <tr class="font-bold">
             <td>Netto:</td>
@@ -144,8 +147,8 @@ onMounted(async () => {
             <td>{{ allItemsSum?.amountGross }}</td>
           </tr>
         </tbody>
-      </table>
-      <div v-if="kind === DocumentKind.overdueNotice">
+      </table> -->
+      <!-- <div v-if="kind === DocumentKind.overdueNotice">
         <section>
           <p class="font-bold">
             Zzgl. Mahnkosten in Höhe von:
@@ -155,8 +158,8 @@ onMounted(async () => {
             Zzgl. Verzugszinsen in Höhe von:
             {{ `${(result as OverdueNoticeDocument).default_interest} €` }}
           </p>
-        </section>
-        <table class="mt-5">
+        </section> -->
+      <!-- <table class="mt-5">
           <tbody>
             <tr class="font-bold">
               <td>Netto:</td>
@@ -174,43 +177,9 @@ onMounted(async () => {
             </tr>
           </tbody>
         </table>
-      </div>
+      </div> -->
       <DocumentTextPdf :result="result" :kind="kind"></DocumentTextPdf>
-      <section class="text-xs">
-        <hr class="border-black border-1 mb-3" />
-        <div class="grid grid-cols-4 grid-rows-1 gap-1">
-          <div>
-            <p class="font-bold">redacted</p>
-            <p>redacted</p>
-            <p>redacted</p>
-            <p>St-Nr: redacted</p>
-            <p>USt-Id: redacted</p>
-          </div>
-          <div>
-            <p class="font-bold">Kontaktinformation</p>
-            <p>redacted</p>
-            <p>Phone: redacted</p>
-            <p>Mobil: redacted</p>
-            <p>E-Mail: redacted</p>
-          </div>
-          <div class="col-span-2 flex flex-col gap-2">
-            <p class="font-bold self-center">Bankverbindung</p>
-            <div class="flex flex-row">
-              <div>
-                <p>Bankverbindung redacted</p>
-                <p>IBAN: redacted</p>
-                <p>BIC: redacted</p>
-              </div>
-              <div>
-                <p>redacted</p>
-                <p>IBAN: redacted</p>
-                <p>BIC: redacted</p>
-              </div>
-            </div>
-            <p class="self-center">Web: redacted</p>
-          </div>
-        </div>
-      </section>
+      <DocumentPdfFooter></DocumentPdfFooter>
     </div>
   </div>
 </template>
