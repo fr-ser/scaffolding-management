@@ -84,7 +84,10 @@ export function parseJSONsafe(presumedJSON: string): any | null {
 export function formatDateToIsoString(dateToIsoString: Date) {
   return format(dateToIsoString, "yyyy-MM-dd");
 }
-export function calculateItemSumPrice(arrayItems: (OfferItem | OfferItemCreate)[], date?: string) {
+export function calculateItemSumPrice(
+  arrayItems: (OfferItem | OfferItemCreate)[],
+  date: string = "",
+) {
   let amountNet = 0;
   let amountGross = 0;
   let amountVat = 0;
