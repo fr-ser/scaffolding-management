@@ -11,6 +11,7 @@ import type {
   OverdueNoticeDocument,
 } from "@/global/types/entities";
 import { calculateItemSumPrice, getGrossAmount, getNettAmount } from "@/helpers/utils";
+import DocumentTextPdf from "@/views/DocumentTextPdf.vue";
 import DocumentTitlePdf from "@/views/DocumentTitlePdf.vue";
 
 const route = useRoute();
@@ -45,7 +46,7 @@ const allItemsSum = computed(() => {
     );
   }
   if (kind === DocumentKind.invoice) {
-    return calculateItemSumPrice((result.value as OfferDocument).items);
+    return calculateItemSumPrice((result.value as InvoiceDocument).items);
   }
 });
 
@@ -59,7 +60,7 @@ let filteredItems = computed(() => {
   }
 });
 onMounted(async () => {
-  getDocument();
+  await getDocument();
 });
 </script>
 <template>
@@ -69,29 +70,6 @@ onMounted(async () => {
       class="min-h-297 w-[60rem] px-[4rem] ml-auto mr-auto py-5 border-solid border-2 border-slate-500 box-border"
     >
       <DocumentTitlePdf :result="result" :kind="kind" />
-
-      <section v-if="!(kind === DocumentKind.overdueNotice)" class="mb-10 mt-[4rem]">
-        <p class="font-bold">BV:{{ result.client_id }} BV {{ result.client_last_name }}</p>
-        <p>
-          Sehr geehrte Damen und Herren,<br />
-          vielen Dank für Ihren Auftrag, den wir wie folgt in Rechnung stellen.
-        </p>
-      </section>
-      <section v-if="kind === DocumentKind.overdueNotice">
-        <p class="font-bold">BV:{{ result.client_id }} BV {{ result.client_last_name }}</p>
-        <p>
-          Sehr geehrte Damen und Herren,<br />
-          auf unsere u.a. Rechnung(en) haben wir noch keinen Zahlungseingang feststellen können.<br />
-          Wir bitten Sie, die Regulierung nachzuholen und sehen dem Eingang Ihrer Zahlung
-          entgegen.<br />
-          Sollten Sie zwischenzeitlich die Zahlung bereits geleistet haben, betrachten Sie dieses
-          Schreiben bitte als gegenstandslos.<br />
-          Es wurden ihre Zahlungen bis zum
-          {{ `${(result as OverdueNoticeDocument).notice_date}` }} berücksichtigt.<br />
-          Bitte zahlen Sie bis spätestens:
-          {{ `${(result as OverdueNoticeDocument).payments_until}` }}
-        </p>
-      </section>
       <table class="border-solid border-1 border-black">
         <thead>
           <tr>
@@ -173,7 +151,7 @@ onMounted(async () => {
             Zzgl. Mahnkosten in Höhe von:
             {{ `${(result as OverdueNoticeDocument).notice_costs} €` }}
           </p>
-          <p>
+          <p class="font-bold">
             Zzgl. Verzugszinsen in Höhe von:
             {{ `${(result as OverdueNoticeDocument).default_interest} €` }}
           </p>
@@ -197,18 +175,7 @@ onMounted(async () => {
           </tbody>
         </table>
       </div>
-      <section>
-        <p class="mt-5 leading-4">
-          Überweisen Sie bitte den offenen Betrag auf das unten aufgeführte Geschäftskonto.<br />
-          Sie sind verpflichtet, die Rechnung zu Steuerzwecken zwei Jahre lang aufzubewahren.
-        </p>
-        <p class="mt-5 leading-4">
-          Die aufgeführten Arbeiten wurden am 27.09.2024 ausgeführt.<br />
-          Zahlungsziel: Bitte zahlen Sie bis zum 09.10.2024 ohne Abzug.
-        </p>
-        <p class="mt-5">Mit freundlichen Grüßen</p>
-        <p class="mt-5">redacted</p>
-      </section>
+      <DocumentTextPdf :result="result" :kind="kind"></DocumentTextPdf>
       <section class="text-xs">
         <hr class="border-black border-1 mb-3" />
         <div class="grid grid-cols-4 grid-rows-1 gap-1">

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 
+import { formatIsoDateString } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
 import type {
   InvoiceDocument,
@@ -57,5 +58,34 @@ if (props.kind === DocumentKind.overdueNotice) {
       <p v-if="props.kind === DocumentKind.offer">Angebot gültig bis:</p>
       <hr class="border-black border-1 mt-3" />
     </div>
+  </section>
+  <section v-if="props.kind === DocumentKind.invoice" class="mb-10 mt-[4rem]">
+    <p class="font-bold">BV:{{ result.client_id }} BV {{ result.client_last_name }}</p>
+    <p>
+      Sehr geehrte Damen und Herren,<br />
+      vielen Dank für Ihren Auftrag, den wir wie folgt in Rechnung stellen.
+    </p>
+  </section>
+  <section v-if="props.kind === DocumentKind.offer" class="mb-10 mt-[4rem]">
+    <p class="font-bold">BV:{{ result.client_id }} BV {{ result.client_last_name }}</p>
+    <p>
+      Sehr geehrte Damen und Herren,<br />
+      vielen Dank für Ihr Interesse. Hiermit unterbreiten wir Ihnen folgendes Angebot
+    </p>
+  </section>
+  <section v-if="props.kind === DocumentKind.overdueNotice" class="mb-10 mt-[4rem]">
+    <p class="font-bold">BV:{{ result.client_id }} BV {{ result.client_last_name }}</p>
+    <p>
+      Sehr geehrte Damen und Herren,<br />
+      auf unsere u.a. Rechnung(en) haben wir noch keinen Zahlungseingang feststellen können.<br />
+      Wir bitten Sie, die Regulierung nachzuholen und sehen dem Eingang Ihrer Zahlung entgegen.<br />
+      Sollten Sie zwischenzeitlich die Zahlung bereits geleistet haben, betrachten Sie dieses
+      Schreiben bitte als gegenstandslos.<br />
+      Es wurden ihre Zahlungen bis zum
+      {{ `${formatIsoDateString((result as OverdueNoticeDocument).notice_date)}` }}
+      berücksichtigt.<br />
+      Bitte zahlen Sie bis spätestens:
+      {{ `${formatIsoDateString((result as OverdueNoticeDocument).payments_until)}` }}
+    </p>
   </section>
 </template>
