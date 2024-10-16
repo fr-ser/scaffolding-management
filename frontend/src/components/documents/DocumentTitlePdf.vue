@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
-
 import { formatIsoDateString } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
 import type {

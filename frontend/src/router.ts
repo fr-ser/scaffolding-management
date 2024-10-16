@@ -4,7 +4,6 @@ import ArticleView from "@/views/ArticleView.vue";
 import ClientListView from "@/views/ClientListView.vue";
 import ClientView from "@/views/ClientView.vue";
 import DocumentListView from "@/views/DocumentListView.vue";
-import DocumentOverduePdfView from "@/views/DocumentOverduePdfView.vue";
 import DocumentPdfView from "@/views/DocumentPdfView.vue";
 import InvoiceView from "@/views/InvoiceView.vue";
 import OfferView from "@/views/OfferView.vue";
@@ -121,14 +120,6 @@ const router = createRouter({
       component: DocumentPdfView,
       meta: {
         label: "Dokumente Pdf",
-      },
-    },
-    {
-      path: `${ROUTES.DOCUMENTS.path}/:id/mahnung/pdf`,
-      name: `${ROUTES.DOCUMENTS.name}-overdue`,
-      component: DocumentOverduePdfView,
-      meta: {
-        label: "Dokumente overdue Pdf",
       },
     },
     {
