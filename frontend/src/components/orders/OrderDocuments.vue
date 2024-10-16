@@ -4,7 +4,8 @@ import Dialog from "primevue/dialog";
 import ProgressSpinner from "primevue/progressspinner";
 import { ref } from "vue";
 
-import { getDocumentsByOrder } from "@/backendClient";
+import { getDocumentsByOrder, getDocumentsBySubOrder } from "@/backendClient";
+import { DocumentKind } from "@/global/types/appTypes";
 import {
   type InvoiceDocument,
   type OfferDocument,
@@ -12,41 +13,61 @@ import {
 } from "@/global/types/entities";
 
 const props = defineProps<{
-  id: string;
+  id: string | number;
+  kind?: DocumentKind;
 }>();
 
 let visible = ref(false);
 let documents = ref<(OfferDocument | OverdueNoticeDocument | InvoiceDocument)[]>([]);
 let isLoading = ref<boolean>(false);
 
-async function getDocuments() {
+async function getAllDocuments() {
   isLoading.value = true;
   documents.value = await getDocumentsByOrder(props.id as string);
   isLoading.value = false;
 }
-async function openDocumentsList() {
+async function openAllDocumentsList() {
   visible.value = true;
-  getDocuments();
+  getAllDocuments();
 }
+async function getItemDocuments() {
+  isLoading.value = true;
+  documents.value = await getDocumentsBySubOrder(props.id as number, props.kind as DocumentKind);
+  isLoading.value = false;
+}
+async function openItemDocumentsList() {
+  visible.value = true;
+  getItemDocuments();
+}
+console.log(DocumentKind);
 </script>
 
 <template>
-  <div class="font-bold my-2">Dokumente</div>
+  <div v-if="!kind" class="font-bold my-2">Dokumente</div>
   <div class="flex flex-row gap-4">
     <Button
-      @click="openDocumentsList"
+      v-if="!kind"
+      @click="openAllDocumentsList"
       label="Alle Auftragsdokumente anzeigen"
       severity="secondary"
       outlined
       size="small"
     />
-    <!-- <Button label="Dokument Erstellen" outlined size="small" /> -->
+    <Button
+      v-else
+      @click="openItemDocumentsList"
+      label="Show all SubItem Documents"
+      severity="secondary"
+      outlined
+      size="small"
+    />
   </div>
   <Dialog class="w-full sm:w-4/6" v-model:visible="visible" modal header="Auftragsdokumente">
     <div v-if="isLoading" class="flex justify-center">
       <ProgressSpinner />
     </div>
-    <div v-else v-for="document in documents" :key="document.id">
+    {{ documents.length === 0 ? "No documents" : null }}
+    <div v-for="document in documents" :key="document.id">
       <div class="border border-slate-300 hover:border-primary ps-4 py-1">{{ document.id }}</div>
     </div>
   </Dialog>
