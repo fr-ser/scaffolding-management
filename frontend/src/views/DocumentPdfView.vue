@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import { getInvoiceDocument, getOfferDocument, getOverdueNoticeDocument } from "@/backendClient";
@@ -7,8 +7,7 @@ import DocumentPdfFooter from "@/components/documents/DocumentPdfFooter.vue";
 import DocumentPdfTable from "@/components/documents/DocumentPdfTable.vue";
 import DocumentTextPdf from "@/components/documents/DocumentTextPdf.vue";
 import DocumentTitlePdf from "@/components/documents/DocumentTitlePdf.vue";
-// import { getVatRate } from "@/global/helpers";
-import { ArticleKind, DocumentKind } from "@/global/types/appTypes";
+import { DocumentKind } from "@/global/types/appTypes";
 import type {
   InvoiceDocument,
   OfferDocument,
@@ -17,26 +16,20 @@ import type {
 
 const route = useRoute();
 let result = ref<OfferDocument | OverdueNoticeDocument | InvoiceDocument>();
-// const pageId = route.query.sub_id;
 const kind = route.query.sub_type as unknown as DocumentKind;
 
 async function getDocument() {
   if (kind === DocumentKind.offer) {
     result.value = await getOfferDocument(route.params.id as string);
-    console.log(result);
     return result;
   }
   if (kind === DocumentKind.invoice) {
     result.value = await getInvoiceDocument(route.params.id as string);
-    console.log(result);
     return result;
   }
   if (kind === DocumentKind.overdueNotice) {
     result.value = await getOverdueNoticeDocument(route.params.id as string);
-    console.log(result);
     return result;
-  } else {
-    console.log("wrong type");
   }
 }
 onMounted(async () => {

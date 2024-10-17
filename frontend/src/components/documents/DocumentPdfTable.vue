@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed } from "vue";
 
 import { getVatRate } from "@/global/helpers";
-import { formatIsoDateString } from "@/global/helpers";
 import { ArticleKind, DocumentKind } from "@/global/types/appTypes";
 import type {
   InvoiceDocument,
@@ -25,6 +24,8 @@ const allItemsSum = computed(() => {
   }
   if (props.kind === DocumentKind.invoice) {
     return calculateItemSumPrice((props.result as InvoiceDocument).items);
+  } else {
+    return undefined;
   }
 });
 let filteredItems = computed(() => {
@@ -63,7 +64,6 @@ const props = defineProps<{
         <td>{{ `${item.price || "-"} €` }}</td>
         <td>{{ `${getNettAmount(item.amount, item.price)} €` }}</td>
         <td>
-          <!-- TODO: MISSING INVOICEDATE -->
           {{
             `${
               getVatRate({
@@ -75,14 +75,6 @@ const props = defineProps<{
           }}
         </td>
         <td>
-          <!-- {{
-            `${(
-              ((getNettAmount(item.amount, item.price) as number) *
-                getVatRate({
-                  isoDate: `${kind === DocumentKind.invoice ? "" : (result as OfferDocument).offered_at}`,
-                })) as number
-            ).toFixed(2)} €`
-          }} -->
           {{
             getVattAmount(
               item.amount,
@@ -92,7 +84,6 @@ const props = defineProps<{
           }}
         </td>
         <td>
-          <!-- (item as InvoiceDocumentItem).invoiceDate -->
           {{
             getGrossAmount(
               item,
