@@ -89,6 +89,41 @@ export default function useNotifications() {
       life: 3000,
     });
   };
+  const showCreateOverdueNotification = () => {
+    toast.add({
+      severity: "info",
+      summary: "Eine neue Mahnung wurde erstellt",
+      life: 3000,
+    });
+  };
+  const showUpdateOverdueNoticeLevelNotification = () => {
+    toast.add({
+      severity: "info",
+      summary: "The notice level was changed",
+      life: 3000,
+    });
+  };
+  const showUpdateOverduePaymentStatusNotification = () => {
+    toast.add({
+      severity: "info",
+      summary: "The status was changed",
+      life: 3000,
+    });
+  };
+  const showCreatePdfDocumentNotification = () => {
+    toast.add({
+      severity: "info",
+      summary: "Pdf document was created",
+      life: 3000,
+    });
+  };
+  const showCreateNewDocumentNotification = () => {
+    toast.add({
+      severity: "info",
+      summary: "New document was created",
+      life: 3000,
+    });
+  };
   return {
     showDeleteClientNotification,
     showUpdateClientNotification,
@@ -102,5 +137,10 @@ export default function useNotifications() {
     showUpdateOfferStatusNotification,
     showCreateInvoiceNotification,
     showUpdateInvoiceStatusNotification,
+    showCreateOverdueNotification,
+    showUpdateOverdueNoticeLevelNotification,
+    showUpdateOverduePaymentStatusNotification,
+    showCreatePdfDocumentNotification,
+    showCreateNewDocumentNotification,
   };
 }

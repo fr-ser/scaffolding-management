@@ -4,9 +4,13 @@ import Dropdown from "primevue/dropdown";
 import { computed, ref, watch } from "vue";
 
 import { updateInvoice } from "@/backendClient";
+import OrderDocuments from "@/components/orders/OrderDocuments.vue";
+// import SubOrderDocumentButton from "@/components/orders/SubOrderDocumentButton.vue";
+import SubOrderItemButton from "@/components/orders/SubOrderItemButton.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { formatIsoDateString } from "@/global/helpers";
+import { DocumentKind } from "@/global/types/appTypes";
 import { ArticleKind, PaymentStatus } from "@/global/types/appTypes";
 import type { Invoice } from "@/global/types/entities";
 import { calculateItemSumPrice, getGrossAmount } from "@/helpers/utils";
@@ -51,12 +55,12 @@ let serviceDates = props.invoice.service_dates.map(formatIsoDateString).join(", 
       class="w-full md:w-[14rem]"
     />
   </section>
-  <section class="mt-2">
-    <P class="font-bold">
+  <section>
+    <p class="font-bold">
       Leistungsdatum: <span class="font-normal"> {{ serviceDates }}</span>
-    </P>
+    </p>
   </section>
-  <section class="mt-2">
+  <section>
     <p><span class="font-bold">Rechnungsbeschreibung:</span> {{ invoice.description }}</p>
   </section>
   <p class="font-bold mt-1">Angebotspreis:</p>
@@ -83,5 +87,9 @@ let serviceDates = props.invoice.service_dates.map(formatIsoDateString).join(", 
         </div>
       </template>
     </Card>
+  </section>
+  <section class="flex flex-row gap-4 mt-3">
+    <SubOrderItemButton :id="invoice.id" :kind="DocumentKind.invoice" />
+    <OrderDocuments :id="invoice.id" :kind="DocumentKind.invoice" />
   </section>
 </template>
