@@ -38,6 +38,9 @@ ordersRouter.get(
     }
 
     const result = await dataSource.manager.findAndCount(Order, {
+      // TODO: check if we always want to return all relations
+      // TODO: do not return suborders depending on the role
+      relations: ["invoices", "offer", "overdue_notices", "client"],
       skip,
       take,
       order: { created_at: "DESC" },
