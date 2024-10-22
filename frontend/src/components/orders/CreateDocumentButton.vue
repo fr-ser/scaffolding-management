@@ -22,7 +22,6 @@ const notifications = useNotifications();
 let documents = ref<OfferDocument | OverdueNoticeDocument | InvoiceDocument>();
 async function createDocument() {
   documents.value = await createDocumentBySubOrder(props.id, props.kind);
-  console.log(documents.value);
   notifications.showCreateNewDocumentNotification();
 }
 const confirmCreateDocument = () => {
