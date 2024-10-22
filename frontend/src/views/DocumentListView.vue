@@ -87,7 +87,7 @@ onMounted(async () => {
       <Button
         @click="confirmCreatePdf"
         type="button"
-        label="Pdf Speichern"
+        label="PDF speichern"
         :disabled="!selectedProduct.length"
       />
     </div>
