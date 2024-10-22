@@ -113,14 +113,14 @@ export default function useNotifications() {
   const showCreatePdfDocumentNotification = () => {
     toast.add({
       severity: "info",
-      summary: "Pdf document was created",
+      summary: "Ein PDF-Dokument wurde erstellt",
       life: 3000,
     });
   };
   const showCreateNewDocumentNotification = () => {
     toast.add({
       severity: "info",
-      summary: "New document was created",
+      summary: "Ein neues Dokument wurde erstellt",
       life: 3000,
     });
   };
