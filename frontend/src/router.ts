@@ -4,12 +4,12 @@ import ArticleView from "@/views/ArticleView.vue";
 import ClientListView from "@/views/ClientListView.vue";
 import ClientView from "@/views/ClientView.vue";
 import DocumentListView from "@/views/DocumentListView.vue";
-import DocumentPdfView from "@/views/DocumentPdfView.vue";
+import DocumentPdfView from "@/views/DocumentView.vue";
 import InvoiceView from "@/views/InvoiceView.vue";
 import OfferView from "@/views/OfferView.vue";
 import OrderListView from "@/views/OrderListView.vue";
 import OrderView from "@/views/OrderView.vue";
-import OverdueView from "@/views/OverdueView.vue";
+import OverdueView from "@/views/OverdueNoticeView.vue";
 import OverviewView from "@/views/OverviewView.vue";
 
 export const ROUTES = {
