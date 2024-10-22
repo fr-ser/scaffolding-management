@@ -105,28 +105,37 @@ export function calculateItemSumPrice(
   }
 
   return {
-    amountNet: formatNumber(amountNet, { decimals: 2, currency: true }),
-    amountGross: formatNumber(amountGross, { decimals: 2, currency: true }),
-    amountVat: formatNumber(amountVat, { decimals: 2, currency: true }),
+    amountNet: getFormatedAmount(amountNet),
+    amountGross: getFormatedAmount(amountGross),
+    amountVat: getFormatedAmount(amountVat),
   };
 }
 export function getGrossAmount(item: OfferItem | OfferItemCreate, date: string) {
-  if (!item.amount || !item.price) return "-";
-
-  const result = item.amount * item.price * (1 + getVatRate({ isoDate: date }));
-  return formatNumber(result, { decimals: 2, currency: true });
+  if (item.amount && item.price) {
+    return item.amount * item.price * (1 + getVatRate({ isoDate: date }));
+  } else {
+    return undefined;
+  }
 }
-
 export function getNetAmount(item?: number, price?: number) {
   if (item && price) {
-    return round(item * price, 2);
+    return item * price;
   } else {
-    return "-";
+    return undefined;
   }
 }
 export function getVatAmount(amount?: number, price?: number, date?: string) {
-  if (amount && price) {
-    const result = (getNetAmount(amount, price) as number) * getVatRate({ isoDate: date });
+  const netto = getNetAmount(amount, price);
+
+  if (netto) {
+    return netto * getVatRate({ isoDate: date });
+  } else {
+    return undefined;
+  }
+}
+
+export function getFormatedAmount(result?: number) {
+  if (result) {
     return formatNumber(result, { decimals: 2, currency: true });
   } else {
     return "-";
