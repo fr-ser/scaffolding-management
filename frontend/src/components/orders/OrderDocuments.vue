@@ -43,7 +43,7 @@ console.log(DocumentKind);
 </script>
 
 <template>
-  <div v-if="!kind" class="font-bold my-2">Dokumente</div>
+  <div class="font-bold my-2">Dokumente</div>
   <div class="flex flex-row gap-4">
     <Button
       v-if="!kind"

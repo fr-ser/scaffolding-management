@@ -11,9 +11,6 @@ const props = defineProps<{
   result: OfferDocument | OverdueNoticeDocument | InvoiceDocument;
   kind: DocumentKind;
 }>();
-
-// if (props.kind === DocumentKind.overdueNotice) {
-// }
 </script>
 <template>
   <section v-if="props.kind === DocumentKind.offer">

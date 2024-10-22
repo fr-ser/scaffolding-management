@@ -117,7 +117,7 @@ const props = defineProps<{
     <table class="mt-5">
       <tbody>
         <tr class="font-bold">
-          <td>Netto:</td>
+          <td>Netto</td>
           <td>Umsatzsteuer</td>
           <td>Rechnungsbetrag</td>
         </tr>
