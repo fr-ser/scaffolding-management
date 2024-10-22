@@ -99,7 +99,7 @@ export default function useNotifications() {
   const showUpdateOverdueNoticeLevelNotification = () => {
     toast.add({
       severity: "info",
-      summary: "The notice level was changed",
+      summary: "Der Mahnungslevel wurde geändert",
       life: 3000,
     });
   };
