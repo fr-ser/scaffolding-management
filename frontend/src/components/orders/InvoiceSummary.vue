@@ -5,7 +5,6 @@ import { computed, ref, watch } from "vue";
 
 import { updateInvoice } from "@/backendClient";
 import OrderDocuments from "@/components/orders/OrderDocuments.vue";
-// import SubOrderDocumentButton from "@/components/orders/SubOrderDocumentButton.vue";
 import SubOrderItemButton from "@/components/orders/SubOrderItemButton.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
