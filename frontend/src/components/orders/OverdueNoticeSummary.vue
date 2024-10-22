@@ -3,8 +3,8 @@ import Dropdown from "primevue/dropdown";
 import { ref, watch } from "vue";
 
 import { updateOverdueNotice } from "@/backendClient";
+import CreateDocumentButton from "@/components/orders/CreateDocumentButton.vue";
 import OrderDocuments from "@/components/orders/OrderDocuments.vue";
-import SubOrderItemButton from "@/components/orders/SubOrderItemButton.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { formatIsoDateString } from "@/global/helpers";
@@ -70,7 +70,7 @@ watch(noticeLevel, async () => {
     <p><span class="font-bold">Beschreibung: </span>{{ overdue.description }}</p>
   </section>
   <section class="flex flex-row gap-4 mt-3">
-    <SubOrderItemButton :id="overdue.id" :kind="DocumentKind.overdueNotice" />
+    <CreateDocumentButton :id="overdue.id" :kind="DocumentKind.overdueNotice" />
     <OrderDocuments :id="overdue.id" :kind="DocumentKind.overdueNotice" />
   </section>
 </template>

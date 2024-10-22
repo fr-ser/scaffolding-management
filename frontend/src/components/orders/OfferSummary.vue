@@ -4,8 +4,8 @@ import Dropdown from "primevue/dropdown";
 import { computed, ref, watch } from "vue";
 
 import { updateOffer } from "@/backendClient";
+import CreateDocumentButton from "@/components/orders/CreateDocumentButton.vue";
 import OrderDocuments from "@/components/orders/OrderDocuments.vue";
-import SubOrderItemButton from "@/components/orders/SubOrderItemButton.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { formatIsoDateString } from "@/global/helpers";
@@ -77,7 +77,7 @@ watch(offerStatusValue, async () => {
     </Card>
   </section>
   <section class="flex flex-row gap-4 mt-3">
-    <SubOrderItemButton :id="offer.id" :kind="DocumentKind.offer" />
+    <CreateDocumentButton :id="offer.id" :kind="DocumentKind.offer" />
     <OrderDocuments :id="offer.id" :kind="DocumentKind.offer" />
   </section>
 </template>

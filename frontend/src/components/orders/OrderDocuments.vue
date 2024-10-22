@@ -39,7 +39,6 @@ async function openItemDocumentsList() {
   visible.value = true;
   getItemDocuments();
 }
-console.log(DocumentKind);
 </script>
 
 <template>
