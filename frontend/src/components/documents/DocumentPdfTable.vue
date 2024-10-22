@@ -8,12 +8,7 @@ import type {
   OfferDocument,
   OverdueNoticeDocument,
 } from "@/global/types/entities";
-import {
-  calculateItemSumPrice,
-  getGrossAmount,
-  getNettAmount,
-  getVattAmount,
-} from "@/helpers/utils";
+import { calculateItemSumPrice, getGrossAmount, getNetAmount, getVatAmount } from "@/helpers/utils";
 
 const allItemsSum = computed(() => {
   if (props.kind === DocumentKind.offer) {
@@ -62,7 +57,7 @@ const props = defineProps<{
         <td>{{ item.amount }}</td>
         <td>{{ item.unit }}</td>
         <td>{{ `${item.price || "-"} €` }}</td>
-        <td>{{ `${getNettAmount(item.amount, item.price)} €` }}</td>
+        <td>{{ `${getNetAmount(item.amount, item.price)} €` }}</td>
         <td>
           {{
             `${
@@ -76,7 +71,7 @@ const props = defineProps<{
         </td>
         <td>
           {{
-            getVattAmount(
+            getVatAmount(
               item.amount,
               item.price,
               `${kind === DocumentKind.invoice ? "" : (result as OfferDocument).offered_at}`,
