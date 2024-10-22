@@ -53,7 +53,6 @@ watch(noticeLevel, async () => {
       id="overdueType"
       v-model="noticeLevel"
       :options="overdueType"
-      placeholder="Anrede"
       class="w-full md:w-[14rem]"
     />
     <p>
@@ -64,7 +63,6 @@ watch(noticeLevel, async () => {
       id="overdueZahlungStatus"
       v-model="overduePaymentStatus"
       :options="paymentStatus"
-      placeholder="Anrede"
       class="w-full md:w-[14rem]"
     />
     <p><span class="font-bold">Mahnkosten: </span>{{ overdue.notice_costs }}</p>
