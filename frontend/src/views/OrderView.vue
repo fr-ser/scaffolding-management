@@ -17,7 +17,7 @@ import { createOrder, deleteOrder, getClients, getOrder, updateOrder } from "@/b
 import InvoiceSummary from "@/components/orders/InvoiceSummary.vue";
 import OfferSummary from "@/components/orders/OfferSummary.vue";
 import OrderDocuments from "@/components/orders/OrderDocuments.vue";
-import OverdueSummary from "@/components/orders/OverdueSummary.vue";
+import OverdueSummary from "@/components/orders/OverdueNoticeSummary.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { formatIsoDateString } from "@/global/helpers";
