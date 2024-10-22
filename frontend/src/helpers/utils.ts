@@ -117,16 +117,16 @@ export function getGrossAmount(item: OfferItem | OfferItemCreate, date: string) 
   return formatNumber(result, { decimals: 2, currency: true });
 }
 
-export function getNettAmount(item?: number, price?: number) {
+export function getNetAmount(item?: number, price?: number) {
   if (item && price) {
     return round(item * price, 2);
   } else {
     return "-";
   }
 }
-export function getVattAmount(amount?: number, price?: number, date?: string) {
+export function getVatAmount(amount?: number, price?: number, date?: string) {
   if (amount && price) {
-    const result = (getNettAmount(amount, price) as number) * getVatRate({ isoDate: date });
+    const result = (getNetAmount(amount, price) as number) * getVatRate({ isoDate: date });
     return formatNumber(result, { decimals: 2, currency: true });
   } else {
     return "-";
