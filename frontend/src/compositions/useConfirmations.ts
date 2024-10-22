@@ -56,7 +56,7 @@ export default function useConfirmation() {
   };
   const showUpdateOverduePaymentStatusConfirmation = (acceptCallback: () => void) => {
     confirm.require({
-      message: "Do you want to change the payment status?",
+      message: "Wollen Sie den Zahlungsstatus ändern?",
       header: "Bestätigung",
       rejectLabel: "Abbrechen",
       rejectClass: "bg-transparent border text-red-500 border border-red-500 hover:bg-red-300/10",
@@ -66,7 +66,7 @@ export default function useConfirmation() {
   };
   const showUpdateOverdueNoticeLevelConfirmation = (acceptCallback: () => void) => {
     confirm.require({
-      message: "Do you want to change the notice level?",
+      message: "Wollen Sie den Mahnungslevel ändern?",
       header: "Bestätigung",
       rejectLabel: "Abbrechen",
       rejectClass: "bg-transparent border text-red-500 border border-red-500 hover:bg-red-300/10",
@@ -86,7 +86,7 @@ export default function useConfirmation() {
   };
   const showCreateDocumentConfirmation = (acceptCallback: () => void) => {
     confirm.require({
-      message: ` "Wollen Sie für die folgenden Dokumente erstellen?"`,
+      message: ` "Wollen Sie ein Dokument erstellen?"`,
       header: "Bestätigung",
       rejectLabel: "Abbrechen",
       rejectClass: "bg-transparent border text-red-500 border border-red-500 hover:bg-red-300/10",
