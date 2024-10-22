@@ -74,9 +74,9 @@ export default function useConfirmation() {
       accept: acceptCallback,
     });
   };
-  const showCreatePdfConfirmation = (acceptCallback: () => void, array: string[]) => {
+  const showCreateMultiplePdfConfirmation = (acceptCallback: () => void, documentIds: string[]) => {
     confirm.require({
-      message: ` "Wollen Sie für die folgenden Dokumente eine PDF-Datei erstellen: ${array.join(", ")}?"`,
+      message: ` "Wollen Sie für die folgenden Dokumente eine PDF-Datei erstellen: ${documentIds.join(", ")}?"`,
       header: "Bestätigung",
       rejectLabel: "Abbrechen",
       rejectClass: "bg-transparent border text-red-500 border border-red-500 hover:bg-red-300/10",
@@ -102,7 +102,7 @@ export default function useConfirmation() {
     showUpdateInvoiceStatusConfirmation,
     showUpdateOverduePaymentStatusConfirmation,
     showUpdateOverdueNoticeLevelConfirmation,
-    showCreatePdfConfirmation,
+    showCreateMultiplePdfConfirmation,
     showCreateDocumentConfirmation,
   };
 }

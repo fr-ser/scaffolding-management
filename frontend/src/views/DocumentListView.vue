@@ -61,7 +61,7 @@ async function createPdf() {
 }
 
 const confirmCreatePdf = () => {
-  confirm.showCreatePdfConfirmation(createPdf, getSelectedIds());
+  confirm.showCreateMultiplePdfConfirmation(createPdf, getSelectedIds());
 };
 
 watch(search, debounce(reloadPage, 250));

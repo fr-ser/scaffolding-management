@@ -106,7 +106,7 @@ export default function useNotifications() {
   const showUpdateOverduePaymentStatusNotification = () => {
     toast.add({
       severity: "info",
-      summary: "The status was changed",
+      summary: "Der Status wurde geändert",
       life: 3000,
     });
   };
