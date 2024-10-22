@@ -156,10 +156,6 @@ const subItemsIds = computed(() => {
 
 const getActiveSubOrderIndex = () => {
   const { sub_id, sub_type } = route.query;
-  // EQUAL TO:
-  // const sub_type = route.query.sub_type;
-  // const sub_id = route.query.sub_id;
-
   const index = subItemsIds.value.findIndex((item) => {
     return item.id === Number(sub_id) && item.type === sub_type;
   });
@@ -307,11 +303,11 @@ onMounted(async () => {
                 <InvoiceSummary :invoice="item"> </InvoiceSummary>
               </TabPanel>
               <TabPanel
-                v-for="unit in (orderInfo as Order).overdue_notices"
-                :key="unit.id"
-                :header="`Mahnung ${formatIsoDateString(unit.notice_date)}`"
+                v-for="item in (orderInfo as Order).overdue_notices"
+                :key="item.id"
+                :header="`Mahnung ${formatIsoDateString(item.notice_date)}`"
               >
-                <OverdueSummary :overdue="unit"></OverdueSummary>
+                <OverdueSummary :overdue="item"></OverdueSummary>
               </TabPanel>
             </TabView>
           </section>
