@@ -257,7 +257,7 @@ onMounted(async () => {
     </div>
     <div class="font-bold">Filterregeln:</div>
   </div>
-  <SplitButton label="Options" :model="items" :class="'w-full'" />
+  <SplitButton label="Regel hinzufügen" :model="items" :class="'w-full'" />
   <section class="flex flex-col sm:flex-row gap-4 sm:gap-4 Class Properties flex-wrap">
     <ClientSearch v-if="filters.client.active" @find-client="findClient"></ClientSearch>
     <ArticleSearch v-if="filters.article.active" @find-article="findArticle"></ArticleSearch>
