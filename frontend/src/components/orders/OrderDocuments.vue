@@ -21,41 +21,31 @@ let visible = ref(false);
 let documents = ref<(OfferDocument | OverdueNoticeDocument | InvoiceDocument)[]>([]);
 let isLoading = ref<boolean>(false);
 
-async function getAllDocuments() {
-  isLoading.value = true;
-  documents.value = await getDocumentsByOrder(props.id as string);
-  isLoading.value = false;
+function buttonLabel() {
+  if (!props.kind) {
+    return "Alle Auftragsdokumente anzeigen";
+  } else {
+    return "Show all SubItem Documents";
+  }
 }
-async function openAllDocumentsList() {
+async function buttonDocumentFunction() {
   visible.value = true;
-  getAllDocuments();
-}
-async function getItemDocuments() {
   isLoading.value = true;
-  documents.value = await getDocumentsBySubOrder(props.id as number, props.kind as DocumentKind);
+  if (!props.kind) {
+    documents.value = await getDocumentsByOrder(props.id as string);
+  } else {
+    documents.value = await getDocumentsBySubOrder(props.id as number, props.kind as DocumentKind);
+  }
   isLoading.value = false;
-}
-async function openItemDocumentsList() {
-  visible.value = true;
-  getItemDocuments();
 }
 </script>
 
 <template>
-  <div class="font-bold my-2">Dokumente</div>
+  <div v-if="!kind" class="font-bold my-2">Dokumente</div>
   <div class="flex flex-row gap-4">
     <Button
-      v-if="!kind"
-      @click="openAllDocumentsList"
-      label="Alle Auftragsdokumente anzeigen"
-      severity="secondary"
-      outlined
-      size="small"
-    />
-    <Button
-      v-else
-      @click="openItemDocumentsList"
-      label="Show all SubItem Documents"
+      @click="buttonDocumentFunction"
+      :label="`${buttonLabel()}`"
       severity="secondary"
       outlined
       size="small"
