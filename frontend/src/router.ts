@@ -115,7 +115,7 @@ const router = createRouter({
       },
     },
     {
-      path: `${ROUTES.DOCUMENTS.path}/:id/pdf`,
+      path: `${ROUTES.DOCUMENTS.path}/:id`,
       name: ROUTES.DOCUMENTS.name,
       component: DocumentPdfView,
       meta: {
