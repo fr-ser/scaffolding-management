@@ -117,23 +117,6 @@ export function getGrossAmount(item: OfferItem | OfferItemCreate, date: string) 
     return undefined;
   }
 }
-export function getNetAmount(item?: number, price?: number) {
-  if (item && price) {
-    return item * price;
-  } else {
-    return undefined;
-  }
-}
-export function getVatAmount(amount?: number, price?: number, date?: string) {
-  const netto = getNetAmount(amount, price);
-
-  if (netto) {
-    return netto * getVatRate({ isoDate: date });
-  } else {
-    return undefined;
-  }
-}
-
 export function getFormatedAmount(result?: number) {
   if (result) {
     return formatNumber(result, { decimals: 2, currency: true });

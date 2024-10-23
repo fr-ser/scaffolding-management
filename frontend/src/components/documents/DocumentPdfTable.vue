@@ -1,20 +1,14 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { getVatRate } from "@/global/helpers";
+import { getNetAmount, getVatAmount, getVatRate } from "@/global/helpers";
 import { ArticleKind, DocumentKind } from "@/global/types/appTypes";
 import type {
   InvoiceDocument,
   OfferDocument,
   OverdueNoticeDocument,
 } from "@/global/types/entities";
-import {
-  calculateItemSumPrice,
-  getFormatedAmount,
-  getGrossAmount,
-  getNetAmount,
-  getVatAmount,
-} from "@/helpers/utils";
+import { calculateItemSumPrice, getFormatedAmount, getGrossAmount } from "@/helpers/utils";
 
 const allItemsSum = computed(() => {
   if (props.kind === DocumentKind.offer) {

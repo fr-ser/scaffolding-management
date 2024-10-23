@@ -70,3 +70,19 @@ export function round(number: number, decimals: number = 0): number {
 export function formatIsoDateString(isoDate: string): string {
   return new Date(isoDate).toLocaleDateString("de-DE");
 }
+export function getNetAmount(item?: number, price?: number) {
+  if (item && price) {
+    return item * price;
+  } else {
+    return undefined;
+  }
+}
+export function getVatAmount(amount?: number, price?: number, date?: string) {
+  const netto = getNetAmount(amount, price);
+
+  if (netto) {
+    return netto * getVatRate({ isoDate: date });
+  } else {
+    return undefined;
+  }
+}
