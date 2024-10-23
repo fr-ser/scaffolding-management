@@ -20,7 +20,7 @@ watch(
 );
 </script>
 <template>
-  <FloatLabel class="my-1 w-full sm:w-1/4 flex md:self-end">
+  <FloatLabel class="my-1 w-full sm:w-1/4 mt-6 flex md:self-end">
     <Dropdown
       v-model="selectedOrderStatus"
       :options="orderStatusTypes"

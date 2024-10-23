@@ -16,7 +16,7 @@ watch(overduePaymentStatus, () => {
 </script>
 
 <template>
-  <FloatLabel class="w-full md:w-1/4 mb-2 flex md:self-end">
+  <FloatLabel class="w-full md:w-1/4 mb-2 mt-6 flex md:self-end">
     <Dropdown
       id="payment-status"
       v-model="overduePaymentStatus"
