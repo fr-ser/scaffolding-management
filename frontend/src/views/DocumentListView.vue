@@ -129,7 +129,7 @@ onMounted(async () => {
             <div class="flex flex-col gap-2">
               <div>
                 <router-link
-                  :to="`${ROUTES.DOCUMENTS.path}/${data.id}/pdf?sub_type=${getDocumentType(data)}`"
+                  :to="`${ROUTES.DOCUMENTS.path}/${data.id}?sub_type=${getDocumentType(data)}`"
                 >
                   <Button icon="pi pi-search" severity="secondary" outlined size="small"></Button>
                 </router-link>
