@@ -34,7 +34,7 @@ watch(
 <template>
   <Button
     v-if="!selectedArticleId"
-    class="h-1/2 flex self-start md:self-end mb-1"
+    class="h-1/2 flex self-start mt-2 md:self-end mb-1"
     @click="openArticlesList()"
     type="button"
     label="Position/Artikel"
