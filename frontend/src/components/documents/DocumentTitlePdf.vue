@@ -58,7 +58,7 @@ if (props.kind === DocumentKind.overdueNotice) {
     </div>
   </section>
   <section v-if="props.kind === DocumentKind.invoice" class="mb-10 mt-[4rem]">
-    <p class="font-bold">BV:{{ result.client_id }} BV {{ result.client_last_name }}</p>
+    <p class="font-bold">BV: {{ result.order_title }}</p>
     <p>
       Sehr geehrte Damen und Herren,<br />
       vielen Dank für Ihren Auftrag, den wir wie folgt in Rechnung stellen.

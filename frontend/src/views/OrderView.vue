@@ -21,7 +21,7 @@ import OverdueSummary from "@/components/orders/OverdueNoticeSummary.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { formatIsoDateString } from "@/global/helpers";
-import { OrderStatus } from "@/global/types/appTypes";
+import { OrderStatus, SubItemKind } from "@/global/types/appTypes";
 import type { OrderCreate } from "@/global/types/dataEditTypes";
 import type { Client, Offer, Order } from "@/global/types/entities";
 import { debounce } from "@/helpers/utils";
@@ -128,7 +128,7 @@ const subItemsIds = computed(() => {
 
   if ((orderInfo.value as Order).offer) {
     result.push({
-      type: "OFFER",
+      type: SubItemKind.offer,
       id: (orderInfo.value as Order).offer?.id,
     });
   }
@@ -136,7 +136,7 @@ const subItemsIds = computed(() => {
   if ((orderInfo.value as Order).invoices?.length) {
     (orderInfo.value as Order).invoices?.forEach((invoice) => {
       result.push({
-        type: "INVOICE",
+        type: SubItemKind.invoice,
         id: invoice.id,
       });
     });
@@ -145,7 +145,7 @@ const subItemsIds = computed(() => {
   if ((orderInfo.value as Order).overdue_notices?.length) {
     (orderInfo.value as Order).overdue_notices?.forEach((overdue) => {
       result.push({
-        type: "OVERDUE",
+        type: SubItemKind.overdueNotice,
         id: overdue.id,
       });
     });
