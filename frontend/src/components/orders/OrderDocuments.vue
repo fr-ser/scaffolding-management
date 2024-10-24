@@ -11,6 +11,7 @@ import {
   type OfferDocument,
   type OverdueNoticeDocument,
 } from "@/global/types/entities";
+import { ROUTES } from "@/router";
 
 const props = defineProps<{
   id: string | number;
@@ -20,12 +21,26 @@ const props = defineProps<{
 let visible = ref(false);
 let documents = ref<(OfferDocument | OverdueNoticeDocument | InvoiceDocument)[]>([]);
 let isLoading = ref<boolean>(false);
-
+function getDocumentType(doc: OfferDocument | OverdueNoticeDocument | InvoiceDocument) {
+  if ("offer_id" in doc) {
+    return DocumentKind.offer;
+  } else if ("overdue_notice_id" in doc) {
+    return DocumentKind.overdueNotice;
+  } else {
+    return DocumentKind.invoice;
+  }
+}
 function buttonLabel() {
   if (!props.kind) {
     return "Alle Auftragsdokumente anzeigen";
+  }
+  if (props.kind === DocumentKind.offer) {
+    return "Show all Offer Documents";
+  }
+  if (props.kind === DocumentKind.invoice) {
+    return "Show all Invoice Documents";
   } else {
-    return "Show all SubItem Documents";
+    return "Show all Overdue Notice Documents";
   }
 }
 async function buttonDocumentFunction() {
@@ -56,8 +71,14 @@ async function buttonDocumentFunction() {
       <ProgressSpinner />
     </div>
     {{ documents.length === 0 ? "No documents" : null }}
-    <div v-for="document in documents" :key="document.id">
+    <!-- сделать ссылку для документов тут  -->
+
+    <router-link
+      :to="`${ROUTES.DOCUMENTS.path}/${document.id}?sub_type=${getDocumentType(document)}`"
+      v-for="document in documents"
+      :key="document.id"
+    >
       <div class="border border-slate-300 hover:border-primary ps-4 py-1">{{ document.id }}</div>
-    </div>
+    </router-link>
   </Dialog>
 </template>
