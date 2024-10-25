@@ -35,7 +35,7 @@ async function openArticlesList(kind: ArticleKind) {
   const articlesList = (await getArticles()).data;
   filteredArticles.value = articlesList.filter((article) => article.kind === kind);
 }
-let grossValue = computed<string>(() => {
+let grossValue = computed<number | undefined>(() => {
   return getGrossAmount(editableItem.value, props.vatDate);
 });
 function chooseArticle(article: Article) {
