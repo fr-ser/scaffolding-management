@@ -48,6 +48,7 @@ export enum ClientSalutation {
   misses_doctor = "Frau Dr.",
   mister_doctor = "Herr Dr.",
 }
+
 export enum SubItemKind {
   offer = "OFFER",
   invoice = "INVOICE",
