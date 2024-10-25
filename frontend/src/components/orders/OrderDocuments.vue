@@ -71,8 +71,6 @@ async function buttonDocumentFunction() {
       <ProgressSpinner />
     </div>
     {{ documents.length === 0 ? "No documents" : null }}
-    <!-- сделать ссылку для документов тут  -->
-
     <router-link
       :to="`${ROUTES.DOCUMENTS.path}/${document.id}?sub_type=${getDocumentType(document)}`"
       v-for="document in documents"
