@@ -8,8 +8,8 @@ import { deleteOrder, getOrders } from "@/backendClient";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import type { Order } from "@/global/types/entities";
+import { getOrderCreatePath, getOrderEditPath } from "@/helpers/routes";
 import { debounce } from "@/helpers/utils";
-import { ROUTES } from "@/router";
 
 const ordersList = ref<Order[]>([]);
 const search = ref<string>("");
@@ -54,9 +54,9 @@ onMounted(async () => {
           data-testid="order-search-input"
         />
       </span>
-      <router-link :to="`${ROUTES.ORDER.path}/new`">
+      <router-link :to="getOrderCreatePath()">
         <Button
-          icon="pi pi-plus"
+          label="Neu"
           rounded
           aria-label="Neuen Auftrag anlegen"
           data-testid="order-create-button"
@@ -64,11 +64,7 @@ onMounted(async () => {
       </router-link>
     </div>
     <div class="grow overflow-auto">
-      <router-link
-        :to="`${ROUTES.ORDER.path}/${order.id}/edit`"
-        v-for="order in ordersList"
-        :key="order.id"
-      >
+      <router-link :to="getOrderEditPath(order.id)" v-for="order in ordersList" :key="order.id">
         <Card class="my-2" data-testid="order-card">
           <template #content>
             <div class="flex flex-row justify-between items-center">
@@ -76,7 +72,7 @@ onMounted(async () => {
                 {{ `${order.id} ${order.title}` }}
               </div>
               <div class="flex flex-col gap-y-2">
-                <router-link :to="`${ROUTES.ORDER.path}/${order.id}/edit`">
+                <router-link :to="getOrderEditPath(order.id)">
                   <Button
                     label="Bearbeiten"
                     icon="pi pi-pencil"

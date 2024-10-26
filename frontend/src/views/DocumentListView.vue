@@ -15,8 +15,8 @@ import type {
   OfferDocument,
   OverdueNoticeDocument,
 } from "@/global/types/entities";
+import { getDocumentViewPath } from "@/helpers/routes";
 import { debounce } from "@/helpers/utils";
-import { ROUTES } from "@/router";
 
 const confirm = useConfirmations();
 const notifications = useNotifications();
@@ -128,9 +128,7 @@ onMounted(async () => {
           <template #body="{ data }">
             <div class="flex flex-col gap-2">
               <div>
-                <router-link
-                  :to="`${ROUTES.DOCUMENTS.path}/${data.id}?sub_type=${getDocumentType(data)}`"
-                >
+                <router-link :to="getDocumentViewPath(getDocumentType(data), data.id)">
                   <Button icon="pi pi-search" severity="secondary" outlined size="small"></Button>
                 </router-link>
               </div>

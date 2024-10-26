@@ -11,7 +11,7 @@ import {
   type OfferDocument,
   type OverdueNoticeDocument,
 } from "@/global/types/entities";
-import { ROUTES } from "@/router";
+import { getDocumentViewPath } from "@/helpers/routes";
 
 const props = defineProps<{
   id: string | number;
@@ -72,7 +72,7 @@ async function buttonDocumentFunction() {
     </div>
     {{ documents.length === 0 ? "No documents" : null }}
     <router-link
-      :to="`${ROUTES.DOCUMENTS.path}/${document.id}?sub_type=${getDocumentType(document)}`"
+      :to="getDocumentViewPath(getDocumentType(document), document.id)"
       v-for="document in documents"
       :key="document.id"
     >

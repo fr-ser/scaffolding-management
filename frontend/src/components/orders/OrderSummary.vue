@@ -2,7 +2,7 @@
 import Card from "primevue/card";
 
 import type { Order } from "@/global/types/entities";
-import { ROUTES } from "@/router";
+import { getClientEditPath } from "@/helpers/routes";
 
 const props = defineProps<{
   orderInfo: Order;
@@ -21,10 +21,7 @@ const props = defineProps<{
         <div><span class="font-bold">Status: </span> {{ props.orderInfo.status }}</div>
         <div>
           <span class="font-bold">Kunde: </span>
-          <router-link
-            class="underline"
-            :to="`${ROUTES.CLIENT.path}/${props.orderInfo.client_id}/edit`"
-          >
+          <router-link class="underline" :to="getClientEditPath(props.orderInfo.client_id)">
             {{ props.orderInfo.client.first_name }} {{ props.orderInfo.client.last_name }}
             <i class="pi pi-external-link ml-1"></i>
           </router-link>

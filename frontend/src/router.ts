@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
+import { DocumentKind } from "@/global/types/appTypes";
+import * as routes from "@/helpers/routes";
 import ArticleView from "@/views/ArticleView.vue";
 import ClientListView from "@/views/ClientListView.vue";
 import ClientView from "@/views/ClientView.vue";
@@ -12,123 +14,73 @@ import OrderView from "@/views/OrderView.vue";
 import OverdueView from "@/views/OverdueNoticeView.vue";
 import OverviewView from "@/views/OverviewView.vue";
 
-export const ROUTES = {
-  CLIENT: { name: "client", path: "/client", label: "Kunden" },
-  ORDER: { name: "order", path: "/order", label: "Aufträge" },
-  DOCUMENTS: { name: "documents", path: "/documents", label: "Dokumente" },
-  OVERVIEW: { name: "overviews", path: "/overviews", label: "Übersicht" },
-  ARTICLES: { name: "articles", path: "/articles", label: "Artikel" },
-};
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: "/",
-      redirect: ROUTES.CLIENT.path,
+      redirect: routes.getClientListPath(),
     },
     {
-      path: ROUTES.CLIENT.path,
-      name: `${ROUTES.CLIENT.name}-list`,
+      path: routes.getClientListPath(),
       component: ClientListView,
-      meta: {
-        label: "Kunden",
-      },
     },
     {
-      path: `${ROUTES.CLIENT.path}/:id/edit`,
-      name: ROUTES.CLIENT.name,
+      path: routes.getClientEditPath(":id"),
       component: ClientView,
-      meta: {
-        label: "Kunden anschauen/bearbeiten",
-      },
     },
     {
-      path: `${ROUTES.CLIENT.path}/new`,
-      name: `${ROUTES.CLIENT.name}-new`,
+      path: routes.getClientCreatePath(),
       component: ClientView,
-      meta: {
-        label: "Neuen Kunden erstellen",
-      },
     },
     {
-      path: ROUTES.ORDER.path,
-      name: `${ROUTES.ORDER.name}-list`,
+      path: routes.getOrderListPath(),
       component: OrderListView,
-      meta: {
-        label: "Aufträge",
-      },
     },
     {
-      path: ROUTES.OVERVIEW.path,
-      name: ROUTES.OVERVIEW.name,
+      path: routes.getOverviewPath(),
       component: OverviewView,
-      meta: {
-        label: "Übersicht",
-      },
     },
     {
-      path: `${ROUTES.ORDER.path}/:id/edit`,
-      name: ROUTES.ORDER.name,
+      path: routes.getOrderEditPath(":id"),
       component: OrderView,
-      meta: {
-        label: "Auftrag anschauen/bearbeiten",
-      },
+    },
+
+    {
+      path: routes.getOrderSubOrderEditPath(
+        ":orderId",
+        ":kind" as any as DocumentKind,
+        ":subOrderId" as any as number,
+      ),
+      component: OrderView,
     },
     {
-      path: `${ROUTES.ORDER.path}/:order_id/edit/offer/new`,
-      name: `${ROUTES.ORDER.name}-newOffer`,
+      path: routes.getOrderSubOrderCreatePath(":orderId", DocumentKind.offer),
       component: OfferView,
-      meta: {
-        label: "Unteraufträge anschauen/bearbeiten",
-      },
     },
     {
-      path: `${ROUTES.ORDER.path}/:order_id/edit/invoice/new`,
-      name: `${ROUTES.ORDER.name}-newInvoice`,
+      path: routes.getOrderSubOrderCreatePath(":orderId", DocumentKind.invoice),
       component: InvoiceView,
-      meta: {
-        label: "Rechnung anschauen/bearbeiten",
-      },
     },
     {
-      path: `${ROUTES.ORDER.path}/:order_id/edit/overdue/new`,
-      name: `${ROUTES.ORDER.name}-newOverdue`,
+      path: routes.getOrderSubOrderCreatePath(":orderId", DocumentKind.overdueNotice),
       component: OverdueView,
-      meta: {
-        label: "Mahnung anschauen/bearbeiten",
-      },
     },
     {
-      path: `${ROUTES.ORDER.path}/new`,
-      name: `${ROUTES.ORDER.name}-new`,
+      path: routes.getOrderCreatePath(),
       component: OrderView,
-      meta: {
-        label: "Neuen Auftrag erstellen",
-      },
     },
     {
-      path: ROUTES.DOCUMENTS.path,
-      name: `${ROUTES.DOCUMENTS.name}-list`,
+      path: routes.getDocumentListPath(),
       component: DocumentListView,
-      meta: {
-        label: "Dokumente",
-      },
     },
     {
-      path: `${ROUTES.DOCUMENTS.path}/:id`,
-      name: ROUTES.DOCUMENTS.name,
+      path: routes.getDocumentViewPath(":kind" as any as DocumentKind, ":id"),
       component: DocumentPdfView,
-      meta: {
-        label: "Dokumente Pdf",
-      },
     },
     {
-      path: ROUTES.ARTICLES.path,
-      name: ROUTES.ARTICLES.name,
+      path: routes.getArticleListPath(),
       component: ArticleView,
-      meta: {
-        label: "Artikel",
-      },
     },
   ],
 });

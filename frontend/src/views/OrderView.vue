@@ -21,11 +21,14 @@ import OverdueSummary from "@/components/orders/OverdueNoticeSummary.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { formatIsoDateString } from "@/global/helpers";
-import { OrderStatus, SubItemKind } from "@/global/types/appTypes";
+import { DocumentKind, OrderStatus, SubItemKind } from "@/global/types/appTypes";
 import type { OrderCreate } from "@/global/types/dataEditTypes";
 import type { Client, Offer, Order } from "@/global/types/entities";
+import { getOrderListPath, getOrderSubOrderCreatePath } from "@/helpers/routes";
 import { debounce } from "@/helpers/utils";
-import { ROUTES } from "@/router";
+
+const router = useRouter();
+const route = useRoute();
 
 let orderInfo = ref<OrderCreate | Order>({
   client_id: "",
@@ -82,11 +85,6 @@ const searchClient = (event: any) => {
     }
   }, 250)();
 };
-const router = useRouter();
-const route = useRoute();
-function onOrdersList() {
-  router.push(`${ROUTES.ORDER.path}`);
-}
 const confirm = useConfirmations();
 const notifications = useNotifications();
 
@@ -102,14 +100,14 @@ const onSaveOrder = async () => {
     notifications.showUpdateOrderNotification();
   } else {
     await createOrder(payload);
-    router.push(`${ROUTES.ORDER.path}`);
+    router.push(getOrderListPath());
     notifications.showCreateOrderNotification();
   }
 };
 
 const removeOrder = async () => {
   await deleteOrder(`${route.params.id}`);
-  router.push(`${ROUTES.ORDER.path}`);
+  router.push(getOrderListPath());
   notifications.showDeleteOrderNotification();
 };
 
@@ -180,7 +178,7 @@ onMounted(async () => {
   <form v-else>
     <div class="flex flex-row justify-between mb-3">
       <Button
-        @click="onOrdersList"
+        @click="router.push(getOrderListPath())"
         icon="pi pi-arrow-left"
         size="small"
         severity="secondary"
@@ -278,13 +276,23 @@ onMounted(async () => {
           <div v-if="isEditing">
             <p class="font-bold mb-2">Unteraufträge</p>
             <div class="flex flex-col gap-2">
-              <router-link :to="`${ROUTES.ORDER.path}/${route.params.id}/edit/offer/new`">
+              <router-link
+                :to="getOrderSubOrderCreatePath(route.params.id as string, DocumentKind.offer)"
+              >
                 <Button v-if="!(orderInfo as Order).offer" label="Angebot erstellen"></Button>
               </router-link>
-              <router-link :to="`${ROUTES.ORDER.path}/${route.params.id}/edit/invoice/new`">
+              <router-link
+                :to="
+                  getOrderSubOrderCreatePath(route.params.id as string, DocumentKind.overdueNotice)
+                "
+              >
                 <Button label="Rechnung erstellen"></Button>
               </router-link>
-              <router-link :to="`${ROUTES.ORDER.path}/${route.params.id}/edit/overdue/new`">
+              <router-link
+                :to="
+                  getOrderSubOrderCreatePath(route.params.id as string, DocumentKind.overdueNotice)
+                "
+              >
                 <Button label="Mahnung erstellen"></Button>
               </router-link>
             </div>
