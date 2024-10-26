@@ -17,6 +17,7 @@ import OverdueStatusSearch from "@/components/overview/OverdueStatusSearch.vue";
 import PaymentStatusSearch from "@/components/overview/PaymentStatusSearch.vue";
 import { formatIsoDateString } from "@/global/helpers";
 import {
+  DocumentKind,
   OfferStatus,
   OrderStatus,
   OverdueNoticeLevel,
@@ -24,7 +25,7 @@ import {
   PaymentStatus,
 } from "@/global/types/appTypes";
 import type { Article, Client, Order } from "@/global/types/entities";
-import { ROUTES } from "@/router";
+import { getOrderEditPath, getOrderSubOrderEditPath } from "@/helpers/routes";
 
 type FilterDate = Date | null | undefined;
 
@@ -356,7 +357,7 @@ onMounted(async () => {
       <template #content>
         <div class="flex flex-row justify-between items-center">
           <div>
-            <router-link :to="`${ROUTES.ORDER.path}/${order.id}/edit`">
+            <router-link :to="getOrderEditPath(order.id)">
               <span class="font-bold">Auftrag:</span>
               {{
                 `${order.client.street_and_number},  ${order.client.postal_code}  ${order.client.city} `
@@ -366,14 +367,13 @@ onMounted(async () => {
 
               <i class="pi pi-external-link ml-1"></i>
             </router-link>
-            <!-- ${order.offer} -->
             <ul class="list-disc pl-6 underline mt-3">
               <li class="underlined pb-2" v-if="order.offer">
                 <router-link
-                  :to="`${ROUTES.ORDER.path}/${order.id}/edit?sub_id=${order.offer.id}&sub_type=OFFER`"
+                  :to="getOrderSubOrderEditPath(order.id, DocumentKind.offer, order.offer.id)"
                 >
                   <span>Angebot vom: </span>{{ `${formatIsoDateString(order.offer.offered_at)}` }}
-                  <span> - Angebotstatus: </span> {{ `${order.offer.status}` }}
+                  <span> - Angebotsstatus: </span> {{ `${order.offer.status}` }}
 
                   <i class="pi pi-external-link ml-1"></i>
                 </router-link>
@@ -385,10 +385,10 @@ onMounted(async () => {
                 :key="item.id"
               >
                 <router-link
-                  :to="`${ROUTES.ORDER.path}/${order.id}/edit?sub_id=${item.id}&sub_type=INVOICE`"
+                  :to="getOrderSubOrderEditPath(order.id, DocumentKind.invoice, item.id)"
                 >
                   <span>Rechnung vom: {{ formatIsoDateString(item.invoice_date) }}</span>
-                  <span> -Zahlungstatus: {{ item.status }}</span>
+                  <span> - Zahlungsstatus: {{ item.status }}</span>
 
                   <i class="pi pi-external-link ml-1"></i>
                 </router-link>
@@ -400,10 +400,10 @@ onMounted(async () => {
                 :key="item.id"
               >
                 <router-link
-                  :to="`${ROUTES.ORDER.path}/${order.id}/edit?sub_id=${item.id}&sub_type=MAHNUNG`"
+                  :to="getOrderSubOrderEditPath(order.id, DocumentKind.overdueNotice, item.id)"
                 >
                   <span>Mahnung vom: {{ formatIsoDateString(item.notice_date) }}</span>
-                  <span>-Zahlungstatus: {{ item.payment_status }} </span>
+                  <span> - Zahlungsstatus: {{ item.payment_status }} </span>
 
                   <i class="pi pi-external-link ml-1"></i>
                 </router-link>

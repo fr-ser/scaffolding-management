@@ -9,15 +9,14 @@ import Textarea from "primevue/textarea";
 import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { createOverdueNotice } from "@/backendClient";
-import { getOrder } from "@/backendClient";
+import { createOverdueNotice, getOrder } from "@/backendClient";
 import OrderSummary from "@/components/orders/OrderSummary.vue";
 import useNotifications from "@/compositions/useNotifications";
 import { OverdueNoticeLevel, OverdueNoticePaymentStatus } from "@/global/types/appTypes";
 import type { OverdueNoticeCreate } from "@/global/types/dataEditTypes";
 import type { Order } from "@/global/types/entities";
+import { getOrderEditPath } from "@/helpers/routes";
 import { formatDateToIsoString } from "@/helpers/utils";
-import { ROUTES } from "@/router";
 
 const route = useRoute();
 const router = useRouter();
@@ -47,7 +46,7 @@ async function onSaveOverdue() {
   await createOverdueNotice({
     ...overdueInfo.value,
   });
-  router.push(`${ROUTES.ORDER.path}/${route.params.order_id}/edit`);
+  router.push(getOrderEditPath(route.params.order_id as string));
   notifications.showCreateOverdueNotification();
 }
 watch(paymentUntil, () => {
@@ -79,7 +78,7 @@ onMounted(async () => {
 <template>
   <div v-if="orderInfo">
     <div class="flex flex-row justify-between">
-      <router-link :to="`${ROUTES.ORDER.path}/${route.params.order_id}/edit`">
+      <router-link :to="getOrderEditPath(route.params.orderId as string)">
         <Button icon="pi pi-arrow-left" size="small" severity="secondary" text raised />
       </router-link>
       <div class="flex gap-x-2">
