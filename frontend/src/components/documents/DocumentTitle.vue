@@ -18,16 +18,16 @@ let title = {
 };
 
 if (props.kind === DocumentKind.offer) {
-  title.data = "AngebotsDatum";
-  title.number = "AngebotsNummer";
+  title.data = "Angebotsdatum";
+  title.number = "Angebotsnummer";
 }
 if (props.kind === DocumentKind.invoice) {
-  title.data = "RechnungDatum";
-  title.number = "RechnungNummer";
+  title.data = "Rechnungsdatum";
+  title.number = "Rechnungsnummer";
 }
 if (props.kind === DocumentKind.overdueNotice) {
-  title.data = "MahnDatum";
-  title.number = "BelegNummer";
+  title.data = "Mahndatum";
+  title.number = "Belegnummer";
 }
 </script>
 <template>
@@ -38,7 +38,7 @@ if (props.kind === DocumentKind.overdueNotice) {
       <p class="font-bold text-2xl pt-5">{{ kind }}</p>
     </div>
     <div>
-      <img class="h-32" src="http://bergedorfer.diskstation.org:5000/img/logo.png" />
+      <img class="h-32" src="http://redacted:5000/img/logo.png" />
     </div>
   </header>
   <section class="flex flex-row justify-between">
@@ -51,7 +51,7 @@ if (props.kind === DocumentKind.overdueNotice) {
     <div class="">
       <hr class="border-black border-1 mb-3" />
       <p>{{ `${title.data}: ` }} {{ result.creation_date }}</p>
-      <p>KundensNummer: {{ result.client_id }}</p>
+      <p>Kundennummer: {{ result.client_id }}</p>
       <p>{{ `${title.number}: ` }} {{ result.id }}</p>
       <p v-if="props.kind === DocumentKind.offer">Angebot gültig bis:</p>
       <hr class="border-black border-1 mt-3" />

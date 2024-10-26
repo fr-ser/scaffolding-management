@@ -36,7 +36,7 @@ const props = defineProps<{
   </section>
   <section v-if="props.kind === DocumentKind.overdueNotice">
     Überweisen Sie bitte den offenen Betrag auf das unten aufgeführte Geschäftskonto. <br />
-    Mitfreundlichen Grüßen <br />
+    Mit freundlichen Grüßen <br />
     John Smith <br />
   </section>
 </template>

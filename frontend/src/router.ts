@@ -6,7 +6,7 @@ import ArticleView from "@/views/ArticleView.vue";
 import ClientListView from "@/views/ClientListView.vue";
 import ClientView from "@/views/ClientView.vue";
 import DocumentListView from "@/views/DocumentListView.vue";
-import DocumentPdfView from "@/views/DocumentView.vue";
+import DocumentView from "@/views/DocumentView.vue";
 import InvoiceView from "@/views/InvoiceView.vue";
 import OfferView from "@/views/OfferView.vue";
 import OrderListView from "@/views/OrderListView.vue";
@@ -76,7 +76,7 @@ const router = createRouter({
     },
     {
       path: routes.getDocumentViewPath(":kind" as any as DocumentKind, ":id"),
-      component: DocumentPdfView,
+      component: DocumentView,
     },
     {
       path: routes.getArticleListPath(),

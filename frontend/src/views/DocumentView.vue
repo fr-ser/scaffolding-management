@@ -3,10 +3,10 @@ import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import { getInvoiceDocument, getOfferDocument, getOverdueNoticeDocument } from "@/backendClient";
-import DocumentPdfFooter from "@/components/documents/DocumentPdfFooter.vue";
-import DocumentPdfTable from "@/components/documents/DocumentPdfTable.vue";
-import DocumentTextPdf from "@/components/documents/DocumentTextPdf.vue";
-import DocumentTitlePdf from "@/components/documents/DocumentTitlePdf.vue";
+import DocumentFooter from "@/components/documents/DocumentFooter.vue";
+import DocumentTable from "@/components/documents/DocumentTable.vue";
+import DocumentText from "@/components/documents/DocumentText.vue";
+import DocumentTitle from "@/components/documents/DocumentTitle.vue";
 import { DocumentKind } from "@/global/types/appTypes";
 import type {
   InvoiceDocument,
@@ -16,7 +16,7 @@ import type {
 
 const route = useRoute();
 let result = ref<OfferDocument | OverdueNoticeDocument | InvoiceDocument>();
-const kind = route.query.sub_type as unknown as DocumentKind;
+const kind = route.params.kind as DocumentKind;
 
 async function getDocument() {
   if (kind === DocumentKind.offer) {
@@ -42,10 +42,10 @@ onMounted(async () => {
       v-if="result"
       class="min-h-297 w-[60rem] px-[4rem] ml-auto mr-auto py-5 border-solid border-2 border-slate-500 box-border"
     >
-      <DocumentTitlePdf :result="result" :kind="kind" />
-      <DocumentPdfTable :result="result" :kind="kind"></DocumentPdfTable>
-      <DocumentTextPdf :result="result" :kind="kind"></DocumentTextPdf>
-      <DocumentPdfFooter></DocumentPdfFooter>
+      <DocumentTitle :result="result" :kind="kind" />
+      <DocumentTable :result="result" :kind="kind"></DocumentTable>
+      <DocumentText :result="result" :kind="kind"></DocumentText>
+      <DocumentFooter></DocumentFooter>
     </div>
   </div>
 </template>

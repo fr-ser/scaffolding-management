@@ -162,9 +162,9 @@ onMounted(async () => {
               showIcon
               iconDisplay="input"
             />
-            <label for="calendar"> Zalungsziel </label>
+            <label for="calendar"> Zahlungsziel </label>
           </FloatLabel>
-          <!-- <div class="mb-2">Zahlungstatus:</div> -->
+          <!-- <div class="mb-2">Zahlungsstatus:</div> -->
           <FloatLabel>
             <Dropdown
               id="invoice-info-status"
@@ -173,7 +173,7 @@ onMounted(async () => {
               placeholder="Anrede"
               class="w-full md:w-[14rem]"
             />
-            <label for="invoice-info-status"> Zahlungstatus: </label>
+            <label for="invoice-info-status"> Zahlungsstatus: </label>
           </FloatLabel>
         </section>
         <div class="flex flex-row justify-start gap-2 items-center mb-4">

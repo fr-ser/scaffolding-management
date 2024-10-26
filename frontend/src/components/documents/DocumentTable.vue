@@ -41,9 +41,9 @@ const props = defineProps<{
   <table class="border-solid border-1 border-black">
     <thead>
       <tr>
-        <th class="pl-6">Bezeihnung</th>
-        <th class="pl-6">Anzeihl</th>
-        <th class="pl-6">Anheit</th>
+        <th class="pl-6">Bezeichnung</th>
+        <th class="pl-6">Anzahl</th>
+        <th class="pl-6">Einheit</th>
         <th class="pl-6">Preis</th>
         <th class="pl-6">Netto</th>
         <th class="pl-6">USt.%</th>
