@@ -29,6 +29,7 @@ export enum ErrorCode {
   PDF_NOT_ALL_DOCUMENTS_FOUND = "PDF_NOT_ALL_DOCUMENTS_FOUND",
   PDF_TOO_MANY_DOCUMENTS_SELECTED = "PDF_TOO_MANY_DOCUMENTS_SELECTED",
   INTERNAL = "INTERNAL",
+  WRONG_ROLE = "WRONG_ROLE",
 }
 
 export type SaveDocumentsAsPdfPayload = { kind: DocumentKind; id: string }[];

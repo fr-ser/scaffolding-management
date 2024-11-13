@@ -16,7 +16,7 @@ const search = ref<string>("");
 
 async function reloadPage() {
   // TODO: use pagination
-  ordersList.value = (await getOrders({ query: search.value })).data;
+  ordersList.value = (await getOrders({ search: search.value })).data;
 }
 
 const confirm = useConfirmations();
