@@ -122,6 +122,7 @@ export interface OfferDocument extends BaseDocument {
 export interface InvoiceDocument extends BaseDocument {
   invoice_id: number;
   items: InvoiceDocumentItem[];
+  invoice_date: string;
   service_dates: string[];
   payment_target: string;
   can_have_cash_discount: boolean;

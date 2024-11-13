@@ -225,6 +225,7 @@ async function insertData(dataSource: DataSource) {
           invoice_id: () => `(SELECT id from invoice where order_id='A${index + 1}')`,
           service_dates: [`2021-01-0${index + 1}`, `2022-01-0${index + 1}`],
           payment_target: `2024-01-0${index + 1}`,
+          invoice_date: `2022-01-0${index + 1}`,
           can_have_cash_discount: false,
         };
       }),
@@ -269,7 +270,7 @@ async function insertData(dataSource: DataSource) {
     .values(
       Array.from(Array(10)).map((_: unknown, index: number) => {
         return {
-          id: `R-2020-01-${index + 1}`,
+          id: `M-2020-01-${index + 1}`,
           creation_date: `2021-01-0${index + 1}`,
           client_id: `K${index + 1}`,
           client_email: `email${index}@test.com`,
