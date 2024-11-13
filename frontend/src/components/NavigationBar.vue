@@ -15,17 +15,17 @@ const items = ref([
   },
   {
     label: "Aufträge",
-    icon: "pi pi-shopping-cart",
+    icon: "pi pi-shop",
     route: routes.getOrderListPath(),
   },
   {
     label: "Übersicht",
-    icon: "pi pi-clipboard",
+    icon: "pi pi-sitemap",
     route: routes.getOverviewPath(),
   },
   {
     label: "Dokumente",
-    icon: "pi pi-file",
+    icon: "pi pi-file-pdf",
     route: routes.getDocumentListPath(),
   },
   {
