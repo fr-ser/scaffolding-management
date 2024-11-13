@@ -88,15 +88,21 @@ export async function updateClient(id: string, client: ClientUpdate): Promise<Cl
 }
 
 export async function getOrders(
-  options: { clientId?: string; query?: string } = {},
+  options: { clientId?: string; search?: string; overdue?: boolean; detailed?: true } = {},
 ): Promise<PaginationResponse<Order>> {
   const params: any = {};
+  // TODO: check if client ID is implemented
   if (options.clientId) {
     params.client_id = options.clientId;
   }
-
-  if (options.query) {
-    params.search = options.query;
+  if (options.search) {
+    params.search = options.search;
+  }
+  if (options.detailed) {
+    params.detailed = options.detailed;
+  }
+  if (options.overdue) {
+    params.overdue = options.overdue;
   }
   const response = await axiosInstance.get(`/api/orders`, { params });
   return response.data;

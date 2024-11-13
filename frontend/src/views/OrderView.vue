@@ -179,7 +179,7 @@ onMounted(async () => {
     <div class="flex flex-row justify-between mb-3">
       <Button
         @click="router.push(getOrderListPath())"
-        icon="pi pi-arrow-left"
+        icon="pi pi-list"
         size="small"
         severity="secondary"
         text

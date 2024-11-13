@@ -1,6 +1,6 @@
 import express from "express";
 import basicAuth from "express-basic-auth";
-import { FindOneOptions, FindOptionsRelations, ILike } from "typeorm";
+import { FindOptionsRelations } from "typeorm";
 
 import { getAppDataSource } from "@/db";
 import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/db/entities/documents";
@@ -8,6 +8,7 @@ import { Invoice } from "@/db/entities/invoice";
 import { Offer } from "@/db/entities/offer";
 import { Order } from "@/db/entities/order";
 import { OverdueNotice } from "@/db/entities/overdue_notice";
+import { OfferStatus, OverdueNoticePaymentStatus, PaymentStatus } from "@/global/types/appTypes";
 import {
   ErrorCode,
   PaginationQueryParameters,
@@ -25,25 +26,86 @@ export const ordersRouter = express.Router();
 ordersRouter.get(
   "",
   [checkAuth({ all: true })],
-  async (req: express.Request, res: express.Response) => {
+  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const { skip = 0, take = 100 } = req.query as PaginationQueryParameters;
-    const { search } = req.query as { search?: string };
+    const { search, overdue, detailed } = req.query as {
+      search?: string;
+      overdue?: boolean;
+      detailed?: boolean;
+    };
 
     const dataSource = getAppDataSource();
 
-    let whereClause: FindOneOptions<Order>["where"] = undefined;
+    // let whereClause: FindOneOptions<Order>["where"] = [];
 
-    if (search) {
-      whereClause = [{ id: ILike(`%${search}%`) }, { title: ILike(`%${search}%`) }];
+    let databaseQuery = dataSource
+      .getRepository(Order)
+      .createQueryBuilder("order")
+      .orderBy("order.created_at", "DESC")
+      .limit(take)
+      .offset(skip);
+    if (detailed) {
+      const role = getRoleByUser((req as basicAuth.IBasicAuthedRequest).auth.user);
+      if (role === UserRole.employee) {
+        next(new ApiError(ErrorCode.WRONG_ROLE, 403));
+        return;
+      }
+      databaseQuery = databaseQuery.leftJoinAndSelect("order.client", "client");
     }
 
-    const result = await dataSource.manager.findAndCount(Order, {
-      relations: ["invoices", "offer", "overdue_notices", "client"],
-      skip,
-      take,
-      order: { created_at: "DESC" },
-      where: whereClause,
-    });
+    if (detailed && !overdue) {
+      // here we join all sub orders as they are not filtered
+      databaseQuery = databaseQuery.leftJoinAndSelect("order.offer", "offer");
+      databaseQuery = databaseQuery.leftJoinAndSelect("order.overdue_notices", "overdue_notices");
+      databaseQuery = databaseQuery.leftJoinAndSelect("order.invoices", "invoices");
+    }
+
+    if (search) {
+      databaseQuery = databaseQuery.andWhere(
+        "(order.id LIKE CONCAT('%',:idSearch, '%') OR order.title LIKE CONCAT('%',:titleSearch, '%'))",
+        {
+          idSearch: search,
+          titleSearch: search,
+        },
+      );
+    }
+
+    if (overdue) {
+      databaseQuery = databaseQuery.leftJoinAndSelect(
+        "order.offer",
+        "offer",
+        "(offer.status = :overdueOfferStatus and date('now') > date(offer.offer_valid_until))",
+        {
+          overdueOfferStatus: OfferStatus.created,
+        },
+      );
+      databaseQuery = databaseQuery.leftJoinAndSelect(
+        "order.overdue_notices",
+        "overdue_notices",
+        "(overdue_notices.payment_status in(:...overdueOverdueNoticeStatus) and date('now') > date(overdue_notices.payment_target))",
+        {
+          overdueOverdueNoticeStatus: [
+            OverdueNoticePaymentStatus.open,
+            OverdueNoticePaymentStatus.partiallyPaid,
+          ],
+        },
+      );
+      databaseQuery = databaseQuery.leftJoinAndSelect(
+        "order.invoices",
+        "invoices",
+        "(invoices.status = :overdueInvoiceStatus and date('now') > date(invoices.payment_target))",
+        {
+          overdueInvoiceStatus: PaymentStatus.open,
+        },
+      );
+      databaseQuery = databaseQuery.andWhere(
+        "invoices.id is not null or overdue_notices.id is not null or offer.id is not null",
+      );
+    }
+
+    console.log(databaseQuery.getSql());
+
+    const result = await databaseQuery.getManyAndCount();
 
     res.json({ data: result[0], totalCount: result[1] } as PaginationResponse<Order>);
   },

@@ -50,7 +50,9 @@ describe("Clients routes", () => {
     expect(fullResponseData.totalCount).toBe(2);
 
     // search with a filter
-    const filteredResponse = await fetch(getRequest(server, "api/clients?search=st+us"));
+    const filteredResponse = await fetch(
+      getRequest(server, "api/clients", { params: { search: "st us" } }),
+    );
 
     expect(filteredResponse.status).toBe(200);
 
