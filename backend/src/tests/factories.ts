@@ -77,6 +77,7 @@ export async function getInvoiceDocument(
       ],
       service_dates: ["1993-12-12", "1994-12-13"],
       payment_target: "1995-12-12",
+      invoice_date: "1994-12-12",
       can_have_cash_discount: false,
       discount_duration: 0,
       discount_percentage: 0,

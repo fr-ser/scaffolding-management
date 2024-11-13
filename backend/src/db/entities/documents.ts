@@ -98,6 +98,9 @@ export class InvoiceDocument extends BaseDocument {
   service_dates: string[];
 
   @Column({ type: "text" })
+  invoice_date: string;
+
+  @Column({ type: "text" })
   payment_target: string;
 
   @Column({ type: "boolean" })

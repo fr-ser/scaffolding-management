@@ -106,6 +106,7 @@ export class Init1725292732890 implements MigrationInterface {
         "order_title" text NOT NULL,
         "invoice_id" integer NOT NULL,
         "service_dates" text NOT NULL,
+        "invoice_date" text NOT NULL,
         "payment_target" text NOT NULL,
         "can_have_cash_discount" boolean NOT NULL,
         "discount_duration" numeric,

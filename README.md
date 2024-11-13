@@ -54,3 +54,6 @@ These environment variables should be set:
 
 - PI_SSH_PORT
 - PI_SSH_ADDRESS
+
+<!-- TODO: remove all kinds of overview search stuff -->
+<!-- TODO: add document search endpoint -->
