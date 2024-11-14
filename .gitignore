@@ -11,5 +11,5 @@ node_modules/
 /playwright/.cache/
 
 # environment files
-*.env
+*.local
 

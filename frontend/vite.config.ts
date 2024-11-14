@@ -1,16 +1,11 @@
 import vue from "@vitejs/plugin-vue";
 import { URL, fileURLToPath } from "node:url";
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig } from "vite";
 
 // <https://vitejs.dev/config/>
-export default defineConfig((env) => {
-  const envVariables = loadEnv(env.mode, "./");
-
-  const serverURL = new URL(envVariables.VITE_SERVER_URL ?? "<http://localhost:3001>");
-  const serverAPIPath = envVariables.VITE_SERVER_API_PATH ?? "/api";
-
+export default defineConfig(() => {
   return {
-    envDir: "./",
+    envDir: "../",
     plugins: [vue()],
     resolve: {
       alias: {
@@ -22,7 +17,7 @@ export default defineConfig((env) => {
       port: 5173,
       proxy: {
         // proxy requests with the API path to the server
-        [serverAPIPath]: serverURL.origin,
+        ["/api"]: new URL("http://localhost:3001").origin,
       },
     },
   };

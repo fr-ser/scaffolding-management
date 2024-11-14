@@ -7,6 +7,11 @@ import type {
   OverdueNoticeDocument,
 } from "@/global/types/entities";
 
+const VITE_COMPANY_NAME = import.meta.env.VITE_COMPANY_NAME;
+const VITE_COMPANY_STREET_AND_NUMBER = import.meta.env.VITE_COMPANY_STREET_AND_NUMBER;
+const VITE_COMPANY_POSTAL_CODE_AND_CITY = import.meta.env.VITE_COMPANY_POSTAL_CODE_AND_CITY;
+const BASE_URL = import.meta.env.BASE_URL;
+
 const props = defineProps<{
   result: OfferDocument | OverdueNoticeDocument | InvoiceDocument;
   kind: DocumentKind;
@@ -33,12 +38,12 @@ if (props.kind === DocumentKind.overdueNotice) {
 <template>
   <header class="flex flex-row justify-between mb-10">
     <div class="text-xs">
-      <p>redacted &amp; redacted</p>
-      <p>redacted</p>
+      <p>{{ VITE_COMPANY_NAME }}</p>
+      <p>{{ VITE_COMPANY_STREET_AND_NUMBER }}, {{ VITE_COMPANY_POSTAL_CODE_AND_CITY }}</p>
       <p class="font-bold text-2xl pt-5">{{ kind }}</p>
     </div>
     <div>
-      <img class="h-32" src="http://redacted:5000/img/logo.png" />
+      <img class="h-32" :src="`${BASE_URL}logo_pdf.png`" />
     </div>
   </header>
   <section class="flex flex-row justify-between">
