@@ -31,7 +31,7 @@ build:
 
 #: start server in production mode (serving both the API and frontend)
 run-server-production:
-	cd backend && STATIC_FILE_ROOT=dist/static CONFIG_PATH=local.env npm run start:server
+	cd backend && STATIC_FILE_ROOT=dist/static CONFIG_PATH=../.env.development npm run start:server
 
 #: run all tests
 test-all:
