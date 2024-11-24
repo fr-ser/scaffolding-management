@@ -141,6 +141,7 @@ async function insertData(dataSource: DataSource) {
     .values(
       Array.from(Array(10)).map((_: unknown, index: number) => {
         return {
+          created_at: (Date.now() + 100 * index) / 1000,
           id: `A-2020-01-${index + 1}`,
           creation_date: `2021-01-0${index + 1}`,
           client_id: `K${index + 1}`,
@@ -211,6 +212,7 @@ async function insertData(dataSource: DataSource) {
     .values(
       Array.from(Array(10)).map((_: unknown, index: number) => {
         return {
+          created_at: (Date.now() + 100 * index) / 1000,
           id: `R-2020-01-${index + 1}`,
           creation_date: `2021-01-0${index + 1}`,
           client_id: `K${index + 1}`,
@@ -265,6 +267,7 @@ async function insertData(dataSource: DataSource) {
     .values(
       Array.from(Array(10)).map((_: unknown, index: number) => {
         return {
+          created_at: (Date.now() + 100 * index) / 1000,
           id: `M-2020-01-${index + 1}`,
           creation_date: `2021-01-0${index + 1}`,
           client_id: `K${index + 1}`,
