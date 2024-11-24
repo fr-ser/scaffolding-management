@@ -3,8 +3,9 @@ import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import { getInvoiceDocument, getOfferDocument, getOverdueNoticeDocument } from "@/backendClient";
+import DocumentArticleTable from "@/components/documents/DocumentArticleTable.vue";
 import DocumentFooter from "@/components/documents/DocumentFooter.vue";
-import DocumentTable from "@/components/documents/DocumentTable.vue";
+import DocumentInvoiceItemTable from "@/components/documents/DocumentInvoiceItemTable.vue";
 import DocumentText from "@/components/documents/DocumentText.vue";
 import DocumentTitle from "@/components/documents/DocumentTitle.vue";
 import { DocumentKind } from "@/global/types/appTypes";
@@ -36,6 +37,7 @@ onMounted(async () => {
   await getDocument();
 });
 </script>
+
 <template>
   <div class="w-full">
     <div
@@ -43,26 +45,17 @@ onMounted(async () => {
       class="min-h-297 w-[60rem] px-[4rem] ml-auto mr-auto py-5 border-solid border-2 border-slate-500 box-border"
     >
       <DocumentTitle :result="result" :kind="kind" />
-      <DocumentTable :result="result" :kind="kind"></DocumentTable>
-      <DocumentText :result="result" :kind="kind"></DocumentText>
-      <DocumentFooter></DocumentFooter>
+      <DocumentInvoiceItemTable
+        v-if="kind === DocumentKind.overdueNotice"
+        :document="result as OverdueNoticeDocument"
+      />
+      <DocumentArticleTable
+        v-else
+        :document="result as InvoiceDocument | OfferDocument"
+        :kind="kind"
+      />
+      <DocumentText :result="result" :kind="kind" />
+      <DocumentFooter />
     </div>
   </div>
 </template>
-<style>
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th,
-td {
-  border: 1px solid black;
-  padding: 8px;
-  text-align: left;
-}
-
-th {
-  background-color: #f2f2f2;
-}
-</style>

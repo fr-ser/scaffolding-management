@@ -12,6 +12,7 @@ module.exports = {
   ],
   parserOptions: {
     ecmaVersion: "latest",
+    vueFeatures: { filter: false },
   },
   plugins: ["prettier"],
   rules: {

@@ -35,7 +35,7 @@ const VITE_COMPANY_HOMEPAGE = import.meta.env.VITE_COMPANY_HOMEPAGE;
         <p>Mobil: {{ VITE_COMPANY_MOBILE_PHONE }}</p>
         <p>E-Mail: {{ VITE_COMPANY_EMAIL }}</p>
       </div>
-      <div class="col-span-2 flex flex-col gap-2">
+      <div class="col-span-2 flex flex-col">
         <p class="font-bold self-center">Bankverbindung</p>
         <div class="flex flex-row">
           <div class="first-bank-block">

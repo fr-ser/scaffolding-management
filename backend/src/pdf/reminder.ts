@@ -1,17 +1,7 @@
 import { COMPANY_OWNER } from "@/config";
-import { formatIsoDateString, formatNumber, getVatRate, round } from "@/global/helpers";
-import { InvoiceDocument, OverdueNoticeDocument } from "@/global/types/entities";
+import { formatIsoDateString, formatNumber, getItemSum, getVatRate } from "@/global/helpers";
+import { OverdueNoticeDocument } from "@/global/types/entities";
 import { PdfFileData, appPageOptions, mmToPx, newPageCheck } from "@/pdf/renderHelpers";
-
-function getInvoiceNetSum(invoice: InvoiceDocument) {
-  return round(
-    invoice.items.reduce((curr, item) => {
-      if (item.price == null || item.amount == null) return curr;
-      else return (curr += round(item.price * item.amount, 2));
-    }, 0),
-    2,
-  );
-}
 
 const rmdTParams: { [index: string]: number } = {
   c1x: appPageOptions.horizontalMargin,
@@ -91,7 +81,7 @@ export function createRmdTable(
       width: rmdTParams.c5x - rmdTParams.c4x,
       align: "center",
     })
-    .text("Ust.", rmdTParams.c5x, mmToPx(107), {
+    .text("USt.", rmdTParams.c5x, mmToPx(107), {
       width: rmdTParams.c6x - rmdTParams.c5x,
       align: "center",
     })
@@ -126,7 +116,7 @@ export function createRmdTable(
         .stroke();
     }
 
-    const netSum = getInvoiceNetSum(invoice);
+    const netSum = getItemSum(invoice.items);
     const vatRate = getVatRate({ isoDate: invoice.service_dates[0] });
 
     pdfFile
@@ -210,7 +200,7 @@ export function setReminderSumTable(
 ) {
   let prices = { net: 0, tax: 0, gross: 0 };
   for (const invoice of document.invoice_documents) {
-    const netSum = getInvoiceNetSum(invoice);
+    const netSum = getItemSum(invoice.items);
     const vatRate = getVatRate({ isoDate: invoice.service_dates[0] });
 
     prices = {
