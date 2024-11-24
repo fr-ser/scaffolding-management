@@ -1,5 +1,5 @@
 import express from "express";
-import { In, LessThanOrEqual } from "typeorm";
+import { In, LessThanOrEqual, SelectQueryBuilder } from "typeorm";
 
 import { getAppDataSource } from "@/db";
 import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/db/entities/documents";
@@ -30,30 +30,57 @@ documentsRouter.get(
     interface QueryParams {
       start_timestamp?: number;
       take?: number;
+      search?: string;
     }
-    const { take = 300 } = req.query as QueryParams;
-    let { start_timestamp } = req.query as QueryParams;
-    if (start_timestamp == null) {
-      start_timestamp = Date.now() / 1000;
+    const { take = 300, start_timestamp = Date.now() / 1000, search } = req.query as QueryParams;
+
+    let baseInvoiceQuery: SelectQueryBuilder<InvoiceDocument>;
+    let baseOfferQuery: SelectQueryBuilder<OfferDocument>;
+    let baseOverdueNoticeQuery: SelectQueryBuilder<OverdueNoticeDocument>;
+
+    if (!search) {
+      baseInvoiceQuery = getAppDataSource().manager.createQueryBuilder(InvoiceDocument, "invoice");
+      baseOfferQuery = getAppDataSource().manager.createQueryBuilder(OfferDocument, "offer");
+      baseOverdueNoticeQuery = getAppDataSource().manager.createQueryBuilder(
+        OverdueNoticeDocument,
+        "overdue_notice",
+      );
+    } else {
+      const cleanSearch = search.trim();
+      baseInvoiceQuery = getAppDataSource()
+        .manager.createQueryBuilder(InvoiceDocument, "invoice")
+        .where("(id LIKE '%' || :search || '%' OR order_title LIKE '%' || :search || '%')", {
+          search: cleanSearch,
+        });
+
+      baseOfferQuery = getAppDataSource()
+        .manager.createQueryBuilder(OfferDocument, "offer")
+        .where("(id LIKE '%' || :search || '%' OR order_title LIKE '%' || :search || '%')", {
+          search: cleanSearch,
+        });
+      baseOverdueNoticeQuery = getAppDataSource()
+        .manager.createQueryBuilder(OverdueNoticeDocument, "overdue_notice")
+        .where("(id LIKE '%' || :search || '%' OR order_title LIKE '%' || :search || '%')", {
+          search: cleanSearch,
+        });
     }
 
-    const dataSource = getAppDataSource();
     const allDataResult = await Promise.all([
-      dataSource.manager.find(InvoiceDocument, {
-        where: { created_at: LessThanOrEqual(start_timestamp) },
-        order: { created_at: "DESC" },
-        take: take,
-      }),
-      dataSource.manager.find(OfferDocument, {
-        where: { created_at: LessThanOrEqual(start_timestamp) },
-        order: { created_at: "DESC" },
-        take: take,
-      }),
-      dataSource.manager.find(OverdueNoticeDocument, {
-        where: { created_at: LessThanOrEqual(start_timestamp) },
-        order: { created_at: "DESC" },
-        take: take,
-      }),
+      baseInvoiceQuery
+        .andWhere({ created_at: LessThanOrEqual(start_timestamp) })
+        .take(take)
+        .orderBy("created_at", "DESC")
+        .getMany(),
+      baseOfferQuery
+        .andWhere({ created_at: LessThanOrEqual(start_timestamp) })
+        .take(take)
+        .orderBy("created_at", "DESC")
+        .getMany(),
+      baseOverdueNoticeQuery
+        .andWhere({ created_at: LessThanOrEqual(start_timestamp) })
+        .take(take)
+        .orderBy("created_at", "DESC")
+        .getMany(),
     ]);
 
     res.json(

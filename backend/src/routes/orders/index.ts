@@ -103,8 +103,6 @@ ordersRouter.get(
       );
     }
 
-    console.log(databaseQuery.getSql());
-
     const result = await databaseQuery.getManyAndCount();
 
     res.json({ data: result[0], totalCount: result[1] } as PaginationResponse<Order>);

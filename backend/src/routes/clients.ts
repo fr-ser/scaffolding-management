@@ -1,4 +1,5 @@
 import express from "express";
+import { SelectQueryBuilder } from "typeorm";
 
 import { getAppDataSource } from "@/db";
 import { Client } from "@/db/entities/client";
@@ -23,17 +24,12 @@ clientsRouter.get(
 
     const dataSource = getAppDataSource();
 
-    let result: [Client[], number];
+    let baseQuery: SelectQueryBuilder<Client>;
 
-    // the "simple" case without search
     if (!search) {
-      result = await dataSource.manager.findAndCount(Client, {
-        skip,
-        take,
-        order: { created_at: "DESC" },
-      });
+      baseQuery = dataSource.manager.createQueryBuilder(Client, "client");
     } else {
-      const baseQuery = dataSource.manager
+      baseQuery = dataSource.manager
         .createQueryBuilder(Client, "client")
         .where(
           "first_name || ' ' || last_name LIKE '%' || :nameSearch || '%' " +
@@ -43,9 +39,11 @@ clientsRouter.get(
             companySearch: search,
           },
         );
-
-      result = await Promise.all([baseQuery.take(take).skip(skip).getMany(), baseQuery.getCount()]);
     }
+    const result = await Promise.all([
+      baseQuery.take(take).skip(skip).orderBy("created_at", "DESC").getMany(),
+      baseQuery.getCount(),
+    ]);
 
     res.json({ data: result[0], totalCount: result[1] } as PaginationResponse<Client>);
   },
