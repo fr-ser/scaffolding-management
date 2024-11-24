@@ -251,11 +251,6 @@ async function insertData(dataSource: DataSource) {
       description: `description ${index + 1}`,
     });
 
-    // const invoiceDocument = await dataSource.manager.findOne(InvoiceDocument, {
-    //   where: { invoice: { order_id: `A${index + 1}` } },
-    // });
-    // console.log("invoiceDocument", invoiceDocument);
-
     await dataSource
       .createQueryBuilder()
       .relation(OverdueNotice, "invoice_documents")

@@ -19,7 +19,6 @@ describe("invoiceDocuments routes", () => {
   let server: Server;
   let appDataSource: DataSource;
   const temporaryDirectory = mkdtempSync(path.join(os.tmpdir(), "test-"));
-  console.log("temporaryDirectory", temporaryDirectory);
 
   beforeAll(async () => {
     appDataSource = await initializeAppDataSource(path.join(temporaryDirectory, "test.db"));
