@@ -20,9 +20,25 @@ import { debounce } from "@/helpers/utils";
 
 const confirm = useConfirmations();
 const notifications = useNotifications();
+
 const documentsList = ref<(InvoiceDocument | OfferDocument | OverdueNoticeDocument)[]>([]);
-const search = ref<string>("");
 const selectedProduct = ref<(OfferDocument | OverdueNoticeDocument | InvoiceDocument)[]>([]);
+
+const search = ref("");
+const paginationStep = 20;
+const take = ref(paginationStep);
+const hasMore = ref(true);
+
+async function loadData() {
+  const response = await getDocuments({ search: search.value, take: take.value });
+  documentsList.value = response.data;
+  hasMore.value = response.data.length !== response.totalCount;
+}
+
+async function loadMore() {
+  take.value += paginationStep;
+  await loadData();
+}
 
 function getDocumentType(doc: OfferDocument | OverdueNoticeDocument | InvoiceDocument) {
   if ("offer_id" in doc) {
@@ -34,15 +50,10 @@ function getDocumentType(doc: OfferDocument | OverdueNoticeDocument | InvoiceDoc
   }
 }
 
-async function reloadPage() {
-  // TODO: use pagination
-  documentsList.value = await getDocuments(search.value);
-}
-
 async function removeDocument(doc: OfferDocument | OverdueNoticeDocument | InvoiceDocument) {
   let kind = getDocumentType(doc);
   await deleteDocument(doc.id, kind);
-  reloadPage();
+  loadData();
 }
 
 function getSelectedIds() {
@@ -64,9 +75,9 @@ const confirmCreatePdf = () => {
   confirm.showCreateMultiplePdfConfirmation(createPdf, getSelectedIds());
 };
 
-watch(search, debounce(reloadPage, 250));
+watch(search, debounce(loadData, 250));
 onMounted(async () => {
-  reloadPage();
+  loadData();
 });
 </script>
 
@@ -142,6 +153,9 @@ onMounted(async () => {
           </template>
         </Column>
       </DataTable>
+      <div class="flex justify-center pt-2">
+        <Button v-if="hasMore" @click="loadMore">Weitere Dokumente laden</Button>
+      </div>
     </div>
   </div>
   <!-- TODO: handle no documents for employees -->

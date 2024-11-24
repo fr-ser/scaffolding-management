@@ -12,11 +12,21 @@ import { getOrderCreatePath, getOrderEditPath } from "@/helpers/routes";
 import { debounce } from "@/helpers/utils";
 
 const ordersList = ref<Order[]>([]);
-const search = ref<string>("");
 
-async function reloadPage() {
-  // TODO: use pagination
-  ordersList.value = (await getOrders({ search: search.value })).data;
+const search = ref("");
+const paginationStep = 20;
+const take = ref(paginationStep);
+const hasMore = ref(true);
+
+async function loadData() {
+  const response = await getOrders({ search: search.value, take: take.value });
+  ordersList.value = response.data;
+  hasMore.value = response.data.length !== response.totalCount;
+}
+
+async function loadMore() {
+  take.value += paginationStep;
+  await loadData();
 }
 
 const confirm = useConfirmations();
@@ -24,7 +34,7 @@ const notifications = useNotifications();
 
 async function removeOrder(order: Order) {
   await deleteOrder(order.id);
-  reloadPage();
+  loadData();
   notifications.showDeleteOrderNotification();
 }
 const confirmDelete = (order: Order) => {
@@ -33,10 +43,10 @@ const confirmDelete = (order: Order) => {
   });
 };
 
-watch(search, debounce(reloadPage, 250));
+watch(search, debounce(loadData, 250));
 
 onMounted(async () => {
-  reloadPage();
+  loadData();
 });
 </script>
 
@@ -56,7 +66,7 @@ onMounted(async () => {
       </span>
       <router-link :to="getOrderCreatePath()">
         <Button
-          label="Neu"
+          label="Auftrag anlegen"
           rounded
           aria-label="Neuen Auftrag anlegen"
           data-testid="order-create-button"
@@ -94,6 +104,9 @@ onMounted(async () => {
           </template>
         </Card>
       </router-link>
+      <div class="flex justify-center">
+        <Button v-if="hasMore" @click="loadMore">Weitere Aufträge laden</Button>
+      </div>
     </div>
   </div>
 </template>

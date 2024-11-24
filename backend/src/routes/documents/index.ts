@@ -1,5 +1,5 @@
 import express from "express";
-import { In, LessThanOrEqual, SelectQueryBuilder } from "typeorm";
+import { In, SelectQueryBuilder } from "typeorm";
 
 import { getAppDataSource } from "@/db";
 import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/db/entities/documents";
@@ -7,6 +7,7 @@ import { DocumentKind } from "@/global/types/appTypes";
 import {
   AnyDocument,
   ErrorCode,
+  PaginationResponse,
   SaveDocumentsAsPdfPayload,
   UserRole,
 } from "@/global/types/backendTypes";
@@ -28,11 +29,10 @@ documentsRouter.get(
     // "regular" pagination will not work with this endpoint that returns data from
     // multiple tables.
     interface QueryParams {
-      start_timestamp?: number;
       take?: number;
       search?: string;
     }
-    const { take = 300, start_timestamp = Date.now() / 1000, search } = req.query as QueryParams;
+    const { take = 300, search } = req.query as QueryParams;
 
     let baseInvoiceQuery: SelectQueryBuilder<InvoiceDocument>;
     let baseOfferQuery: SelectQueryBuilder<OfferDocument>;
@@ -66,29 +66,29 @@ documentsRouter.get(
     }
 
     const allDataResult = await Promise.all([
-      baseInvoiceQuery
-        .andWhere({ created_at: LessThanOrEqual(start_timestamp) })
-        .take(take)
-        .orderBy("created_at", "DESC")
-        .getMany(),
-      baseOfferQuery
-        .andWhere({ created_at: LessThanOrEqual(start_timestamp) })
-        .take(take)
-        .orderBy("created_at", "DESC")
-        .getMany(),
-      baseOverdueNoticeQuery
-        .andWhere({ created_at: LessThanOrEqual(start_timestamp) })
-        .take(take)
-        .orderBy("created_at", "DESC")
-        .getMany(),
+      baseInvoiceQuery.take(take).orderBy("created_at", "DESC").getMany(),
+      baseOfferQuery.take(take).orderBy("created_at", "DESC").getMany(),
+      baseOverdueNoticeQuery.take(take).orderBy("created_at", "DESC").getMany(),
+      baseInvoiceQuery.getCount(),
+      baseOfferQuery.getCount(),
+      baseOverdueNoticeQuery.getCount(),
     ]);
 
-    res.json(
-      mergeSortedDocuments(...allDataResult, {
+    const data = allDataResult.slice(0, 3) as [
+      OfferDocument[],
+      InvoiceDocument[],
+      OverdueNoticeDocument[],
+    ];
+
+    const counts = allDataResult.slice(3) as number[];
+
+    res.json({
+      data: mergeSortedDocuments(...data, {
         isAscending: false,
         maxItems: take,
       }),
-    );
+      totalCount: counts.reduce((acc, item) => acc + item, 0),
+    } as PaginationResponse<InvoiceDocument | OfferDocument | OverdueNoticeDocument>);
   },
 );
 

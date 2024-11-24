@@ -16,16 +16,25 @@ const notifications = useNotifications();
 
 const clientsList = ref<Client[]>([]);
 
-const search = ref<string>("");
+const search = ref("");
+const paginationStep = 20;
+const take = ref(paginationStep);
+const hasMore = ref(true);
 
-async function reloadPage() {
-  // TODO: use pagination
-  clientsList.value = (await getClients(search.value)).data;
+async function loadData() {
+  const response = await getClients({ search: search.value, take: take.value });
+  clientsList.value = response.data;
+  hasMore.value = response.data.length !== response.totalCount;
+}
+
+async function loadMore() {
+  take.value += paginationStep;
+  await loadData();
 }
 
 async function removeClient(client: Client) {
   await deleteClient(client.id);
-  reloadPage();
+  loadData();
   notifications.showDeleteClientNotification();
 }
 
@@ -35,10 +44,10 @@ const confirmDelete = (client: Client) => {
   });
 };
 
-watch(search, debounce(reloadPage, 250));
+watch(search, debounce(loadData, 250));
 
 onMounted(async () => {
-  reloadPage();
+  loadData();
 });
 </script>
 
@@ -58,7 +67,7 @@ onMounted(async () => {
       </span>
       <router-link :to="getClientCreatePath()">
         <Button
-          label="Neu"
+          label="Kunden erstellen"
           rounded
           aria-label="Neuen Kunden erstellen"
           data-testid="client-create-button"
@@ -99,6 +108,9 @@ onMounted(async () => {
           </template>
         </Card>
       </router-link>
+      <div class="flex justify-center">
+        <Button v-if="hasMore" @click="loadMore">Weitere Kunden laden</Button>
+      </div>
     </div>
   </div>
 </template>

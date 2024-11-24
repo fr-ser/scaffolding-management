@@ -43,10 +43,10 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-export async function getArticles(query?: string): Promise<PaginationResponse<Article>> {
-  const params: Record<string, string> = {};
-  if (query) params.search = query;
-  const response = await axiosInstance.get("/api/articles", { params });
+export async function getArticles(
+  parameters = {} as { search?: string; take?: number },
+): Promise<PaginationResponse<Article>> {
+  const response = await axiosInstance.get("/api/articles", { params: parameters });
   return response.data;
 }
 export async function updateArticle(id: string, article: ArticleUpdate): Promise<Article> {
@@ -61,10 +61,10 @@ export async function deleteArticle(id: string): Promise<void> {
   await axiosInstance.delete(`/api/articles/${id}`);
 }
 
-export async function getClients(query?: string): Promise<PaginationResponse<Client>> {
-  const params: Record<string, string> = {};
-  if (query) params.search = query;
-  const response = await axiosInstance.get("/api/clients", { params });
+export async function getClients(
+  parameters = {} as { search?: string; take?: number },
+): Promise<PaginationResponse<Client>> {
+  const response = await axiosInstance.get("/api/clients", { params: parameters });
   return response.data;
 }
 
@@ -88,23 +88,9 @@ export async function updateClient(id: string, client: ClientUpdate): Promise<Cl
 }
 
 export async function getOrders(
-  options: { clientId?: string; search?: string; overdue?: boolean; detailed?: true } = {},
+  parameters = {} as { search?: string; take?: number; detailed?: true; overdue?: true },
 ): Promise<PaginationResponse<Order>> {
-  const params: any = {};
-  // TODO: check if client ID is implemented
-  if (options.clientId) {
-    params.client_id = options.clientId;
-  }
-  if (options.search) {
-    params.search = options.search;
-  }
-  if (options.detailed) {
-    params.detailed = options.detailed;
-  }
-  if (options.overdue) {
-    params.overdue = options.overdue;
-  }
-  const response = await axiosInstance.get(`/api/orders`, { params });
+  const response = await axiosInstance.get(`/api/orders`, { params: parameters });
   return response.data;
 }
 export async function getOrder(id: string): Promise<Order> {
@@ -160,11 +146,9 @@ export async function updateOverdueNotice(
 }
 
 export async function getDocuments(
-  query?: string,
-): Promise<(OfferDocument | OverdueNoticeDocument | InvoiceDocument)[]> {
-  const params: Record<string, string> = {};
-  if (query) params.search = query;
-  const response = await axiosInstance.get(`/api/documents`, { params });
+  parameters = {} as { search?: string; take?: number },
+): Promise<PaginationResponse<OfferDocument | OverdueNoticeDocument | InvoiceDocument>> {
+  const response = await axiosInstance.get(`/api/documents`, { params: parameters });
   return response.data;
 }
 
