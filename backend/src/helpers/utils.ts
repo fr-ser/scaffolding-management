@@ -13,7 +13,7 @@ export function mergeSortedDocuments(
     a: OfferDocument | InvoiceDocument | OverdueNoticeDocument,
     b: OfferDocument | InvoiceDocument | OverdueNoticeDocument,
   ) => {
-    return isAscending ? a.creation_date < b.creation_date : a.creation_date > b.creation_date;
+    return isAscending ? a.created_at < b.created_at : a.created_at > b.created_at;
   };
 
   const mergedArray = [];
