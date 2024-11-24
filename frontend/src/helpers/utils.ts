@@ -28,62 +28,14 @@ export function validEMail(strEMail: string) {
   return emailRegExp.test(strEMail);
 }
 
-export function getUniqueArray<T>(array: Array<T>) {
-  return array.filter(function (item, i, ar) {
-    return ar.indexOf(item) === i;
-  });
-}
-
 /**
- * The function takes a numeric string (german)
- * and returns the number or null (if it cannot be parsed)
- * @param strNum numeric string
- * @param precision optional precision of output
+ * This function formats a Date input into an ISO date string (e.g. Date(123456) -> "2021-12-31")
  */
-export function strToFloat(strNum: string, precision?: number): number {
-  const cleanStr = strNum.replace(/[\s.]/g, "").replace(",", ".");
-  const parsedNum = parseFloat(cleanStr);
-
-  if (typeof precision === "number") return round(parsedNum, precision);
-  else return parsedNum;
-}
-
-export function getDateForDOM(date: Date) {
-  const temp = date;
-  return (
-    temp.getFullYear() +
-    "-" +
-    ("00" + (temp.getMonth() + 1)).slice(-2) +
-    "-" +
-    ("00" + temp.getDate()).slice(-2)
-  );
-}
-
-export function isNumeric(varParameter: any): boolean {
-  return (
-    !isNaN(parseFloat(varParameter)) &&
-    isFinite(varParameter) &&
-    !(typeof varParameter === "string" && varParameter.trim() === "")
-  );
-}
-
-export const dateAddDays = function (initDate: Date, addDays: number) {
-  const newDate = new Date(initDate);
-  newDate.setDate(newDate.getDate() + addDays);
-  return newDate;
-};
-
-export function parseJSONsafe(presumedJSON: string): any | null {
-  try {
-    return JSON.parse(presumedJSON);
-  } catch (error) {
-    return null;
-  }
-}
-
 export function formatDateToIsoString(dateToIsoString: Date) {
   return format(dateToIsoString, "yyyy-MM-dd");
 }
+
+// TODO: remove this helper
 export function calculateItemSumPrice(
   arrayItems: (OfferItem | OfferItemCreate)[],
   date: string = "",
@@ -105,11 +57,12 @@ export function calculateItemSumPrice(
   }
 
   return {
-    amountNet: getFormatedAmount(amountNet),
-    amountGross: getFormatedAmount(amountGross),
-    amountVat: getFormatedAmount(amountVat),
+    amountNet: getFormattedAmount(amountNet),
+    amountGross: getFormattedAmount(amountGross),
+    amountVat: getFormattedAmount(amountVat),
   };
 }
+
 export function getGrossAmount(item: OfferItem | OfferItemCreate, date: string) {
   if (item.amount && item.price) {
     return item.amount * item.price * (1 + getVatRate({ isoDate: date }));
@@ -117,7 +70,8 @@ export function getGrossAmount(item: OfferItem | OfferItemCreate, date: string) 
     return undefined;
   }
 }
-export function getFormatedAmount(result?: number) {
+
+export function getFormattedAmount(result?: number) {
   if (result) {
     return formatNumber(result, { decimals: 2, currency: true });
   } else {

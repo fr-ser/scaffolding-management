@@ -114,5 +114,3 @@ onMounted(async () => {
     </div>
   </div>
 </template>
-
-<style></style>

@@ -12,31 +12,43 @@ const props = defineProps<{
   kind: DocumentKind;
 }>();
 </script>
+
 <template>
-  <section v-if="props.kind === DocumentKind.offer">
-    Die oben zusammengefassten Angaben sind nur geschätzte Angaben und werden bei Rechnungsstellung
-    genau<br />
-    ermittelt und abgerechnet.<br />
-    Wir hoffen Ihnen sagt unser Angebot zu und würden uns freuen, Ihren Auftrag zu erhalten!<br />
-    Mit freundlichen Grüßen<br />
-    John Smith<br />
-    Zur Auftragsersteilung und Bestätigung senden Sie uns das Angebot bitte<br />
-    unterschrieben zurück:
-  </section>
-  <section v-if="props.kind === DocumentKind.invoice">
-    Überweisen Sie bitte den offenen Betrag auf das unten aufgeführte Geschäftskonto.<br />
-    Sie sind verpflichtet, die Rechnung zu Steuerzwecken zwei Jahre lang aufzubewahren.<br />
-    Die aufgeführten Arbeiten wurden am
-    {{ (result as InvoiceDocument).service_dates.map(formatIsoDateString).join(", ") }}
-    ausgeführt.<br />
-    Zahlungsziel: Bitte zahlen Sie bis zum
-    {{ formatIsoDateString((result as InvoiceDocument).payment_target) }} ohne Abzug.<br />
-    Mit freundlichen Grüßen <br />
-    John Smith
-  </section>
-  <section v-if="props.kind === DocumentKind.overdueNotice">
-    Überweisen Sie bitte den offenen Betrag auf das unten aufgeführte Geschäftskonto. <br />
-    Mit freundlichen Grüßen <br />
-    John Smith <br />
-  </section>
+  <div class="pt-24 pb-2">
+    <section v-if="props.kind === DocumentKind.offer">
+      Die oben zusammengefassten Angaben sind nur geschätzte Angaben und werden bei
+      Rechnungsstellung genau<br />
+      ermittelt und abgerechnet.<br />
+      Wir hoffen Ihnen sagt unser Angebot zu und würden uns freuen, Ihren Auftrag zu erhalten!<br /><br />
+      Mit freundlichen Grüßen<br /><br />
+      John Smith<br /><br />
+      <div class="flex">
+        <span>
+          Zur Auftragsersteilung und Bestätigung senden Sie uns das Angebot bitte unterschrieben
+          zurück:
+        </span>
+        <span class="border-solid border-t border-black whitespace-nowrap pr-8 mr-7"
+          >Datum und Unterschrift</span
+        >
+      </div>
+    </section>
+
+    <section v-if="props.kind === DocumentKind.invoice">
+      Überweisen Sie bitte den offenen Betrag auf das unten aufgeführte Geschäftskonto.<br />
+      Sie sind verpflichtet, die Rechnung zu Steuerzwecken zwei Jahre lang aufzubewahren.<br /><br />
+      Die aufgeführten Arbeiten wurden am
+      {{ (result as InvoiceDocument).service_dates.map(formatIsoDateString).join(", ") }}
+      ausgeführt.<br />
+      Zahlungsziel: Bitte zahlen Sie bis zum
+      {{ formatIsoDateString((result as InvoiceDocument).payment_target) }} ohne Abzug.<br /><br />
+      Mit freundlichen Grüßen <br /><br />
+      John Smith
+    </section>
+
+    <section v-if="props.kind === DocumentKind.overdueNotice">
+      Überweisen Sie bitte den offenen Betrag auf das unten aufgeführte Geschäftskonto. <br /><br />
+      Mit freundlichen Grüßen <br /><br />
+      John Smith
+    </section>
+  </div>
 </template>

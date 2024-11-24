@@ -16,5 +16,3 @@ import NavigationBar from "@/components/NavigationBar.vue";
     </div>
   </div>
 </template>
-
-<style scoped></style>

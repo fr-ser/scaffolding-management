@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { formatIsoDateString } from "@/global/helpers";
-import { DocumentKind } from "@/global/types/appTypes";
+import { computed } from "vue";
+
+import { formatIsoDateString, neverFunction } from "@/global/helpers";
+import { DocumentKind, OverdueNoticeLevel } from "@/global/types/appTypes";
 import type {
   InvoiceDocument,
   OfferDocument,
@@ -17,30 +19,39 @@ const props = defineProps<{
   kind: DocumentKind;
 }>();
 
-let title = {
-  data: "",
-  number: "",
-};
-
-if (props.kind === DocumentKind.offer) {
-  title.data = "Angebotsdatum";
-  title.number = "Angebotsnummer";
-}
-if (props.kind === DocumentKind.invoice) {
-  title.data = "Rechnungsdatum";
-  title.number = "Rechnungsnummer";
-}
-if (props.kind === DocumentKind.overdueNotice) {
-  title.data = "Mahndatum";
-  title.number = "Belegnummer";
-}
+const content = computed(() => {
+  if (props.kind === DocumentKind.offer) {
+    return {
+      dateName: "Angebotsdatum",
+      numberName: "Angebotsnummer",
+      titleKind: "Angebot",
+    };
+  } else if (props.kind === DocumentKind.invoice) {
+    return {
+      dateName: "Rechnungsdatum",
+      numberName: "Rechnungsnummer",
+      titleKind: "Rechnung",
+    };
+  } else if (props.kind === DocumentKind.overdueNotice) {
+    let titleKind: string = (props.result as OverdueNoticeDocument).notice_level;
+    if ((props.result as OverdueNoticeDocument).notice_level === OverdueNoticeLevel.last) {
+      titleKind = "Letzte Mahnung vor Abgabe an Inkasso";
+    }
+    return {
+      dateName: "Mahndatum",
+      numberName: "Belegnummer",
+      titleKind,
+    };
+  } else return neverFunction(props.kind);
+});
 </script>
+
 <template>
   <header class="flex flex-row justify-between mb-10">
     <div class="text-xs">
       <p>{{ VITE_COMPANY_NAME }}</p>
       <p>{{ VITE_COMPANY_STREET_AND_NUMBER }}, {{ VITE_COMPANY_POSTAL_CODE_AND_CITY }}</p>
-      <p class="font-bold text-2xl pt-5">{{ kind }}</p>
+      <p class="font-bold text-2xl pt-5">{{ content.titleKind }}</p>
     </div>
     <div>
       <img class="h-32" :src="`${BASE_URL}logo_pdf.png`" />
@@ -55,10 +66,24 @@ if (props.kind === DocumentKind.overdueNotice) {
     </div>
     <div class="">
       <hr class="border-black border-1 mb-3" />
-      <p>{{ `${title.data}: ` }} {{ result.creation_date }}</p>
-      <p>Kundennummer: {{ result.client_id }}</p>
-      <p>{{ `${title.number}: ` }} {{ result.id }}</p>
-      <p v-if="props.kind === DocumentKind.offer">Angebot gültig bis:</p>
+      <table class="header-info">
+        <tr>
+          <td>{{ `${content.dateName}: ` }}</td>
+          <td>{{ formatIsoDateString(result.creation_date) }}</td>
+        </tr>
+        <tr>
+          <td>Kundennummer:</td>
+          <td>{{ result.client_id }}</td>
+        </tr>
+        <tr>
+          <td>{{ `${content.numberName}: ` }}</td>
+          <td>{{ result.id }}</td>
+        </tr>
+        <tr v-if="props.kind === DocumentKind.offer">
+          <td>Angebot gültig bis:</td>
+          <td>{{ formatIsoDateString((result as OfferDocument).offer_valid_until) }}</td>
+        </tr>
+      </table>
       <hr class="border-black border-1 mt-3" />
     </div>
   </section>
@@ -70,14 +95,14 @@ if (props.kind === DocumentKind.overdueNotice) {
     </p>
   </section>
   <section v-if="props.kind === DocumentKind.offer" class="mb-10 mt-[4rem]">
-    <p class="font-bold">BV:{{ result.client_id }} BV {{ result.client_last_name }}</p>
+    <p class="font-bold">BV:{{ result.order_title }}</p>
     <p>
       Sehr geehrte Damen und Herren,<br />
       vielen Dank für Ihr Interesse. Hiermit unterbreiten wir Ihnen folgendes Angebot
     </p>
   </section>
   <section v-if="props.kind === DocumentKind.overdueNotice" class="mb-10 mt-[4rem]">
-    <p class="font-bold">BV:{{ result.client_id }} BV {{ result.client_last_name }}</p>
+    <p class="font-bold">BV:{{ result.order_title }}</p>
     <p>
       Sehr geehrte Damen und Herren,<br />
       auf unsere u.a. Rechnung(en) haben wir noch keinen Zahlungseingang feststellen können.<br />
@@ -85,10 +110,26 @@ if (props.kind === DocumentKind.overdueNotice) {
       Sollten Sie zwischenzeitlich die Zahlung bereits geleistet haben, betrachten Sie dieses
       Schreiben bitte als gegenstandslos.<br />
       Es wurden ihre Zahlungen bis zum
-      {{ `${formatIsoDateString((result as OverdueNoticeDocument).notice_date)}` }}
-      berücksichtigt.<br />
-      Bitte zahlen Sie bis spätestens:
       {{ `${formatIsoDateString((result as OverdueNoticeDocument).payments_until)}` }}
+      berücksichtigt.<br /><br />
+      Bitte zahlen Sie bis spätestens:
+      <span class="font-bold">
+        {{ `${formatIsoDateString((result as OverdueNoticeDocument).payment_target)}` }}
+      </span>
     </p>
   </section>
 </template>
+
+<style scoped lang="scss">
+.header-info {
+  tr {
+    line-height: 1.1em;
+  }
+
+  td:last-child {
+    padding-left: 30px;
+    width: 150px;
+    text-align: center;
+  }
+}
+</style>

@@ -1,3 +1,10 @@
+import type {
+  InvoiceDocumentItem,
+  InvoiceItem,
+  OfferDocumentItem,
+  OfferItem,
+} from "@/global/types/entities";
+
 /**
  * This function is for compile time checking of completeness of if statements
  * It needs to be passed the parameter, that has been checked exhaustively
@@ -39,9 +46,18 @@ export function getVatRate(options: GetVatRateOptions): number {
   }
 }
 
+/**
+ * This function formats a number into a string with a specific number of decimals
+ * and optionally adds a currency symbol
+ *
+ * Defaults:
+ * - currency: false
+ * - decimals: 0 (2 if currency is true)
+ * - undefinedAs: "-"
+ */
 export function formatNumber(
-  number: number,
-  options: { currency?: boolean; decimals?: number } = { currency: false, decimals: 0 },
+  number: number | undefined,
+  options?: { currency?: boolean; decimals?: number; undefinedAs?: string },
 ): string {
   let chosenDecimals: number;
   if (options?.decimals) {
@@ -50,6 +66,10 @@ export function formatNumber(
     chosenDecimals = 2;
   } else {
     chosenDecimals = 0;
+  }
+
+  if (number == null) {
+    return options?.undefinedAs ?? "-";
   }
 
   let result = number.toLocaleString("de-DE", {
@@ -67,9 +87,14 @@ export function round(number: number, decimals: number = 0): number {
   return Math.round(number * Math.pow(10, decimals)) / Math.pow(10, decimals);
 }
 
+/**
+ * This function formats a date input (provided as ISO string) into a date
+ * formatted for humans (e.g. 2021-12-31 -> 31.12.2021)
+ */
 export function formatIsoDateString(isoDate: string): string {
   return new Date(isoDate).toLocaleDateString("de-DE");
 }
+
 export function getNetAmount(item?: number, price?: number) {
   if (item && price) {
     return item * price;
@@ -77,6 +102,7 @@ export function getNetAmount(item?: number, price?: number) {
     return undefined;
   }
 }
+
 export function getVatAmount(amount?: number, price?: number, date?: string) {
   const netto = getNetAmount(amount, price);
 
@@ -85,4 +111,16 @@ export function getVatAmount(amount?: number, price?: number, date?: string) {
   } else {
     return undefined;
   }
+}
+
+export function getItemSum(
+  items: (OfferItem | InvoiceItem | InvoiceDocumentItem | OfferDocumentItem)[],
+) {
+  return round(
+    items.reduce((curr, item) => {
+      if (item.price == null || item.amount == null) return curr;
+      else return (curr += round(item.price * item.amount, 2));
+    }, 0),
+    2,
+  );
 }

@@ -5,7 +5,7 @@ import { DB_PATH } from "@/config";
 import { initializeAppDataSource } from "@/db";
 import { Article } from "@/db/entities/article";
 import { Client } from "@/db/entities/client";
-import { OfferDocumentItem } from "@/db/entities/document_items";
+import { InvoiceDocumentItem, OfferDocumentItem } from "@/db/entities/document_items";
 import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/db/entities/documents";
 import { Invoice } from "@/db/entities/invoice";
 import { Offer } from "@/db/entities/offer";
@@ -234,6 +234,28 @@ async function insertData(dataSource: DataSource) {
     )
     .execute();
 
+  await dataSource
+    .createQueryBuilder()
+    .insert()
+    .into(InvoiceDocumentItem)
+    .values(
+      Array.from(Array(10)).map((_: unknown, index: number) => {
+        const isEven = index % 2 === 0;
+
+        return {
+          invoice_document_id: () =>
+            `(SELECT id from invoice_document where id='R-2020-01-${index + 1}')`,
+          kind: isEven ? ArticleKind.item : ArticleKind.heading,
+          title: `Title ${index + 1}`,
+          description: `Description ${index + 1}`,
+          unit: isEven ? `Unit ${index + 1}` : undefined,
+          price: isEven ? 101 + index : undefined,
+          amount: isEven ? index + 1 : undefined,
+        };
+      }),
+    )
+    .execute();
+
   for (let index = 0; index < 10; index++) {
     const anyPaymentStatus = Object.values(OverdueNoticePaymentStatus)[
       index % Object.values(OverdueNoticePaymentStatus).length
@@ -289,6 +311,14 @@ async function insertData(dataSource: DataSource) {
       }),
     )
     .execute();
+
+  for (let index = 0; index < 10; index++) {
+    await dataSource
+      .createQueryBuilder()
+      .relation(OverdueNoticeDocument, "invoice_documents")
+      .of(`M-2020-01-${index + 1}`)
+      .add(`R-2020-01-${index + 1}`);
+  }
 }
 
 async function main() {
