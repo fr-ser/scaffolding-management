@@ -12,15 +12,23 @@ import { debounce } from "@/helpers/utils";
 interface EditableArticle extends Article {
   isNew?: boolean;
 }
+const articlesList = ref<EditableArticle[]>([]);
 
-let search = ref<string>("");
+const search = ref("");
+const paginationStep = 3;
+const take = ref(paginationStep);
+const hasMore = ref(true);
 
-async function reloadPage() {
-  // TODO: use pagination
-  articlesList.value = (await getArticles(search.value)).data;
+async function loadData() {
+  const response = await getArticles({ search: search.value, take: take.value });
+  articlesList.value = response.data;
+  hasMore.value = response.data.length !== response.totalCount;
 }
 
-const articlesList = ref<EditableArticle[]>([]);
+async function loadMore() {
+  take.value += paginationStep;
+  await loadData();
+}
 
 function createNewArticle() {
   articlesList.value.unshift({
@@ -33,10 +41,10 @@ function createNewArticle() {
   } as any);
 }
 
-watch(search, debounce(reloadPage, 250));
+watch(search, debounce(loadData, 250));
 
 onMounted(async () => {
-  reloadPage();
+  loadData();
 });
 </script>
 
@@ -57,7 +65,7 @@ onMounted(async () => {
       </span>
       <Button
         @click="createNewArticle"
-        label="Neu"
+        label="Artikel erstellen"
         rounded
         aria-label="Neuen Artikel erstellen"
         data-testid="article-create-button"
@@ -69,9 +77,12 @@ onMounted(async () => {
         :article="article"
         :is-new="article.isNew"
         :key="article.id"
-        @reload-article-view="reloadPage"
+        @reload-article-view="loadData"
         data-testid="article-card"
       />
+    </div>
+    <div class="flex justify-center">
+      <Button v-if="hasMore" @click="loadMore">Weitere Artikel laden</Button>
     </div>
   </div>
 </template>

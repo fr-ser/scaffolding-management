@@ -89,7 +89,6 @@ const confirm = useConfirmations();
 const notifications = useNotifications();
 
 const onSaveOrder = async () => {
-  // TODO: add validation
   const payload: OrderCreate = orderInfo.value as OrderCreate;
 
   if (selectedClient.value) {

@@ -40,7 +40,6 @@ const isEditing = computed(() => {
   return Boolean(route.params.id);
 });
 const onSaveClient = async () => {
-  // TODO: add validation
   if (isEditing.value) {
     await updateClient(`${route.params.id}`, userInfo.value);
     notifications.showUpdateClientNotification();

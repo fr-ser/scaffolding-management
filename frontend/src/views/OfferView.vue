@@ -71,7 +71,6 @@ const items = [
 ];
 
 async function onSaveOffer() {
-  // TODO: add validation
   await createOffer({
     ...offerInfo.value,
     items: offerItemsArray.value,
