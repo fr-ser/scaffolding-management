@@ -278,21 +278,19 @@ onMounted(async () => {
               <router-link
                 :to="getOrderSubOrderCreatePath(route.params.id as string, DocumentKind.offer)"
               >
-                <Button v-if="!(orderInfo as Order).offer" label="Angebot erstellen"></Button>
+                <Button v-if="!(orderInfo as Order).offer" label="Angebot erstellen" />
+              </router-link>
+              <router-link
+                :to="getOrderSubOrderCreatePath(route.params.id as string, DocumentKind.invoice)"
+              >
+                <Button label="Rechnung erstellen" />
               </router-link>
               <router-link
                 :to="
                   getOrderSubOrderCreatePath(route.params.id as string, DocumentKind.overdueNotice)
                 "
               >
-                <Button label="Rechnung erstellen"></Button>
-              </router-link>
-              <router-link
-                :to="
-                  getOrderSubOrderCreatePath(route.params.id as string, DocumentKind.overdueNotice)
-                "
-              >
-                <Button label="Mahnung erstellen"></Button>
+                <Button label="Mahnung erstellen" />
               </router-link>
             </div>
           </div>
@@ -305,7 +303,7 @@ onMounted(async () => {
               <TabPanel
                 v-for="item in (orderInfo as Order).invoices"
                 :key="item.id"
-                :header="`Invoice ${formatIsoDateString(item.invoice_date)}`"
+                :header="`Rechnung ${formatIsoDateString(item.invoice_date)}`"
               >
                 <InvoiceSummary :invoice="item"> </InvoiceSummary>
               </TabPanel>

@@ -8,11 +8,10 @@ import CreateDocumentButton from "@/components/orders/CreateDocumentButton.vue";
 import OrderDocuments from "@/components/orders/OrderDocuments.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
-import { formatIsoDateString } from "@/global/helpers";
-import { DocumentKind } from "@/global/types/appTypes";
-import { ArticleKind, PaymentStatus } from "@/global/types/appTypes";
+import { formatIsoDateString, formatNumber, getItemSum, getVatRate } from "@/global/helpers";
+import { ArticleKind, DocumentKind, PaymentStatus } from "@/global/types/appTypes";
 import type { Invoice } from "@/global/types/entities";
-import { calculateItemSumPrice, getGrossAmount } from "@/helpers/utils";
+import { getGrossAmount } from "@/helpers/utils";
 
 const props = defineProps<{
   invoice: Invoice;
@@ -22,9 +21,15 @@ let invoiceStatusValue = ref<PaymentStatus>(props.invoice.status);
 const notifications = useNotifications();
 
 const confirm = useConfirmations();
-const allItemsSum = computed(() => {
-  return calculateItemSumPrice(props.invoice.items, props.invoice.invoice_date);
+
+const vatRate = computed(() => {
+  return getVatRate({ isoDate: props.invoice.invoice_date });
 });
+
+const itemsNetSum = computed(() => {
+  return getItemSum(props.invoice.items);
+});
+
 watch(invoiceStatusValue, async () => {
   confirm.showUpdateInvoiceStatusConfirmation(async () => {
     await updateInvoice(props.invoice.id, {
@@ -33,8 +38,8 @@ watch(invoiceStatusValue, async () => {
     notifications.showUpdateInvoiceStatusNotification();
   });
 });
-let serviceDates = props.invoice.service_dates.map(formatIsoDateString).join(", ");
 </script>
+
 <template>
   <section
     class="flex flex-col justify-items-start gap-2 sm:flex-row sm:gap-8 sm:items-center flex-wrap"
@@ -44,9 +49,9 @@ let serviceDates = props.invoice.service_dates.map(formatIsoDateString).join(", 
       {{ formatIsoDateString(invoice.invoice_date) }}
     </p>
     <p>
-      <span class="font-bold">Zalungsziel:</span> {{ formatIsoDateString(invoice.payment_target) }}
+      <span class="font-bold">Zahlungsziel:</span> {{ formatIsoDateString(invoice.payment_target) }}
     </p>
-    <p class="font-bold">Zahlungstatus:</p>
+    <p class="font-bold">Zahlungsstatus:</p>
     <Dropdown
       v-model="invoiceStatusValue"
       :options="paymentStatusOptions"
@@ -56,7 +61,10 @@ let serviceDates = props.invoice.service_dates.map(formatIsoDateString).join(", 
   </section>
   <section>
     <p class="font-bold">
-      Leistungsdatum: <span class="font-normal"> {{ serviceDates }}</span>
+      Leistungsdatum:
+      <span class="font-normal">
+        {{ invoice.service_dates.map(formatIsoDateString).join(", ") }}</span
+      >
     </p>
   </section>
   <section>
@@ -64,9 +72,9 @@ let serviceDates = props.invoice.service_dates.map(formatIsoDateString).join(", 
   </section>
   <p class="font-bold mt-1">Angebotspreis:</p>
   <section class="flex flex-row gap-10">
-    <span> Netto: {{ allItemsSum.amountNet }} </span>
-    <span>USt: {{ allItemsSum.amountVat }}</span>
-    <span>Brutto: {{ allItemsSum.amountGross }} </span>
+    <span>Netto: {{ formatNumber(itemsNetSum, { currency: true }) }} </span>
+    <span>USt: {{ formatNumber(itemsNetSum * vatRate, { currency: true }) }}</span>
+    <span>Brutto: {{ formatNumber(itemsNetSum * (1 + vatRate), { currency: true }) }} </span>
   </section>
   <section v-for="(item, idx) in invoice.items" class="my-2" :key="item.id">
     <Card class="w-full">
@@ -81,7 +89,12 @@ let serviceDates = props.invoice.service_dates.map(formatIsoDateString).join(", 
             <div>Anzahl: {{ item.amount ?? "-" }}</div>
             <div>Einheit: {{ item.unit ?? "-" }}</div>
             <div>Preis: {{ item.price ?? "-" }}</div>
-            <div>Brutto: {{ getGrossAmount(item, props.invoice.invoice_date) }}</div>
+            <div>
+              Brutto:
+              {{
+                formatNumber(getGrossAmount(item, props.invoice.invoice_date), { currency: true })
+              }}
+            </div>
           </div>
         </div>
       </template>

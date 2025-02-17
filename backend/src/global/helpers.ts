@@ -1,10 +1,3 @@
-import type {
-  InvoiceDocumentItem,
-  InvoiceItem,
-  OfferDocumentItem,
-  OfferItem,
-} from "@/global/types/entities";
-
 /**
  * This function is for compile time checking of completeness of if statements
  * It needs to be passed the parameter, that has been checked exhaustively
@@ -95,16 +88,16 @@ export function formatIsoDateString(isoDate: string): string {
   return new Date(isoDate).toLocaleDateString("de-DE");
 }
 
-export function getNetAmount(item?: number, price?: number) {
-  if (item && price) {
-    return item * price;
+export function maybeMultiply(a?: number, b?: number) {
+  if (a && b) {
+    return a * b;
   } else {
     return undefined;
   }
 }
 
 export function getVatAmount(amount?: number, price?: number, date?: string) {
-  const netto = getNetAmount(amount, price);
+  const netto = maybeMultiply(amount, price);
 
   if (netto) {
     return netto * getVatRate({ isoDate: date });
@@ -113,9 +106,7 @@ export function getVatAmount(amount?: number, price?: number, date?: string) {
   }
 }
 
-export function getItemSum(
-  items: (OfferItem | InvoiceItem | InvoiceDocumentItem | OfferDocumentItem)[],
-) {
+export function getItemSum(items: { price?: number; amount?: number }[]) {
   return round(
     items.reduce((curr, item) => {
       if (item.price == null || item.amount == null) return curr;

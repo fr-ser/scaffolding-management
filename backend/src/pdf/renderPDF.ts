@@ -20,11 +20,9 @@ import {
   COMPANY_VAT_CODE,
   STATIC_FILE_ROOT,
 } from "@/config";
-import { OfferDocumentItem } from "@/db/entities/document_items";
-import { formatNumber, getVatRate, neverFunction, round } from "@/global/helpers";
+import { formatNumber, getItemSum, getVatRate, neverFunction } from "@/global/helpers";
 import { ArticleKind, DocumentKind, OverdueNoticeLevel } from "@/global/types/appTypes";
 import { AnyDocument } from "@/global/types/backendTypes";
-import { InvoiceDocumentItem } from "@/global/types/entities";
 import {
   setInitialInvoiceText,
   setInvoiceInformationTable,
@@ -234,7 +232,7 @@ const createDocument = function createDocument(
     else neverFunction(documentData);
   }
 
-  function createQtInvTable() {
+  function createOfferOrInvoiceTable() {
     pdfFile
       .font("Helvetica-Bold")
       .fontSize(9)
@@ -279,121 +277,119 @@ const createDocument = function createDocument(
 
     pdfFileData.currY = pdfFile.y + 5;
 
-    if (documentData.kind === DocumentKind.offer || documentData.kind === DocumentKind.invoice) {
-      for (const item of documentData.document.items) {
-        if (
-          newPageCheck(
-            pdfFile,
-            pdfFileData.currY,
-            pdfFile.heightOfString(item.description, {
-              width: tParams.c2x - tParams.c1x,
-            }),
-            pdfFileData,
-          )
-        ) {
-          pdfFile
-            .lineWidth(1)
-            .strokeOpacity(0.5)
-            .strokeColor([96, 125, 139])
-            .moveTo(tParams.c1x, pdfFileData.currY - 5)
-            .lineTo(
-              appPageOptions.pageWidth - appPageOptions.horizontalMargin,
-              pdfFileData.currY - 5,
-            )
-            .stroke();
-        }
-
+    if (documentData.kind !== DocumentKind.offer && documentData.kind !== DocumentKind.invoice) {
+      throw Error("Cannot generate article positions for an overdue notice");
+    }
+    for (const item of documentData.document.items) {
+      if (
+        newPageCheck(
+          pdfFile,
+          pdfFileData.currY,
+          pdfFile.heightOfString(item.description, {
+            width: tParams.c2x - tParams.c1x,
+          }),
+          pdfFileData,
+        )
+      ) {
         pdfFile
-          .font("Helvetica-Bold")
-          .fontSize(9)
-          .text(item.title, tParams.c1x + 2, pdfFileData.currY, {
-            width: tParams.c2x - tParams.c1x - 2,
-          })
-          .font("Helvetica");
+          .lineWidth(1)
+          .strokeOpacity(0.5)
+          .strokeColor([96, 125, 139])
+          .moveTo(tParams.c1x, pdfFileData.currY - 5)
+          .lineTo(appPageOptions.pageWidth - appPageOptions.horizontalMargin, pdfFileData.currY - 5)
+          .stroke();
+      }
 
-        // could be two lines, therefore save height
-        const postHeadY = pdfFile.y + 1;
-
-        if (
-          item.kind === ArticleKind.item &&
-          item.amount != null &&
-          item.price != null &&
-          item.unit != null
-        ) {
-          pdfFile
-            .text(formatNumber(item.amount), tParams.c2x, pdfFileData.currY, {
-              width: tParams.c3x - tParams.c2x,
-              align: "center",
-            })
-            .text(item.unit, tParams.c3x, pdfFileData.currY, {
-              width: tParams.c4x - tParams.c3x,
-              align: "center",
-            })
-            .text(formatNumber(item.price), tParams.c4x, pdfFileData.currY, {
-              width: tParams.c5x - tParams.c4x,
-              align: "center",
-            })
-            .text(
-              formatNumber(item.price * item.amount, { decimals: 2 }),
-              tParams.c5x,
-              pdfFileData.currY,
-              {
-                width: tParams.c6x - tParams.c5x,
-                align: "center",
-              },
-            )
-            .text(`${vatRate * 100}%`, tParams.c6x, pdfFileData.currY, {
-              width: tParams.c7x - tParams.c6x,
-              align: "center",
-            })
-            .text(
-              formatNumber(item.price * item.amount * vatRate, { decimals: 2 }),
-              tParams.c7x,
-              pdfFileData.currY,
-              {
-                width: tParams.c8x - tParams.c7x,
-                align: "center",
-              },
-            )
-            .text(
-              formatNumber(item.price * item.amount * (1 + vatRate), { decimals: 2 }),
-              tParams.c8x,
-              pdfFileData.currY,
-              {
-                width: tParams.c9x - tParams.c8x,
-                align: "center",
-              },
-            );
-        }
-        // must come last as this is the highest element
-        pdfFile.text(item.description, tParams.c1x + 2, postHeadY, {
+      pdfFile
+        .font("Helvetica-Bold")
+        .fontSize(9)
+        .text(item.title, tParams.c1x + 2, pdfFileData.currY, {
           width: tParams.c2x - tParams.c1x - 2,
-        });
+        })
+        .font("Helvetica");
+
+      // could be two lines, therefore save height
+      const postHeadY = pdfFile.y + 1;
+
+      if (
+        item.kind === ArticleKind.item &&
+        item.amount != null &&
+        item.price != null &&
+        item.unit != null
+      ) {
+        pdfFile
+          .text(formatNumber(item.amount), tParams.c2x, pdfFileData.currY, {
+            width: tParams.c3x - tParams.c2x,
+            align: "center",
+          })
+          .text(item.unit, tParams.c3x, pdfFileData.currY, {
+            width: tParams.c4x - tParams.c3x,
+            align: "center",
+          })
+          .text(formatNumber(item.price), tParams.c4x, pdfFileData.currY, {
+            width: tParams.c5x - tParams.c4x,
+            align: "center",
+          })
+          .text(
+            formatNumber(item.price * item.amount, { decimals: 2 }),
+            tParams.c5x,
+            pdfFileData.currY,
+            {
+              width: tParams.c6x - tParams.c5x,
+              align: "center",
+            },
+          )
+          .text(`${vatRate * 100}%`, tParams.c6x, pdfFileData.currY, {
+            width: tParams.c7x - tParams.c6x,
+            align: "center",
+          })
+          .text(
+            formatNumber(item.price * item.amount * vatRate, { decimals: 2 }),
+            tParams.c7x,
+            pdfFileData.currY,
+            {
+              width: tParams.c8x - tParams.c7x,
+              align: "center",
+            },
+          )
+          .text(
+            formatNumber(item.price * item.amount * (1 + vatRate), { decimals: 2 }),
+            tParams.c8x,
+            pdfFileData.currY,
+            {
+              width: tParams.c9x - tParams.c8x,
+              align: "center",
+            },
+          );
+      }
+      // must come last as this is the highest element
+      pdfFile.text(item.description, tParams.c1x + 2, postHeadY, {
+        width: tParams.c2x - tParams.c1x - 2,
+      });
+
+      pdfFile
+        .lineWidth(1)
+        .strokeOpacity(0.5)
+        .strokeColor([96, 125, 139])
+        .moveTo(tParams.c1x, pdfFile.y + 1)
+        .lineTo(appPageOptions.pageWidth - appPageOptions.horizontalMargin, pdfFile.y + 1)
+        .stroke();
+
+      pdfFileData.prevY = pdfFileData.currY;
+      pdfFileData.currY = pdfFile.y + 5;
+
+      for (let ii = 1; ii < 10; ii++) {
+        const tempX = tParams["c" + ii + "x"];
 
         pdfFile
           .lineWidth(1)
           .strokeOpacity(0.5)
           .strokeColor([96, 125, 139])
-          .moveTo(tParams.c1x, pdfFile.y + 1)
-          .lineTo(appPageOptions.pageWidth - appPageOptions.horizontalMargin, pdfFile.y + 1)
+          .moveTo(tempX, pdfFileData.prevY - 5)
+          .lineTo(tempX, pdfFileData.currY - 5)
           .stroke();
-
-        pdfFileData.prevY = pdfFileData.currY;
-        pdfFileData.currY = pdfFile.y + 5;
-
-        for (let ii = 1; ii < 10; ii++) {
-          const tempX = tParams["c" + ii + "x"];
-
-          pdfFile
-            .lineWidth(1)
-            .strokeOpacity(0.5)
-            .strokeColor([96, 125, 139])
-            .moveTo(tempX, pdfFileData.prevY - 5)
-            .lineTo(tempX, pdfFileData.currY - 5)
-            .stroke();
-        }
       }
-    } else throw Error("Cannot generate article positions for an overdue notice");
+    }
 
     pdfFileData.currY += 10;
   }
@@ -428,12 +424,7 @@ const createDocument = function createDocument(
     pdfFileData.currY = pdfFile.y;
 
     if (documentData.kind === DocumentKind.offer || documentData.kind === DocumentKind.invoice) {
-      const netSum = (
-        documentData.document.items as (InvoiceDocumentItem | OfferDocumentItem)[]
-      ).reduce((curr, item) => {
-        if (item.price == null || item.amount == null) return curr;
-        else return (curr += round(item.price * item.amount, 2));
-      }, 0);
+      const netSum = getItemSum(documentData.document.items);
 
       pdfFile
         .font("Helvetica")
@@ -519,7 +510,7 @@ const createDocument = function createDocument(
   createSubHeader();
   createTableTopText();
   if (documentData.kind === DocumentKind.invoice || documentData.kind === DocumentKind.offer)
-    createQtInvTable();
+    createOfferOrInvoiceTable();
   else if (documentData.kind === DocumentKind.overdueNotice)
     createRmdTable(pdfFile, documentData.document, pdfFileData);
   createTableBottomText();
