@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Button from "primevue/button";
 import Card from "primevue/card";
 import Checkbox from "primevue/checkbox";
 import { onMounted, ref } from "vue";
@@ -11,24 +12,34 @@ import { getOrderEditPath, getOrderSubOrderEditPath } from "@/helpers/routes";
 
 const ordersList = ref<Order[]>([]);
 
-async function reloadPage() {
-  // TODO: use pagination
-  ordersList.value = (await getOrders({ detailed: true, overdue: true })).data;
+const paginationStep = 20;
+const take = ref(paginationStep);
+const hasMore = ref(true);
+
+async function loadData() {
+  const response = await getOrders({ detailed: true, overdue: true, take: take.value });
+  ordersList.value = response.data;
+  hasMore.value = response.data.length !== response.totalCount;
+}
+
+async function loadMore() {
+  take.value += paginationStep;
+  await loadData();
 }
 
 onMounted(async () => {
-  reloadPage();
+  loadData();
 });
 </script>
 
 <template>
-  <section class="mb-6 mt-2">
-    <div class="flex align-items-center">
+  <div class="mb-6 mt-2 ml-2">
+    <div class="flex gap-2">
       <Checkbox :model-value="true" input-id="overdue-filter" binary disabled />
-      <label for="overdue-filter" class="ml-2"> Überfällige Unteraufträge </label>
+      <label for="overdue-filter">Überfällige Unteraufträge</label>
     </div>
-  </section>
-  <section v-for="order in ordersList" :key="order.id">
+  </div>
+  <div v-for="order in ordersList" :key="order.id">
     <Card class="my-2">
       <template #content>
         <div class="flex flex-row justify-between items-center">
@@ -38,7 +49,7 @@ onMounted(async () => {
               {{
                 `${order.client.street_and_number},  ${order.client.postal_code}  ${order.client.city} `
               }}
-              <span class="font-bold"> - Kunde: </span
+              <span class="font-bold"> - Kunde:</span
               >{{ ` ${order.client.first_name} ${order.client.last_name}` }}
 
               <i class="pi pi-external-link ml-1"></i>
@@ -48,8 +59,8 @@ onMounted(async () => {
                 <router-link
                   :to="getOrderSubOrderEditPath(order.id, DocumentKind.offer, order.offer.id)"
                 >
-                  <span>Angebot vom: </span>{{ `${formatIsoDateString(order.offer.offered_at)}` }}
-                  <span> - Angebotsstatus: </span> {{ `${order.offer.status}` }}
+                  <span>Angebot vom:</span>{{ `${formatIsoDateString(order.offer.offered_at)}` }}
+                  <span> - Angebotsstatus:</span> {{ `${order.offer.status}` }}
 
                   <i class="pi pi-external-link ml-1"></i>
                 </router-link>
@@ -89,5 +100,9 @@ onMounted(async () => {
         </div>
       </template>
     </Card>
-  </section>
+  </div>
+
+  <div class="flex justify-center">
+    <Button v-if="hasMore" @click="loadMore">Weitere Aufträge laden</Button>
+  </div>
 </template>
