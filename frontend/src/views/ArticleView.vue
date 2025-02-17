@@ -15,7 +15,7 @@ interface EditableArticle extends Article {
 const articlesList = ref<EditableArticle[]>([]);
 
 const search = ref("");
-const paginationStep = 3;
+const paginationStep = 20;
 const take = ref(paginationStep);
 const hasMore = ref(true);
 
@@ -32,13 +32,14 @@ async function loadMore() {
 
 function createNewArticle() {
   articlesList.value.unshift({
-    id: crypto.randomUUID(),
-    kind: ArticleKind.heading,
-    title: "New Title",
-    description: "New Description",
     isNew: true,
-    // TODO: do not use "any"
-  } as any);
+    id: "", // will be replaced by the backend
+    kind: ArticleKind.heading,
+    title: "",
+    description: "",
+    created_at: Date.now(),
+    updated_at: Date.now(),
+  });
 }
 
 watch(search, debounce(loadData, 250));
