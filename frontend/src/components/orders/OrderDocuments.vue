@@ -35,12 +35,12 @@ function buttonLabel() {
     return "Alle Auftragsdokumente anzeigen";
   }
   if (props.kind === DocumentKind.offer) {
-    return "Show all Offer Documents";
+    return "Alle Angebotsdokumente anzeigen";
   }
   if (props.kind === DocumentKind.invoice) {
-    return "Show all Invoice Documents";
+    return "Alle Rechnungsdokumente anzeigen";
   } else {
-    return "Show all Overdue Notice Documents";
+    return "Alle Mahnungsdokumente anzeigen";
   }
 }
 async function buttonDocumentFunction() {

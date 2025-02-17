@@ -14,11 +14,12 @@ import { createInvoice, getOrder } from "@/backendClient";
 import OrderSummary from "@/components/orders/OrderSummary.vue";
 import SubOrderItem from "@/components/orders/SubOrderItem.vue";
 import useNotifications from "@/compositions/useNotifications";
+import { formatNumber, getItemSum, getVatRate } from "@/global/helpers";
 import { ArticleKind, PaymentStatus } from "@/global/types/appTypes";
 import type { InvoiceCreate, InvoiceItemCreate } from "@/global/types/dataEditTypes";
 import type { Order } from "@/global/types/entities";
 import { getOrderEditPath } from "@/helpers/routes";
-import { calculateItemSumPrice, formatDateToIsoString } from "@/helpers/utils";
+import { formatDateToIsoString } from "@/helpers/utils";
 
 const route = useRoute();
 const router = useRouter();
@@ -88,8 +89,13 @@ function onItemCreate(kind: ArticleKind) {
 function onServiceDateDelete(id: number) {
   serviceDates.value = serviceDates.value.filter((element) => element.id !== id);
 }
-const allItemsSum = computed(() => {
-  return calculateItemSumPrice(invoiceItemsArray.value, invoiceInfo.value.invoice_date);
+
+const vatRate = computed(() => {
+  return getVatRate({ isoDate: invoiceInfo.value.invoice_date });
+});
+
+const itemsNetSum = computed(() => {
+  return getItemSum(invoiceItemsArray.value);
 });
 
 async function onCreateInvoice() {
@@ -222,9 +228,11 @@ onMounted(async () => {
           </FloatLabel>
           <div class="font-bold">Summe:</div>
           <div class="flex flex-row gap-10 my-3">
-            <span>Netto: {{ allItemsSum.amountNet }} </span>
-            <span>USt: {{ allItemsSum.amountVat }} </span>
-            <span>Brutto: {{ allItemsSum.amountGross }}</span>
+            <span>Netto: {{ formatNumber(itemsNetSum, { currency: true }) }} </span>
+            <span>USt: {{ formatNumber(itemsNetSum * vatRate, { currency: true }) }}</span>
+            <span
+              >Brutto: {{ formatNumber(itemsNetSum * (1 + vatRate), { currency: true }) }}
+            </span>
           </div>
           <SplitButton label="Hinzufügen" :model="items" :class="'w-full'" />
         </section>
