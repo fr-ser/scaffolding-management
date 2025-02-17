@@ -8,23 +8,27 @@ import CreateDocumentButton from "@/components/orders/CreateDocumentButton.vue";
 import OrderDocuments from "@/components/orders/OrderDocuments.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
-import { formatIsoDateString } from "@/global/helpers";
+import { formatIsoDateString, formatNumber, getItemSum, getVatRate } from "@/global/helpers";
 import { ArticleKind, DocumentKind, OfferStatus } from "@/global/types/appTypes";
 import type { Offer } from "@/global/types/entities";
-import { calculateItemSumPrice, getGrossAmount } from "@/helpers/utils";
+import { getGrossAmount } from "@/helpers/utils";
 
 const props = defineProps<{
   offer: Offer;
 }>();
 const notifications = useNotifications();
-
 const confirm = useConfirmations();
 
 const offersType = Object.values(OfferStatus);
 
 let offerStatusValue = ref<OfferStatus>(props.offer.status);
-const allItemsSum = computed(() => {
-  return calculateItemSumPrice(props.offer.items, props.offer.offered_at);
+
+const vatRate = computed(() => {
+  return getVatRate({ isoDate: props.offer.offered_at });
+});
+
+const itemsNetSum = computed(() => {
+  return getItemSum(props.offer.items);
 });
 
 watch(offerStatusValue, async () => {
@@ -36,6 +40,7 @@ watch(offerStatusValue, async () => {
   });
 });
 </script>
+
 <template>
   <section class="flex flex-col justify-items-start gap-2 sm:flex-row sm:gap-8 sm:items-center">
     <p><span class="font-bold">Datum:</span> {{ formatIsoDateString(offer.offered_at) }}</p>
@@ -53,15 +58,15 @@ watch(offerStatusValue, async () => {
   </section>
   <p class="font-bold">Angebotspreis:</p>
   <section class="flex flex-row gap-10">
-    <span> Netto: {{ allItemsSum.amountNet }} </span>
-    <span>USt: {{ allItemsSum.amountVat }}</span>
-    <span>Brutto: {{ allItemsSum.amountGross }} </span>
+    <span>Netto: {{ formatNumber(itemsNetSum, { currency: true }) }} </span>
+    <span>USt: {{ formatNumber(itemsNetSum * vatRate, { currency: true }) }}</span>
+    <span>Brutto: {{ formatNumber(itemsNetSum * (1 + vatRate), { currency: true }) }} </span>
   </section>
   <section v-for="(item, idx) in offer.items" class="my-2" :key="item.id">
     <Card class="w-full">
       <template #content>
         <div class="grid grid-cols-1 sm:grid-cols-3 sm:gap-2">
-          <p class="font-bold">Position{{ idx + 1 }}:</p>
+          <p class="font-bold">Position {{ idx + 1 }}:</p>
           <div>
             <div>{{ item.title }}</div>
             <div>{{ item.description }}</div>
@@ -70,7 +75,10 @@ watch(offerStatusValue, async () => {
             <div>Anzahl: {{ item.amount ?? "-" }}</div>
             <div>Einheit: {{ item.unit ?? "-" }}</div>
             <div>Preis: {{ item.price ?? "-" }}</div>
-            <div>Brutto: {{ getGrossAmount(item, props.offer.offered_at) }}</div>
+            <div>
+              Brutto:
+              {{ formatNumber(getGrossAmount(item, props.offer.offered_at), { currency: true }) }}
+            </div>
           </div>
         </div>
       </template>

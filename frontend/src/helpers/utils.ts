@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 
-import { formatNumber, getVatRate, round } from "@/global/helpers";
+import { getVatRate } from "@/global/helpers";
 import type { OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { OfferItem } from "@/global/types/entities";
 
@@ -35,46 +35,10 @@ export function formatDateToIsoString(dateToIsoString: Date) {
   return format(dateToIsoString, "yyyy-MM-dd");
 }
 
-// TODO: remove this helper
-export function calculateItemSumPrice(
-  arrayItems: (OfferItem | OfferItemCreate)[],
-  date: string = "",
-) {
-  let amountNet = 0;
-  let amountGross = 0;
-  let amountVat = 0;
-
-  for (const item of arrayItems) {
-    const amount = item.amount ?? 0;
-    const price = item.price ?? 0;
-
-    const netPrice = round(amount * price, 2);
-    const grossPrice = round(netPrice * (1 + getVatRate({ isoDate: date })), 2);
-
-    amountNet += netPrice;
-    amountGross += grossPrice;
-    amountVat += round(grossPrice - netPrice, 2);
-  }
-
-  return {
-    amountNet: getFormattedAmount(amountNet),
-    amountGross: getFormattedAmount(amountGross),
-    amountVat: getFormattedAmount(amountVat),
-  };
-}
-
 export function getGrossAmount(item: OfferItem | OfferItemCreate, date: string) {
   if (item.amount && item.price) {
     return item.amount * item.price * (1 + getVatRate({ isoDate: date }));
   } else {
     return undefined;
-  }
-}
-
-export function getFormattedAmount(result?: number) {
-  if (result) {
-    return formatNumber(result, { decimals: 2, currency: true });
-  } else {
-    return "-";
   }
 }

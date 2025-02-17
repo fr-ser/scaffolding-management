@@ -9,6 +9,7 @@ import Textarea from "primevue/textarea";
 import { computed, ref, watch } from "vue";
 
 import { getArticles } from "@/backendClient";
+import { formatNumber } from "@/global/helpers";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { InvoiceItemCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Article } from "@/global/types/entities";
@@ -35,9 +36,11 @@ async function openArticlesList(kind: ArticleKind) {
   const articlesList = (await getArticles()).data;
   filteredArticles.value = articlesList.filter((article) => article.kind === kind);
 }
+
 let grossValue = computed<number | undefined>(() => {
   return getGrossAmount(editableItem.value, props.vatDate);
 });
+
 function chooseArticle(article: Article) {
   editableItem.value.title = article.title;
   editableItem.value.description = article.description;
@@ -107,7 +110,7 @@ watch(
             <InputNumber id="price" v-model="editableItem.price" class="w-full" />
             <label for="unit">Preis</label>
           </FloatLabel>
-          <div>Brutto: {{ grossValue }}</div>
+          <div>Brutto: {{ formatNumber(grossValue, { currency: true }) }}</div>
         </div>
       </div>
     </template>

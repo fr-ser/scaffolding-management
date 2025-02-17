@@ -13,11 +13,12 @@ import { useRoute, useRouter } from "vue-router";
 import { createOffer, getOrder } from "@/backendClient";
 import OrderSummary from "@/components/orders/OrderSummary.vue";
 import SubOrderItem from "@/components/orders/SubOrderItem.vue";
+import { formatNumber, getItemSum, getVatRate } from "@/global/helpers";
 import { ArticleKind, OfferStatus } from "@/global/types/appTypes";
 import type { OfferCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Offer, Order } from "@/global/types/entities";
 import { getOrderEditPath } from "@/helpers/routes";
-import { calculateItemSumPrice, formatDateToIsoString } from "@/helpers/utils";
+import { formatDateToIsoString } from "@/helpers/utils";
 
 let itemCount = 1;
 const route = useRoute();
@@ -78,11 +79,17 @@ async function onSaveOffer() {
 
   router.push(getOrderEditPath(route.params.order_id as string));
 }
+
 function onItemDelete(id: number) {
   offerItemsArray.value = offerItemsArray.value.filter((element) => element.id !== id);
 }
-const allItemsSum = computed(() => {
-  return calculateItemSumPrice(offerItemsArray.value, offerInfo.value.offered_at);
+
+const vatRate = computed(() => {
+  return getVatRate({ isoDate: offerInfo.value.offered_at });
+});
+
+const itemsNetSum = computed(() => {
+  return getItemSum(offerItemsArray.value);
 });
 
 watch(offerDate, () => {
@@ -172,9 +179,11 @@ onMounted(async () => {
             </FloatLabel>
             <div class="font-bold">Summe:</div>
             <div class="flex flex-row gap-10">
-              <span>Netto: {{ allItemsSum.amountNet }} </span>
-              <span>USt: {{ allItemsSum.amountVat }} </span>
-              <span>Brutto: {{ allItemsSum.amountGross }}</span>
+              <span>Netto: {{ formatNumber(itemsNetSum, { currency: true }) }} </span>
+              <span>USt: {{ formatNumber(itemsNetSum * vatRate, { currency: true }) }}</span>
+              <span
+                >Brutto: {{ formatNumber(itemsNetSum * (1 + vatRate), { currency: true }) }}
+              </span>
             </div>
             <SplitButton label="Hinzufügen" :model="items" :class="'w-full'" />
           </div>

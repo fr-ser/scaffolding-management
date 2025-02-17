@@ -3,21 +3,22 @@ import { computed } from "vue";
 
 import {
   formatNumber,
-  getNetAmount,
+  getItemSum,
   getVatAmount,
   getVatRate,
+  maybeMultiply,
   neverFunction,
 } from "@/global/helpers";
 import { ArticleKind, DocumentKind } from "@/global/types/appTypes";
 import type { InvoiceDocument, OfferDocument } from "@/global/types/entities";
-import { calculateItemSumPrice, getGrossAmount } from "@/helpers/utils";
+import { getGrossAmount } from "@/helpers/utils";
 
 const props = defineProps<{
   document: OfferDocument | InvoiceDocument;
   kind: DocumentKind.invoice | DocumentKind.offer;
 }>();
 
-const allItemsSum = computed(() => {
+const vatRate = computed(() => {
   let vatDate: string;
 
   if (props.kind === DocumentKind.invoice) {
@@ -26,7 +27,11 @@ const allItemsSum = computed(() => {
     vatDate = (props.document as OfferDocument).offered_at;
   } else neverFunction(props.kind);
 
-  return calculateItemSumPrice(props.document.items, vatDate);
+  return getVatRate({ isoDate: vatDate });
+});
+
+const allItemsNetSum = computed(() => {
+  return getItemSum(props.document.items);
 });
 </script>
 
@@ -57,7 +62,7 @@ const allItemsSum = computed(() => {
           {{
             item.kind === ArticleKind.heading
               ? ""
-              : formatNumber(getNetAmount(item.amount, item.price), { decimals: 2 })
+              : formatNumber(maybeMultiply(item.amount, item.price), { decimals: 2 })
           }}
         </td>
         <td>
@@ -111,9 +116,9 @@ const allItemsSum = computed(() => {
         <td>Rechnungsbetrag</td>
       </tr>
       <tr class="font-bold">
-        <td>{{ allItemsSum?.amountNet }}</td>
-        <td>{{ allItemsSum?.amountVat }}</td>
-        <td>{{ allItemsSum?.amountGross }}</td>
+        <td>{{ formatNumber(allItemsNetSum, { currency: true }) }}</td>
+        <td>{{ formatNumber(allItemsNetSum * vatRate, { currency: true }) }}</td>
+        <td>{{ formatNumber(allItemsNetSum * (1 + vatRate), { currency: true }) }}</td>
       </tr>
     </tbody>
   </table>

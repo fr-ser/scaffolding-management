@@ -1,6 +1,6 @@
 export enum ArticleKind {
-  item = "item",
-  heading = "heading",
+  item = "Artikel",
+  heading = "Hinweis",
 }
 
 export enum OverdueNoticeLevel {

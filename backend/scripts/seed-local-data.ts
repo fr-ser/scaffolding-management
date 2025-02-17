@@ -10,7 +10,7 @@ import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/db/enti
 import { Invoice } from "@/db/entities/invoice";
 import { Offer } from "@/db/entities/offer";
 import { Order } from "@/db/entities/order";
-import { OfferItem } from "@/db/entities/order_items";
+import { InvoiceItem, OfferItem } from "@/db/entities/order_items";
 import { OverdueNotice } from "@/db/entities/overdue_notice";
 import {
   ArticleKind,
@@ -205,6 +205,26 @@ async function insertData(dataSource: DataSource) {
     )
     .execute();
 
+  await dataSource
+    .createQueryBuilder()
+    .insert()
+    .into(InvoiceItem)
+    .values(
+      Array.from(Array(10)).map((_: unknown, index: number) => {
+        const isEven = index % 2 === 0;
+
+        return {
+          invoice_id: () => `(SELECT id from invoice where order_id='A${index + 1}')`,
+          kind: isEven ? ArticleKind.item : ArticleKind.heading,
+          title: `Title ${index + 1}`,
+          description: `Description ${index + 1}`,
+          unit: isEven ? `Unit ${index + 1}` : undefined,
+          price: isEven ? 101 + index : undefined,
+          amount: isEven ? index + 1 : undefined,
+        };
+      }),
+    )
+    .execute();
   await dataSource
     .createQueryBuilder()
     .insert()
