@@ -31,21 +31,24 @@ const editableArticle = ref(props.article);
 const onUpdateArticle = async () => {
   if (props.isNew) {
     await createArticle(editableArticle.value);
-    notifications.showCreateArticleNotification();
+    notifications.showNotification("Ein neuer Artikel wurde erstellt");
     emit("reloadArticleView");
   } else {
     await updateArticle(`${editableArticle.value.id}`, editableArticle.value);
-    notifications.showUpdateArticleNotification();
+    notifications.showNotification("Die Änderungen wurden gespeichert");
   }
 };
 
 const onDeleteArticle = async () => {
   await deleteArticle(`${editableArticle.value.id}`);
   emit("reloadArticleView");
-  notifications.showDeleteArticleNotification();
+  notifications.showNotification("Der Artikel wurde gelöscht");
 };
 const confirmDelete = () => {
-  confirm.showDeleteArticleConfirmation(onDeleteArticle);
+  confirm.showConfirmation(
+    "Sind Sie sich sicher, dass der Artikel gelöscht werden soll?",
+    onDeleteArticle,
+  );
 };
 </script>
 

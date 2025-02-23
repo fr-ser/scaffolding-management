@@ -159,9 +159,12 @@ export async function getDocuments(
 }
 
 export async function getDocumentsByOrder(
-  id: string,
+  orderId: string,
+  parameters = {} as { kind?: DocumentKind; withItems: boolean; unpaid?: boolean },
 ): Promise<(OfferDocument | OverdueNoticeDocument | InvoiceDocument)[]> {
-  const response = await axiosInstance.get(`/api/orders/${id}/documents`);
+  const response = await axiosInstance.get(`/api/orders/${orderId}/documents`, {
+    params: parameters,
+  });
   return response.data;
 }
 

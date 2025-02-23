@@ -7,7 +7,7 @@ import { OfferDocument } from "@/db/entities/documents";
 import { Offer } from "@/db/entities/offer";
 import { OfferItem } from "@/db/entities/order_items";
 import { ErrorCode, UserPermissions } from "@/global/types/backendTypes";
-import { OfferCreate } from "@/global/types/dataEditTypes";
+import { OfferCreate, OfferUpdate } from "@/global/types/dataEditTypes";
 import { ApiError } from "@/helpers/apiErrors";
 
 export const offersRouter = express.Router();
@@ -66,21 +66,52 @@ offersRouter.patch(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const offerId = parseInt(req.params.id);
+    const payload = req.body as OfferUpdate;
     const dataSource = getAppDataSource();
-    let offer: Offer | null = null;
+
+    const payloadWithoutItems = { ...payload, items: undefined, id: offerId };
 
     try {
-      await dataSource.manager.update(Offer, req.params.id, req.body);
-      offer = await dataSource.manager.findOne(Offer, {
-        where: { id: parseInt(req.params.id) },
+      await dataSource.transaction(async (transactionalEntityManager) => {
+        await transactionalEntityManager.save(Offer, payloadWithoutItems);
+
+        if (payload.items == null) return;
+
+        await transactionalEntityManager.delete(OfferItem, {
+          offer_id: payloadWithoutItems.id,
+        });
+
+        await transactionalEntityManager
+          .createQueryBuilder()
+          .insert()
+          .into(OfferItem)
+          .values(
+            payload.items.map((item) => {
+              return {
+                kind: item.kind,
+                title: item.title,
+                description: item.description,
+                unit: item.unit,
+                price: item.price,
+                amount: item.amount,
+                offer_id: offerId,
+              };
+            }),
+          )
+          .execute();
       });
     } catch (error) {
       next(error);
       return;
     }
 
-    if (offer != null) res.json(offer);
-    else next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
+    const offer = await dataSource.manager.findOne(Offer, {
+      where: { id: parseInt(req.params.id) },
+    });
+
+    if (offer == null) next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
+    else res.json(offer);
   },
 );
 
@@ -143,6 +174,7 @@ offersRouter.post(
 
     const document = dataSource.manager.create(OfferDocument, {
       id: `A-${offer.offered_at.substring(0, 7)}-${maxId + 1}`,
+      order_id: offer.order_id,
       creation_date: new Date().toISOString().substring(0, 10),
       client_id: offer.order.client_id,
       client_email: offer.order.client.email,

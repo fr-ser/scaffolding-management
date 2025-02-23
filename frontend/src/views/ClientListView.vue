@@ -44,13 +44,16 @@ async function loadMore() {
 async function removeClient(client: Client) {
   await deleteClient(client.id);
   loadData();
-  notifications.showDeleteClientNotification();
+  notifications.showNotification("Der Kunde wurde gelöscht");
 }
 
 const confirmDelete = (client: Client) => {
-  confirm.showDeleteClientConfirmation(async () => {
-    removeClient(client);
-  });
+  confirm.showConfirmation(
+    "Sind Sie sich sicher, dass der Kunde gelöscht werden soll?",
+    async () => {
+      removeClient(client);
+    },
+  );
 };
 
 watch(search, debounce(loadData, 250));

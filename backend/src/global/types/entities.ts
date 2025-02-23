@@ -57,7 +57,6 @@ export interface Invoice extends CreatedAtUpdatedAt {
   id: number;
   order_id: string;
   order: Order;
-  sub_id: string;
   service_dates: string[];
   invoice_date: string;
   payment_target: string;
@@ -165,7 +164,6 @@ export interface OverdueNotice extends CreatedAtUpdatedAt {
   order_id: string;
   order: Order;
   invoice_documents: InvoiceDocument[];
-  sub_id: string;
   description: string;
   notice_date: string;
   payments_until: string;

@@ -74,7 +74,7 @@ async function getDocument() {
 }
 
 function sendClick() {
-  confirm.getConfirmation("Möchten Sie die E-Mail senden?", async function () {
+  confirm.showConfirmation("Möchten Sie die E-Mail senden?", async function () {
     try {
       await sendDocumentAsEmail({
         kind,

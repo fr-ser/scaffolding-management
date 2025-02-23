@@ -9,11 +9,10 @@ import Textarea from "primevue/textarea";
 import { computed, ref, watch } from "vue";
 
 import { getArticles } from "@/backendClient";
-import { formatNumber } from "@/global/helpers";
+import { formatNumber, getVatRate } from "@/global/helpers";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { InvoiceItemCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Article } from "@/global/types/entities";
-import { getGrossAmount } from "@/helpers/utils";
 
 const props = defineProps<{
   index: number;
@@ -23,7 +22,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   updated: [item: OfferItemCreate | InvoiceItemCreate];
-  deleted: [id: number];
+  deleted: [];
 }>();
 
 let filteredArticles = ref<Article[]>([]);
@@ -37,8 +36,8 @@ async function openArticlesList(kind: ArticleKind) {
   filteredArticles.value = articlesList.filter((article) => article.kind === kind);
 }
 
-let grossValue = computed<number | undefined>(() => {
-  return getGrossAmount(editableItem.value, props.vatDate);
+let vatRate = computed(() => {
+  return getVatRate({ isoDate: props.vatDate });
 });
 
 function chooseArticle(article: Article) {
@@ -51,7 +50,7 @@ function chooseArticle(article: Article) {
   isArticlesListVisible.value = false;
 }
 function onDeleteOfferItem() {
-  emit("deleted", editableItem.value.id);
+  emit("deleted");
 }
 
 watch(
@@ -67,8 +66,22 @@ watch(
   <Card class="my-2">
     <template #content>
       <div class="flex flex-col gap-y-6">
-        <div class="flex flex-row justify-between">
+        <div class="flex flex-row justify-between items-center">
           <p class="font-bold">Position {{ index }}</p>
+          <div v-if="editableItem.price != null && editableItem.amount != null">
+            Netto:
+            {{
+              formatNumber(editableItem.price * editableItem.amount, {
+                currency: true,
+              })
+            }}
+            - Brutto:
+            {{
+              formatNumber(editableItem.price * editableItem.amount * (1 + vatRate), {
+                currency: true,
+              })
+            }}
+          </div>
           <div>
             <Button
               @click="openArticlesList(props.item.kind)"
@@ -82,35 +95,42 @@ watch(
             <Button @click="onDeleteOfferItem" icon="pi pi-times" severity="danger" text raised />
           </div>
         </div>
-        <FloatLabel>
-          <InputText id="titel" v-model="editableItem.title" class="w-full" />
-          <label for="titel">Titel</label>
-        </FloatLabel>
-        <FloatLabel>
-          <Textarea
-            id="text"
-            v-model="editableItem.description"
-            class="w-full"
-            autoResize
-            rows="3"
-            cols="30"
-          />
-          <label for="text">Bezeichnung</label>
-        </FloatLabel>
-        <div v-if="item.kind === ArticleKind.item" class="flex flex-col gap-y-6">
-          <FloatLabel>
-            <InputNumber id="number" v-model="editableItem.amount" class="w-full" />
-            <label for="number">Anzahl</label>
-          </FloatLabel>
-          <FloatLabel>
-            <InputText id="unit" v-model="editableItem.unit" class="w-full" />
-            <label for="unit">Einheit</label>
-          </FloatLabel>
-          <FloatLabel>
-            <InputNumber id="price" v-model="editableItem.price" class="w-full" />
-            <label for="unit">Preis</label>
-          </FloatLabel>
-          <div>Brutto: {{ formatNumber(grossValue, { currency: true }) }}</div>
+        <div class="flex gap-6 flex-col sm:flex-row">
+          <section data-name="description" class="grow flex flex-col gap-6">
+            <FloatLabel>
+              <InputText id="titel" v-model="editableItem.title" class="w-full" />
+              <label for="titel">Titel</label>
+            </FloatLabel>
+            <FloatLabel>
+              <Textarea
+                id="text"
+                v-model="editableItem.description"
+                class="w-full"
+                autoResize
+                rows="4"
+                cols="30"
+              />
+              <label for="text">Bezeichnung</label>
+            </FloatLabel>
+          </section>
+          <section
+            data-name="amount"
+            v-if="item.kind === ArticleKind.item"
+            class="basis-48 flex flex-col gap-6"
+          >
+            <FloatLabel>
+              <InputNumber id="number" v-model="editableItem.amount" class="w-full" />
+              <label for="number">Anzahl</label>
+            </FloatLabel>
+            <FloatLabel>
+              <InputText id="unit" v-model="editableItem.unit" class="w-full" />
+              <label for="unit">Einheit</label>
+            </FloatLabel>
+            <FloatLabel>
+              <InputNumber id="price" v-model="editableItem.price" class="w-full" />
+              <label for="unit">Preis</label>
+            </FloatLabel>
+          </section>
         </div>
       </div>
     </template>

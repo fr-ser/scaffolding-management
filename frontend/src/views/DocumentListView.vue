@@ -60,7 +60,7 @@ function getDocumentTypeById(id: string) {
 }
 
 function removeDocument(doc: OfferDocument | OverdueNoticeDocument | InvoiceDocument) {
-  confirm.getConfirmation(
+  confirm.showConfirmation(
     "Sind Sie sicher, dass Sie das Dokument löschen möchten?",
     async function () {
       let kind = getDocumentType(doc);
@@ -93,7 +93,7 @@ async function createPdf() {
 
 const confirmCreatePdf = () => {
   const message = `Wollen Sie für die folgenden Dokumente eine PDF-Datei erstellen: ${documentSelection.value.join(", ")}?`;
-  confirm.getConfirmation(message, createPdf);
+  confirm.showConfirmation(message, createPdf);
 };
 
 watch(search, debounce(loadData, 250));

@@ -5,7 +5,7 @@ import { getAppDataSource } from "@/db";
 import { OverdueNoticeDocument } from "@/db/entities/documents";
 import { OverdueNotice } from "@/db/entities/overdue_notice";
 import { ErrorCode, UserPermissions } from "@/global/types/backendTypes";
-import { OverdueNoticeCreate } from "@/global/types/dataEditTypes";
+import { OverdueNoticeCreate, OverdueNoticeUpdate } from "@/global/types/dataEditTypes";
 import { ApiError } from "@/helpers/apiErrors";
 
 export const overdueNoticesRouter = express.Router();
@@ -30,8 +30,12 @@ overdueNoticesRouter.post(
   async (req: express.Request, res: express.Response) => {
     const dataSource = getAppDataSource();
     const payload = req.body as OverdueNoticeCreate;
+    const payloadWitDocuments = {
+      ...payload,
+      invoice_documents: payload.invoice_documents.map((id) => ({ id })),
+    };
 
-    const overdueNotice = dataSource.manager.create(OverdueNotice, { ...payload });
+    const overdueNotice = dataSource.manager.create(OverdueNotice, { ...payloadWitDocuments });
 
     await dataSource.transaction(async (transactionalEntityManager) => {
       await transactionalEntityManager.save(OverdueNotice, overdueNotice);
@@ -46,16 +50,29 @@ overdueNoticesRouter.patch(
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
+    const payload = req.body as OverdueNoticeUpdate;
     let overdueNotice: OverdueNotice | null = null;
 
-    delete req.body.id;
-    delete req.body.invoice_documents;
+    let invoiceDocumentUpdates = undefined;
+    if (payload.invoice_documents) {
+      invoiceDocumentUpdates = payload.invoice_documents.map((id) => ({ id }));
+    }
+    const payloadWithoutID = { ...payload, invoice_documents: undefined };
 
     try {
-      await dataSource.manager.update(OverdueNotice, req.params.id, req.body);
+      await dataSource.manager.update(OverdueNotice, req.params.id, payloadWithoutID);
       overdueNotice = await dataSource.manager.findOne(OverdueNotice, {
         where: { id: parseInt(req.params.id) },
+        relations: { invoice_documents: true },
       });
+
+      if (overdueNotice && invoiceDocumentUpdates != undefined) {
+        await dataSource.manager
+          .createQueryBuilder()
+          .relation(OverdueNotice, "invoice_documents")
+          .of(overdueNotice)
+          .addAndRemove(invoiceDocumentUpdates, overdueNotice.invoice_documents);
+      }
     } catch (error) {
       next(error);
       return;
@@ -126,6 +143,7 @@ overdueNoticesRouter.post(
 
     const document = dataSource.manager.create(OverdueNoticeDocument, {
       id: `M-${overdueNotice.notice_date.substring(0, 7)}-${maxId + 1}`,
+      order_id: overdueNotice.order_id,
       creation_date: new Date().toISOString().substring(0, 10),
       client_id: overdueNotice.order.client_id,
       client_email: overdueNotice.order.client.email,

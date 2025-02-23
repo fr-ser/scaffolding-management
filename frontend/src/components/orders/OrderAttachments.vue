@@ -44,7 +44,7 @@ function onUpload(event: FileUploadUploadEvent) {
 }
 
 function onDeleteClick(fileName: string) {
-  confirmation.getConfirmation(
+  confirmation.showConfirmation(
     `Soll die Datei '${fileName}' wirklich gelöscht werden?`,
     async () => {
       await deleteOrderAttachment(props.orderId, fileName);

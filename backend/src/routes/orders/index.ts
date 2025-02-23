@@ -1,6 +1,6 @@
 import express from "express";
 import basicAuth from "express-basic-auth";
-import { FindOptionsRelations } from "typeorm";
+import { FindOptionsRelations, Not } from "typeorm";
 
 import { checkPermissionMiddleware, getPermissionsForUser } from "@/authorization";
 import { getAppDataSource } from "@/db";
@@ -9,7 +9,12 @@ import { Invoice } from "@/db/entities/invoice";
 import { Offer } from "@/db/entities/offer";
 import { Order } from "@/db/entities/order";
 import { OverdueNotice } from "@/db/entities/overdue_notice";
-import { OfferStatus, OverdueNoticePaymentStatus, PaymentStatus } from "@/global/types/appTypes";
+import {
+  DocumentKind,
+  OfferStatus,
+  OverdueNoticePaymentStatus,
+  PaymentStatus,
+} from "@/global/types/appTypes";
 import {
   ErrorCode,
   PaginationQueryParameters,
@@ -223,20 +228,54 @@ ordersRouter.get(
   "/:id/documents",
   [checkPermissionMiddleware(UserPermissions.DOCUMENTS_VIEW)],
   async (req: express.Request, res: express.Response) => {
-    const dataSource = getAppDataSource();
-    const allDataResult = await Promise.all([
-      dataSource.manager.find(InvoiceDocument, {
-        where: { invoice: { order_id: req.params.id } },
-      }),
-      dataSource.manager.find(OfferDocument, {
-        where: { offer: { order_id: req.params.id } },
-      }),
-      dataSource.manager.find(OverdueNoticeDocument, {
-        where: { overdue_notice: { order_id: req.params.id } },
-      }),
-    ]);
+    const { withItems, kind, unpaid } = req.query as {
+      withItems?: boolean;
+      unpaid?: boolean;
+      kind?: DocumentKind;
+    };
 
-    res.json([...allDataResult[0], ...allDataResult[1], ...allDataResult[2]]);
+    const dataSource = getAppDataSource();
+
+    const promises = [];
+
+    if (kind == undefined || kind == DocumentKind.invoice) {
+      promises.push(
+        dataSource.manager.find(InvoiceDocument, {
+          where: {
+            invoice: {
+              order_id: req.params.id,
+              status: unpaid ? Not(PaymentStatus.paid) : undefined,
+            },
+          },
+          relations: withItems ? ["items"] : [],
+        }),
+      );
+    }
+    if (kind == undefined || kind == DocumentKind.offer) {
+      promises.push(
+        dataSource.manager.find(OfferDocument, {
+          where: {
+            offer: { order_id: req.params.id },
+          },
+          relations: withItems ? ["items"] : [],
+        }),
+      );
+    }
+    if (kind == undefined || kind == DocumentKind.overdueNotice) {
+      promises.push(
+        dataSource.manager.find(OverdueNoticeDocument, {
+          where: {
+            overdue_notice: {
+              order_id: req.params.id,
+              payment_status: unpaid ? Not(OverdueNoticePaymentStatus.paid) : undefined,
+            },
+          },
+          relations: withItems ? ["invoice_documents"] : [],
+        }),
+      );
+    }
+    const allDataResult = await Promise.all(promises);
+    res.json(allDataResult.flat());
   },
 );
 

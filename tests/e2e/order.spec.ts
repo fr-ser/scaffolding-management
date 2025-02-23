@@ -35,7 +35,7 @@ test("create, edit and delete an order", async ({ page }) => {
   // delete
   await page.getByTestId("order-return-button").click();
   await page.getByTestId("order-card").first().getByTestId("order-delete-button").click();
-  await page.getByRole("alertdialog").getByText("Löschen").click();
+  await page.getByRole("alertdialog").getByText("Bestätigen").click();
   await expect(page.getByText("Der Auftrag wurde gelöscht")).toBeVisible();
 
   await page.getByTestId("order-search-input").fill(timestamp);

@@ -14,19 +14,19 @@ import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { createOrder, deleteOrder, getClients, getOrder, updateOrder } from "@/backendClient";
-import InvoiceSummary from "@/components/orders/InvoiceSummary.vue";
-import OfferSummary from "@/components/orders/OfferSummary.vue";
+import InvoiceEdit from "@/components/orders/InvoiceEdit.vue";
+import OfferEdit from "@/components/orders/OfferEdit.vue";
 import OrderAttachments from "@/components/orders/OrderAttachments.vue";
 import OrderDocuments from "@/components/orders/OrderDocuments.vue";
-import OverdueSummary from "@/components/orders/OverdueNoticeSummary.vue";
+import OverdueNoticeEdit from "@/components/orders/OverdueNoticeEdit.vue";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { formatIsoDateString } from "@/global/helpers";
-import { DocumentKind, OrderStatus, SubItemKind } from "@/global/types/appTypes";
+import { DocumentKind, OrderStatus } from "@/global/types/appTypes";
 import { UserPermissions } from "@/global/types/backendTypes";
 import type { OrderCreate } from "@/global/types/dataEditTypes";
-import type { Client, Offer, Order } from "@/global/types/entities";
-import { getOrderListPath, getOrderSubOrderCreatePath } from "@/helpers/routes";
+import type { Client, Invoice, Order, OverdueNotice } from "@/global/types/entities";
+import { getOrderListPath } from "@/helpers/routes";
 import { debounce } from "@/helpers/utils";
 import { useUserStore } from "@/store";
 
@@ -101,22 +101,25 @@ const onSaveOrder = async () => {
   }
   if (isEditing.value) {
     await updateOrder(`${route.params.id}`, orderInfo.value);
-    notifications.showUpdateOrderNotification();
+    notifications.showNotification("Der Auftrag wurde gespeichert");
   } else {
     await createOrder(payload);
     router.push(getOrderListPath());
-    notifications.showCreateOrderNotification();
+    notifications.showNotification("Ein neuer Auftrag wurde erstellt");
   }
 };
 
 const removeOrder = async () => {
   await deleteOrder(`${route.params.id}`);
   router.push(getOrderListPath());
-  notifications.showDeleteOrderNotification();
+  notifications.showNotification("Der Auftrag wurde gelöscht");
 };
 
 const confirmDelete = () => {
-  confirm.showDeleteOrderConfirmation(removeOrder);
+  confirm.showConfirmation(
+    "Sind Sie sich sicher, dass der Auftrag gelöscht werden soll?",
+    removeOrder,
+  );
 };
 
 const findClientById = () => {
@@ -125,55 +128,53 @@ const findClientById = () => {
   return foundClient;
 };
 
-const subItemsIds = computed(() => {
-  const result = [];
+async function loadOrderData() {
+  const newOrder = await getOrder(route.params.id as string);
+  orderInfo.value = newOrder;
+  showOfferTab.value = Boolean(newOrder.offer);
 
-  if ((orderInfo.value as Order).offer) {
-    result.push({
-      type: SubItemKind.offer,
-      id: (orderInfo.value as Order).offer?.id,
-    });
+  if (route.query?.kind === DocumentKind.invoice) {
+    const id = parseInt(route.query?.subOrderId as string);
+
+    activeTabIndex.value =
+      1 + (newOrder.invoices as Invoice[]).findIndex((item) => item.id === id) || 0;
+  } else if (route.query?.kind === DocumentKind.overdueNotice) {
+    const id = parseInt(route.query?.subOrderId as string);
+    const invoiceLength = newOrder?.invoices?.length || 0;
+
+    activeTabIndex.value =
+      invoiceLength +
+        1 +
+        (newOrder.overdue_notices as OverdueNotice[]).findIndex((item) => item.id === id) || 0;
   }
-
-  if ((orderInfo.value as Order).invoices?.length) {
-    (orderInfo.value as Order).invoices?.forEach((invoice) => {
-      result.push({
-        type: SubItemKind.invoice,
-        id: invoice.id,
-      });
-    });
-  }
-
-  if ((orderInfo.value as Order).overdue_notices?.length) {
-    (orderInfo.value as Order).overdue_notices?.forEach((overdue) => {
-      result.push({
-        type: SubItemKind.overdueNotice,
-        id: overdue.id,
-      });
-    });
-  }
-
-  return result;
-});
-
-const getActiveSubOrderIndex = () => {
-  const { sub_id, sub_type } = route.query;
-  const index = subItemsIds.value.findIndex((item) => {
-    return item.id === Number(sub_id) && item.type === sub_type;
-  });
-  return index !== -1 ? index : 0;
-};
+  //if the query is "offer" we show the default tab
+}
 
 onMounted(async () => {
   clientsList.value = (await getClients()).data;
 
   if (isEditing.value) {
-    orderInfo.value = await getOrder(route.params.id as string);
+    await loadOrderData();
     selectedClient.value = findClientById();
   }
 
   isLoading.value = false;
 });
+
+const activeTabIndex = ref(0);
+
+let showOfferTab = ref<boolean>(false);
+function onClickCreateOffer() {
+  showOfferTab.value = true;
+}
+let showNewInvoiceTab = ref<boolean>(false);
+function onClickCreateInvoice() {
+  showNewInvoiceTab.value = true;
+}
+let showNewOverdueNoticeTab = ref<boolean>(false);
+function onClickCreateOverdueNotice() {
+  showNewOverdueNoticeTab.value = true;
+}
 </script>
 <template>
   <div v-if="isLoading" class="flex justify-center">
@@ -212,26 +213,28 @@ onMounted(async () => {
       <template #content>
         <div class="flex flex-col gap-y-5">
           <p class="font-bold">Daten</p>
-          <FloatLabel>
-            <InputText id="order-title" v-model="orderInfo.title" class="w-full" />
-            <label for="order-title">Bauvorhaben</label>
-          </FloatLabel>
-          <FloatLabel>
-            <Dropdown
-              v-model="orderInfo.status"
-              :options="orderStatusTypes"
-              class="w-full mt-3"
-              id="select"
-            />
-            <label for="select" class="mt-3">Status</label>
-          </FloatLabel>
+          <div class="flex flex-row flex-wrap gap-2">
+            <FloatLabel class="grow">
+              <InputText id="order-title" v-model="orderInfo.title" class="w-full" />
+              <label for="order-title">Bauvorhaben</label>
+            </FloatLabel>
+            <FloatLabel>
+              <Dropdown
+                v-model="orderInfo.status"
+                :options="orderStatusTypes"
+                class="min-w-32"
+                id="order-status"
+              />
+              <label for="order-status">Status</label>
+            </FloatLabel>
+          </div>
           <p class="font-bold">Skonto</p>
-          <div class="grid grid-cols-2 gap-1 mt-3">
+          <div class="flex flex-row flex-wrap justify-between gap-1 mt-3">
             <FloatLabel>
               <Dropdown
                 v-model="orderInfo.can_have_cash_discount"
                 :options="discountChoice"
-                class="w-full"
+                class="min-w-48"
                 id="select-discount"
                 optionLabel="label"
                 optionValue="value"
@@ -242,16 +245,16 @@ onMounted(async () => {
               <Dropdown
                 v-model="orderInfo.discount_duration"
                 :options="discountPeriodChoice"
-                class="w-full"
+                class="min-w-48"
                 id="select"
               />
               <label for="select">Skontodauer</label>
             </FloatLabel>
+            <FloatLabel>
+              <InputNumber id="percent" v-model="orderInfo.discount_percentage" class="w-full" />
+              <label for="percent">Skonto(%)</label>
+            </FloatLabel>
           </div>
-          <FloatLabel>
-            <InputNumber id="percent" v-model="orderInfo.discount_percentage" class="w-full" />
-            <label for="percent">Skonto(%)</label>
-          </FloatLabel>
 
           <div>
             <label for="description" class="w-full font-bold my-3">Beschreibung</label>
@@ -280,47 +283,56 @@ onMounted(async () => {
           </div>
           <div v-if="isEditing && userStore.permissions.includes(UserPermissions.SUB_ORDERS_EDIT)">
             <p class="font-bold mb-2">Unteraufträge</p>
-            <div class="flex flex-col gap-2">
-              <router-link
-                :to="getOrderSubOrderCreatePath(route.params.id as string, DocumentKind.offer)"
-              >
-                <Button v-if="!(orderInfo as Order).offer" label="Angebot erstellen" />
-              </router-link>
-              <router-link
-                :to="getOrderSubOrderCreatePath(route.params.id as string, DocumentKind.invoice)"
-              >
-                <Button label="Rechnung erstellen" />
-              </router-link>
-              <router-link
-                :to="
-                  getOrderSubOrderCreatePath(route.params.id as string, DocumentKind.overdueNotice)
-                "
-              >
-                <Button label="Mahnung erstellen" />
-              </router-link>
+            <div class="flex flex-row gap-2">
+              <Button
+                v-if="(orderInfo as Order).offer == null"
+                label="Angebot erstellen"
+                @click="onClickCreateOffer"
+              />
+              <Button label="Rechnung erstellen" @click="onClickCreateInvoice" />
+              <Button label="Mahnung erstellen" @click="onClickCreateOverdueNotice" />
             </div>
-          </div>
-          <section v-if="userStore.permissions.includes(UserPermissions.SUB_ORDERS_VIEW)">
-            <TabView :active-index="getActiveSubOrderIndex()">
-              <TabPanel v-if="(orderInfo as Order).offer" header="Angebot">
-                <OfferSummary :offer="(orderInfo as Order).offer as Offer"></OfferSummary>
+            <TabView
+              v-if="userStore.permissions.includes(UserPermissions.SUB_ORDERS_VIEW)"
+              :active-index="activeTabIndex"
+            >
+              <TabPanel v-if="showOfferTab" header="Angebot">
+                <OfferEdit
+                  @deleted="loadOrderData"
+                  :order="orderInfo as Order"
+                  :existing-offer="(orderInfo as Order).offer"
+                />
               </TabPanel>
               <TabPanel
                 v-for="item in (orderInfo as Order).invoices"
                 :key="item.id"
                 :header="`Rechnung ${formatIsoDateString(item.invoice_date)}`"
               >
-                <InvoiceSummary :invoice="item"> </InvoiceSummary>
+                <InvoiceEdit
+                  @deleted="loadOrderData"
+                  :order="orderInfo as Order"
+                  :existing-invoice="item"
+                />
+              </TabPanel>
+              <TabPanel v-if="showNewInvoiceTab" :header="`Neue Rechnung`">
+                <InvoiceEdit @deleted="loadOrderData" :order="orderInfo as Order" />
               </TabPanel>
               <TabPanel
                 v-for="item in (orderInfo as Order).overdue_notices"
                 :key="item.id"
                 :header="`Mahnung ${formatIsoDateString(item.notice_date)}`"
               >
-                <OverdueSummary :overdue="item"></OverdueSummary>
+                <OverdueNoticeEdit
+                  @deleted="loadOrderData"
+                  :order="orderInfo as Order"
+                  :existing-overdue-notice="item"
+                />
+              </TabPanel>
+              <TabPanel v-if="showNewOverdueNoticeTab" :header="`Neue Mahnung`">
+                <OverdueNoticeEdit @deleted="loadOrderData" :order="orderInfo as Order" />
               </TabPanel>
             </TabView>
-          </section>
+          </div>
         </div>
         <OrderDocuments
           v-if="isEditing && userStore.permissions.includes(UserPermissions.DOCUMENTS_VIEW)"

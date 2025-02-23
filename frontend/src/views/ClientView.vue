@@ -26,10 +26,13 @@ const notifications = useNotifications();
 const onDeleteClient = async () => {
   await deleteClient(`${route.params.id}`);
   router.push(getClientListPath());
-  notifications.showDeleteClientNotification();
+  notifications.showNotification("Der Kunde wurde gelöscht");
 };
 const confirmDelete = () => {
-  confirm.showDeleteClientConfirmation(onDeleteClient);
+  confirm.showConfirmation(
+    "Sind Sie sich sicher, dass der Kunde gelöscht werden soll?",
+    onDeleteClient,
+  );
 };
 
 let userInfo = ref<ClientUpdate | ClientCreate>({});
@@ -46,11 +49,11 @@ const isEditing = computed(() => {
 const onSaveClient = async () => {
   if (isEditing.value) {
     await updateClient(`${route.params.id}`, userInfo.value);
-    notifications.showUpdateClientNotification();
+    notifications.showNotification("Die Änderung der Kundendaten wurde gespeichert");
   } else {
     await createClient(userInfo.value);
     router.push(getClientListPath());
-    notifications.showCreateClientNotification();
+    notifications.showNotification("Ein neuer Kunde wurde erstellt");
   }
 };
 function onClientList() {

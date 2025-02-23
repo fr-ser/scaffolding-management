@@ -7,7 +7,7 @@ import { InvoiceDocument } from "@/db/entities/documents";
 import { Invoice } from "@/db/entities/invoice";
 import { InvoiceItem } from "@/db/entities/order_items";
 import { ErrorCode, UserPermissions } from "@/global/types/backendTypes";
-import { InvoiceCreate } from "@/global/types/dataEditTypes";
+import { InvoiceCreate, InvoiceUpdate } from "@/global/types/dataEditTypes";
 import { ApiError } from "@/helpers/apiErrors";
 
 export const invoicesRouter = express.Router();
@@ -88,21 +88,52 @@ invoicesRouter.patch(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const invoiceId = parseInt(req.params.id);
+    const payload = req.body as InvoiceUpdate;
     const dataSource = getAppDataSource();
-    let invoice: Invoice | null = null;
+
+    const invoiceWithoutItems = { ...payload, items: undefined, id: invoiceId };
 
     try {
-      await dataSource.manager.update(Invoice, req.params.id, req.body);
-      invoice = await dataSource.manager.findOne(Invoice, {
-        where: { id: parseInt(req.params.id) },
+      await dataSource.transaction(async (transactionalEntityManager) => {
+        await transactionalEntityManager.save(Invoice, invoiceWithoutItems);
+
+        if (payload.items == null) return;
+
+        await transactionalEntityManager.delete(InvoiceItem, {
+          invoice_id: invoiceWithoutItems.id,
+        });
+
+        await transactionalEntityManager
+          .createQueryBuilder()
+          .insert()
+          .into(InvoiceItem)
+          .values(
+            payload.items.map((item) => {
+              return {
+                kind: item.kind,
+                title: item.title,
+                description: item.description,
+                unit: item.unit,
+                price: item.price,
+                amount: item.amount,
+                invoice_id: invoiceId,
+              };
+            }),
+          )
+          .execute();
       });
     } catch (error) {
       next(error);
       return;
     }
 
-    if (invoice != null) res.json(invoice);
-    else next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
+    const invoice = await dataSource.manager.findOne(Invoice, {
+      where: { id: parseInt(req.params.id) },
+    });
+
+    if (invoice == null) next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
+    else res.json(invoice);
   },
 );
 
@@ -142,6 +173,7 @@ invoicesRouter.post(
 
     const document = dataSource.manager.create(InvoiceDocument, {
       id: `R-${invoice.invoice_date.substring(0, 7)}-${maxId + 1}`,
+      order_id: invoice.order_id,
       creation_date: new Date().toISOString().substring(0, 10),
       client_id: invoice.order.client_id,
       client_email: invoice.order.client.email,
@@ -153,6 +185,7 @@ invoicesRouter.post(
       client_city: invoice.order.client.city,
       order_title: invoice.order.title,
       invoice_id: invoice.id,
+      invoice_date: invoice.invoice_date,
       service_dates: invoice.service_dates,
       payment_target: invoice.payment_target,
       can_have_cash_discount: invoice.order.can_have_cash_discount,

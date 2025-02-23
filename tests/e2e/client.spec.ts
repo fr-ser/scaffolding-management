@@ -47,7 +47,7 @@ test("create, edit and delete a client", async ({ page }) => {
     .getByLabel("Löschen")
     .click();
 
-  await page.getByRole("alertdialog").getByText("Löschen").click();
+  await page.getByRole("alertdialog").getByText("Bestätigen").click();
   await expect(page.getByText("Der Kunde wurde gelöscht")).toBeVisible();
   await expect(page.getByText(timestamp)).not.toBeVisible();
 });
