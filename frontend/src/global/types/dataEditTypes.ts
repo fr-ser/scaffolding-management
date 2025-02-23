@@ -21,30 +21,38 @@ export type OrderCreate = Omit<
 >;
 export type OrderUpdate = Partial<OrderCreate>;
 
-export type OfferItemCreate = Omit<OfferItem, "offer_id" | "offer">;
+export type OfferItemCreate = Omit<OfferItem, "offer_id" | "offer" | "id">;
 
 export type OfferCreate = Omit<
   Offer,
-  "id" | "order" | "documents" | "created_at" | "updated_at" | "items"
+  "id" | "order" | "documents" | "created_at" | "updated_at" | "items" | "sub_id"
 > & {
   items: OfferItemCreate[];
 };
 
-export type InvoiceItemCreate = Omit<InvoiceItem, "invoice_id" | "invoice">;
+export type InvoiceItemCreate = Omit<InvoiceItem, "invoice_id" | "invoice" | "id">;
 
 export type InvoiceCreate = Omit<
   Invoice,
-  "id" | "order" | "documents" | "created_at" | "updated_at" | "items"
+  "id" | "order" | "documents" | "created_at" | "updated_at" | "items" | "sub_id"
 > & {
   items: InvoiceItemCreate[];
 };
-export type InvoiceUpdate = Partial<Omit<Invoice, "id">>;
+export type InvoiceUpdate = Partial<Omit<Invoice, "id" | "items">> & {
+  items?: InvoiceItemCreate[];
+};
 
-export type OfferUpdate = Partial<Omit<Offer, "id">>;
+export type OfferUpdate = Partial<Omit<Offer, "id" | "items">> & {
+  items?: OfferItemCreate[];
+};
 
 export type OverdueNoticeCreate = Omit<
   OverdueNotice,
   "id" | "order" | "invoice_documents" | "created_at" | "updated_at"
->;
+> & {
+  invoice_documents: string[];
+};
 
-export type OverdueNoticeUpdate = Partial<Omit<OverdueNotice, "id">>;
+export type OverdueNoticeUpdate = Partial<Omit<OverdueNotice, "id" | "invoice_documents">> & {
+  invoice_documents?: string[];
+};

@@ -16,7 +16,7 @@ interface GetVatRateOptions {
  */
 export function getVatRate(options: GetVatRateOptions): number {
   const { isoDate } = options;
-  if (isoDate === "") {
+  if (isoDate == null || isoDate === "") {
     return 0.19;
   }
 

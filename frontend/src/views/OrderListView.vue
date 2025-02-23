@@ -45,12 +45,15 @@ const notifications = useNotifications();
 async function removeOrder(order: Order) {
   await deleteOrder(order.id);
   loadData();
-  notifications.showDeleteOrderNotification();
+  notifications.showNotification("Der Auftrag wurde gelöscht");
 }
 const confirmDelete = (order: Order) => {
-  confirm.showDeleteOrderConfirmation(async () => {
-    removeOrder(order);
-  });
+  confirm.showConfirmation(
+    "Sind Sie sich sicher, dass der Auftrag gelöscht werden soll?",
+    async () => {
+      removeOrder(order);
+    },
+  );
 };
 
 watch(search, debounce(loadData, 250));

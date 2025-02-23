@@ -38,7 +38,7 @@ test("create, edit and delete an article", async ({ page }) => {
 
   // delete
   await page.getByTestId("article-card").first().getByTestId("article-delete-button").click();
-  await page.getByRole("alertdialog").getByText("Löschen").click();
+  await page.getByRole("alertdialog").getByText("Bestätigen").click();
   await expect(page.getByText("Der Artikel wurde gelöscht")).toBeVisible();
 
   await page.getByTestId("article-search-input").fill(timestamp);

@@ -41,7 +41,7 @@ export class OverdueNotice {
   })
   invoice_documents: InvoiceDocument[];
 
-  @Column({ type: "text" })
+  @Column({ type: "text", nullable: true })
   sub_id: string;
 
   @Column({ type: "text", nullable: true })

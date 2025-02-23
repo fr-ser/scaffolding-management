@@ -8,7 +8,7 @@ import { getOrders } from "@/backendClient";
 import { formatIsoDateString } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
 import type { Order } from "@/global/types/entities";
-import { getOrderEditPath, getOrderSubOrderEditPath } from "@/helpers/routes";
+import { getOrderEditPath } from "@/helpers/routes";
 
 const ordersList = ref<Order[]>([]);
 
@@ -56,9 +56,7 @@ onMounted(async () => {
             </router-link>
             <ul class="list-disc pl-6 underline mt-3">
               <li class="underlined pb-2" v-if="order.offer">
-                <router-link
-                  :to="getOrderSubOrderEditPath(order.id, DocumentKind.offer, order.offer.id)"
-                >
+                <router-link :to="getOrderEditPath(order.id, DocumentKind.offer, order.offer.id)">
                   <span>Angebot vom:</span>{{ `${formatIsoDateString(order.offer.offered_at)}` }}
                   <span> - Angebotsstatus:</span> {{ `${order.offer.status}` }}
 
@@ -71,9 +69,7 @@ onMounted(async () => {
                 v-for="item in order.invoices"
                 :key="item.id"
               >
-                <router-link
-                  :to="getOrderSubOrderEditPath(order.id, DocumentKind.invoice, item.id)"
-                >
+                <router-link :to="getOrderEditPath(order.id, DocumentKind.invoice, item.id)">
                   <span>Rechnung vom: {{ formatIsoDateString(item.invoice_date) }}</span>
                   <span> - Zahlungsstatus: {{ item.status }}</span>
 
@@ -86,9 +82,7 @@ onMounted(async () => {
                 v-for="item in order.overdue_notices"
                 :key="item.id"
               >
-                <router-link
-                  :to="getOrderSubOrderEditPath(order.id, DocumentKind.overdueNotice, item.id)"
-                >
+                <router-link :to="getOrderEditPath(order.id, DocumentKind.overdueNotice, item.id)">
                   <span>Mahnung vom: {{ formatIsoDateString(item.notice_date) }}</span>
                   <span> - Zahlungsstatus: {{ item.payment_status }} </span>
 

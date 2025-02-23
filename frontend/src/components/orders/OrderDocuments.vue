@@ -70,7 +70,7 @@ async function buttonDocumentFunction() {
     <div v-if="isLoading" class="flex justify-center">
       <ProgressSpinner />
     </div>
-    {{ documents.length === 0 ? "No documents" : null }}
+    {{ documents.length === 0 ? "Keine Dokumente vorhanden" : null }}
     <router-link
       :to="getDocumentViewPath(getDocumentType(document), document.id)"
       v-for="document in documents"

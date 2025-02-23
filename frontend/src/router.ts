@@ -7,11 +7,8 @@ import ClientListView from "@/views/ClientListView.vue";
 import ClientView from "@/views/ClientView.vue";
 import DocumentListView from "@/views/DocumentListView.vue";
 import DocumentView from "@/views/DocumentView.vue";
-import InvoiceView from "@/views/InvoiceView.vue";
-import OfferView from "@/views/OfferView.vue";
 import OrderListView from "@/views/OrderListView.vue";
 import OrderView from "@/views/OrderView.vue";
-import OverdueView from "@/views/OverdueNoticeView.vue";
 import OverviewView from "@/views/OverviewView.vue";
 
 const router = createRouter({
@@ -44,27 +41,6 @@ const router = createRouter({
     {
       path: routes.getOrderEditPath(":id"),
       component: OrderView,
-    },
-
-    {
-      path: routes.getOrderSubOrderEditPath(
-        ":orderId",
-        ":kind" as any as DocumentKind,
-        ":subOrderId" as any as number,
-      ),
-      component: OrderView,
-    },
-    {
-      path: routes.getOrderSubOrderCreatePath(":orderId", DocumentKind.offer),
-      component: OfferView,
-    },
-    {
-      path: routes.getOrderSubOrderCreatePath(":orderId", DocumentKind.invoice),
-      component: InvoiceView,
-    },
-    {
-      path: routes.getOrderSubOrderCreatePath(":orderId", DocumentKind.overdueNotice),
-      component: OverdueView,
     },
     {
       path: routes.getOrderCreatePath(),

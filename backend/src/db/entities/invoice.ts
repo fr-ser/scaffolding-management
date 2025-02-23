@@ -22,7 +22,7 @@ export class Invoice {
   @JoinColumn({ name: "order_id" })
   order: Order;
 
-  @Column({ type: "text" })
+  @Column({ type: "text", nullable: true })
   sub_id: string;
 
   @Column("simple-json")

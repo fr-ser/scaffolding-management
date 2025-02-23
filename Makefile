@@ -1,4 +1,4 @@
-# command to list available commands with a preceeding comment (requires "#:")
+# command to list available commands with a preceding comment (requires "#:")
 help: 
 	@ echo '  Usage:'
 	@ echo '    make <target>'

@@ -1,16 +1,10 @@
 <script setup lang="ts">
 import Button from "primevue/button";
-import { ref } from "vue";
 
 import { createDocumentBySubOrder } from "@/backendClient";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { DocumentKind } from "@/global/types/appTypes";
-import {
-  type InvoiceDocument,
-  type OfferDocument,
-  type OverdueNoticeDocument,
-} from "@/global/types/entities";
 
 const props = defineProps<{
   id: number;
@@ -19,13 +13,11 @@ const props = defineProps<{
 const confirm = useConfirmations();
 const notifications = useNotifications();
 
-let documents = ref<OfferDocument | OverdueNoticeDocument | InvoiceDocument>();
-async function createDocument() {
-  documents.value = await createDocumentBySubOrder(props.id, props.kind);
-  notifications.showCreateNewDocumentNotification();
-}
 const confirmCreateDocument = () => {
-  confirm.showCreateDocumentConfirmation(createDocument);
+  confirm.showConfirmation("Wollen Sie ein Dokument erstellen?", async () => {
+    await createDocumentBySubOrder(props.id, props.kind);
+    notifications.showNotification("Ein neues Dokument wurde erstellt");
+  });
 };
 </script>
 <template>

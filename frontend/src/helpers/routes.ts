@@ -36,14 +36,13 @@ export function getOrderCreatePath() {
   return "/orders-create";
 }
 
-export function getOrderEditPath(orderId: string) {
-  return `/orders/${orderId}/edit`;
-}
-
-export function getOrderSubOrderEditPath(orderId: string, kind: DocumentKind, subOrderId: number) {
-  return `/orders/${orderId}/${kind}/${subOrderId}/edit`;
-}
-
-export function getOrderSubOrderCreatePath(orderId: string, kind: DocumentKind) {
-  return `/orders/${orderId}/${kind}-create`;
+export function getOrderEditPath(orderId: string, kind?: DocumentKind, subOrderId?: number) {
+  let path = `/orders/${orderId}/edit`;
+  if (kind) {
+    path += `?kind=${kind}`;
+    if (subOrderId) {
+      path += `&subOrderId=${subOrderId}`;
+    }
+  }
+  return path;
 }
