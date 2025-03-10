@@ -50,10 +50,16 @@ function getDocumentType(doc: OfferDocument | OverdueNoticeDocument | InvoiceDoc
   }
 }
 
-async function removeDocument(doc: OfferDocument | OverdueNoticeDocument | InvoiceDocument) {
-  let kind = getDocumentType(doc);
-  await deleteDocument(doc.id, kind);
-  loadData();
+function removeDocument(doc: OfferDocument | OverdueNoticeDocument | InvoiceDocument) {
+  confirm.getConfirmation(
+    "Sind Sie sicher, dass Sie das Dokument löschen möchten?",
+    async function () {
+      let kind = getDocumentType(doc);
+      await deleteDocument(doc.id, kind);
+      loadData();
+      notifications.showNotification("Das Dokument wurde gelöscht");
+    },
+  );
 }
 
 function getSelectedIds() {
