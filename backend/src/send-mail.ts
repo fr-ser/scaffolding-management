@@ -10,7 +10,6 @@ import {
 import { log } from "@/helpers/logging";
 
 interface AttachmentInterface {
-  type: string;
   filename: string;
   content: string;
 }

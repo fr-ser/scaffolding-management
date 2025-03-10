@@ -2,7 +2,11 @@ import axios from "axios";
 
 import { neverFunction } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
-import type { PaginationResponse, SaveDocumentsAsPdfPayload } from "@/global/types/backendTypes";
+import type {
+  PaginationResponse,
+  SaveDocumentsAsPdfPayload,
+  SendDocumentsAsEMail,
+} from "@/global/types/backendTypes";
 import type {
   ArticleCreate,
   ArticleUpdate,
@@ -204,4 +208,8 @@ export async function getDocumentPdf(payload: SaveDocumentsAsPdfPayload): Promis
     responseType: "blob",
   });
   return response.data;
+}
+
+export async function sendDocumentAsEmail(payload: SendDocumentsAsEMail) {
+  await axiosInstance.post(`/api/documents/send-email`, payload);
 }
