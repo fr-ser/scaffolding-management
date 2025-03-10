@@ -1,3 +1,4 @@
+import type { ToastMessageOptions } from "primevue/toast";
 import { useToast } from "primevue/usetoast";
 
 export default function useNotifications() {
@@ -143,9 +144,9 @@ export default function useNotifications() {
     showCreatePdfDocumentNotification,
     showCreateNewDocumentNotification,
 
-    showNotification(text: string) {
+    showNotification(text: string, severity: ToastMessageOptions["severity"] = "info") {
       toast.add({
-        severity: "info",
+        severity,
         summary: text,
         life: 3000,
       });

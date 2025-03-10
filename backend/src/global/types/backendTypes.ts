@@ -33,6 +33,14 @@ export enum ErrorCode {
 }
 
 export type SaveDocumentsAsPdfPayload = { kind: DocumentKind; id: string }[];
+export type SendDocumentsAsEMail = {
+  kind: DocumentKind;
+  id: string;
+  recipient: string;
+  subject: string;
+  message: string;
+  attachmentName: string;
+};
 
 export type AnyDocument =
   | {

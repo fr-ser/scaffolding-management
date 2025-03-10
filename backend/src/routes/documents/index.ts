@@ -3,12 +3,14 @@ import { In, SelectQueryBuilder } from "typeorm";
 
 import { getAppDataSource } from "@/db";
 import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/db/entities/documents";
+import { neverFunction } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
 import {
   AnyDocument,
   ErrorCode,
   PaginationResponse,
   SaveDocumentsAsPdfPayload,
+  SendDocumentsAsEMail,
   UserRole,
 } from "@/global/types/backendTypes";
 import { ApiError } from "@/helpers/apiErrors";
@@ -19,6 +21,7 @@ import { renderMultiplePDF } from "@/pdf/renderPDF";
 import { invoiceDocumentsRouter } from "@/routes/documents/invoice_documents";
 import { offerDocumentsRouter } from "@/routes/documents/offer_documents";
 import { overdueNoticeDocumentsRouter } from "@/routes/documents/overdue_notice_documents";
+import { sendMail } from "@/send-mail";
 
 export const documentsRouter = express.Router();
 
@@ -174,6 +177,59 @@ documentsRouter.post(
     }
   },
 );
+
+documentsRouter.post(
+  "/send-email",
+  [checkAuth({ no: [UserRole.employee] })],
+  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const payload = req.body as SendDocumentsAsEMail;
+    const dataSource = getAppDataSource();
+
+    let dataForPdfGeneration;
+
+    if (payload.kind === DocumentKind.invoice) {
+      const document = await dataSource.manager.findOne(InvoiceDocument, {
+        relations: { items: true },
+        where: { id: payload.id },
+      });
+      dataForPdfGeneration = { kind: payload.kind, document };
+    } else if (payload.kind === DocumentKind.offer) {
+      const document = await dataSource.manager.findOne(OfferDocument, {
+        relations: { items: true },
+        where: { id: payload.id },
+      });
+      dataForPdfGeneration = { kind: payload.kind, document };
+    } else if (payload.kind === DocumentKind.overdueNotice) {
+      const document = await dataSource.manager.findOne(OverdueNoticeDocument, {
+        relations: { invoice_documents: { items: true } },
+        where: { id: payload.id },
+      });
+      dataForPdfGeneration = { kind: payload.kind, document };
+    } else neverFunction(payload.kind);
+
+    if (dataForPdfGeneration.document == null) {
+      next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
+      return;
+    }
+
+    let pdfAsString: string;
+
+    try {
+      pdfAsString = await renderMultiplePDF([dataForPdfGeneration as AnyDocument], true);
+    } catch (error) {
+      log(`Could not generate a PDF for ${payload.kind} - ${payload.id}`, error);
+      next(error);
+      return;
+    }
+
+    await sendMail([payload.recipient], payload.subject, payload.message, [
+      { filename: payload.attachmentName, content: pdfAsString },
+    ]);
+
+    res.sendStatus(201);
+  },
+);
+
 documentsRouter.use("/offers", offerDocumentsRouter);
 documentsRouter.use("/overdue_notices", overdueNoticeDocumentsRouter);
 documentsRouter.use("/invoices", invoiceDocumentsRouter);
