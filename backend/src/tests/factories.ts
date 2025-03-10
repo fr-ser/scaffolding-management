@@ -55,6 +55,7 @@ export async function getInvoiceDocument(
       client_postal_code: "client_postal_code",
       client_city: "client_city",
       order_title: "order_title",
+      order_id: "order_id",
       invoice_id: invoiceId,
       items: [
         {
@@ -109,6 +110,7 @@ export async function getOfferDocument(): Promise<OfferDocument> {
     client_postal_code: "client_postal_code",
     client_city: "client_city",
     order_title: "order_title",
+    order_id: "order_id",
     offer_id: 1,
     items: [
       {
@@ -149,6 +151,7 @@ export async function getOverdueNoticeDocument(): Promise<OverdueNoticeDocument>
     client_postal_code: "client_postal_code",
     client_city: "client_city",
     order_title: "order_title",
+    order_id: "order_id",
     overdue_notice_id: 1,
     notice_level: OverdueNoticeLevel.first,
     notice_date: "1993-12-12",

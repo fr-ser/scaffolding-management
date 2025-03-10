@@ -83,6 +83,7 @@ export class Init1725292732890 implements MigrationInterface {
         "client_city" text,
         "order_title" text NOT NULL,
         "offer_id" integer NOT NULL,
+        "order_id" text NOT NULL,
         "offered_at" text NOT NULL,
         "offer_valid_until" text NOT NULL,
         CONSTRAINT "FK_296a2bb8e15dc276478de2a6709" FOREIGN KEY ("offer_id") REFERENCES "offer" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -104,6 +105,7 @@ export class Init1725292732890 implements MigrationInterface {
         "client_postal_code" text,
         "client_city" text,
         "order_title" text NOT NULL,
+        "order_id" text NOT NULL,
         "invoice_id" integer NOT NULL,
         "service_dates" text NOT NULL,
         "invoice_date" text NOT NULL,
@@ -130,6 +132,7 @@ export class Init1725292732890 implements MigrationInterface {
         "client_postal_code" text,
         "client_city" text,
         "order_title" text NOT NULL,
+        "order_id" text NOT NULL,
         "overdue_notice_id" integer NOT NULL,
         "notice_level" text NOT NULL,
         "notice_date" text NOT NULL,
