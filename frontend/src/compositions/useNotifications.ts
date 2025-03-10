@@ -142,5 +142,13 @@ export default function useNotifications() {
     showUpdateOverduePaymentStatusNotification,
     showCreatePdfDocumentNotification,
     showCreateNewDocumentNotification,
+
+    showNotification(text: string) {
+      toast.add({
+        severity: "info",
+        summary: text,
+        life: 3000,
+      });
+    },
   };
 }

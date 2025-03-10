@@ -109,6 +109,7 @@ interface BaseDocument extends CreatedAtUpdatedAt {
   client_street_and_number?: string;
   client_postal_code?: string;
   client_city?: string;
+  order_id: string;
   order_title: string;
 }
 
