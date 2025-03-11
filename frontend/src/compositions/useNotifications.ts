@@ -125,6 +125,8 @@ export default function useNotifications() {
       life: 3000,
     });
   };
+
+  // TODO: delete all custom notifications
   return {
     showDeleteClientNotification,
     showUpdateClientNotification,

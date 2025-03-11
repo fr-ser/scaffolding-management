@@ -53,8 +53,8 @@ onMounted(async () => {
 
 <template>
   <div class="flex flex-col overflow-hidden h-full">
-    <div class="card flex w-full gap-x-6 mb-3">
-      <span class="relative grow">
+    <div class="flex w-full gap-x-6 mb-3">
+      <span class="relative grow flex flex-row items-center">
         <i
           class="pi pi-search absolute top-2/4 -mt-2 left-3 text-surface-400 dark:text-surface-600"
         />
@@ -80,13 +80,13 @@ onMounted(async () => {
         v-for="client in clientsList"
         :key="client.id"
       >
-        <Card class="my-2" data-testid="client-card">
+        <Card class="mt-2" data-testid="client-card">
           <template #content>
             <div class="flex gap-2 flex-row justify-between items-center">
               <div>
                 {{ `${client.first_name} ${client.last_name}` }}
               </div>
-              <div class="flex flex-col gap-y-2">
+              <div class="flex flex-row flex-wrap gap-2">
                 <router-link :to="getClientEditPath(client.id)">
                   <Button
                     label="Bearbeiten"
@@ -108,7 +108,7 @@ onMounted(async () => {
           </template>
         </Card>
       </router-link>
-      <div class="flex justify-center">
+      <div class="mt-2 flex justify-center">
         <Button v-if="hasMore" @click="loadMore">Weitere Kunden laden</Button>
       </div>
     </div>

@@ -52,10 +52,10 @@ const confirmDelete = () => {
 <template>
   <Card>
     <template #content>
-      <form class="flex flex-col gap-y-3">
-        <div v-if="isNew" class="flex justify-center mb-3 py-1.5 bg-green-100">NEU</div>
-        <div>
-          <FloatLabel class="mb-6 mt-2">
+      <div v-if="isNew" class="flex justify-center mb-3 py-1.5 bg-green-100">NEU</div>
+      <form class="flex flex-row flex-wrap gap-x-3 gap-y-6 pt-4">
+        <div class="min-w-72 grow flex flex-col gap-6">
+          <FloatLabel>
             <InputText id="titel" v-model="editableArticle.title" class="w-full" />
             <label for="titel">Titel</label>
           </FloatLabel>
@@ -65,33 +65,31 @@ const confirmDelete = () => {
               v-model="editableArticle.description"
               class="w-full"
               autoResize
-              rows="3"
+              rows="7"
               cols="30"
             />
             <label for="text">Bezeichnung</label>
           </FloatLabel>
-          <div class="grid grid-cols-2 gap-2 mt-6">
-            <FloatLabel>
-              <!-- The following warning is logged in the browser console:
+        </div>
+        <div class="grow md:grow-0 min-w-72 flex flex-col flex-wrap justify-end gap-6">
+          <FloatLabel>
+            <!-- The following warning is logged in the browser console:
               "Incorrect use of <label for=FORM_ELEMENT>"
               It is because of this outstanding bug: 
               https://github.com/primefaces/primevue/issues/2924
               -->
-              <Dropdown
-                v-model="editableArticle.kind"
-                :options="articlesType"
-                class="w-full"
-                id="article-kind"
-              />
-              <label for="article-kind">Art</label>
-            </FloatLabel>
-            <FloatLabel>
-              <InputText class="w-full" id="unit" v-model="editableArticle.unit" />
-              <label for="unit">Einheit</label>
-            </FloatLabel>
-          </div>
-        </div>
-        <div class="flex flex-row justify-end gap-4 mt-4">
+            <Dropdown
+              v-model="editableArticle.kind"
+              :options="articlesType"
+              class="w-full"
+              id="article-kind"
+            />
+            <label for="article-kind">Art</label>
+          </FloatLabel>
+          <FloatLabel>
+            <InputText class="w-full" id="unit" v-model="editableArticle.unit" />
+            <label for="unit">Einheit</label>
+          </FloatLabel>
           <FloatLabel class="grow">
             <InputNumber
               class="w-full"
@@ -101,24 +99,26 @@ const confirmDelete = () => {
             />
             <label for="price">Preis</label>
           </FloatLabel>
-          <Button
-            @click="onUpdateArticle"
-            icon="pi pi-save"
-            text
-            rounded
-            aria-label="Artikel speichern"
-            data-testid="article-save-button"
-          />
-          <Button
-            @click="confirmDelete"
-            v-if="!isNew"
-            icon="pi pi-times"
-            severity="danger"
-            text
-            rounded
-            aria-label="Artikel löschen"
-            data-testid="article-delete-button"
-          />
+          <div class="flex flex-row flex-wrap justify-end">
+            <Button
+              @click="confirmDelete"
+              v-if="!isNew"
+              icon="pi pi-times"
+              severity="danger"
+              text
+              rounded
+              aria-label="Artikel löschen"
+              data-testid="article-delete-button"
+            />
+            <Button
+              @click="onUpdateArticle"
+              icon="pi pi-save"
+              text
+              rounded
+              aria-label="Artikel speichern"
+              data-testid="article-save-button"
+            />
+          </div>
         </div>
       </form>
     </template>
