@@ -51,8 +51,8 @@ onMounted(async () => {
 
 <template>
   <div class="flex flex-col overflow-hidden h-full">
-    <div class="card flex w-full gap-x-6 mb-3">
-      <span class="relative grow">
+    <div class="flex w-full gap-x-6 mb-3">
+      <span class="relative grow flex flex-row items-center">
         <i
           class="pi pi-search absolute top-2/4 -mt-2 left-3 text-surface-400 dark:text-surface-600"
         />
@@ -82,7 +82,7 @@ onMounted(async () => {
         data-testid="article-card"
       />
     </div>
-    <div class="flex justify-center">
+    <div class="mt-2 flex justify-center">
       <Button v-if="hasMore" @click="loadMore">Weitere Artikel laden</Button>
     </div>
   </div>

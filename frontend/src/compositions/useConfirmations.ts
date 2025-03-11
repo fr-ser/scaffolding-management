@@ -94,6 +94,8 @@ export default function useConfirmation() {
       accept: acceptCallback,
     });
   };
+
+  // TODO: delete all custom confirmations
   return {
     showDeleteOrderConfirmation,
     showDeleteClientConfirmation,
