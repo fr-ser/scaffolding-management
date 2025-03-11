@@ -19,7 +19,7 @@ const clientsList = ref<Client[]>([]);
 const search = ref("");
 const paginationStep = 20;
 const take = ref(paginationStep);
-const hasMore = ref(true);
+const hasMore = ref(false);
 
 async function loadData() {
   const response = await getClients({ search: search.value, take: take.value });

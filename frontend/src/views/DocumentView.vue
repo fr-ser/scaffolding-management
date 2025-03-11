@@ -2,10 +2,9 @@
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import InputText from "primevue/inputtext";
-import Menu from "primevue/menu";
 import Textarea from "primevue/textarea";
 import { onMounted, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 
 import {
   getInvoiceDocument,
@@ -27,7 +26,7 @@ import type {
   OfferDocument,
   OverdueNoticeDocument,
 } from "@/global/types/entities";
-import { getOrderEditPath } from "@/helpers/routes";
+import { getDocumentListPath, getOrderEditPath } from "@/helpers/routes";
 
 const VITE_COMPANY_NAME = import.meta.env.VITE_COMPANY_NAME;
 const VITE_COMPANY_STREET_AND_NUMBER = import.meta.env.VITE_COMPANY_STREET_AND_NUMBER;
@@ -41,7 +40,6 @@ const VITE_COMPANY_FAX = import.meta.env.VITE_COMPANY_FAX;
 const confirm = useConfirmations();
 const notification = useNotifications();
 
-const router = useRouter();
 const route = useRoute();
 const kind = route.params.kind as DocumentKind;
 let emailKind = "";
@@ -61,25 +59,6 @@ const emailRecipient = ref("");
 const emailSubject = ref("");
 const emailMessage = ref("");
 const emailAttachmentName = ref("");
-
-const menuItems = ref([
-  {
-    label: "E-Mail-Versand",
-    icon: "pi pi-envelope",
-    command: function () {
-      isEmailDialogVisible.value = true;
-    },
-  },
-  {
-    label: "Auftrag anzeigen",
-    icon: "pi pi-shop",
-    command: function () {
-      if (result.value != null) {
-        router.push(getOrderEditPath(result.value.order_id));
-      }
-    },
-  },
-]);
 
 async function getDocument() {
   if (kind === DocumentKind.offer) {
@@ -146,8 +125,24 @@ Fax: ${VITE_COMPANY_FAX}`;
 </script>
 
 <template>
-  <div class="w-full flex gap-2 flex-col-reverse lg:flex-row">
-    <Menu :model="menuItems" />
+  <div class="">
+    <div class="flex flex-row justify-between mb-2">
+      <router-link :to="getDocumentListPath()">
+        <Button icon="pi pi-arrow-left" size="small" severity="secondary" text raised />
+      </router-link>
+      <div class="flex gap-x-2">
+        <router-link :to="getOrderEditPath(result?.order_id as string)">
+          <Button label="Auftrag anzeigen" severity="info" text raised />
+        </router-link>
+        <Button
+          label="E-Mail-Versand"
+          severity="info"
+          text
+          raised
+          @click="isEmailDialogVisible = true"
+        />
+      </div>
+    </div>
     <div
       v-if="result"
       class="min-h-297 w-[60rem] px-[4rem] ml-auto mr-auto py-5 border-solid border-2 border-slate-500 box-border"
