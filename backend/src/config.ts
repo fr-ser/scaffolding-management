@@ -25,7 +25,10 @@ if (USE_HTTPS) {
 
 export const HTTP_PORT = process.env.HTTP_PORT || 3001;
 export const STATIC_FILE_ROOT = process.env.STATIC_FILE_ROOT || "static";
-export const DROPBOX_ACCESS_TOKEN = getRequired("DROPBOX_ACCESS_TOKEN");
+export const DROPBOX_PATH_PREFIX = "/v3/";
+export const DROPBOX_REFRESH_TOKEN = getRequired("DROPBOX_REFRESH_TOKEN");
+export const DROPBOX_CLIENT_ID = getRequired("DROPBOX_CLIENT_ID");
+export const DROPBOX_CLIENT_SECRET = getRequired("DROPBOX_CLIENT_SECRET");
 export const DAILY_BACKUP_COUNT = parseInt(getRequired("DAILY_BACKUP_COUNT"));
 export const MONTHLY_BACKUP_COUNT = parseInt(getRequired("MONTHLY_BACKUP_COUNT"));
 

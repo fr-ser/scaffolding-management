@@ -17,6 +17,7 @@ import {
 } from "@/global/types/backendTypes";
 import { ApiError, SQLITE_CONSTRAINT_ERROR_CODE } from "@/helpers/apiErrors";
 import { checkAuth, getRoleByUser } from "@/helpers/roleManagement";
+import { attachmentsRouter } from "@/routes/orders/attachments";
 import { invoicesRouter } from "@/routes/orders/invoices";
 import { offersRouter } from "@/routes/orders/offers";
 import { overdueNoticesRouter } from "@/routes/orders/overdue_notices";
@@ -242,6 +243,7 @@ ordersRouter.get(
   },
 );
 
+ordersRouter.use("/:orderId/attachments", attachmentsRouter);
 ordersRouter.use("/invoices", invoicesRouter);
 ordersRouter.use("/offers", offersRouter);
 ordersRouter.use("/overdue_notices", overdueNoticesRouter);

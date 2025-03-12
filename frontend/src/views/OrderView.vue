@@ -16,6 +16,7 @@ import { useRoute, useRouter } from "vue-router";
 import { createOrder, deleteOrder, getClients, getOrder, updateOrder } from "@/backendClient";
 import InvoiceSummary from "@/components/orders/InvoiceSummary.vue";
 import OfferSummary from "@/components/orders/OfferSummary.vue";
+import OrderAttachments from "@/components/orders/OrderAttachments.vue";
 import OrderDocuments from "@/components/orders/OrderDocuments.vue";
 import OverdueSummary from "@/components/orders/OverdueNoticeSummary.vue";
 import useConfirmations from "@/compositions/useConfirmations";
@@ -317,7 +318,8 @@ onMounted(async () => {
             </TabView>
           </section>
         </div>
-        <OrderDocuments v-if="isEditing" :id="(orderInfo as Order).id"></OrderDocuments>
+        <OrderDocuments v-if="isEditing" :id="(orderInfo as Order).id" />
+        <OrderAttachments v-if="isEditing" :order-id="(orderInfo as Order).id" />
       </template>
     </Card>
   </form>

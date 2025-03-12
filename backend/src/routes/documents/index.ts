@@ -21,7 +21,7 @@ import { renderMultiplePDF } from "@/pdf/renderPDF";
 import { invoiceDocumentsRouter } from "@/routes/documents/invoice_documents";
 import { offerDocumentsRouter } from "@/routes/documents/offer_documents";
 import { overdueNoticeDocumentsRouter } from "@/routes/documents/overdue_notice_documents";
-import { sendMail } from "@/send-mail";
+import { sendMail } from "@/services/email";
 
 export const documentsRouter = express.Router();
 
