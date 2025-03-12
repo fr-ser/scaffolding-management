@@ -1,6 +1,6 @@
 import { APP_MAIL_PAGE_URL, OWNER_EMAIL } from "@/config";
 import { Invoice, Offer, Order, OverdueNotice } from "@/global/types/entities";
-import { sendMail } from "@/send-mail";
+import { sendMail } from "@/services/email";
 
 const emailTemplate = (
   blockedOrderText: string,

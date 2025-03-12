@@ -3,6 +3,7 @@ import axios from "axios";
 import { neverFunction } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
 import type {
+  DropboxFile,
   PaginationResponse,
   SaveDocumentsAsPdfPayload,
   SendDocumentsAsEMail,
@@ -212,4 +213,13 @@ export async function getDocumentPdf(payload: SaveDocumentsAsPdfPayload): Promis
 
 export async function sendDocumentAsEmail(payload: SendDocumentsAsEMail) {
   await axiosInstance.post(`/api/documents/send-email`, payload);
+}
+
+export async function getOrderAttachments(id: string) {
+  const response = await axiosInstance.get(`/api/orders/${id}/attachments`);
+  return response.data as DropboxFile[];
+}
+
+export async function deleteOrderAttachment(orderId: string, fileName: string) {
+  await axiosInstance.delete(`/api/orders/${orderId}/attachments/${encodeURIComponent(fileName)}`);
 }

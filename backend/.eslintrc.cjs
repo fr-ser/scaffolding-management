@@ -10,5 +10,11 @@ module.exports = {
   root: true,
   rules: {
     "prettier/prettier": "error",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        varsIgnorePattern: "^_$",
+      },
+    ],
   },
 };

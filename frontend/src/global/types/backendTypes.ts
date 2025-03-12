@@ -30,17 +30,18 @@ export enum ErrorCode {
   PDF_TOO_MANY_DOCUMENTS_SELECTED = "PDF_TOO_MANY_DOCUMENTS_SELECTED",
   INTERNAL = "INTERNAL",
   WRONG_ROLE = "WRONG_ROLE",
+  FILE_UPLOAD_INVALID_COUNT = "FILE_UPLOAD_INVALID_COUNT",
 }
 
 export type SaveDocumentsAsPdfPayload = { kind: DocumentKind; id: string }[];
-export type SendDocumentsAsEMail = {
+export interface SendDocumentsAsEMail {
   kind: DocumentKind;
   id: string;
   recipient: string;
   subject: string;
   message: string;
   attachmentName: string;
-};
+}
 
 export type AnyDocument =
   | {
@@ -55,3 +56,8 @@ export type AnyDocument =
       kind: DocumentKind.overdueNotice;
       document: OverdueNoticeDocument;
     };
+
+export interface DropboxFile {
+  name: string;
+  link: string;
+}
