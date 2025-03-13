@@ -1,6 +1,7 @@
 import express from "express";
 import { In, SelectQueryBuilder } from "typeorm";
 
+import { checkPermissionMiddleware } from "@/authorization";
 import { getAppDataSource } from "@/db";
 import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/db/entities/documents";
 import { neverFunction } from "@/global/helpers";
@@ -11,11 +12,10 @@ import {
   PaginationResponse,
   SaveDocumentsAsPdfPayload,
   SendDocumentsAsEMail,
-  UserRole,
+  UserPermissions,
 } from "@/global/types/backendTypes";
 import { ApiError } from "@/helpers/apiErrors";
 import { log } from "@/helpers/logging";
-import { checkAuth } from "@/helpers/roleManagement";
 import { mergeSortedDocuments } from "@/helpers/utils";
 import { renderMultiplePDF } from "@/pdf/renderPDF";
 import { invoiceDocumentsRouter } from "@/routes/documents/invoice_documents";
@@ -27,7 +27,7 @@ export const documentsRouter = express.Router();
 
 documentsRouter.get(
   "",
-  [checkAuth({ no: [UserRole.employee] })],
+  [checkPermissionMiddleware(UserPermissions.DOCUMENTS_VIEW)],
   async (req: express.Request, res: express.Response) => {
     // "regular" pagination will not work with this endpoint that returns data from
     // multiple tables.
@@ -97,7 +97,7 @@ documentsRouter.get(
 
 documentsRouter.post(
   "/pdf-download",
-  [checkAuth({ no: [UserRole.employee] })],
+  [checkPermissionMiddleware(UserPermissions.DOCUMENTS_VIEW)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const payload = req.body as SaveDocumentsAsPdfPayload;
 
@@ -180,7 +180,7 @@ documentsRouter.post(
 
 documentsRouter.post(
   "/send-email",
-  [checkAuth({ no: [UserRole.employee] })],
+  [checkPermissionMiddleware(UserPermissions.DOCUMENTS_SEND_EMAIL)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const payload = req.body as SendDocumentsAsEMail;
     const dataSource = getAppDataSource();

@@ -3,17 +3,16 @@ import fs from "node:fs/promises";
 import express from "express";
 import formidable from "formidable";
 
-import { DropboxFile, ErrorCode, UserRole } from "@/global/types/backendTypes";
+import { checkPermissionMiddleware } from "@/authorization";
+import { DropboxFile, ErrorCode, UserPermissions } from "@/global/types/backendTypes";
 import { ApiError } from "@/helpers/apiErrors";
 import { log } from "@/helpers/logging";
-import { checkAuth } from "@/helpers/roleManagement";
 import { deleteFile, getFileDownloadLink, getFilesForOrder, uploadFile } from "@/services/dropbox";
 
 export const attachmentsRouter = express.Router({ mergeParams: true });
 
 attachmentsRouter.get(
   "/",
-  [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     let files: string[];
     try {
@@ -38,7 +37,7 @@ attachmentsRouter.get(
 
 attachmentsRouter.post(
   "/",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.ATTACHMENTS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const form = formidable({ maxFiles: 1 });
 
@@ -75,7 +74,7 @@ attachmentsRouter.post(
 
 attachmentsRouter.delete(
   "/:fileName",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.ATTACHMENTS_EDIT)],
   async (req: express.Request, res: express.Response) => {
     await deleteFile(req.params.orderId, req.params.fileName);
     res.sendStatus(200);

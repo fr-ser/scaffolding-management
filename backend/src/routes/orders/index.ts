@@ -2,6 +2,7 @@ import express from "express";
 import basicAuth from "express-basic-auth";
 import { FindOptionsRelations } from "typeorm";
 
+import { checkPermissionMiddleware, getPermissionsForUser } from "@/authorization";
 import { getAppDataSource } from "@/db";
 import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/db/entities/documents";
 import { Invoice } from "@/db/entities/invoice";
@@ -13,10 +14,9 @@ import {
   ErrorCode,
   PaginationQueryParameters,
   PaginationResponse,
-  UserRole,
+  UserPermissions,
 } from "@/global/types/backendTypes";
 import { ApiError, SQLITE_CONSTRAINT_ERROR_CODE } from "@/helpers/apiErrors";
-import { checkAuth, getRoleByUser } from "@/helpers/roleManagement";
 import { attachmentsRouter } from "@/routes/orders/attachments";
 import { invoicesRouter } from "@/routes/orders/invoices";
 import { offersRouter } from "@/routes/orders/offers";
@@ -26,7 +26,6 @@ export const ordersRouter = express.Router();
 
 ordersRouter.get(
   "",
-  [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const { skip = 0, take = 100 } = req.query as PaginationQueryParameters;
     const { search, overdue, detailed } = req.query as {
@@ -46,8 +45,8 @@ ordersRouter.get(
       .limit(take)
       .offset(skip);
     if (detailed) {
-      const role = getRoleByUser((req as basicAuth.IBasicAuthedRequest).auth.user);
-      if (role === UserRole.employee) {
+      const permissions = getPermissionsForUser((req as basicAuth.IBasicAuthedRequest).auth.user);
+      if (!permissions.includes(UserPermissions.SUB_ORDERS_VIEW)) {
         next(new ApiError(ErrorCode.WRONG_ROLE, 403));
         return;
       }
@@ -112,7 +111,7 @@ ordersRouter.get(
 
 ordersRouter.post(
   "",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.ORDER_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     try {
@@ -133,15 +132,14 @@ ordersRouter.post(
 
 ordersRouter.get(
   "/:id",
-  [checkAuth({ all: true })],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
 
-    const role = getRoleByUser((req as basicAuth.IBasicAuthedRequest).auth.user);
+    const permissions = getPermissionsForUser((req as basicAuth.IBasicAuthedRequest).auth.user);
     let relations = {
       client: true,
     } as FindOptionsRelations<Order>;
-    if (role !== UserRole.employee) {
+    if (permissions.includes(UserPermissions.SUB_ORDERS_VIEW)) {
       relations = {
         client: true,
         offer: { items: true },
@@ -162,7 +160,7 @@ ordersRouter.get(
 
 ordersRouter.patch(
   "/:id",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.ORDER_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     let order: Order | null = null;
@@ -196,7 +194,7 @@ ordersRouter.patch(
 
 ordersRouter.delete(
   "/:id",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.ORDER_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     try {
@@ -224,7 +222,7 @@ ordersRouter.delete(
 
 ordersRouter.get(
   "/:id/documents",
-  [checkAuth({ no: [UserRole.employee] })],
+  [checkPermissionMiddleware(UserPermissions.DOCUMENTS_VIEW)],
   async (req: express.Request, res: express.Response) => {
     const dataSource = getAppDataSource();
     const allDataResult = await Promise.all([

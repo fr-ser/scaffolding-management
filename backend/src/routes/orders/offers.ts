@@ -1,20 +1,20 @@
 import express from "express";
 
+import { checkPermissionMiddleware } from "@/authorization";
 import { getAppDataSource } from "@/db";
 import { OfferDocumentItem } from "@/db/entities/document_items";
 import { OfferDocument } from "@/db/entities/documents";
 import { Offer } from "@/db/entities/offer";
 import { OfferItem } from "@/db/entities/order_items";
-import { ErrorCode, UserRole } from "@/global/types/backendTypes";
+import { ErrorCode, UserPermissions } from "@/global/types/backendTypes";
 import { OfferCreate } from "@/global/types/dataEditTypes";
 import { ApiError } from "@/helpers/apiErrors";
-import { checkAuth } from "@/helpers/roleManagement";
 
 export const offersRouter = express.Router();
 
 offersRouter.get(
   "/:id",
-  [checkAuth({ no: [UserRole.employee] })],
+  [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_VIEW)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     const offer = await dataSource.manager.findOne(Offer, {
@@ -28,7 +28,7 @@ offersRouter.get(
 
 offersRouter.post(
   "",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response) => {
     const dataSource = getAppDataSource();
     const payload = req.body as OfferCreate;
@@ -64,7 +64,7 @@ offersRouter.post(
 
 offersRouter.patch(
   "/:id",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     let offer: Offer | null = null;
@@ -86,7 +86,7 @@ offersRouter.patch(
 
 offersRouter.delete(
   "/:id",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
 
@@ -108,7 +108,7 @@ offersRouter.delete(
 
 offersRouter.get(
   "/:id/documents",
-  [checkAuth({ no: [UserRole.employee] })],
+  [checkPermissionMiddleware(UserPermissions.DOCUMENTS_VIEW)],
   async (req: express.Request, res: express.Response) => {
     const dataSource = getAppDataSource();
     res.json(
@@ -121,7 +121,7 @@ offersRouter.get(
 
 offersRouter.post(
   "/:id/documents",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.DOCUMENTS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     const offer = await dataSource.manager.findOne(Offer, {

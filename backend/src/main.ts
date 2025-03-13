@@ -8,7 +8,8 @@ import express from "express";
 import basicAuth from "express-basic-auth";
 import "source-map-support/register";
 
-import { STATIC_FILE_ROOT, USERS } from "@/config";
+import { USERS } from "@/authorization";
+import { STATIC_FILE_ROOT } from "@/config";
 import { apiErrorHandler, requestLogger, timeoutCheck } from "@/helpers/middleware";
 import { articlesRouter } from "@/routes/articles";
 import { clientsRouter } from "@/routes/clients";

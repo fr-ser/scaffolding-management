@@ -1,11 +1,17 @@
 import type { DocumentKind } from "./appTypes";
 import type { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "./entities";
 
-export enum UserRole {
-  admin = "ADMIN",
-  partner = "PARTNER",
-  invoicing = "RECHNUNGSVERWALTUNG",
-  employee = "MITARBEITER",
+export enum UserPermissions {
+  ARTICLES_VIEW = "ARTICLES_VIEW",
+  ARTICLES_EDIT = "ARTICLES_EDIT",
+  CLIENTS_EDIT = "CLIENTS_EDIT",
+  DOCUMENTS_VIEW = "DOCUMENTS_VIEW",
+  DOCUMENTS_EDIT = "DOCUMENTS_EDIT",
+  DOCUMENTS_SEND_EMAIL = "DOCUMENTS_SEND_EMAIL",
+  ATTACHMENTS_EDIT = "ATTACHMENTS_EDIT",
+  SUB_ORDERS_VIEW = "SUB_ORDERS_VIEW",
+  SUB_ORDERS_EDIT = "SUB_ORDERS_EDIT",
+  ORDER_EDIT = "ORDER_EDIT",
 }
 
 export interface PaginationQueryParameters {
