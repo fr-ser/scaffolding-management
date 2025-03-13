@@ -1,20 +1,20 @@
 import express from "express";
 
+import { checkPermissionMiddleware } from "@/authorization";
 import { getAppDataSource } from "@/db";
 import { InvoiceDocumentItem } from "@/db/entities/document_items";
 import { InvoiceDocument } from "@/db/entities/documents";
 import { Invoice } from "@/db/entities/invoice";
 import { InvoiceItem } from "@/db/entities/order_items";
-import { ErrorCode, UserRole } from "@/global/types/backendTypes";
+import { ErrorCode, UserPermissions } from "@/global/types/backendTypes";
 import { InvoiceCreate } from "@/global/types/dataEditTypes";
 import { ApiError } from "@/helpers/apiErrors";
-import { checkAuth } from "@/helpers/roleManagement";
 
 export const invoicesRouter = express.Router();
 
 invoicesRouter.get(
   "/:id",
-  [checkAuth({ no: [UserRole.employee] })],
+  [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_VIEW)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     const invoice = await dataSource.manager.findOne(Invoice, {
@@ -28,7 +28,7 @@ invoicesRouter.get(
 
 invoicesRouter.post(
   "",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response) => {
     const dataSource = getAppDataSource();
     const payload = req.body as InvoiceCreate;
@@ -64,7 +64,7 @@ invoicesRouter.post(
 
 invoicesRouter.delete(
   "/:id",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
 
@@ -86,7 +86,7 @@ invoicesRouter.delete(
 
 invoicesRouter.patch(
   "/:id",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     let invoice: Invoice | null = null;
@@ -108,7 +108,7 @@ invoicesRouter.patch(
 
 invoicesRouter.get(
   "/:id/documents",
-  [checkAuth({ no: [UserRole.employee] })],
+  [checkPermissionMiddleware(UserPermissions.DOCUMENTS_VIEW)],
   async (req: express.Request, res: express.Response) => {
     const dataSource = getAppDataSource();
     const documents = await dataSource.manager.find(InvoiceDocument, {
@@ -120,7 +120,7 @@ invoicesRouter.get(
 
 invoicesRouter.post(
   "/:id/documents",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.DOCUMENTS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     const invoice = await dataSource.manager.findOne(Invoice, {

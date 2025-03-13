@@ -1,8 +1,6 @@
 import dotenv from "dotenv";
 import path from "path";
 
-import { UserRole } from "@/global/types/backendTypes";
-
 const DOTENV_FILE_PATH = process.env.CONFIG_PATH || ".env";
 dotenv.config({ path: path.resolve(DOTENV_FILE_PATH) });
 
@@ -33,30 +31,14 @@ export const DAILY_BACKUP_COUNT = parseInt(getRequired("DAILY_BACKUP_COUNT"));
 export const MONTHLY_BACKUP_COUNT = parseInt(getRequired("MONTHLY_BACKUP_COUNT"));
 
 // Users
-const USER_ADMIN_NAME = getRequired("USER_ADMIN_NAME");
-const USER_ADMIN_PASSWORD = getRequired("USER_ADMIN_PASSWORD");
-const USER_PARTNER_NAME = getRequired("USER_PARTNER_NAME");
-const USER_PARTNER_PASSWORD = getRequired("USER_PARTNER_PASSWORD");
-const USER_INVOICING_NAME = getRequired("USER_INVOICING_NAME");
-const USER_INVOICING_PASSWORD = getRequired("USER_INVOICING_PASSWORD");
-const USER_EMPLOYEE_NAME = getRequired("USER_EMPLOYEE_NAME");
-const USER_EMPLOYEE_PASSWORD = getRequired("USER_EMPLOYEE_PASSWORD");
-
-export const USERS = {
-  [USER_ADMIN_NAME]: { password: USER_ADMIN_PASSWORD, role: UserRole.admin },
-  [USER_PARTNER_NAME]: {
-    password: USER_PARTNER_PASSWORD,
-    role: UserRole.partner,
-  },
-  [USER_INVOICING_NAME]: {
-    password: USER_INVOICING_PASSWORD,
-    role: UserRole.invoicing,
-  },
-  [USER_EMPLOYEE_NAME]: {
-    password: USER_EMPLOYEE_PASSWORD,
-    role: UserRole.employee,
-  },
-};
+export const USER_ADMIN_NAME = getRequired("USER_ADMIN_NAME");
+export const USER_ADMIN_PASSWORD = getRequired("USER_ADMIN_PASSWORD");
+export const USER_PARTNER_NAME = getRequired("USER_PARTNER_NAME");
+export const USER_PARTNER_PASSWORD = getRequired("USER_PARTNER_PASSWORD");
+export const USER_INVOICING_NAME = getRequired("USER_INVOICING_NAME");
+export const USER_INVOICING_PASSWORD = getRequired("USER_INVOICING_PASSWORD");
+export const USER_EMPLOYEE_NAME = getRequired("USER_EMPLOYEE_NAME");
+export const USER_EMPLOYEE_PASSWORD = getRequired("USER_EMPLOYEE_PASSWORD");
 
 // Database
 export const DB_PATH = getRequired("DB_PATH");

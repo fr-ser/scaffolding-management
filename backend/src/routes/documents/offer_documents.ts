@@ -1,16 +1,16 @@
 import express from "express";
 
+import { checkPermissionMiddleware } from "@/authorization";
 import { getAppDataSource } from "@/db";
 import { OfferDocument } from "@/db/entities/documents";
-import { ErrorCode, UserRole } from "@/global/types/backendTypes";
+import { ErrorCode, UserPermissions } from "@/global/types/backendTypes";
 import { ApiError } from "@/helpers/apiErrors";
-import { checkAuth } from "@/helpers/roleManagement";
 
 export const offerDocumentsRouter = express.Router();
 
 offerDocumentsRouter.get(
   "/:id",
-  [checkAuth({ no: [UserRole.employee] })],
+  [checkPermissionMiddleware(UserPermissions.DOCUMENTS_VIEW)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     const document = await dataSource.manager.findOne(OfferDocument, {
@@ -25,7 +25,7 @@ offerDocumentsRouter.get(
 
 offerDocumentsRouter.delete(
   "/:id",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.DOCUMENTS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     try {

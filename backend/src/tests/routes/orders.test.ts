@@ -8,9 +8,9 @@ import { Express } from "express";
 import { DataSource } from "typeorm";
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
 
+import { USER_ADMIN_NAME, USER_EMPLOYEE_NAME } from "@/config";
 import { closeDatabase, initializeAppDataSource } from "@/db";
 import { OfferStatus, OverdueNoticePaymentStatus, PaymentStatus } from "@/global/types/appTypes";
-import { UserRole } from "@/global/types/backendTypes";
 import { Order } from "@/global/types/entities";
 import { getApp } from "@/main";
 import { getRequest } from "@/tests/api-utils";
@@ -170,7 +170,7 @@ describe("Orders routes", () => {
     await getOverdueNotice({ order }, appDataSource);
 
     const adminResponse = await fetch(
-      getRequest(server, `api/orders/${order.id}`, { userRole: UserRole.admin }),
+      getRequest(server, `api/orders/${order.id}`, { userName: USER_ADMIN_NAME }),
     );
 
     expect(adminResponse.status).toBe(200);
@@ -181,7 +181,7 @@ describe("Orders routes", () => {
     expect(adminResponseData.overdue_notices.length).toBeGreaterThan(0);
 
     const employeeResponse = await fetch(
-      getRequest(server, `api/orders/${order.id}`, { userRole: UserRole.employee }),
+      getRequest(server, `api/orders/${order.id}`, { userName: USER_EMPLOYEE_NAME }),
     );
 
     expect(employeeResponse.status).toBe(200);

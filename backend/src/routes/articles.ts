@@ -1,22 +1,22 @@
 import express from "express";
 import { FindOneOptions, ILike } from "typeorm";
 
+import { checkPermissionMiddleware } from "@/authorization";
 import { getAppDataSource } from "@/db";
 import { Article } from "@/db/entities/article";
 import {
   ErrorCode,
   PaginationQueryParameters,
   PaginationResponse,
-  UserRole,
+  UserPermissions,
 } from "@/global/types/backendTypes";
 import { ApiError } from "@/helpers/apiErrors";
-import { checkAuth } from "@/helpers/roleManagement";
 
 export const articlesRouter = express.Router();
 
 articlesRouter.get(
   "",
-  [checkAuth({ no: [UserRole.employee] })],
+  [checkPermissionMiddleware(UserPermissions.ARTICLES_VIEW)],
   async (req: express.Request, res: express.Response) => {
     const { skip = 0, take = 100 } = req.query as PaginationQueryParameters;
     const { search } = req.query as { search?: string };
@@ -45,7 +45,7 @@ articlesRouter.get(
 
 articlesRouter.patch(
   "/:id",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.ARTICLES_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     let article: Article | null = null;
@@ -67,7 +67,7 @@ articlesRouter.patch(
 
 articlesRouter.post(
   "/",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.ARTICLES_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     try {
@@ -91,7 +91,7 @@ articlesRouter.post(
 
 articlesRouter.delete(
   "/:id",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.ARTICLES_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     try {

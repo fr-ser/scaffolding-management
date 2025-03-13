@@ -1,18 +1,18 @@
 import express from "express";
 
+import { checkPermissionMiddleware } from "@/authorization";
 import { getAppDataSource } from "@/db";
 import { OverdueNoticeDocument } from "@/db/entities/documents";
 import { OverdueNotice } from "@/db/entities/overdue_notice";
-import { ErrorCode, UserRole } from "@/global/types/backendTypes";
+import { ErrorCode, UserPermissions } from "@/global/types/backendTypes";
 import { OverdueNoticeCreate } from "@/global/types/dataEditTypes";
 import { ApiError } from "@/helpers/apiErrors";
-import { checkAuth } from "@/helpers/roleManagement";
 
 export const overdueNoticesRouter = express.Router();
 
 overdueNoticesRouter.get(
   "/:id",
-  [checkAuth({ no: [UserRole.employee] })],
+  [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_VIEW)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     const overdue_notice = await dataSource.manager.findOne(OverdueNotice, {
@@ -26,7 +26,7 @@ overdueNoticesRouter.get(
 
 overdueNoticesRouter.post(
   "",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response) => {
     const dataSource = getAppDataSource();
     const payload = req.body as OverdueNoticeCreate;
@@ -43,7 +43,7 @@ overdueNoticesRouter.post(
 
 overdueNoticesRouter.patch(
   "/:id",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     let overdueNotice: OverdueNotice | null = null;
@@ -68,7 +68,7 @@ overdueNoticesRouter.patch(
 
 overdueNoticesRouter.delete(
   "/:id",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
 
@@ -90,7 +90,7 @@ overdueNoticesRouter.delete(
 
 overdueNoticesRouter.get(
   "/:id/documents",
-  [checkAuth({ no: [UserRole.employee] })],
+  [checkPermissionMiddleware(UserPermissions.DOCUMENTS_VIEW)],
   async (req: express.Request, res: express.Response) => {
     const dataSource = getAppDataSource();
     res.json(
@@ -103,7 +103,7 @@ overdueNoticesRouter.get(
 
 overdueNoticesRouter.post(
   "/:id/documents",
-  [checkAuth({ yes: [UserRole.admin, UserRole.partner] })],
+  [checkPermissionMiddleware(UserPermissions.DOCUMENTS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     const overdueNotice = await dataSource.manager.findOne(OverdueNotice, {
