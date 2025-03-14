@@ -1,7 +1,6 @@
 import fs from "node:fs/promises";
 
 import { Dropbox } from "dropbox";
-import formidable from "formidable";
 
 import { DROPBOX_CLIENT_ID, DROPBOX_CLIENT_SECRET, DROPBOX_REFRESH_TOKEN } from "@/config";
 
@@ -23,10 +22,12 @@ export async function getFilesInFolder(folderPath: string) {
   }
 }
 
-export async function uploadFile(path: string, file: formidable.File) {
-  const contents = await fs.readFile(file.filepath);
+export async function uploadFile(path: string, filePath: string) {
+  await dbx.filesUpload({ contents: await fs.readFile(filePath), path });
+}
 
-  await dbx.filesUpload({ contents, path });
+export async function renameFile(fromPath: string, toPath: string) {
+  await dbx.filesMoveV2({ from_path: fromPath, to_path: toPath });
 }
 
 export async function deleteFile(path: string) {

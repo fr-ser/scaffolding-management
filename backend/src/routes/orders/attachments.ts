@@ -62,7 +62,7 @@ attachmentsRouter.post(
     try {
       await uploadFile(
         `${DROPBOX_PATH_PREFIX}/attachments/${req.params.orderId}/${file.originalFilename}`,
-        file,
+        file.filepath,
       );
     } catch (error) {
       log("Error uploading file", error);
