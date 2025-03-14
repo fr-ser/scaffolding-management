@@ -13,8 +13,12 @@ import { createClient, deleteClient, getClient, updateClient } from "@/backendCl
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { ClientSalutation } from "@/global/types/appTypes";
+import { UserPermissions } from "@/global/types/backendTypes";
 import type { ClientCreate, ClientUpdate } from "@/global/types/dataEditTypes";
 import { getClientListPath } from "@/helpers/routes";
+import { useUserStore } from "@/store";
+
+const userStore = useUserStore();
 
 const confirm = useConfirmations();
 const notifications = useNotifications();
@@ -72,7 +76,7 @@ onMounted(async () => {
         text
         raised
       />
-      <div class="flex gap-x-2">
+      <div v-if="userStore.permissions.includes(UserPermissions.CLIENTS_EDIT)" class="flex gap-x-2">
         <Button @click="onSaveClient" label="Speichern" text raised />
         <Button
           @click="confirmDelete"

@@ -10,12 +10,14 @@ import { ref } from "vue";
 import { deleteOrderAttachment, getOrderAttachments } from "@/backendClient";
 import useConfirmation from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
-import type { DropboxFile } from "@/global/types/backendTypes";
+import { type DropboxFile, UserPermissions } from "@/global/types/backendTypes";
+import { useUserStore } from "@/store";
 
 const props = defineProps<{
   orderId: string;
 }>();
 
+const userStore = useUserStore();
 const notification = useNotifications();
 const confirmation = useConfirmation();
 
@@ -63,7 +65,10 @@ function onDeleteClick(fileName: string) {
       size="small"
       @click="showAttachments"
     />
-    <div class="flex flex-row">
+    <div
+      v-if="userStore.permissions.includes(UserPermissions.ATTACHMENTS_EDIT)"
+      class="flex flex-row"
+    >
       <FileUpload
         mode="basic"
         name="file"

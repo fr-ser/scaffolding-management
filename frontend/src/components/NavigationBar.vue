@@ -1,39 +1,55 @@
 <script setup lang="ts">
 import Menubar from "primevue/menubar";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 
+import { UserPermissions } from "@/global/types/backendTypes";
 import * as routes from "@/helpers/routes";
+import { useUserStore } from "@/store";
 
 const route = useRoute();
+const userStore = useUserStore();
 
-const items = ref([
-  {
-    label: "Kunden",
-    icon: "pi pi-user",
-    route: routes.getClientListPath(),
-  },
-  {
-    label: "Aufträge",
-    icon: "pi pi-shop",
-    route: routes.getOrderListPath(),
-  },
-  {
-    label: "Übersicht",
-    icon: "pi pi-sitemap",
-    route: routes.getOverviewPath(),
-  },
-  {
-    label: "Dokumente",
-    icon: "pi pi-file-pdf",
-    route: routes.getDocumentListPath(),
-  },
-  {
-    label: "Artikel",
-    icon: "pi pi-list",
-    route: routes.getArticleListPath(),
-  },
-]);
+const items = computed(() => {
+  const baseRoutes = [
+    {
+      label: "Kunden",
+      icon: "pi pi-user",
+      route: routes.getClientListPath(),
+    },
+    {
+      label: "Aufträge",
+      icon: "pi pi-shop",
+      route: routes.getOrderListPath(),
+    },
+  ];
+
+  if (userStore.permissions.includes(UserPermissions.SUB_ORDERS_VIEW)) {
+    baseRoutes.push({
+      label: "Übersicht",
+      icon: "pi pi-sitemap",
+      route: routes.getOverviewPath(),
+    });
+  }
+
+  if (userStore.permissions.includes(UserPermissions.DOCUMENTS_VIEW)) {
+    baseRoutes.push({
+      label: "Dokumente",
+      icon: "pi pi-file-pdf",
+      route: routes.getDocumentListPath(),
+    });
+  }
+
+  if (userStore.permissions.includes(UserPermissions.ARTICLES_VIEW)) {
+    baseRoutes.push({
+      label: "Artikel",
+      icon: "pi pi-list",
+      route: routes.getArticleListPath(),
+    });
+  }
+
+  return baseRoutes;
+});
 </script>
 
 <template>

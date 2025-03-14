@@ -13,10 +13,7 @@ const app = createApp(App);
 app.use(ConfirmationService);
 app.use(ToastService);
 
-app.use(PrimeVue, {
-  unstyled: true,
-  pt: Lara,
-});
+app.use(PrimeVue, { unstyled: true, pt: Lara });
 
 app.use(createPinia());
 app.use(router);
