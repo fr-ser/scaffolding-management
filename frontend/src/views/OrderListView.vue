@@ -16,7 +16,9 @@ import { useUserStore } from "@/store";
 const userStore = useUserStore();
 
 const editButtonText = computed(() => {
-  return userStore.permissions.includes(UserPermissions.ORDERS_UPDATE) ? "Bearbeiten" : "Anschauen";
+  return userStore.permissions.includes(UserPermissions.ORDERS_UPDATE)
+    ? "Anschauen / Bearbeiten"
+    : "Anschauen";
 });
 
 const ordersList = ref<Order[]>([]);
@@ -85,37 +87,35 @@ onMounted(async () => {
       </router-link>
     </div>
     <div class="grow overflow-auto">
-      <router-link :to="getOrderEditPath(order.id)" v-for="order in ordersList" :key="order.id">
-        <Card class="mt-2" data-testid="order-card">
-          <template #content>
-            <div class="flex flex-row justify-between items-center">
-              <div>
-                {{ `${order.id} ${order.title}` }}
-              </div>
-              <div class="flex flex-row flex-wrap gap-2">
-                <router-link :to="getOrderEditPath(order.id)">
-                  <Button
-                    :label="editButtonText"
-                    icon="pi pi-pencil"
-                    severity="secondary"
-                    outlined
-                    size="small"
-                  />
-                </router-link>
-                <Button
-                  v-if="userStore.permissions.includes(UserPermissions.ORDERS_CREATE_DELETE)"
-                  @click.stop.prevent="confirmDelete(order)"
-                  label="Löschen"
-                  icon="pi pi-times"
-                  severity="danger"
-                  size="small"
-                  data-testid="order-delete-button"
-                />
-              </div>
+      <Card v-for="order in ordersList" :key="order.id" class="mt-2" data-testid="order-card">
+        <template #content>
+          <div class="flex flex-row justify-between items-center">
+            <div>
+              {{ `${order.id} ${order.title}` }}
             </div>
-          </template>
-        </Card>
-      </router-link>
+            <div class="flex flex-row flex-wrap gap-2">
+              <router-link :to="getOrderEditPath(order.id)">
+                <Button
+                  :label="editButtonText"
+                  icon="pi pi-pencil"
+                  severity="secondary"
+                  outlined
+                  size="small"
+                />
+              </router-link>
+              <Button
+                v-if="userStore.permissions.includes(UserPermissions.ORDERS_CREATE_DELETE)"
+                @click.stop.prevent="confirmDelete(order)"
+                label="Löschen"
+                icon="pi pi-times"
+                severity="danger"
+                size="small"
+                data-testid="order-delete-button"
+              />
+            </div>
+          </div>
+        </template>
+      </Card>
       <div class="mt-2 flex justify-center">
         <Button v-if="hasMore" @click="loadMore">Weitere Aufträge laden</Button>
       </div>

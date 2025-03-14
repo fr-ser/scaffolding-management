@@ -24,7 +24,7 @@ test("create, edit and delete an order", async ({ page }) => {
   expect(await page.getByTestId("order-card").count()).toBe(1);
 
   // edit
-  await page.getByTestId("order-card").click();
+  await page.getByTestId("order-card").getByLabel("Anschauen / Bearbeiten").click();
   await page.getByLabel("Bauvorhaben").fill("new-title " + timestamp);
   await page.getByTestId("order-save-button").click();
   await expect(page.getByText("Der Auftrag wurde gespeichert")).toBeVisible();

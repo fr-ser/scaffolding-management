@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Menubar from "primevue/menubar";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useRoute } from "vue-router";
 
 import { UserPermissions } from "@/global/types/backendTypes";
