@@ -11,6 +11,7 @@
     "start:server": "npm run build && CONFIG_PATH=../.env.development node ./dist/src/index.js",
     "db:seed": "npm run build && CONFIG_PATH=../.env.development npx ts-node -r tsconfig-paths/register scripts/seed-local-data.ts",
     "db:seed:overwrite": "npm run db:seed -- --overwrite",
+    "run-script": "npm run build && CONFIG_PATH=../.env.development npx ts-node -r tsconfig-paths/register",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
     "format": "npm run lint -- --fix && prettier --write src/",
     "test:code": "npm run build && CONFIG_PATH=../.env.development vitest run --silent",
