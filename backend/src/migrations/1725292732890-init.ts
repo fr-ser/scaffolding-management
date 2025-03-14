@@ -22,6 +22,15 @@ export class Init1725292732890 implements MigrationInterface {
     `);
 
     await queryRunner.query(`
+      CREATE TRIGGER article_update_updated_at
+      AFTER UPDATE ON article FOR EACH ROW
+      BEGIN
+        UPDATE article SET updated_at = unixepoch('subsec')
+        WHERE rowid = OLD.rowid;
+      END;
+    `);
+
+    await queryRunner.query(`
       CREATE TABLE "offer_document_item" (
         "id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
         "kind" text NOT NULL,
@@ -31,7 +40,7 @@ export class Init1725292732890 implements MigrationInterface {
         "price" numeric,
         "amount" numeric,
         "offer_document_id" text NOT NULL,
-        CONSTRAINT "FK_a7b490d98b70a86f764a949f999" FOREIGN KEY ("offer_document_id") REFERENCES "offer_document" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        CONSTRAINT "FK_offer_document_id" FOREIGN KEY ("offer_document_id") REFERENCES "offer_document" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
       )
     `);
     await queryRunner.query(`
@@ -44,7 +53,7 @@ export class Init1725292732890 implements MigrationInterface {
         "price" numeric,
         "amount" numeric,
         "invoice_document_id" text NOT NULL,
-        CONSTRAINT "FK_80e2a45e785dd7506d0a9037a27" FOREIGN KEY ("invoice_document_id") REFERENCES "invoice_document" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        CONSTRAINT "FK_invoice_document_id" FOREIGN KEY ("invoice_document_id") REFERENCES "invoice_document" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
       )
     `);
 
@@ -63,8 +72,17 @@ export class Init1725292732890 implements MigrationInterface {
         "payment_status" text NOT NULL,
         "notice_costs" numeric NOT NULL,
         "default_interest" numeric,
-        CONSTRAINT "FK_75531ab02ca06794a60271527d1" FOREIGN KEY ("order_id") REFERENCES "order" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+        CONSTRAINT "FK_order_id" FOREIGN KEY ("order_id") REFERENCES "order" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
       )
+    `);
+
+    await queryRunner.query(`
+      CREATE TRIGGER overdue_notice_update_updated_at
+      AFTER UPDATE ON overdue_notice FOR EACH ROW
+      BEGIN
+        UPDATE overdue_notice SET updated_at = unixepoch('subsec')
+        WHERE rowid = OLD.rowid;
+      END;
     `);
 
     await queryRunner.query(`
@@ -86,8 +104,17 @@ export class Init1725292732890 implements MigrationInterface {
         "order_id" text NOT NULL,
         "offered_at" text NOT NULL,
         "offer_valid_until" text NOT NULL,
-        CONSTRAINT "FK_296a2bb8e15dc276478de2a6709" FOREIGN KEY ("offer_id") REFERENCES "offer" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+        CONSTRAINT "FK_offer_id" FOREIGN KEY ("offer_id") REFERENCES "offer" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
       )
+    `);
+
+    await queryRunner.query(`
+      CREATE TRIGGER offer_document_update_updated_at
+      AFTER UPDATE ON offer_document FOR EACH ROW
+      BEGIN
+        UPDATE offer_document SET updated_at = unixepoch('subsec')
+        WHERE rowid = OLD.rowid;
+      END;
     `);
 
     await queryRunner.query(`
@@ -113,8 +140,17 @@ export class Init1725292732890 implements MigrationInterface {
         "can_have_cash_discount" boolean NOT NULL,
         "discount_duration" numeric,
         "discount_percentage" numeric,
-        CONSTRAINT "FK_431abc189f1ef6c8ee0dff3d4bd" FOREIGN KEY ("invoice_id") REFERENCES "invoice" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+        CONSTRAINT "FK_invoice_id" FOREIGN KEY ("invoice_id") REFERENCES "invoice" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
       )
+    `);
+
+    await queryRunner.query(`
+      CREATE TRIGGER invoice_document_update_updated_at
+      AFTER UPDATE ON invoice_document FOR EACH ROW
+      BEGIN
+        UPDATE invoice_document SET updated_at = unixepoch('subsec')
+        WHERE rowid = OLD.rowid;
+      END;
     `);
 
     await queryRunner.query(`
@@ -140,8 +176,17 @@ export class Init1725292732890 implements MigrationInterface {
         "payment_target" text NOT NULL,
         "notice_costs" numeric NOT NULL,
         "default_interest" numeric,
-        CONSTRAINT "FK_3e474d349cd3307a0e3c4aad3cf" FOREIGN KEY ("overdue_notice_id") REFERENCES "overdue_notice" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+        CONSTRAINT "FK_overdue_notice_id" FOREIGN KEY ("overdue_notice_id") REFERENCES "overdue_notice" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
       )
+    `);
+
+    await queryRunner.query(`
+      CREATE TRIGGER overdue_notice_document_update_updated_at
+      AFTER UPDATE ON overdue_notice_document FOR EACH ROW
+      BEGIN
+        UPDATE overdue_notice_document SET updated_at = unixepoch('subsec')
+        WHERE rowid = OLD.rowid;
+      END;
     `);
 
     await queryRunner.query(`
@@ -154,7 +199,7 @@ export class Init1725292732890 implements MigrationInterface {
         "price" numeric,
         "amount" numeric,
         "offer_id" integer NOT NULL,
-        CONSTRAINT "FK_c2ba09983ba4b4ca5b57360fc11" FOREIGN KEY ("offer_id") REFERENCES "offer" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        CONSTRAINT "FK_offer_id" FOREIGN KEY ("offer_id") REFERENCES "offer" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
       )
     `);
 
@@ -168,9 +213,18 @@ export class Init1725292732890 implements MigrationInterface {
         "description" text,
         "offered_at" text NOT NULL,
         "offer_valid_until" text NOT NULL,
-        CONSTRAINT "REL_de27658a4ecb056097fb5c3f0a" UNIQUE ("order_id"),
-        CONSTRAINT "FK_de27658a4ecb056097fb5c3f0ab" FOREIGN KEY ("order_id") REFERENCES "order" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+        CONSTRAINT "REL_unique_order_id" UNIQUE ("order_id"),
+        CONSTRAINT "FK_order_id" FOREIGN KEY ("order_id") REFERENCES "order" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
       )
+    `);
+
+    await queryRunner.query(`
+      CREATE TRIGGER offer_update_updated_at
+      AFTER UPDATE ON offer FOR EACH ROW
+      BEGIN
+        UPDATE offer SET updated_at = unixepoch('subsec')
+        WHERE rowid = OLD.rowid;
+      END;
     `);
 
     await queryRunner.query(`
@@ -183,7 +237,7 @@ export class Init1725292732890 implements MigrationInterface {
         "price" numeric,
         "amount" numeric,
         "invoice_id" integer NOT NULL,
-        CONSTRAINT "FK_9830c1881dd701d440c2164c3cd" FOREIGN KEY ("invoice_id") REFERENCES "invoice" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        CONSTRAINT "FK_invoice_id" FOREIGN KEY ("invoice_id") REFERENCES "invoice" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
       )
     `);
 
@@ -199,8 +253,17 @@ export class Init1725292732890 implements MigrationInterface {
         "payment_target" text NOT NULL,
         "status" text NOT NULL,
         "description" text,
-        CONSTRAINT "FK_1e74a9888e5e228184769ba3dfd" FOREIGN KEY ("order_id") REFERENCES "order" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+        CONSTRAINT "FK_order_id" FOREIGN KEY ("order_id") REFERENCES "order" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
       )
+    `);
+
+    await queryRunner.query(`
+      CREATE TRIGGER invoice_update_updated_at
+      AFTER UPDATE ON invoice FOR EACH ROW
+      BEGIN
+        UPDATE invoice SET updated_at = unixepoch('subsec')
+        WHERE rowid = OLD.rowid;
+      END;
     `);
 
     await queryRunner.query(`
@@ -224,6 +287,15 @@ export class Init1725292732890 implements MigrationInterface {
     `);
 
     await queryRunner.query(`
+      CREATE TRIGGER client_update_updated_at
+      AFTER UPDATE ON client FOR EACH ROW
+      BEGIN
+        UPDATE client SET updated_at = unixepoch('subsec')
+        WHERE rowid = OLD.rowid;
+      END;
+    `);
+
+    await queryRunner.query(`
       CREATE TABLE "order" (
         "id" text PRIMARY KEY NOT NULL,
         "created_at" real NOT NULL DEFAULT (unixepoch('subsec')),
@@ -235,40 +307,49 @@ export class Init1725292732890 implements MigrationInterface {
         "can_have_cash_discount" boolean NOT NULL,
         "discount_duration" numeric,
         "discount_percentage" numeric,
-        CONSTRAINT "FK_a0d9cbb7f4a017bac3198dd8ca0" FOREIGN KEY ("client_id") REFERENCES "client" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+        CONSTRAINT "FK_client_id" FOREIGN KEY ("client_id") REFERENCES "client" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
       )
     `);
 
     await queryRunner.query(`
+      CREATE TRIGGER order_update_updated_at
+      AFTER UPDATE ON "order" FOR EACH ROW
+      BEGIN
+        UPDATE "order" SET updated_at = unixepoch('subsec')
+        WHERE rowid = OLD.rowid;
+      END;
+    `);
+
+    await await queryRunner.query(`
       CREATE TABLE "overdue_notice_invoice_document_junction" (
         "overdue_notice_id" integer NOT NULL,
         "invoice_document_id" text NOT NULL,
-        CONSTRAINT "FK_d59594eb76f18bfefe606c96af1" FOREIGN KEY ("overdue_notice_id") REFERENCES "overdue_notice" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-        CONSTRAINT "FK_e771d43f961f230dd6245bfd0b0" FOREIGN KEY ("invoice_document_id") REFERENCES "invoice_document" ("id") ON DELETE RESTRICT,
+        CONSTRAINT "FK_overdue_notice_id" FOREIGN KEY ("overdue_notice_id") REFERENCES "overdue_notice" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+        CONSTRAINT "FK_invoice_document_id" FOREIGN KEY ("invoice_document_id") REFERENCES "invoice_document" ("id") ON DELETE RESTRICT,
         PRIMARY KEY ("overdue_notice_id", "invoice_document_id")
       )
     `);
 
     await queryRunner.query(
-      `CREATE INDEX "IDX_d59594eb76f18bfefe606c96af" ON "overdue_notice_invoice_document_junction" ("overdue_notice_id") `,
+      `CREATE INDEX "IDX_onidj_overdue_notice_id" ON "overdue_notice_invoice_document_junction" ("overdue_notice_id") `,
     );
     await queryRunner.query(
-      `CREATE INDEX "IDX_e771d43f961f230dd6245bfd0b" ON "overdue_notice_invoice_document_junction" ("invoice_document_id") `,
+      `CREATE INDEX "IDX_onidj_invoice_document_id" ON "overdue_notice_invoice_document_junction" ("invoice_document_id") `,
     );
     await queryRunner.query(`
       CREATE TABLE "overdue_notice_document_invoice_document_junction" (
         "overdue_notice_document_id" text NOT NULL,
         "invoice_document_id" text NOT NULL,
-        CONSTRAINT "FK_e5b1bbf1f45dc069d47e6d590bf" FOREIGN KEY ("overdue_notice_document_id") REFERENCES "overdue_notice_document" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-        CONSTRAINT "FK_c529c22acf50be8e097c519b802" FOREIGN KEY ("invoice_document_id") REFERENCES "invoice_document" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+        CONSTRAINT "FK_overdue_notice_document_id" FOREIGN KEY ("overdue_notice_document_id") REFERENCES "overdue_notice_document" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+        CONSTRAINT "FK_invoice_document_id" FOREIGN KEY ("invoice_document_id") REFERENCES "invoice_document" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
         PRIMARY KEY ("overdue_notice_document_id", "invoice_document_id")
       )
     `);
     await queryRunner.query(
-      `CREATE INDEX "IDX_e5b1bbf1f45dc069d47e6d590b" ON "overdue_notice_document_invoice_document_junction" ("overdue_notice_document_id") `,
+      `CREATE INDEX "IDX_ondidj_overdue_notice_document_id" ON "overdue_notice_document_invoice_document_junction" ("overdue_notice_document_id") `,
     );
     await queryRunner.query(
-      `CREATE INDEX "IDX_c529c22acf50be8e097c519b80" ON "overdue_notice_document_invoice_document_junction" ("invoice_document_id") `,
+      `CREATE INDEX "IDX_ondidj_invoice_document_id" ON "overdue_notice_document_invoice_document_junction" ("invoice_document_id") `,
     );
   }
 
