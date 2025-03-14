@@ -1,9 +1,17 @@
 <script setup lang="ts">
 import ConfirmDialog from "primevue/confirmdialog";
 import Toast from "primevue/toast";
+import { onMounted } from "vue";
 import { RouterView } from "vue-router";
 
 import NavigationBar from "@/components/NavigationBar.vue";
+import { useUserStore } from "@/store";
+
+const userStore = useUserStore();
+
+onMounted(() => {
+  userStore.loadPermissions();
+});
 </script>
 
 <template>

@@ -111,7 +111,7 @@ ordersRouter.get(
 
 ordersRouter.post(
   "",
-  [checkPermissionMiddleware(UserPermissions.ORDER_EDIT)],
+  [checkPermissionMiddleware(UserPermissions.ORDERS_CREATE_DELETE)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     try {
@@ -160,7 +160,7 @@ ordersRouter.get(
 
 ordersRouter.patch(
   "/:id",
-  [checkPermissionMiddleware(UserPermissions.ORDER_EDIT)],
+  [checkPermissionMiddleware(UserPermissions.ORDERS_UPDATE)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     let order: Order | null = null;
@@ -194,7 +194,7 @@ ordersRouter.patch(
 
 ordersRouter.delete(
   "/:id",
-  [checkPermissionMiddleware(UserPermissions.ORDER_EDIT)],
+  [checkPermissionMiddleware(UserPermissions.ORDERS_CREATE_DELETE)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     try {

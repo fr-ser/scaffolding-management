@@ -14,16 +14,17 @@ import {
 import { UserPermissions } from "@/global/types/backendTypes";
 
 const adminPermissions = [
-  UserPermissions.ARTICLES_VIEW,
   UserPermissions.ARTICLES_EDIT,
+  UserPermissions.ARTICLES_VIEW,
+  UserPermissions.ATTACHMENTS_EDIT,
   UserPermissions.CLIENTS_EDIT,
-  UserPermissions.DOCUMENTS_VIEW,
   UserPermissions.DOCUMENTS_EDIT,
   UserPermissions.DOCUMENTS_SEND_EMAIL,
-  UserPermissions.ATTACHMENTS_EDIT,
-  UserPermissions.SUB_ORDERS_VIEW,
+  UserPermissions.DOCUMENTS_VIEW,
+  UserPermissions.ORDERS_CREATE_DELETE,
+  UserPermissions.ORDERS_UPDATE,
   UserPermissions.SUB_ORDERS_EDIT,
-  UserPermissions.ORDER_EDIT,
+  UserPermissions.SUB_ORDERS_VIEW,
 ];
 
 export const USERS = {
@@ -38,12 +39,12 @@ export const USERS = {
   [USER_INVOICING_NAME]: {
     password: USER_INVOICING_PASSWORD,
     permissions: [
-      UserPermissions.ARTICLES_VIEW,
-      UserPermissions.DOCUMENTS_VIEW,
-      // TODO: check if invoicing can edit documents
-      UserPermissions.SUB_ORDERS_VIEW,
-      // TODO: check if invoicing can edit suboffers
+      UserPermissions.DOCUMENTS_EDIT,
       UserPermissions.DOCUMENTS_SEND_EMAIL,
+      UserPermissions.DOCUMENTS_VIEW,
+      UserPermissions.ORDERS_UPDATE,
+      UserPermissions.SUB_ORDERS_EDIT,
+      UserPermissions.SUB_ORDERS_VIEW,
     ],
   },
   [USER_EMPLOYEE_NAME]: {

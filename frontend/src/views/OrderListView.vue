@@ -2,14 +2,22 @@
 import Button from "primevue/button";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 
 import { deleteOrder, getOrders } from "@/backendClient";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
+import { UserPermissions } from "@/global/types/backendTypes";
 import type { Order } from "@/global/types/entities";
 import { getOrderCreatePath, getOrderEditPath } from "@/helpers/routes";
 import { debounce } from "@/helpers/utils";
+import { useUserStore } from "@/store";
+
+const userStore = useUserStore();
+
+const editButtonText = computed(() => {
+  return userStore.permissions.includes(UserPermissions.ORDERS_UPDATE) ? "Bearbeiten" : "Anschauen";
+});
 
 const ordersList = ref<Order[]>([]);
 
@@ -64,7 +72,10 @@ onMounted(async () => {
           data-testid="order-search-input"
         />
       </span>
-      <router-link :to="getOrderCreatePath()">
+      <router-link
+        v-if="userStore.permissions.includes(UserPermissions.ORDERS_CREATE_DELETE)"
+        :to="getOrderCreatePath()"
+      >
         <Button
           label="Auftrag anlegen"
           rounded
@@ -84,7 +95,7 @@ onMounted(async () => {
               <div class="flex flex-row flex-wrap gap-2">
                 <router-link :to="getOrderEditPath(order.id)">
                   <Button
-                    label="Bearbeiten"
+                    :label="editButtonText"
                     icon="pi pi-pencil"
                     severity="secondary"
                     outlined
@@ -92,6 +103,7 @@ onMounted(async () => {
                   />
                 </router-link>
                 <Button
+                  v-if="userStore.permissions.includes(UserPermissions.ORDERS_CREATE_DELETE)"
                   @click.stop.prevent="confirmDelete(order)"
                   label="Löschen"
                   icon="pi pi-times"

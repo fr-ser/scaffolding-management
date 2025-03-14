@@ -2,18 +2,25 @@
 import Button from "primevue/button";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 
 import { deleteClient, getClients } from "@/backendClient";
 import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
+import { UserPermissions } from "@/global/types/backendTypes";
 import type { Client } from "@/global/types/entities";
 import { getClientCreatePath, getClientEditPath } from "@/helpers/routes";
 import { debounce } from "@/helpers/utils";
+import { useUserStore } from "@/store";
+
+const userStore = useUserStore();
+
+const editButtonText = computed(() => {
+  return userStore.permissions.includes(UserPermissions.CLIENTS_EDIT) ? "Bearbeiten" : "Anschauen";
+});
 
 const confirm = useConfirmations();
 const notifications = useNotifications();
-
 const clientsList = ref<Client[]>([]);
 
 const search = ref("");
@@ -65,7 +72,10 @@ onMounted(async () => {
           data-testid="client-search-input"
         />
       </span>
-      <router-link :to="getClientCreatePath()">
+      <router-link
+        v-if="userStore.permissions.includes(UserPermissions.CLIENTS_EDIT)"
+        :to="getClientCreatePath()"
+      >
         <Button
           label="Kunden erstellen"
           rounded
@@ -89,7 +99,7 @@ onMounted(async () => {
               <div class="flex flex-row flex-wrap gap-2">
                 <router-link :to="getClientEditPath(client.id)">
                   <Button
-                    label="Bearbeiten"
+                    :label="editButtonText"
                     icon="pi pi-pencil"
                     severity="secondary"
                     outlined
@@ -97,6 +107,7 @@ onMounted(async () => {
                   />
                 </router-link>
                 <Button
+                  v-if="userStore.permissions.includes(UserPermissions.CLIENTS_EDIT)"
                   @click.stop.prevent="confirmDelete(client)"
                   label="Löschen"
                   icon="pi pi-times"

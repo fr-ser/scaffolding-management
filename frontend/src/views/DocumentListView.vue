@@ -156,5 +156,4 @@ onMounted(async () => {
       </div>
     </div>
   </div>
-  <!-- TODO: handle no documents for employees -->
 </template>

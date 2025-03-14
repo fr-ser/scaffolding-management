@@ -7,6 +7,7 @@ import type {
   PaginationResponse,
   SaveDocumentsAsPdfPayload,
   SendDocumentsAsEMail,
+  UserData,
 } from "@/global/types/backendTypes";
 import type {
   ArticleCreate,
@@ -222,4 +223,9 @@ export async function getOrderAttachments(id: string) {
 
 export async function deleteOrderAttachment(orderId: string, fileName: string) {
   await axiosInstance.delete(`/api/orders/${orderId}/attachments/${encodeURIComponent(fileName)}`);
+}
+
+export async function getUserData() {
+  const response = await axiosInstance.get(`/api/users`);
+  return response.data as UserData;
 }

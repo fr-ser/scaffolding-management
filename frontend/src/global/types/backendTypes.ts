@@ -2,16 +2,17 @@ import type { DocumentKind } from "./appTypes";
 import type { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "./entities";
 
 export enum UserPermissions {
-  ARTICLES_VIEW = "ARTICLES_VIEW",
   ARTICLES_EDIT = "ARTICLES_EDIT",
+  ARTICLES_VIEW = "ARTICLES_VIEW",
+  ATTACHMENTS_EDIT = "ATTACHMENTS_EDIT",
   CLIENTS_EDIT = "CLIENTS_EDIT",
-  DOCUMENTS_VIEW = "DOCUMENTS_VIEW",
   DOCUMENTS_EDIT = "DOCUMENTS_EDIT",
   DOCUMENTS_SEND_EMAIL = "DOCUMENTS_SEND_EMAIL",
-  ATTACHMENTS_EDIT = "ATTACHMENTS_EDIT",
-  SUB_ORDERS_VIEW = "SUB_ORDERS_VIEW",
+  DOCUMENTS_VIEW = "DOCUMENTS_VIEW",
+  ORDERS_CREATE_DELETE = "ORDERS_CREATE_DELETE",
+  ORDERS_UPDATE = "ORDERS_UPDATE",
   SUB_ORDERS_EDIT = "SUB_ORDERS_EDIT",
-  ORDER_EDIT = "ORDER_EDIT",
+  SUB_ORDERS_VIEW = "SUB_ORDERS_VIEW",
 }
 
 export interface PaginationQueryParameters {
@@ -66,4 +67,8 @@ export type AnyDocument =
 export interface DropboxFile {
   name: string;
   link: string;
+}
+
+export interface UserData {
+  permissions: UserPermissions[];
 }

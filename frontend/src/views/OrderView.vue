@@ -23,10 +23,14 @@ import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
 import { formatIsoDateString } from "@/global/helpers";
 import { DocumentKind, OrderStatus, SubItemKind } from "@/global/types/appTypes";
+import { UserPermissions } from "@/global/types/backendTypes";
 import type { OrderCreate } from "@/global/types/dataEditTypes";
 import type { Client, Offer, Order } from "@/global/types/entities";
 import { getOrderListPath, getOrderSubOrderCreatePath } from "@/helpers/routes";
 import { debounce } from "@/helpers/utils";
+import { useUserStore } from "@/store";
+
+const userStore = useUserStore();
 
 const router = useRouter();
 const route = useRoute();
@@ -179,7 +183,7 @@ onMounted(async () => {
     <div class="flex flex-row justify-between mb-3">
       <Button
         @click="router.push(getOrderListPath())"
-        icon="pi pi-list"
+        icon="pi pi-arrow-left"
         size="small"
         severity="secondary"
         text
@@ -187,6 +191,7 @@ onMounted(async () => {
         data-testid="order-return-button"
       />
       <Button
+        v-if="userStore.permissions.includes(UserPermissions.ORDERS_UPDATE)"
         @click="onSaveOrder"
         type="button"
         label="Auftrag Speichern"
@@ -194,7 +199,7 @@ onMounted(async () => {
         data-testid="order-save-button"
       />
       <Button
-        v-if="isEditing"
+        v-if="userStore.permissions.includes(UserPermissions.ORDERS_CREATE_DELETE) && isEditing"
         @click="confirmDelete"
         type="button"
         label="Löschen"
@@ -273,7 +278,7 @@ onMounted(async () => {
               }"
             />
           </div>
-          <div v-if="isEditing">
+          <div v-if="isEditing && userStore.permissions.includes(UserPermissions.SUB_ORDERS_EDIT)">
             <p class="font-bold mb-2">Unteraufträge</p>
             <div class="flex flex-col gap-2">
               <router-link
@@ -295,8 +300,7 @@ onMounted(async () => {
               </router-link>
             </div>
           </div>
-          <!-- TODO: handle no suborder for employees -->
-          <section>
+          <section v-if="userStore.permissions.includes(UserPermissions.SUB_ORDERS_VIEW)">
             <TabView :active-index="getActiveSubOrderIndex()">
               <TabPanel v-if="(orderInfo as Order).offer" header="Angebot">
                 <OfferSummary :offer="(orderInfo as Order).offer as Offer"></OfferSummary>
@@ -318,7 +322,10 @@ onMounted(async () => {
             </TabView>
           </section>
         </div>
-        <OrderDocuments v-if="isEditing" :id="(orderInfo as Order).id" />
+        <OrderDocuments
+          v-if="isEditing && userStore.permissions.includes(UserPermissions.DOCUMENTS_VIEW)"
+          :id="(orderInfo as Order).id"
+        />
         <OrderAttachments v-if="isEditing" :order-id="(orderInfo as Order).id" />
       </template>
     </Card>

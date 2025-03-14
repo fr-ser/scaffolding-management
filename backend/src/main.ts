@@ -15,6 +15,7 @@ import { articlesRouter } from "@/routes/articles";
 import { clientsRouter } from "@/routes/clients";
 import { documentsRouter } from "@/routes/documents";
 import { ordersRouter } from "@/routes/orders";
+import { usersRouter } from "@/routes/users";
 
 export function getApp() {
   const app = express();
@@ -49,6 +50,7 @@ export function getApp() {
   app.use(bodyParser.text({ type: "text/plain", limit: "1mb" }));
   app.use(bodyParser.text({ type: "text/html", limit: "3mb" }));
   app.use(express.static(STATIC_FILE_ROOT));
+  app.use("/api/users", usersRouter);
   app.use("/api/clients", clientsRouter);
   app.use("/api/orders", ordersRouter);
   app.use("/api/articles", articlesRouter);
