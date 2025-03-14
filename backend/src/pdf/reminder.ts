@@ -1,4 +1,4 @@
-import { COMPANY_OWNER } from "@/config";
+import { COMPANY_NAME } from "@/config";
 import { formatIsoDateString, formatNumber, getItemSum, getVatRate } from "@/global/helpers";
 import { OverdueNoticeDocument } from "@/global/types/entities";
 import { PdfFileData, appPageOptions, mmToPx, newPageCheck } from "@/pdf/renderHelpers";
@@ -255,6 +255,6 @@ export function setReminderSubSumTableText(pdfFile: PDFKit.PDFDocument, pdfFileD
     .text(" ", appPageOptions.horizontalMargin, pdfFileData.currY)
     .text("Mit freundlichen Grüßen")
     .moveDown()
-    .text(COMPANY_OWNER);
+    .text(COMPANY_NAME);
   pdfFileData.currY = pdfFile.y;
 }

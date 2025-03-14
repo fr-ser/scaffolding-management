@@ -1,4 +1,4 @@
-import { COMPANY_OWNER } from "@/config";
+import { COMPANY_NAME } from "@/config";
 import { formatIsoDateString, formatNumber } from "@/global/helpers";
 import { InvoiceDocument } from "@/global/types/entities";
 import { PdfFileData, appPageOptions, mmToPx, newPageCheck } from "@/pdf/renderHelpers";
@@ -72,6 +72,6 @@ export const setInvoiceSubSumTableText = function setInvoiceSubSumTableText(
     .text(" ", appPageOptions.horizontalMargin, pdfFileData.currY)
     .text("Mit freundlichen Grüßen")
     .moveDown()
-    .text(COMPANY_OWNER);
+    .text(COMPANY_NAME);
   pdfFileData.currY = pdfFile.y;
 };

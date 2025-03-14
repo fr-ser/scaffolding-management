@@ -2,21 +2,16 @@ import path from "path";
 import PDFDocument from "pdfkit";
 
 import {
-  COMPANY_BANK_NAME_1,
-  COMPANY_BANK_NAME_2,
-  COMPANY_BIC_1,
-  COMPANY_BIC_2,
+  COMPANY_BANK_NAME,
+  COMPANY_BIC,
   COMPANY_EMAIL,
   COMPANY_HOMEPAGE,
-  COMPANY_IBAN_1,
-  COMPANY_IBAN_2,
+  COMPANY_IBAN,
   COMPANY_MOBILE_PHONE,
   COMPANY_NAME,
-  COMPANY_OWNER,
   COMPANY_PHONE,
   COMPANY_POSTAL_CODE_AND_CITY,
   COMPANY_STREET_AND_NUMBER,
-  COMPANY_TAX_CODE,
   COMPANY_VAT_CODE,
   STATIC_FILE_ROOT,
 } from "@/config";
@@ -132,55 +127,31 @@ const createDocument = function createDocument(
         .font("Helvetica")
         .text(COMPANY_STREET_AND_NUMBER)
         .text(COMPANY_POSTAL_CODE_AND_CITY)
-        .text(COMPANY_TAX_CODE)
         .text(COMPANY_VAT_CODE);
 
       pdfFile
         .font("Helvetica-Bold")
         .fontSize(8)
-        .text("Kontaktinformation", mmToPx(55), appPageOptions.footerStart + mmToPx(2))
+        .text("Kontaktinformation", mmToPx(85), appPageOptions.footerStart + mmToPx(2))
         .font("Helvetica")
-        .text(COMPANY_OWNER)
         .text(`Phone: ${COMPANY_PHONE}`)
         .text(`Mobil: ${COMPANY_MOBILE_PHONE}`)
-        .text(`E-Mail: ${COMPANY_EMAIL}`);
+        .text(`E-Mail: ${COMPANY_EMAIL}`)
+        .text(`Web: ${COMPANY_HOMEPAGE}`);
 
       pdfFile
         .font("Helvetica-Bold")
         .fontSize(8)
-        .text("Bankverbindung", mmToPx(100), appPageOptions.footerStart + mmToPx(2), {
-          width: mmToPx(100),
-          align: "center",
-        })
-        .font("Helvetica")
-        .moveDown(3)
-        .text(`Web: ${COMPANY_HOMEPAGE}`, { width: mmToPx(100), align: "center" });
+        .text("Bankverbindung", mmToPx(145), appPageOptions.footerStart + mmToPx(2));
 
       pdfFile
         .font("Helvetica-Bold")
         .fontSize(7.5)
-        .text(" ", mmToPx(100), appPageOptions.footerStart + mmToPx(2))
+        .text(" ", mmToPx(145), appPageOptions.footerStart + mmToPx(2))
         .font("Helvetica")
-        .text(COMPANY_BANK_NAME_1)
-        .text(`IBAN: ${COMPANY_IBAN_1}`)
-        .text(`BIC: ${COMPANY_BIC_1}`);
-
-      pdfFile
-        .lineWidth(1)
-        .strokeColor("black")
-        .strokeOpacity(1)
-        .moveTo(mmToPx(147), appPageOptions.footerStart + mmToPx(5))
-        .lineTo(mmToPx(147), appPageOptions.footerStart + mmToPx(13.5))
-        .stroke();
-
-      pdfFile
-        .font("Helvetica-Bold")
-        .fontSize(7.5)
-        .text(" ", mmToPx(150), appPageOptions.footerStart + mmToPx(2))
-        .font("Helvetica")
-        .text(COMPANY_BANK_NAME_2)
-        .text(`IBAN: ${COMPANY_IBAN_2}`)
-        .text(`BIC: ${COMPANY_BIC_2}`);
+        .text(COMPANY_BANK_NAME)
+        .text(`IBAN: ${COMPANY_IBAN}`)
+        .text(`BIC: ${COMPANY_BIC}`);
     }
   }
 
