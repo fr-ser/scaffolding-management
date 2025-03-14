@@ -1,4 +1,6 @@
 import fs from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 import { DataSource, MoreThanOrEqual } from "typeorm";
 
@@ -60,7 +62,7 @@ export async function backupDocuments(dataSource: DataSource) {
   const yesterdayYear = yesterday.getFullYear();
   const yesterdayMonth = String(yesterday.getMonth() + 1).padStart(2, "0");
 
-  const temporaryFolder = await fs.mkdtemp("backup");
+  const temporaryFolder = await fs.mkdtemp(join(tmpdir(), "backup-"));
   const temporaryPdfPath = temporaryFolder + "/temp.pdf";
   for (const document of allDocuments) {
     await fs.writeFile(temporaryPdfPath, await renderMultiplePDF([document]));
