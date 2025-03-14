@@ -16,7 +16,9 @@ import { useUserStore } from "@/store";
 const userStore = useUserStore();
 
 const editButtonText = computed(() => {
-  return userStore.permissions.includes(UserPermissions.CLIENTS_EDIT) ? "Bearbeiten" : "Anschauen";
+  return userStore.permissions.includes(UserPermissions.CLIENTS_EDIT)
+    ? "Anschauen / Bearbeiten"
+    : "Anschauen";
 });
 
 const confirm = useConfirmations();
@@ -85,40 +87,34 @@ onMounted(async () => {
       </router-link>
     </div>
     <div class="grow overflow-auto">
-      <router-link
-        :to="getClientEditPath(client.id)"
-        v-for="client in clientsList"
-        :key="client.id"
-      >
-        <Card class="mt-2" data-testid="client-card">
-          <template #content>
-            <div class="flex gap-2 flex-row justify-between items-center">
-              <div>
-                {{ `${client.first_name} ${client.last_name}` }}
-              </div>
-              <div class="flex flex-row flex-wrap gap-2">
-                <router-link :to="getClientEditPath(client.id)">
-                  <Button
-                    :label="editButtonText"
-                    icon="pi pi-pencil"
-                    severity="secondary"
-                    outlined
-                    size="small"
-                  />
-                </router-link>
+      <Card v-for="client in clientsList" :key="client.id" class="mt-2" data-testid="client-card">
+        <template #content>
+          <div class="flex gap-2 flex-row justify-between items-center">
+            <div>
+              {{ `${client.first_name} ${client.last_name}` }}
+            </div>
+            <div class="flex flex-row flex-wrap gap-2">
+              <router-link :to="getClientEditPath(client.id)">
                 <Button
-                  v-if="userStore.permissions.includes(UserPermissions.CLIENTS_EDIT)"
-                  @click.stop.prevent="confirmDelete(client)"
-                  label="Löschen"
-                  icon="pi pi-times"
-                  severity="danger"
+                  :label="editButtonText"
+                  icon="pi pi-pencil"
+                  severity="secondary"
+                  outlined
                   size="small"
                 />
-              </div>
+              </router-link>
+              <Button
+                v-if="userStore.permissions.includes(UserPermissions.CLIENTS_EDIT)"
+                @click.stop.prevent="confirmDelete(client)"
+                label="Löschen"
+                icon="pi pi-times"
+                severity="danger"
+                size="small"
+              />
             </div>
-          </template>
-        </Card>
-      </router-link>
+          </div>
+        </template>
+      </Card>
       <div class="mt-2 flex justify-center">
         <Button v-if="hasMore" @click="loadMore">Weitere Kunden laden</Button>
       </div>

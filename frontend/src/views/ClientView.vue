@@ -166,14 +166,14 @@ onMounted(async () => {
             </FloatLabel>
             <FloatLabel>
               <Textarea
-                id="text"
+                id="comment"
                 v-model="userInfo.comment"
                 class="w-full"
                 autoResize
                 rows="5"
                 cols="30"
               />
-              <label for="text">Kommentar</label>
+              <label for="comment">Kommentar</label>
             </FloatLabel>
           </div>
         </template>

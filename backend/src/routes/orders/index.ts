@@ -36,8 +36,6 @@ ordersRouter.get(
 
     const dataSource = getAppDataSource();
 
-    // let whereClause: FindOneOptions<Order>["where"] = [];
-
     let databaseQuery = dataSource
       .getRepository(Order)
       .createQueryBuilder("order")
@@ -139,6 +137,7 @@ ordersRouter.get(
     let relations = {
       client: true,
     } as FindOptionsRelations<Order>;
+
     if (permissions.includes(UserPermissions.SUB_ORDERS_VIEW)) {
       relations = {
         client: true,
