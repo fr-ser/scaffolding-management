@@ -5,6 +5,9 @@ node_modules
 dist
 .env*
 
+# script artifacts
+backup.json
+
 # local development artifacts
 .envrc
 *.db
