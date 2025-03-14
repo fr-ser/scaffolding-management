@@ -11,6 +11,8 @@ const props = defineProps<{
   result: OfferDocument | OverdueNoticeDocument | InvoiceDocument;
   kind: DocumentKind;
 }>();
+
+const VITE_COMPANY_NAME = import.meta.env.VITE_COMPANY_NAME;
 </script>
 
 <template>
@@ -21,7 +23,7 @@ const props = defineProps<{
       ermittelt und abgerechnet.<br />
       Wir hoffen Ihnen sagt unser Angebot zu und würden uns freuen, Ihren Auftrag zu erhalten!<br /><br />
       Mit freundlichen Grüßen<br /><br />
-      John Smith<br /><br />
+      {{ VITE_COMPANY_NAME }}<br /><br />
       <div class="flex">
         <span>
           Zur Auftragsersteilung und Bestätigung senden Sie uns das Angebot bitte unterschrieben
@@ -42,13 +44,13 @@ const props = defineProps<{
       Zahlungsziel: Bitte zahlen Sie bis zum
       {{ formatIsoDateString((result as InvoiceDocument).payment_target) }} ohne Abzug.<br /><br />
       Mit freundlichen Grüßen <br /><br />
-      John Smith
+      {{ VITE_COMPANY_NAME }}
     </section>
 
     <section v-if="props.kind === DocumentKind.overdueNotice">
       Überweisen Sie bitte den offenen Betrag auf das unten aufgeführte Geschäftskonto. <br /><br />
       Mit freundlichen Grüßen <br /><br />
-      John Smith
+      {{ VITE_COMPANY_NAME }}
     </section>
   </div>
 </template>

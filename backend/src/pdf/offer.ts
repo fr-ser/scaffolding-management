@@ -1,4 +1,4 @@
-import { COMPANY_OWNER } from "@/config";
+import { COMPANY_NAME } from "@/config";
 import { formatIsoDateString } from "@/global/helpers";
 import { OfferDocument } from "@/global/types/entities";
 import { PdfFileData, appPageOptions, mmToPx, newPageCheck } from "@/pdf/renderHelpers";
@@ -52,7 +52,7 @@ export function setOfferSubSumTableText(pdfFile: PDFKit.PDFDocument, pdfFileData
     .text(" ")
     .text("Mit freundlichen Grüßen")
     .text(" ")
-    .text(COMPANY_OWNER);
+    .text(COMPANY_NAME);
   pdfFileData.currY = pdfFile.y;
 
   newPageCheck(pdfFile, pdfFileData.currY, pdfFile.currentLineHeight() * 4, pdfFileData);
