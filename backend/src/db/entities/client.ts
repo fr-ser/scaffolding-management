@@ -12,7 +12,6 @@ export class Client {
   @Column({ type: "real", default: () => "unixepoch('subsec')" })
   created_at: number;
 
-  // TODO: Add onUpdate trigger (and for all other entities)
   @Column({ type: "real", default: () => "unixepoch('subsec')" })
   updated_at: number;
 

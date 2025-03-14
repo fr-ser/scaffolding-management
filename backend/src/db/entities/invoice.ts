@@ -12,7 +12,6 @@ export class Invoice {
   @Column({ type: "real", default: () => "unixepoch('subsec')" })
   created_at: number;
 
-  // TODO: Add onUpdate trigger (and for all other entities)
   @Column({ type: "real", default: () => "unixepoch('subsec')" })
   updated_at: number;
 
@@ -23,7 +22,6 @@ export class Invoice {
   @JoinColumn({ name: "order_id" })
   order: Order;
 
-  // TODO: this is only created for the move from the old to the new app. Delete it afterwards
   @Column({ type: "text" })
   sub_id: string;
 
