@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon",
     "build": "CONFIG_PATH=../.env.development tsc && tsc-alias",
-    "start:email-task": "npm run build && CONFIG_PATH=../.env.development node ./dist/src/tasks/email_notification/task.js",
+    "start:task:email": "npm run build && CONFIG_PATH=../.env.development node ./dist/src/tasks/email_notification/task.js",
+    "start:task:backup": "npm run build && CONFIG_PATH=../.env.development node ./dist/src/tasks/backup/task.js",
     "start:server": "npm run build && CONFIG_PATH=../.env.development node ./dist/src/index.js",
     "db:seed": "npm run build && CONFIG_PATH=../.env.development npx ts-node -r tsconfig-paths/register scripts/seed-local-data.ts",
     "db:seed:overwrite": "npm run db:seed -- --overwrite",

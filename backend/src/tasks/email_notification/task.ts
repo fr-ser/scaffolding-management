@@ -16,7 +16,7 @@ import { sendNotificationEmail } from "@/tasks/email_notification/email";
  * - overdue invoices
  * - overdue "overdue notices"
  */
-async function main() {
+async function emailNotificationTask() {
   log("Starting email notification task");
 
   const dataSource = await initializeAppDataSource(DB_PATH);
@@ -36,7 +36,7 @@ async function main() {
   });
 }
 
-main()
+emailNotificationTask()
   .then(() => {
     log("Email notification task finished");
   })

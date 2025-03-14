@@ -9,4 +9,3 @@ Learn more about the recommended Project Setup and IDE Support in the [Vue Docs 
 Run `npm run dev` to start the development environment.
 
 Run `npm run test` to run all tests.
-<!-- TODO: add database backup task -->
