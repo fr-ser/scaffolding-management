@@ -4,10 +4,11 @@ import express from "express";
 import formidable from "formidable";
 
 import { checkPermissionMiddleware } from "@/authorization";
+import { DROPBOX_PATH_PREFIX } from "@/config";
 import { DropboxFile, ErrorCode, UserPermissions } from "@/global/types/backendTypes";
 import { ApiError } from "@/helpers/apiErrors";
 import { log } from "@/helpers/logging";
-import { deleteFile, getFileDownloadLink, getFilesForOrder, uploadFile } from "@/services/dropbox";
+import { deleteFile, getFileDownloadLink, getFilesInFolder, uploadFile } from "@/services/dropbox";
 
 export const attachmentsRouter = express.Router({ mergeParams: true });
 
@@ -16,7 +17,7 @@ attachmentsRouter.get(
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     let files: string[];
     try {
-      files = await getFilesForOrder(req.params.orderId);
+      files = await getFilesInFolder(`${DROPBOX_PATH_PREFIX}/attachments/${req.params.orderId}/`);
     } catch (error) {
       log("Error getting files from dropbox", error);
       next(error);
@@ -24,7 +25,9 @@ attachmentsRouter.get(
     }
 
     const getLinkPromises = await Promise.all(
-      files.map((fileName) => getFileDownloadLink(req.params.orderId, fileName)),
+      files.map((fileName) =>
+        getFileDownloadLink(`${DROPBOX_PATH_PREFIX}/attachments/${req.params.orderId}/${fileName}`),
+      ),
     );
 
     res.send(
@@ -57,7 +60,10 @@ attachmentsRouter.post(
     }
 
     try {
-      await uploadFile(req.params.orderId, file);
+      await uploadFile(
+        `${DROPBOX_PATH_PREFIX}/attachments/${req.params.orderId}/${file.originalFilename}`,
+        file,
+      );
     } catch (error) {
       log("Error uploading file", error);
       next(error);
@@ -67,7 +73,9 @@ attachmentsRouter.post(
 
     res.send({
       name: file.originalFilename as string,
-      link: await getFileDownloadLink(req.params.orderId, file.originalFilename as string),
+      link: await getFileDownloadLink(
+        `${DROPBOX_PATH_PREFIX}/attachments/${req.params.orderId}/${file.originalFilename as string}`,
+      ),
     } as DropboxFile);
   },
 );
@@ -76,7 +84,9 @@ attachmentsRouter.delete(
   "/:fileName",
   [checkPermissionMiddleware(UserPermissions.ATTACHMENTS_EDIT)],
   async (req: express.Request, res: express.Response) => {
-    await deleteFile(req.params.orderId, req.params.fileName);
+    await deleteFile(
+      `${DROPBOX_PATH_PREFIX}/attachments/${req.params.orderId}/${req.params.fileName}`,
+    );
     res.sendStatus(200);
   },
 );
