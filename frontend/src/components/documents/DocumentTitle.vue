@@ -67,22 +67,24 @@ const content = computed(() => {
     <div class="">
       <hr class="border-black border-1 mb-3" />
       <table class="header-info">
-        <tr>
-          <td>{{ `${content.dateName}: ` }}</td>
-          <td>{{ formatIsoDateString(result.creation_date) }}</td>
-        </tr>
-        <tr>
-          <td>Kundennummer:</td>
-          <td>{{ result.client_id }}</td>
-        </tr>
-        <tr>
-          <td>{{ `${content.numberName}: ` }}</td>
-          <td>{{ result.id }}</td>
-        </tr>
-        <tr v-if="props.kind === DocumentKind.offer">
-          <td>Angebot gültig bis:</td>
-          <td>{{ formatIsoDateString((result as OfferDocument).offer_valid_until) }}</td>
-        </tr>
+        <tbody>
+          <tr>
+            <td>{{ `${content.dateName}: ` }}</td>
+            <td>{{ formatIsoDateString(result.creation_date) }}</td>
+          </tr>
+          <tr>
+            <td>Kundennummer:</td>
+            <td>{{ result.client_id }}</td>
+          </tr>
+          <tr>
+            <td>{{ `${content.numberName}: ` }}</td>
+            <td>{{ result.id }}</td>
+          </tr>
+          <tr v-if="props.kind === DocumentKind.offer">
+            <td>Angebot gültig bis:</td>
+            <td>{{ formatIsoDateString((result as OfferDocument).offer_valid_until) }}</td>
+          </tr>
+        </tbody>
       </table>
       <hr class="border-black border-1 mt-3" />
     </div>
