@@ -11,15 +11,29 @@ const dbx = new Dropbox({
 });
 
 export async function getFilesInFolder(folderPath: string) {
-  // TODO: handle pagination
+  let entries: string[] = [];
+  let hasMore = false;
   try {
-    const contents = (await dbx.filesListFolder({ path: folderPath })).result.entries;
-
-    return contents.filter((entry) => entry[".tag"] === "file").map((entry) => entry.name);
+    const result = (await dbx.filesListFolder({ path: folderPath })).result;
+    entries = entries.concat(
+      result.entries.filter((entry) => entry[".tag"] === "file").map((entry) => entry.name),
+    );
+    hasMore = result.has_more;
+    let cursor = result.cursor;
+    while (hasMore) {
+      const cursorResult = (await dbx.filesListFolderContinue({ cursor })).result;
+      entries = entries.concat(
+        cursorResult.entries.filter((entry) => entry[".tag"] === "file").map((entry) => entry.name),
+      );
+      hasMore = cursorResult.has_more;
+      cursor = cursorResult.cursor;
+    }
   } catch (err) {
     if (err?.error?.error?.path?.[".tag"] === "not_found") return [];
     throw err;
   }
+
+  return entries;
 }
 
 export async function uploadFile(path: string, filePath: string) {
