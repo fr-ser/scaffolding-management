@@ -20,16 +20,16 @@ export abstract class OrderItem {
   @Column({ type: "text", nullable: true })
   unit?: string;
 
-  @Column({ type: "numeric", nullable: true })
+  @Column({ type: "real", nullable: true })
   price?: number;
 
-  @Column({ type: "numeric", nullable: true })
+  @Column({ type: "real", nullable: true })
   amount?: number;
 }
 
 @Entity()
 export class OfferItem extends OrderItem {
-  @Column({ type: "numeric" })
+  @Column({ type: "integer" })
   offer_id: number;
 
   @ManyToOne(() => Offer, { onDelete: "CASCADE" })
@@ -39,7 +39,7 @@ export class OfferItem extends OrderItem {
 
 @Entity()
 export class InvoiceItem extends OrderItem {
-  @Column({ type: "numeric" })
+  @Column({ type: "integer" })
   invoice_id: number;
 
   @ManyToOne(() => Invoice, { onDelete: "CASCADE" })

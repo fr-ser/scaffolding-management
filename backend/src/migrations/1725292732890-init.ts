@@ -17,8 +17,8 @@ export class Init1725292732890 implements MigrationInterface {
         "title" text NOT NULL,
         "description" text NOT NULL,
         "unit" text,
-        "price" numeric
-      )
+        "price" REAL
+      ) STRICT
     `);
 
     await queryRunner.query(`
@@ -37,11 +37,11 @@ export class Init1725292732890 implements MigrationInterface {
         "title" text NOT NULL,
         "description" text NOT NULL,
         "unit" text,
-        "price" numeric,
-        "amount" numeric,
+        "price" REAL,
+        "amount" REAL,
         "offer_document_id" text NOT NULL,
         CONSTRAINT "FK_offer_document_id" FOREIGN KEY ("offer_document_id") REFERENCES "offer_document" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
-      )
+      ) STRICT
     `);
     await queryRunner.query(`
       CREATE TABLE "invoice_document_item" (
@@ -50,8 +50,8 @@ export class Init1725292732890 implements MigrationInterface {
         "title" text NOT NULL,
         "description" text NOT NULL,
         "unit" text,
-        "price" numeric,
-        "amount" numeric,
+        "price" REAL,
+        "amount" REAL,
         "invoice_document_id" text NOT NULL,
         CONSTRAINT "FK_invoice_document_id" FOREIGN KEY ("invoice_document_id") REFERENCES "invoice_document" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
       )
@@ -70,10 +70,10 @@ export class Init1725292732890 implements MigrationInterface {
         "payment_target" text NOT NULL,
         "notice_level" text NOT NULL,
         "payment_status" text NOT NULL,
-        "notice_costs" numeric NOT NULL,
-        "default_interest" numeric,
+        "notice_costs" real NOT NULL,
+        "default_interest" real,
         CONSTRAINT "FK_order_id" FOREIGN KEY ("order_id") REFERENCES "order" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
-      )
+      ) STRICT
     `);
 
     await queryRunner.query(`
@@ -105,7 +105,7 @@ export class Init1725292732890 implements MigrationInterface {
         "offered_at" text NOT NULL,
         "offer_valid_until" text NOT NULL,
         CONSTRAINT "FK_offer_id" FOREIGN KEY ("offer_id") REFERENCES "offer" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
-      )
+      ) STRICT
     `);
 
     await queryRunner.query(`
@@ -137,11 +137,11 @@ export class Init1725292732890 implements MigrationInterface {
         "service_dates" text NOT NULL,
         "invoice_date" text NOT NULL,
         "payment_target" text NOT NULL,
-        "can_have_cash_discount" boolean NOT NULL,
-        "discount_duration" numeric,
-        "discount_percentage" numeric,
+        "can_have_cash_discount" int NOT NULL,
+        "discount_duration" real,
+        "discount_percentage" real,
         CONSTRAINT "FK_invoice_id" FOREIGN KEY ("invoice_id") REFERENCES "invoice" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
-      )
+      ) STRICT
     `);
 
     await queryRunner.query(`
@@ -174,10 +174,10 @@ export class Init1725292732890 implements MigrationInterface {
         "notice_date" text NOT NULL,
         "payments_until" text NOT NULL,
         "payment_target" text NOT NULL,
-        "notice_costs" numeric NOT NULL,
-        "default_interest" numeric,
+        "notice_costs" real NOT NULL,
+        "default_interest" real,
         CONSTRAINT "FK_overdue_notice_id" FOREIGN KEY ("overdue_notice_id") REFERENCES "overdue_notice" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
-      )
+      ) STRICT
     `);
 
     await queryRunner.query(`
@@ -196,11 +196,11 @@ export class Init1725292732890 implements MigrationInterface {
         "title" text NOT NULL,
         "description" text NOT NULL,
         "unit" text,
-        "price" numeric,
-        "amount" numeric,
+        "price" REAL,
+        "amount" REAL,
         "offer_id" integer NOT NULL,
         CONSTRAINT "FK_offer_id" FOREIGN KEY ("offer_id") REFERENCES "offer" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
-      )
+      ) STRICT
     `);
 
     await queryRunner.query(`
@@ -215,7 +215,7 @@ export class Init1725292732890 implements MigrationInterface {
         "offer_valid_until" text NOT NULL,
         CONSTRAINT "REL_unique_order_id" UNIQUE ("order_id"),
         CONSTRAINT "FK_order_id" FOREIGN KEY ("order_id") REFERENCES "order" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
-      )
+      ) STRICT
     `);
 
     await queryRunner.query(`
@@ -234,11 +234,11 @@ export class Init1725292732890 implements MigrationInterface {
         "title" text NOT NULL,
         "description" text NOT NULL,
         "unit" text,
-        "price" numeric,
-        "amount" numeric,
+        "price" REAL,
+        "amount" REAL,
         "invoice_id" integer NOT NULL,
         CONSTRAINT "FK_invoice_id" FOREIGN KEY ("invoice_id") REFERENCES "invoice" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
-      )
+      ) STRICT
     `);
 
     await queryRunner.query(`
@@ -254,7 +254,7 @@ export class Init1725292732890 implements MigrationInterface {
         "status" text NOT NULL,
         "description" text,
         CONSTRAINT "FK_order_id" FOREIGN KEY ("order_id") REFERENCES "order" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
-      )
+      ) STRICT
     `);
 
     await queryRunner.query(`
@@ -283,7 +283,7 @@ export class Init1725292732890 implements MigrationInterface {
         "postal_code" text,
         "city" text,
         "street_and_number" text
-      )
+      ) STRICT
     `);
 
     await queryRunner.query(`
@@ -304,11 +304,11 @@ export class Init1725292732890 implements MigrationInterface {
         "status" text NOT NULL,
         "title" text NOT NULL,
         "description" text,
-        "can_have_cash_discount" boolean NOT NULL,
-        "discount_duration" numeric,
-        "discount_percentage" numeric,
+        "can_have_cash_discount" int NOT NULL,
+        "discount_duration" real,
+        "discount_percentage" real,
         CONSTRAINT "FK_client_id" FOREIGN KEY ("client_id") REFERENCES "client" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
-      )
+      ) STRICT
     `);
 
     await queryRunner.query(`
@@ -327,7 +327,7 @@ export class Init1725292732890 implements MigrationInterface {
         CONSTRAINT "FK_overdue_notice_id" FOREIGN KEY ("overdue_notice_id") REFERENCES "overdue_notice" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
         CONSTRAINT "FK_invoice_document_id" FOREIGN KEY ("invoice_document_id") REFERENCES "invoice_document" ("id") ON DELETE RESTRICT,
         PRIMARY KEY ("overdue_notice_id", "invoice_document_id")
-      )
+      ) STRICT
     `);
 
     await queryRunner.query(
@@ -343,7 +343,7 @@ export class Init1725292732890 implements MigrationInterface {
         CONSTRAINT "FK_overdue_notice_document_id" FOREIGN KEY ("overdue_notice_document_id") REFERENCES "overdue_notice_document" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
         CONSTRAINT "FK_invoice_document_id" FOREIGN KEY ("invoice_document_id") REFERENCES "invoice_document" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
         PRIMARY KEY ("overdue_notice_document_id", "invoice_document_id")
-      )
+      ) STRICT
     `);
     await queryRunner.query(
       `CREATE INDEX "IDX_ondidj_overdue_notice_document_id" ON "overdue_notice_document_invoice_document_junction" ("overdue_notice_document_id") `,

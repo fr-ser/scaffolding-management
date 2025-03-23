@@ -33,11 +33,13 @@ const notifications = useNotifications();
 let status = ref(props.existingInvoice?.status || PaymentStatus.initial);
 let description = ref(props.existingInvoice?.description || "");
 let invoiceItemsArray = ref<InvoiceItemCreate[]>(props.existingInvoice?.items || []);
-let invoiceDate = ref<Date | undefined>(
-  props.existingInvoice ? new Date(props.existingInvoice.invoice_date) : undefined,
+let invoiceDate = ref<Date>(
+  props.existingInvoice ? new Date(props.existingInvoice.invoice_date) : new Date(),
 );
-let paymentTarget = ref<Date | undefined>(
-  props.existingInvoice ? new Date(props.existingInvoice.payment_target) : undefined,
+let paymentTarget = ref<Date>(
+  props.existingInvoice
+    ? new Date(props.existingInvoice.payment_target)
+    : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
 );
 let serviceDates = ref<{ date?: Date }[]>(
   props.existingInvoice?.service_dates.map((date) => ({ date: new Date(date) })) || [],

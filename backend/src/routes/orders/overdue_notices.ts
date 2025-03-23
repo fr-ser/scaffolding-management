@@ -27,7 +27,7 @@ overdueNoticesRouter.get(
 overdueNoticesRouter.post(
   "",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
-  async (req: express.Request, res: express.Response) => {
+  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     const payload = req.body as OverdueNoticeCreate;
     const payloadWitDocuments = {
@@ -37,11 +37,16 @@ overdueNoticesRouter.post(
 
     const overdueNotice = dataSource.manager.create(OverdueNotice, { ...payloadWitDocuments });
 
-    await dataSource.transaction(async (transactionalEntityManager) => {
-      await transactionalEntityManager.save(OverdueNotice, overdueNotice);
-    });
+    try {
+      await dataSource.transaction(async (transactionalEntityManager) => {
+        await transactionalEntityManager.save(OverdueNotice, overdueNotice);
+      });
 
-    res.json(overdueNotice);
+      res.json(overdueNotice);
+    } catch (error) {
+      next(error);
+      return;
+    }
   },
 );
 
@@ -163,15 +168,20 @@ overdueNoticesRouter.post(
       default_interest: overdueNotice.default_interest,
     });
 
-    await dataSource.transaction(async (transactionalEntityManager) => {
-      await transactionalEntityManager.save(OverdueNoticeDocument, document);
-      transactionalEntityManager
-        .createQueryBuilder()
-        .relation(OverdueNoticeDocument, "invoice_documents")
-        .of(document)
-        .add(overdueNotice.invoice_documents);
-    });
+    try {
+      await dataSource.transaction(async (transactionalEntityManager) => {
+        await transactionalEntityManager.save(OverdueNoticeDocument, document);
+        transactionalEntityManager
+          .createQueryBuilder()
+          .relation(OverdueNoticeDocument, "invoice_documents")
+          .of(document)
+          .add(overdueNotice.invoice_documents);
+      });
 
-    res.json(document);
+      res.json(document);
+    } catch (error) {
+      next(error);
+      return;
+    }
   },
 );
