@@ -37,6 +37,7 @@ clientsRouter.get("/", async (req: express.Request, res: express.Response) => {
         },
       );
   }
+
   const result = await Promise.all([
     baseQuery.take(take).skip(skip).orderBy("created_at", "DESC").getMany(),
     baseQuery.getCount(),

@@ -46,12 +46,12 @@ export class Order {
   @Column({ type: "text", nullable: true })
   description: string;
 
-  @Column({ type: "boolean" })
+  @Column({ type: "int" })
   can_have_cash_discount: boolean;
 
-  @Column({ type: "numeric", nullable: true })
+  @Column({ type: "real", nullable: true })
   discount_duration: number;
 
-  @Column({ type: "numeric", nullable: true })
+  @Column({ type: "real", nullable: true })
   discount_percentage: number;
 }

@@ -29,36 +29,41 @@ offersRouter.get(
 offersRouter.post(
   "",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
-  async (req: express.Request, res: express.Response) => {
+  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     const payload = req.body as OfferCreate;
 
     const offer = dataSource.manager.create(Offer, { ...payload });
 
-    await dataSource.transaction(async (transactionalEntityManager) => {
-      await transactionalEntityManager.save(Offer, offer);
+    try {
+      await dataSource.transaction(async (transactionalEntityManager) => {
+        await transactionalEntityManager.save(Offer, offer);
 
-      await transactionalEntityManager
-        .createQueryBuilder()
-        .insert()
-        .into(OfferItem)
-        .values(
-          payload.items.map((item) => {
-            return {
-              kind: item.kind,
-              title: item.title,
-              description: item.description,
-              unit: item.unit,
-              price: item.price,
-              amount: item.amount,
-              offer_id: offer.id,
-            };
-          }),
-        )
-        .execute();
-    });
+        await transactionalEntityManager
+          .createQueryBuilder()
+          .insert()
+          .into(OfferItem)
+          .values(
+            payload.items.map((item) => {
+              return {
+                kind: item.kind,
+                title: item.title,
+                description: item.description,
+                unit: item.unit,
+                price: item.price,
+                amount: item.amount,
+                offer_id: offer.id,
+              };
+            }),
+          )
+          .execute();
+      });
 
-    res.json(offer);
+      res.json(offer);
+    } catch (error) {
+      next(error);
+      return;
+    }
   },
 );
 
@@ -172,47 +177,52 @@ offersRouter.post(
     `)
     )[0].max_id;
 
-    const document = dataSource.manager.create(OfferDocument, {
-      id: `A-${offer.offered_at.substring(0, 7)}-${maxId + 1}`,
-      order_id: offer.order_id,
-      creation_date: new Date().toISOString().substring(0, 10),
-      client_id: offer.order.client_id,
-      client_email: offer.order.client.email,
-      client_company_name: offer.order.client.company_name,
-      client_first_name: offer.order.client.first_name,
-      client_last_name: offer.order.client.last_name,
-      client_street_and_number: offer.order.client.street_and_number,
-      client_postal_code: offer.order.client.postal_code,
-      client_city: offer.order.client.city,
-      order_title: offer.order.title,
-      offer_id: offer.id,
-      offered_at: offer.offered_at,
-      offer_valid_until: offer.offer_valid_until,
-    });
+    try {
+      const document = dataSource.manager.create(OfferDocument, {
+        id: `A-${offer.offered_at.substring(0, 7)}-${maxId + 1}`,
+        order_id: offer.order_id,
+        creation_date: new Date().toISOString().substring(0, 10),
+        client_id: offer.order.client_id,
+        client_email: offer.order.client.email,
+        client_company_name: offer.order.client.company_name,
+        client_first_name: offer.order.client.first_name,
+        client_last_name: offer.order.client.last_name,
+        client_street_and_number: offer.order.client.street_and_number,
+        client_postal_code: offer.order.client.postal_code,
+        client_city: offer.order.client.city,
+        order_title: offer.order.title,
+        offer_id: offer.id,
+        offered_at: offer.offered_at,
+        offer_valid_until: offer.offer_valid_until,
+      });
 
-    await dataSource.transaction(async (transactionalEntityManager) => {
-      await transactionalEntityManager.save(OfferDocument, document);
+      await dataSource.transaction(async (transactionalEntityManager) => {
+        await transactionalEntityManager.save(OfferDocument, document);
 
-      await transactionalEntityManager
-        .createQueryBuilder()
-        .insert()
-        .into(OfferDocumentItem)
-        .values(
-          offer.items.map((item) => {
-            return {
-              offer_document_id: document.id,
-              kind: item.kind,
-              title: item.title,
-              description: item.description,
-              unit: item.unit,
-              price: item.price,
-              amount: item.amount,
-            };
-          }),
-        )
-        .execute();
-    });
+        await transactionalEntityManager
+          .createQueryBuilder()
+          .insert()
+          .into(OfferDocumentItem)
+          .values(
+            offer.items.map((item) => {
+              return {
+                offer_document_id: document.id,
+                kind: item.kind,
+                title: item.title,
+                description: item.description,
+                unit: item.unit,
+                price: item.price,
+                amount: item.amount,
+              };
+            }),
+          )
+          .execute();
+      });
 
-    res.json(document);
+      res.json(document);
+    } catch (error) {
+      next(error);
+      return;
+    }
   },
 );

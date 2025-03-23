@@ -25,6 +25,6 @@ export class Article {
   @Column({ type: "text", nullable: true })
   unit?: string;
 
-  @Column({ type: "numeric", nullable: true })
+  @Column({ type: "real", nullable: true })
   price?: number;
 }

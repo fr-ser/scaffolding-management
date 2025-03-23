@@ -47,14 +47,16 @@ let paymentStatus = ref(
 let noticeCosts = ref(props.existingOverdueNotice?.notice_costs || 0);
 let defaultInterest = ref(props.existingOverdueNotice?.default_interest || 0);
 let description = ref(props.existingOverdueNotice?.description || "");
-let noticeDate = ref<Date | undefined>(
-  props.existingOverdueNotice ? new Date(props.existingOverdueNotice.notice_date) : undefined,
+let noticeDate = ref<Date>(
+  props.existingOverdueNotice ? new Date(props.existingOverdueNotice.notice_date) : new Date(),
 );
 let paymentTarget = ref<Date | undefined>(
-  props.existingOverdueNotice ? new Date(props.existingOverdueNotice.payment_target) : undefined,
+  props.existingOverdueNotice
+    ? new Date(props.existingOverdueNotice.payment_target)
+    : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
 );
-let paymentsUntil = ref<Date | undefined>(
-  props.existingOverdueNotice ? new Date(props.existingOverdueNotice.payments_until) : undefined,
+let paymentsUntil = ref<Date>(
+  props.existingOverdueNotice ? new Date(props.existingOverdueNotice.payments_until) : new Date(),
 );
 let itemsArray = ref<InvoiceDocument[]>(props.existingOverdueNotice?.invoice_documents || []);
 

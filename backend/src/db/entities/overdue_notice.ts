@@ -62,9 +62,9 @@ export class OverdueNotice {
   @Column({ type: "text" })
   payment_status: OverdueNoticePaymentStatus;
 
-  @Column({ type: "numeric" })
+  @Column({ type: "real" })
   notice_costs: number;
 
-  @Column({ type: "numeric", nullable: true })
+  @Column({ type: "real", nullable: true })
   default_interest: number;
 }

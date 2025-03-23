@@ -48,7 +48,6 @@ async function insertData(dataSource: DataSource) {
       }),
     )
     .execute();
-
   await dataSource
     .createQueryBuilder()
     .insert()

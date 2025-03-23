@@ -105,13 +105,13 @@ export class InvoiceDocument extends BaseDocument {
   @Column({ type: "text" })
   payment_target: string;
 
-  @Column({ type: "boolean" })
+  @Column({ type: "int" })
   can_have_cash_discount: boolean;
 
-  @Column({ type: "numeric", nullable: true })
+  @Column({ type: "real", nullable: true })
   discount_duration: number;
 
-  @Column({ type: "numeric", nullable: true })
+  @Column({ type: "real", nullable: true })
   discount_percentage: number;
 
   @ManyToMany(() => OverdueNotice)
@@ -139,10 +139,10 @@ export class OverdueNoticeDocument extends BaseDocument {
   @Column({ type: "text" })
   payment_target: string;
 
-  @Column({ type: "numeric" })
+  @Column({ type: "real" })
   notice_costs: number;
 
-  @Column({ type: "numeric", nullable: true })
+  @Column({ type: "real", nullable: true })
   default_interest: number;
 
   @ManyToMany(() => InvoiceDocument)

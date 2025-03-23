@@ -73,7 +73,7 @@ const getClientFullName = (client: Client) => {
 };
 
 const isSaveButtonDisabled = computed(() => {
-  return !(orderInfo.value.title && selectedClient.value?.id && orderInfo.value.description);
+  return !(orderInfo.value.title && selectedClient.value?.id);
 });
 
 const searchClient = (event: any) => {

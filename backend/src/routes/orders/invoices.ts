@@ -29,36 +29,41 @@ invoicesRouter.get(
 invoicesRouter.post(
   "",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
-  async (req: express.Request, res: express.Response) => {
+  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     const payload = req.body as InvoiceCreate;
 
     const invoice = dataSource.manager.create(Invoice, { ...payload });
 
-    await dataSource.transaction(async (transactionalEntityManager) => {
-      await transactionalEntityManager.save(Invoice, invoice);
+    try {
+      await dataSource.transaction(async (transactionalEntityManager) => {
+        await transactionalEntityManager.save(Invoice, invoice);
 
-      await transactionalEntityManager
-        .createQueryBuilder()
-        .insert()
-        .into(InvoiceItem)
-        .values(
-          payload.items.map((item) => {
-            return {
-              kind: item.kind,
-              title: item.title,
-              description: item.description,
-              unit: item.unit,
-              price: item.price,
-              amount: item.amount,
-              invoice_id: invoice.id,
-            };
-          }),
-        )
-        .execute();
-    });
+        await transactionalEntityManager
+          .createQueryBuilder()
+          .insert()
+          .into(InvoiceItem)
+          .values(
+            payload.items.map((item) => {
+              return {
+                kind: item.kind,
+                title: item.title,
+                description: item.description,
+                unit: item.unit,
+                price: item.price,
+                amount: item.amount,
+                invoice_id: invoice.id,
+              };
+            }),
+          )
+          .execute();
+      });
 
-    res.json(invoice);
+      res.json(invoice);
+    } catch (error) {
+      next(error);
+      return;
+    }
   },
 );
 
@@ -193,29 +198,34 @@ invoicesRouter.post(
       discount_percentage: invoice.order.discount_percentage,
     });
 
-    await dataSource.transaction(async (transactionalEntityManager) => {
-      await transactionalEntityManager.save(InvoiceDocument, document);
+    try {
+      await dataSource.transaction(async (transactionalEntityManager) => {
+        await transactionalEntityManager.save(InvoiceDocument, document);
 
-      await transactionalEntityManager
-        .createQueryBuilder()
-        .insert()
-        .into(InvoiceDocumentItem)
-        .values(
-          invoice.items.map((item) => {
-            return {
-              invoice_document_id: document.id,
-              kind: item.kind,
-              title: item.title,
-              description: item.description,
-              unit: item.unit,
-              price: item.price,
-              amount: item.amount,
-            };
-          }),
-        )
-        .execute();
-    });
+        await transactionalEntityManager
+          .createQueryBuilder()
+          .insert()
+          .into(InvoiceDocumentItem)
+          .values(
+            invoice.items.map((item) => {
+              return {
+                invoice_document_id: document.id,
+                kind: item.kind,
+                title: item.title,
+                description: item.description,
+                unit: item.unit,
+                price: item.price,
+                amount: item.amount,
+              };
+            }),
+          )
+          .execute();
+      });
 
-    res.json(document);
+      res.json(document);
+    } catch (error) {
+      next(error);
+      return;
+    }
   },
 );

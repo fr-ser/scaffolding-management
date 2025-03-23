@@ -1,6 +1,5 @@
 # Scaffolding Management
 
-<!-- TODO: prevent the backend from crashing with wrong frontend data for db queries -->
 This app should provide basic functionalities to manage a very specific scaffolding business.
 The functionality basically includes:
 
