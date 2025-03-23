@@ -127,7 +127,7 @@ const createDocument = function createDocument(
         .font("Helvetica")
         .text(COMPANY_STREET_AND_NUMBER)
         .text(COMPANY_POSTAL_CODE_AND_CITY)
-        .text(COMPANY_VAT_CODE);
+        .text(`USt-Id: ${COMPANY_VAT_CODE}`);
 
       pdfFile
         .font("Helvetica-Bold")

@@ -54,7 +54,7 @@ const content = computed(() => {
       <p class="font-bold text-2xl pt-5">{{ content.titleKind }}</p>
     </div>
     <div>
-      <img class="h-32" :src="`${BASE_URL}logo_pdf.png`" />
+      <img class="h-32 mr-12" :src="`${BASE_URL}logo_pdf.png`" />
     </div>
   </header>
   <section class="flex flex-row justify-between">

@@ -28,8 +28,6 @@ export const DROPBOX_PATH_PREFIX = "/v3";
 export const DROPBOX_REFRESH_TOKEN = getRequired("DROPBOX_REFRESH_TOKEN");
 export const DROPBOX_CLIENT_ID = getRequired("DROPBOX_CLIENT_ID");
 export const DROPBOX_CLIENT_SECRET = getRequired("DROPBOX_CLIENT_SECRET");
-export const DAILY_BACKUP_COUNT = parseInt(getRequired("DAILY_BACKUP_COUNT"));
-export const MONTHLY_BACKUP_COUNT = parseInt(getRequired("MONTHLY_BACKUP_COUNT"));
 // Users
 export const USER_ADMIN_NAME = getRequired("USER_ADMIN_NAME");
 export const USER_ADMIN_PASSWORD = getRequired("USER_ADMIN_PASSWORD");
