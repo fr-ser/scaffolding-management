@@ -35,7 +35,6 @@ const VITE_COMPANY_PHONE = import.meta.env.VITE_COMPANY_PHONE;
 const VITE_COMPANY_MOBILE_PHONE = import.meta.env.VITE_COMPANY_MOBILE_PHONE;
 const VITE_COMPANY_EMAIL = import.meta.env.VITE_COMPANY_EMAIL;
 const VITE_COMPANY_HOMEPAGE = import.meta.env.VITE_COMPANY_HOMEPAGE;
-const VITE_COMPANY_FAX = import.meta.env.VITE_COMPANY_FAX;
 
 const confirm = useConfirmations();
 const notification = useNotifications();
@@ -120,7 +119,7 @@ ${VITE_COMPANY_HOMEPAGE}
 
 Mobil: ${VITE_COMPANY_MOBILE_PHONE}
 Tel.: ${VITE_COMPANY_PHONE}
-Fax: ${VITE_COMPANY_FAX}`;
+`;
 });
 </script>
 
