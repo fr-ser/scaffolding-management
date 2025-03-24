@@ -22,6 +22,7 @@ export enum OfferStatus {
 }
 
 export enum OrderStatus {
+  offer = "Angebot",
   preparation = "Vorbereitung",
   finished = "Fertig",
   deconstructed = "Abgebaut",
