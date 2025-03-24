@@ -28,7 +28,7 @@ async function insertData(dataSource: DataSource) {
     .insert()
     .into(Client)
     .values(
-      Array.from(Array(10)).map((_: unknown, index: number) => {
+      Array.from(Array(9)).map((_: unknown, index: number) => {
         return {
           id: `K${index + 1}`,
           created_at: (Date.now() + 100 * index) / 1000,
@@ -53,7 +53,7 @@ async function insertData(dataSource: DataSource) {
     .insert()
     .into(Article)
     .values(
-      Array.from(Array(10)).map((_: unknown, index: number) => {
+      Array.from(Array(9)).map((_: unknown, index: number) => {
         const isEven = index % 2 === 0;
         return {
           id: `Art${index + 1}`,
@@ -73,7 +73,7 @@ async function insertData(dataSource: DataSource) {
     .insert()
     .into(Order)
     .values(
-      Array.from(Array(10)).map((_: unknown, index: number) => {
+      Array.from(Array(9)).map((_: unknown, index: number) => {
         const anyOrderStatus =
           Object.values(OrderStatus)[index % Object.values(OrderStatus).length];
 
@@ -97,7 +97,7 @@ async function insertData(dataSource: DataSource) {
     .insert()
     .into(Offer)
     .values(
-      Array.from(Array(10)).map((_: unknown, index: number) => {
+      Array.from(Array(9)).map((_: unknown, index: number) => {
         const anyOfferStatus =
           Object.values(OfferStatus)[index % Object.values(OfferStatus).length];
 
@@ -117,7 +117,7 @@ async function insertData(dataSource: DataSource) {
     .insert()
     .into(OfferItem)
     .values(
-      Array.from(Array(10)).map((_: unknown, index: number) => {
+      Array.from(Array(9)).map((_: unknown, index: number) => {
         const isEven = index % 2 === 0;
 
         return {
@@ -166,7 +166,7 @@ async function insertData(dataSource: DataSource) {
     .insert()
     .into(OfferDocument)
     .values(
-      Array.from(Array(10)).map((_: unknown, index: number) => {
+      Array.from(Array(9)).map((_: unknown, index: number) => {
         return {
           created_at: (Date.now() + 100 * index) / 1000,
           id: `A2020-01-${index + 1}`,
@@ -194,7 +194,7 @@ async function insertData(dataSource: DataSource) {
     .insert()
     .into(OfferDocumentItem)
     .values(
-      Array.from(Array(10)).map((_: unknown, index: number) => {
+      Array.from(Array(9)).map((_: unknown, index: number) => {
         const isEven = index % 2 === 0;
 
         return {
@@ -216,7 +216,7 @@ async function insertData(dataSource: DataSource) {
     .insert()
     .into(Invoice)
     .values(
-      Array.from(Array(10)).map((_: unknown, index: number) => {
+      Array.from(Array(9)).map((_: unknown, index: number) => {
         const anyPaymentStatus =
           Object.values(PaymentStatus)[index % Object.values(PaymentStatus).length];
 
@@ -238,7 +238,7 @@ async function insertData(dataSource: DataSource) {
     .insert()
     .into(InvoiceItem)
     .values(
-      Array.from(Array(10)).map((_: unknown, index: number) => {
+      Array.from(Array(9)).map((_: unknown, index: number) => {
         const isEven = index % 2 === 0;
 
         return {
@@ -258,7 +258,7 @@ async function insertData(dataSource: DataSource) {
     .insert()
     .into(InvoiceDocument)
     .values(
-      Array.from(Array(10)).map((_: unknown, index: number) => {
+      Array.from(Array(9)).map((_: unknown, index: number) => {
         return {
           created_at: (Date.now() + 100 * index) / 1000,
           id: `R2020-01-${index + 1}`,
@@ -288,7 +288,7 @@ async function insertData(dataSource: DataSource) {
     .insert()
     .into(InvoiceDocumentItem)
     .values(
-      Array.from(Array(10)).map((_: unknown, index: number) => {
+      Array.from(Array(9)).map((_: unknown, index: number) => {
         const isEven = index % 2 === 0;
 
         return {
@@ -305,7 +305,7 @@ async function insertData(dataSource: DataSource) {
     )
     .execute();
 
-  for (let index = 0; index < 10; index++) {
+  for (let index = 0; index < 9; index++) {
     const anyPaymentStatus = Object.values(OverdueNoticePaymentStatus)[
       index % Object.values(OverdueNoticePaymentStatus).length
     ];
@@ -336,7 +336,7 @@ async function insertData(dataSource: DataSource) {
     .insert()
     .into(OverdueNoticeDocument)
     .values(
-      Array.from(Array(10)).map((_: unknown, index: number) => {
+      Array.from(Array(9)).map((_: unknown, index: number) => {
         return {
           created_at: (Date.now() + 100 * index) / 1000,
           id: `M2020-01-${index + 1}`,
@@ -362,7 +362,7 @@ async function insertData(dataSource: DataSource) {
     )
     .execute();
 
-  for (let index = 0; index < 10; index++) {
+  for (let index = 0; index < 9; index++) {
     await dataSource
       .createQueryBuilder()
       .relation(OverdueNoticeDocument, "invoice_documents")

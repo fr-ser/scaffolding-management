@@ -37,7 +37,7 @@ offersRouter.post(
 
     try {
       await dataSource.transaction(async (transactionalEntityManager) => {
-        await transactionalEntityManager.save(Offer, offer);
+        await transactionalEntityManager.insert(Offer, offer);
 
         await transactionalEntityManager
           .createQueryBuilder()
@@ -169,13 +169,14 @@ offersRouter.post(
       return;
     }
 
-    const maxId = (
-      await dataSource.manager.query(`
-      SELECT max(cast(substr(id,11) as integer)) as max_id
-      from offer_document
-      where id LIKE '%${offer.offered_at.substring(0, 7)}-%'
-    `)
-    )[0].max_id;
+    const maxId =
+      (
+        await dataSource.manager.query(`
+          SELECT max(cast(substr(id,10) as integer)) as max_id
+          from offer_document
+          where id LIKE '%${offer.offered_at.substring(0, 7)}-%'
+        `)
+      )[0].max_id || 0;
 
     try {
       const document = dataSource.manager.create(OfferDocument, {
@@ -197,7 +198,7 @@ offersRouter.post(
       });
 
       await dataSource.transaction(async (transactionalEntityManager) => {
-        await transactionalEntityManager.save(OfferDocument, document);
+        await transactionalEntityManager.insert(OfferDocument, document);
 
         await transactionalEntityManager
           .createQueryBuilder()
