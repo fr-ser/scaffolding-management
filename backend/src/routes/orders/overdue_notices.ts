@@ -142,12 +142,12 @@ overdueNoticesRouter.post(
       await dataSource.manager.query(`
       SELECT max(cast(substr(id,11) as integer)) as max_id
       from overdue_notice_document
-      where id LIKE 'M-${overdueNotice.notice_date.substring(0, 7)}-%'
+      where id LIKE '%${overdueNotice.notice_date.substring(0, 7)}-%'
     `)
     )[0].max_id;
 
     const document = dataSource.manager.create(OverdueNoticeDocument, {
-      id: `M-${overdueNotice.notice_date.substring(0, 7)}-${maxId + 1}`,
+      id: `%${overdueNotice.notice_date.substring(0, 7)}-${maxId + 1}`,
       order_id: overdueNotice.order_id,
       creation_date: new Date().toISOString().substring(0, 10),
       client_id: overdueNotice.order.client_id,
