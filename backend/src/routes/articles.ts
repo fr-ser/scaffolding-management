@@ -71,11 +71,12 @@ articlesRouter.post(
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     try {
-      const maxId = (
-        await dataSource.manager.query(
-          "SELECT max(cast(substr(id,4) as integer)) as max_id from article",
-        )
-      )[0].max_id;
+      const maxId =
+        (
+          await dataSource.manager.query(
+            "SELECT max(cast(substr(id,4) as integer)) as max_id from article",
+          )
+        )[0].max_id || 0;
 
       const article = dataSource.manager.create(Article, {
         ...req.body,

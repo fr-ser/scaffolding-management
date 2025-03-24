@@ -37,7 +37,7 @@ invoicesRouter.post(
 
     try {
       await dataSource.transaction(async (transactionalEntityManager) => {
-        await transactionalEntityManager.save(Invoice, invoice);
+        await transactionalEntityManager.insert(Invoice, invoice);
 
         await transactionalEntityManager
           .createQueryBuilder()
@@ -168,13 +168,14 @@ invoicesRouter.post(
       return;
     }
 
-    const maxId = (
-      await dataSource.manager.query(`
-      SELECT max(cast(substr(id,11) as integer)) as max_id
+    const maxId =
+      (
+        await dataSource.manager.query(`
+      SELECT max(cast(substr(id,10) as integer)) as max_id
       from invoice_document
       where id LIKE '%${invoice.invoice_date.substring(0, 7)}-%'
     `)
-    )[0].max_id;
+      )[0].max_id || 0;
 
     const document = dataSource.manager.create(InvoiceDocument, {
       id: `R${invoice.invoice_date.substring(0, 7)}-${maxId + 1}`,
@@ -200,7 +201,7 @@ invoicesRouter.post(
 
     try {
       await dataSource.transaction(async (transactionalEntityManager) => {
-        await transactionalEntityManager.save(InvoiceDocument, document);
+        await transactionalEntityManager.insert(InvoiceDocument, document);
 
         await transactionalEntityManager
           .createQueryBuilder()

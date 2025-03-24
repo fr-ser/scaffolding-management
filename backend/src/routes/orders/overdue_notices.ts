@@ -39,7 +39,7 @@ overdueNoticesRouter.post(
 
     try {
       await dataSource.transaction(async (transactionalEntityManager) => {
-        await transactionalEntityManager.save(OverdueNotice, overdueNotice);
+        await transactionalEntityManager.insert(OverdueNotice, overdueNotice);
       });
 
       res.json(overdueNotice);
@@ -138,13 +138,14 @@ overdueNoticesRouter.post(
       return;
     }
 
-    const maxId = (
-      await dataSource.manager.query(`
-      SELECT max(cast(substr(id,11) as integer)) as max_id
+    const maxId =
+      (
+        await dataSource.manager.query(`
+      SELECT max(cast(substr(id,10) as integer)) as max_id
       from overdue_notice_document
       where id LIKE '%${overdueNotice.notice_date.substring(0, 7)}-%'
     `)
-    )[0].max_id;
+      )[0].max_id || 0;
 
     const document = dataSource.manager.create(OverdueNoticeDocument, {
       id: `%${overdueNotice.notice_date.substring(0, 7)}-${maxId + 1}`,
@@ -170,7 +171,7 @@ overdueNoticesRouter.post(
 
     try {
       await dataSource.transaction(async (transactionalEntityManager) => {
-        await transactionalEntityManager.save(OverdueNoticeDocument, document);
+        await transactionalEntityManager.insert(OverdueNoticeDocument, document);
         transactionalEntityManager
           .createQueryBuilder()
           .relation(OverdueNoticeDocument, "invoice_documents")
