@@ -173,13 +173,13 @@ offersRouter.post(
       await dataSource.manager.query(`
       SELECT max(cast(substr(id,11) as integer)) as max_id
       from offer_document
-      where id LIKE 'A-${offer.offered_at.substring(0, 7)}-%'
+      where id LIKE '%${offer.offered_at.substring(0, 7)}-%'
     `)
     )[0].max_id;
 
     try {
       const document = dataSource.manager.create(OfferDocument, {
-        id: `A-${offer.offered_at.substring(0, 7)}-${maxId + 1}`,
+        id: `A${offer.offered_at.substring(0, 7)}-${maxId + 1}`,
         order_id: offer.order_id,
         creation_date: new Date().toISOString().substring(0, 10),
         client_id: offer.order.client_id,

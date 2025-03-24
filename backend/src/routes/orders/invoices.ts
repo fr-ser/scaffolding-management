@@ -172,12 +172,12 @@ invoicesRouter.post(
       await dataSource.manager.query(`
       SELECT max(cast(substr(id,11) as integer)) as max_id
       from invoice_document
-      where id LIKE 'R-${invoice.invoice_date.substring(0, 7)}-%'
+      where id LIKE '%${invoice.invoice_date.substring(0, 7)}-%'
     `)
     )[0].max_id;
 
     const document = dataSource.manager.create(InvoiceDocument, {
-      id: `R-${invoice.invoice_date.substring(0, 7)}-${maxId + 1}`,
+      id: `R${invoice.invoice_date.substring(0, 7)}-${maxId + 1}`,
       order_id: invoice.order_id,
       creation_date: new Date().toISOString().substring(0, 10),
       client_id: invoice.order.client_id,

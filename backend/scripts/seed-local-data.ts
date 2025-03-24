@@ -133,6 +133,34 @@ async function insertData(dataSource: DataSource) {
     )
     .execute();
 
+  // create some documents with legacy IDs
+  await dataSource
+    .createQueryBuilder()
+    .insert()
+    .into(OfferDocument)
+    .values(
+      Array.from(Array(2)).map((_: unknown, index: number) => {
+        return {
+          created_at: (Date.now() - 100 * index) / 1000,
+          id: `A-2020-01-${index + 1}`,
+          creation_date: `2021-01-0${index + 1}`,
+          client_id: `K${index + 1}`,
+          client_email: `email${index}@test.com`,
+          client_company_name: `Company ${index + 1}`,
+          client_first_name: `First Name ${index + 1}`,
+          client_last_name: `Last Name ${index + 1}`,
+          client_street_and_number: `street and number ${index + 1}`,
+          client_postal_code: `postal code ${index + 1}`,
+          client_city: `city ${index + 1}`,
+          order_title: `Order Title ${index + 1}`,
+          order_id: `A${index + 1}`,
+          offer_id: () => `(SELECT id from offer where order_id='A${index + 1}')`,
+          offered_at: `2021-02-0${index + 1}`,
+          offer_valid_until: `2021-03-0${index + 1}`,
+        };
+      }),
+    )
+    .execute();
   await dataSource
     .createQueryBuilder()
     .insert()
@@ -141,7 +169,7 @@ async function insertData(dataSource: DataSource) {
       Array.from(Array(10)).map((_: unknown, index: number) => {
         return {
           created_at: (Date.now() + 100 * index) / 1000,
-          id: `A-2020-01-${index + 1}`,
+          id: `A2020-01-${index + 1}`,
           creation_date: `2021-01-0${index + 1}`,
           client_id: `K${index + 1}`,
           client_email: `email${index}@test.com`,
@@ -171,7 +199,7 @@ async function insertData(dataSource: DataSource) {
 
         return {
           offer_document_id: () =>
-            `(SELECT id from offer_document where id='A-2020-01-${index + 1}')`,
+            `(SELECT id from offer_document where id='A2020-01-${index + 1}')`,
           kind: isEven ? ArticleKind.item : ArticleKind.heading,
           title: `Title ${index + 1}`,
           description: `Description ${index + 1}`,
@@ -233,7 +261,7 @@ async function insertData(dataSource: DataSource) {
       Array.from(Array(10)).map((_: unknown, index: number) => {
         return {
           created_at: (Date.now() + 100 * index) / 1000,
-          id: `R-2020-01-${index + 1}`,
+          id: `R2020-01-${index + 1}`,
           creation_date: `2021-01-0${index + 1}`,
           client_id: `K${index + 1}`,
           client_email: `email${index}@test.com`,
@@ -265,7 +293,7 @@ async function insertData(dataSource: DataSource) {
 
         return {
           invoice_document_id: () =>
-            `(SELECT id from invoice_document where id='R-2020-01-${index + 1}')`,
+            `(SELECT id from invoice_document where id='R2020-01-${index + 1}')`,
           kind: isEven ? ArticleKind.item : ArticleKind.heading,
           title: `Title ${index + 1}`,
           description: `Description ${index + 1}`,
@@ -300,7 +328,7 @@ async function insertData(dataSource: DataSource) {
       .createQueryBuilder()
       .relation(OverdueNotice, "invoice_documents")
       .of(overdueNotice)
-      .add(`R-2020-01-${index + 1}`);
+      .add(`R2020-01-${index + 1}`);
   }
 
   await dataSource
@@ -311,7 +339,7 @@ async function insertData(dataSource: DataSource) {
       Array.from(Array(10)).map((_: unknown, index: number) => {
         return {
           created_at: (Date.now() + 100 * index) / 1000,
-          id: `M-2020-01-${index + 1}`,
+          id: `M2020-01-${index + 1}`,
           creation_date: `2021-01-0${index + 1}`,
           client_id: `K${index + 1}`,
           client_email: `email${index}@test.com`,
@@ -338,8 +366,8 @@ async function insertData(dataSource: DataSource) {
     await dataSource
       .createQueryBuilder()
       .relation(OverdueNoticeDocument, "invoice_documents")
-      .of(`M-2020-01-${index + 1}`)
-      .add(`R-2020-01-${index + 1}`);
+      .of(`M2020-01-${index + 1}`)
+      .add(`R2020-01-${index + 1}`);
   }
 }
 
