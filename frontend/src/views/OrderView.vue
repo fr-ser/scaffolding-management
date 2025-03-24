@@ -37,7 +37,7 @@ const route = useRoute();
 
 let orderInfo = ref<OrderCreate | Order>({
   client_id: "",
-  status: OrderStatus.preparation,
+  status: OrderStatus.offer,
   title: "",
   description: "",
   discount_percentage: 0,
