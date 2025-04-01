@@ -41,6 +41,20 @@ async function loadMore() {
   await loadData();
 }
 
+function getClientLabel(client: Client) {
+  let label = "";
+  if (client.first_name) {
+    label += client.first_name;
+  }
+  if (client.last_name) {
+    label += ` ${client.last_name}`;
+  }
+  if (client.company_name) {
+    label += ` -  ${client.company_name}`;
+  }
+  return label;
+}
+
 async function removeClient(client: Client) {
   await deleteClient(client.id);
   loadData();
@@ -94,7 +108,7 @@ onMounted(async () => {
         <template #content>
           <div class="flex gap-2 flex-row justify-between items-center">
             <div>
-              {{ `${client.first_name} ${client.last_name}` }}
+              {{ getClientLabel(client) }}
             </div>
             <div class="flex flex-row flex-wrap gap-2">
               <router-link :to="getClientEditPath(client.id)">
