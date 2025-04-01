@@ -119,7 +119,14 @@ watch(
             class="basis-48 flex flex-col gap-6"
           >
             <FloatLabel>
-              <InputNumber id="number" v-model="editableItem.amount" class="w-full" />
+              <InputNumber
+                id="number"
+                v-model="editableItem.amount"
+                locale="de-DE"
+                :minFractionDigits="0"
+                :maxFractionDigits="10"
+                class="w-full"
+              />
               <label for="number">Anzahl</label>
             </FloatLabel>
             <FloatLabel>
@@ -127,7 +134,14 @@ watch(
               <label for="unit">Einheit</label>
             </FloatLabel>
             <FloatLabel>
-              <InputNumber id="price" v-model="editableItem.price" class="w-full" />
+              <InputNumber
+                id="price"
+                v-model="editableItem.price"
+                locale="de-DE"
+                :minFractionDigits="0"
+                :maxFractionDigits="10"
+                class="w-full"
+              />
               <label for="unit">Preis</label>
             </FloatLabel>
           </section>
