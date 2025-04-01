@@ -85,7 +85,11 @@ const isSaveButtonDisabled = computed(() => {
 
 const searchClient = (event: any) => {
   debounce(async () => {
-    if (!event.query.trim().length) return;
+    if (!event.query.trim().length) {
+      // we update the list to allow showing all clients when clicking the dropdown
+      filteredClients.value = [...filteredClients.value];
+      return;
+    }
 
     filteredClients.value = (await getClients({ search: event.query.trim() })).data;
   }, 250)();
@@ -170,6 +174,7 @@ function onClickCreateOverdueNotice() {
   showNewOverdueNoticeTab.value = true;
 }
 </script>
+
 <template>
   <div v-if="isLoading" class="flex justify-center">
     <ProgressSpinner />
