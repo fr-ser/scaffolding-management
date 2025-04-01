@@ -245,7 +245,14 @@ function onClickCreateOverdueNotice() {
               <label for="select">Skontodauer</label>
             </FloatLabel>
             <FloatLabel>
-              <InputNumber id="percent" v-model="orderInfo.discount_percentage" class="w-full" />
+              <InputNumber
+                id="percent"
+                v-model="orderInfo.discount_percentage"
+                locale="de-DE"
+                :minFractionDigits="0"
+                :maxFractionDigits="10"
+                class="w-full"
+              />
               <label for="percent">Skonto(%)</label>
             </FloatLabel>
           </div>

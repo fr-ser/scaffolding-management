@@ -222,11 +222,23 @@ async function onClickSave() {
           <label for="payment-status">Zahlungsstatus:</label>
         </FloatLabel>
         <FloatLabel>
-          <InputNumber id="notice-costs" v-model="noticeCosts" />
+          <InputNumber
+            id="notice-costs"
+            v-model="noticeCosts"
+            locale="de-DE"
+            :minFractionDigits="0"
+            :maxFractionDigits="10"
+          />
           <label for="notice-costs">Mahnkosten:</label>
         </FloatLabel>
         <FloatLabel>
-          <InputNumber id="default-interest" v-model="defaultInterest" />
+          <InputNumber
+            id="default-interest"
+            v-model="defaultInterest"
+            locale="de-DE"
+            :minFractionDigits="0"
+            :maxFractionDigits="10"
+          />
           <label for="default-interest">Verzugszinsen:</label>
         </FloatLabel>
       </section>

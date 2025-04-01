@@ -95,6 +95,9 @@ const confirmDelete = () => {
           </FloatLabel>
           <FloatLabel class="grow">
             <InputNumber
+              locale="de-DE"
+              :minFractionDigits="0"
+              :maxFractionDigits="10"
               class="w-full"
               inputId="price"
               v-model="editableArticle.price"
