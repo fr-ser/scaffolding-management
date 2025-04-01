@@ -13,7 +13,14 @@ import Textarea from "primevue/textarea";
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { createOrder, deleteOrder, getClients, getOrder, updateOrder } from "@/backendClient";
+import {
+  createOrder,
+  deleteOrder,
+  getClient,
+  getClients,
+  getOrder,
+  updateOrder,
+} from "@/backendClient";
 import InvoiceEdit from "@/components/orders/InvoiceEdit.vue";
 import OfferEdit from "@/components/orders/OfferEdit.vue";
 import OrderAttachments from "@/components/orders/OrderAttachments.vue";
@@ -60,14 +67,14 @@ const discountPeriodChoice = [7, 14];
 let selectedClient = ref<Client>();
 
 const filteredClients = ref<Client[]>([]);
-const clientsList = ref<Client[]>([]);
 
-const getClientFullName = (client: Client) => {
+const getClientLabel = (client: Client) => {
   let full_name: string = "";
 
   if (client.first_name) full_name += client.first_name + " ";
 
   if (client.last_name) full_name += client.last_name;
+  if (client.company_name) full_name += " - " + client.company_name;
 
   return full_name;
 };
@@ -77,17 +84,10 @@ const isSaveButtonDisabled = computed(() => {
 });
 
 const searchClient = (event: any) => {
-  debounce(() => {
-    if (!event.query.trim().length) {
-      filteredClients.value = [...clientsList.value];
-    } else {
-      filteredClients.value = clientsList.value.filter((client: Client) => {
-        return (
-          client.last_name?.toLowerCase().startsWith(event.query.toLowerCase()) ||
-          client.first_name?.toLowerCase().startsWith(event.query.toLowerCase())
-        );
-      });
-    }
+  debounce(async () => {
+    if (!event.query.trim().length) return;
+
+    filteredClients.value = (await getClients({ search: event.query.trim() })).data;
   }, 250)();
 };
 const confirm = useConfirmations();
@@ -122,12 +122,6 @@ const confirmDelete = () => {
   );
 };
 
-const findClientById = () => {
-  const foundClient = clientsList.value.find((client) => client.id === orderInfo.value.client_id);
-
-  return foundClient;
-};
-
 async function loadOrderData() {
   const newOrder = await getOrder(route.params.id as string);
   orderInfo.value = newOrder;
@@ -151,11 +145,11 @@ async function loadOrderData() {
 }
 
 onMounted(async () => {
-  clientsList.value = (await getClients()).data;
-
   if (isEditing.value) {
     await loadOrderData();
-    selectedClient.value = findClientById();
+    selectedClient.value = await getClient(orderInfo.value.client_id);
+  } else {
+    filteredClients.value = (await getClients()).data;
   }
 
   isLoading.value = false;
@@ -264,9 +258,9 @@ function onClickCreateOverdueNotice() {
             <p class="font-bold">Kunde</p>
             <AutoComplete
               v-model="selectedClient"
-              :optionLabel="getClientFullName"
-              :suggestions="filteredClients"
+              :optionLabel="getClientLabel"
               @complete="searchClient"
+              :suggestions="filteredClients"
               dropdown
               :inputStyle="{ width: '100%' }"
               data-testid="order-client-select"
