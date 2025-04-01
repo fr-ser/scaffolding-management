@@ -13,7 +13,7 @@ test("create, edit and delete an order", async ({ page }) => {
   await page.getByLabel("Bauvorhaben").fill("title " + timestamp);
   await page.getByLabel("Beschreibung").fill("test description");
 
-  await page.getByTestId("order-client-select").locator("button").click();
+  await page.getByTestId("order-client-select").locator("input").fill("1");
   await page.getByRole("option").first().click();
   await page.getByTestId("order-save-button").click();
   await expect(page.getByText("Ein neuer Auftrag wurde erstellt")).toBeVisible();
