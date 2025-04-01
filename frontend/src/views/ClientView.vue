@@ -47,11 +47,17 @@ const isEditing = computed(() => {
   return Boolean(route.params.id);
 });
 const onSaveClient = async () => {
+  let requestBody = {
+    ...userInfo.value,
+  };
+  if (birthdayDate.value) {
+    requestBody.birthday = birthdayDate.value.toISOString();
+  }
   if (isEditing.value) {
-    await updateClient(`${route.params.id}`, userInfo.value);
+    await updateClient(`${route.params.id}`, requestBody);
     notifications.showNotification("Die Änderung der Kundendaten wurde gespeichert");
   } else {
-    await createClient(userInfo.value);
+    await createClient(requestBody);
     router.push(getClientListPath());
     notifications.showNotification("Ein neuer Kunde wurde erstellt");
   }
