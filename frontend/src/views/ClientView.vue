@@ -110,6 +110,10 @@ onMounted(async () => {
               <InputText id="last-name" v-model="userInfo.last_name" class="w-full" />
               <label for="last-name">Nachname</label>
             </FloatLabel>
+            <FloatLabel>
+              <InputText id="company-name" v-model="userInfo.company_name" class="w-full" />
+              <label for="company-name">Firma</label>
+            </FloatLabel>
           </div>
         </template>
       </Card>
