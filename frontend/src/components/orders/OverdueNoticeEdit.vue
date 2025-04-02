@@ -112,9 +112,13 @@ async function onClickedSearchInvoice() {
 
 async function onClickedDelete() {
   confirm.showConfirmation("Möchten Sie die Mahnung wirklich löschen?", async () => {
-    await deleteSubOrder(props.existingOverdueNotice!.id, DocumentKind.overdueNotice);
-    notifications.showNotification("Die Mahnung wurde gelöscht.");
-    emit("deleted");
+    try {
+      await deleteSubOrder(props.existingOverdueNotice!.id, DocumentKind.overdueNotice);
+      notifications.showNotification("Die Mahnung wurde gelöscht.");
+      emit("deleted");
+    } catch (error) {
+      notifications.showNotification("Die Mahnung konnte nicht gelöscht werden.", "error");
+    }
   });
 }
 

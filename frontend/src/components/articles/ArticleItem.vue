@@ -40,9 +40,13 @@ const onUpdateArticle = async () => {
 };
 
 const onDeleteArticle = async () => {
-  await deleteArticle(`${editableArticle.value.id}`);
-  emit("reloadArticleView");
-  notifications.showNotification("Der Artikel wurde gelöscht");
+  try {
+    await deleteArticle(`${editableArticle.value.id}`);
+    emit("reloadArticleView");
+    notifications.showNotification("Der Artikel wurde gelöscht");
+  } catch (error) {
+    notifications.showNotification("Der Artikel konnte nicht gelöscht werden.", "error");
+  }
 };
 const confirmDelete = () => {
   confirm.showConfirmation(

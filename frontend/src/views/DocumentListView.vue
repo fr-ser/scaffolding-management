@@ -63,10 +63,14 @@ function removeDocument(doc: OfferDocument | OverdueNoticeDocument | InvoiceDocu
   confirm.showConfirmation(
     "Sind Sie sicher, dass Sie das Dokument löschen möchten?",
     async function () {
-      let kind = getDocumentType(doc);
-      await deleteDocument(doc.id, kind);
-      loadData();
-      notifications.showNotification("Das Dokument wurde gelöscht");
+      try {
+        let kind = getDocumentType(doc);
+        await deleteDocument(doc.id, kind);
+        loadData();
+        notifications.showNotification("Das Dokument wurde gelöscht");
+      } catch (error) {
+        notifications.showNotification("Das Dokument konnte nicht gelöscht werden.", "error");
+      }
     },
   );
 }

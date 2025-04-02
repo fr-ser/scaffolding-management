@@ -24,9 +24,13 @@ const confirm = useConfirmations();
 const notifications = useNotifications();
 
 const onDeleteClient = async () => {
-  await deleteClient(`${route.params.id}`);
-  router.push(getClientListPath());
-  notifications.showNotification("Der Kunde wurde gelöscht");
+  try {
+    await deleteClient(`${route.params.id}`);
+    router.push(getClientListPath());
+    notifications.showNotification("Der Kunde wurde gelöscht");
+  } catch (error) {
+    notifications.showNotification("Der Kunde konnte nicht gelöscht werden.", "error");
+  }
 };
 const confirmDelete = () => {
   confirm.showConfirmation(

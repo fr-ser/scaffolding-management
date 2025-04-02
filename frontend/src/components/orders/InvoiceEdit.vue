@@ -79,9 +79,13 @@ const itemsNetSum = computed(() => {
 
 async function onDeleteInvoice() {
   confirm.showConfirmation("Möchten Sie die Rechnung wirklich löschen?", async () => {
-    await deleteSubOrder(props.existingInvoice!.id, DocumentKind.invoice);
-    notifications.showNotification("Die Rechnung wurde gelöscht.");
-    emit("deleted");
+    try {
+      await deleteSubOrder(props.existingInvoice!.id, DocumentKind.invoice);
+      notifications.showNotification("Die Rechnung wurde gelöscht.");
+      emit("deleted");
+    } catch (error) {
+      notifications.showNotification("Die Rechnung konnte nicht gelöscht werden.", "error");
+    }
   });
 }
 

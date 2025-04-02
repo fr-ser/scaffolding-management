@@ -47,9 +47,13 @@ function onDeleteClick(fileName: string) {
   confirmation.showConfirmation(
     `Soll die Datei '${fileName}' wirklich gelöscht werden?`,
     async () => {
-      await deleteOrderAttachment(props.orderId, fileName);
-      notification.showNotification(`Die Datei '${fileName}' wurde gelöscht`);
-      attachments.value = attachments.value.filter((file) => file.name !== fileName);
+      try {
+        await deleteOrderAttachment(props.orderId, fileName);
+        notification.showNotification(`Die Datei '${fileName}' wurde gelöscht`);
+        attachments.value = attachments.value.filter((file) => file.name !== fileName);
+      } catch (error) {
+        notification.showNotification("Die Datei konnte nicht gelöscht werden.", "error");
+      }
     },
   );
 }

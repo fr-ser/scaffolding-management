@@ -43,9 +43,13 @@ const confirm = useConfirmations();
 const notifications = useNotifications();
 
 async function removeOrder(order: Order) {
-  await deleteOrder(order.id);
-  loadData();
-  notifications.showNotification("Der Auftrag wurde gelöscht");
+  try {
+    await deleteOrder(order.id);
+    loadData();
+    notifications.showNotification("Der Auftrag wurde gelöscht");
+  } catch (error) {
+    notifications.showNotification("Der Auftrag konnte nicht gelöscht werden.", "error");
+  }
 }
 const confirmDelete = (order: Order) => {
   confirm.showConfirmation(

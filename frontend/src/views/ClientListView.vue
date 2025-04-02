@@ -56,9 +56,13 @@ function getClientLabel(client: Client) {
 }
 
 async function removeClient(client: Client) {
-  await deleteClient(client.id);
-  loadData();
-  notifications.showNotification("Der Kunde wurde gelöscht");
+  try {
+    await deleteClient(client.id);
+    loadData();
+    notifications.showNotification("Der Kunde wurde gelöscht");
+  } catch (error) {
+    notifications.showNotification("Der Kunde konnte nicht gelöscht werden.", "error");
+  }
 }
 
 const confirmDelete = (client: Client) => {

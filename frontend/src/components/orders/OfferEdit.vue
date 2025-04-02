@@ -67,9 +67,13 @@ const itemsNetSum = computed(function () {
 
 async function onDeleteOffer() {
   confirm.showConfirmation("Möchten Sie das Angebot wirklich löschen?", async function () {
-    await deleteSubOrder(props.existingOffer!.id, DocumentKind.offer);
-    notifications.showNotification("Das Angebot wurde gelöscht.");
-    emit("deleted");
+    try {
+      await deleteSubOrder(props.existingOffer!.id, DocumentKind.offer);
+      notifications.showNotification("Das Angebot wurde gelöscht.");
+      emit("deleted");
+    } catch (error) {
+      notifications.showNotification("Das Angebot konnte nicht gelöscht werden.", "error");
+    }
   });
 }
 
