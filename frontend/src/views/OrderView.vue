@@ -114,9 +114,13 @@ const onSaveOrder = async () => {
 };
 
 const removeOrder = async () => {
-  await deleteOrder(`${route.params.id}`);
-  router.push(getOrderListPath());
-  notifications.showNotification("Der Auftrag wurde gelöscht");
+  try {
+    await deleteOrder(`${route.params.id}`);
+    router.push(getOrderListPath());
+    notifications.showNotification("Der Auftrag wurde gelöscht");
+  } catch (error) {
+    notifications.showNotification("Der Auftrag konnte nicht gelöscht werden.", "error");
+  }
 };
 
 const confirmDelete = () => {
