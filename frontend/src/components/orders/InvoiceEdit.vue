@@ -23,6 +23,9 @@ const props = defineProps<{
   order: Order;
 }>();
 
+// we create this intermediate variable to allow setting the offer after saving
+const finalExistingSubOrder = ref(props.existingInvoice);
+
 const emit = defineEmits<{
   deleted: [];
 }>();
@@ -30,19 +33,19 @@ const emit = defineEmits<{
 const confirm = useConfirmations();
 const notifications = useNotifications();
 
-let status = ref(props.existingInvoice?.status || PaymentStatus.initial);
-let description = ref(props.existingInvoice?.description || "");
-let invoiceItemsArray = ref<InvoiceItemCreate[]>(props.existingInvoice?.items || []);
+let status = ref(finalExistingSubOrder.value?.status || PaymentStatus.initial);
+let description = ref(finalExistingSubOrder.value?.description || "");
+let invoiceItemsArray = ref<InvoiceItemCreate[]>(finalExistingSubOrder.value?.items || []);
 let invoiceDate = ref<Date>(
-  props.existingInvoice ? new Date(props.existingInvoice.invoice_date) : new Date(),
+  finalExistingSubOrder.value ? new Date(finalExistingSubOrder.value.invoice_date) : new Date(),
 );
 let paymentTarget = ref<Date>(
-  props.existingInvoice
-    ? new Date(props.existingInvoice.payment_target)
+  finalExistingSubOrder.value
+    ? new Date(finalExistingSubOrder.value.payment_target)
     : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
 );
 let serviceDates = ref<{ date?: Date }[]>(
-  props.existingInvoice?.service_dates.map((date) => ({ date: new Date(date) })) || [],
+  finalExistingSubOrder.value?.service_dates.map((date) => ({ date: new Date(date) })) || [],
 );
 
 const vatRate = computed(() => {
@@ -80,7 +83,7 @@ const itemsNetSum = computed(() => {
 async function onDeleteInvoice() {
   confirm.showConfirmation("Möchten Sie die Rechnung wirklich löschen?", async () => {
     try {
-      await deleteSubOrder(props.existingInvoice!.id, DocumentKind.invoice);
+      await deleteSubOrder(finalExistingSubOrder.value!.id, DocumentKind.invoice);
       notifications.showNotification("Die Rechnung wurde gelöscht.");
       emit("deleted");
     } catch (error) {
@@ -90,8 +93,8 @@ async function onDeleteInvoice() {
 }
 
 async function onSaveInvoice() {
-  if (props.existingInvoice != null) {
-    await updateInvoice(props.existingInvoice.id, {
+  if (finalExistingSubOrder.value != null) {
+    await updateInvoice(finalExistingSubOrder.value.id, {
       status: status.value,
       description: description.value,
       invoice_date: invoiceDate.value?.toISOString(),
@@ -103,7 +106,7 @@ async function onSaveInvoice() {
     });
     notifications.showNotification("Die Rechnungsänderung wurde gespeichert.");
   } else {
-    await createInvoice({
+    const newInvoice = await createInvoice({
       order_id: props.order.id,
       status: status.value,
       description: description.value,
@@ -115,6 +118,7 @@ async function onSaveInvoice() {
       items: invoiceItemsArray.value,
     });
     notifications.showNotification("Eine neue Rechnung wurde erstellt.");
+    finalExistingSubOrder.value = newInvoice;
   }
 }
 </script>
@@ -122,13 +126,13 @@ async function onSaveInvoice() {
 <template>
   <div class="flex flex-row justify-end gap-8">
     <CreateDocumentButton
-      v-if="existingInvoice"
+      v-if="finalExistingSubOrder"
       :kind="DocumentKind.invoice"
-      :id="existingInvoice.id"
+      :id="finalExistingSubOrder.id"
     />
     <div class="grow" />
     <Button
-      v-if="existingInvoice"
+      v-if="finalExistingSubOrder"
       @click="onDeleteInvoice"
       label="Rechnung löschen"
       severity="danger"

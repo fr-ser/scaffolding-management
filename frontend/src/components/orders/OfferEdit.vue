@@ -22,6 +22,9 @@ const props = defineProps<{
   order: Order;
 }>();
 
+// we create this intermediate variable to allow setting the offer after saving
+const finalExistingSubOrder = ref<Offer | undefined>(props.existingOffer);
+
 const emit = defineEmits<{
   deleted: [];
 }>();
@@ -29,14 +32,16 @@ const emit = defineEmits<{
 const confirm = useConfirmations();
 const notifications = useNotifications();
 
-let status = ref(props.existingOffer?.status || OfferStatus.initial);
-let description = ref(props.existingOffer?.description || "");
-let offerItemsArray = ref<OfferItemCreate[]>(props.existingOffer?.items || []);
+let status = ref(finalExistingSubOrder.value?.status || OfferStatus.initial);
+let description = ref(finalExistingSubOrder.value?.description || "");
+let offerItemsArray = ref<OfferItemCreate[]>(finalExistingSubOrder.value?.items || []);
 let offerDate = ref<Date>(
-  props.existingOffer ? new Date(props.existingOffer.offered_at) : new Date(),
+  finalExistingSubOrder.value ? new Date(finalExistingSubOrder.value.offered_at) : new Date(),
 );
 let validityDate = ref<Date>(
-  props.existingOffer ? new Date(props.existingOffer.offer_valid_until) : new Date(),
+  finalExistingSubOrder.value
+    ? new Date(finalExistingSubOrder.value.offer_valid_until)
+    : new Date(),
 );
 
 const vatRate = computed(() => {
@@ -68,7 +73,7 @@ const itemsNetSum = computed(function () {
 async function onDeleteOffer() {
   confirm.showConfirmation("Möchten Sie das Angebot wirklich löschen?", async function () {
     try {
-      await deleteSubOrder(props.existingOffer!.id, DocumentKind.offer);
+      await deleteSubOrder(finalExistingSubOrder.value!.id, DocumentKind.offer);
       notifications.showNotification("Das Angebot wurde gelöscht.");
       emit("deleted");
     } catch (error) {
@@ -78,8 +83,8 @@ async function onDeleteOffer() {
 }
 
 async function onSaveOffer() {
-  if (props.existingOffer != null) {
-    await updateOffer(props.existingOffer.id, {
+  if (finalExistingSubOrder.value != null) {
+    await updateOffer(finalExistingSubOrder.value.id, {
       status: status.value,
       description: description.value,
       offered_at: offerDate.value?.toISOString() as string,
@@ -88,7 +93,7 @@ async function onSaveOffer() {
     });
     notifications.showNotification("Die Angebotsänderung wurde gespeichert.");
   } else {
-    await createOffer({
+    const newOffer = await createOffer({
       order_id: props.order.id,
       status: status.value,
       description: description.value,
@@ -97,16 +102,21 @@ async function onSaveOffer() {
       items: offerItemsArray.value,
     });
     notifications.showNotification("Ein neues Angebot wurde erstellt.");
+    finalExistingSubOrder.value = newOffer;
   }
 }
 </script>
 
 <template>
   <div class="flex flex-row justify-end gap-8">
-    <CreateDocumentButton v-if="existingOffer" :kind="DocumentKind.offer" :id="existingOffer.id" />
+    <CreateDocumentButton
+      v-if="finalExistingSubOrder"
+      :kind="DocumentKind.offer"
+      :id="finalExistingSubOrder.id"
+    />
     <div class="grow" />
     <Button
-      v-if="existingOffer"
+      v-if="finalExistingSubOrder"
       @click="onDeleteOffer"
       label="Angebot löschen"
       severity="danger"
