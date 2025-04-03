@@ -6,7 +6,7 @@ export default function useNotifications() {
 
   return {
     showNotification(summary: string, severity: ToastMessageOptions["severity"] = "info") {
-      toast.add({ severity, summary, life: 3000 });
+      toast.add({ severity, summary, life: 3000, group: "global" });
     },
   };
 }
