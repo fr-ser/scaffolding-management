@@ -33,6 +33,9 @@ const props = defineProps<{
   order: Order;
 }>();
 
+// we create this intermediate variable to allow setting the offer after saving
+const finalExistingSubOrder = ref(props.existingOverdueNotice);
+
 const emit = defineEmits<{
   deleted: [];
 }>();
@@ -40,25 +43,25 @@ const emit = defineEmits<{
 const confirm = useConfirmations();
 const notifications = useNotifications();
 
-let noticeLevel = ref(props.existingOverdueNotice?.notice_level || OverdueNoticeLevel.first);
+let noticeLevel = ref(finalExistingSubOrder.value?.notice_level || OverdueNoticeLevel.first);
 let paymentStatus = ref(
-  props.existingOverdueNotice?.payment_status || OverdueNoticePaymentStatus.initial,
+  finalExistingSubOrder.value?.payment_status || OverdueNoticePaymentStatus.initial,
 );
-let noticeCosts = ref(props.existingOverdueNotice?.notice_costs || 0);
-let defaultInterest = ref(props.existingOverdueNotice?.default_interest || 0);
-let description = ref(props.existingOverdueNotice?.description || "");
+let noticeCosts = ref(finalExistingSubOrder.value?.notice_costs || 0);
+let defaultInterest = ref(finalExistingSubOrder.value?.default_interest || 0);
+let description = ref(finalExistingSubOrder.value?.description || "");
 let noticeDate = ref<Date>(
-  props.existingOverdueNotice ? new Date(props.existingOverdueNotice.notice_date) : new Date(),
+  finalExistingSubOrder.value ? new Date(finalExistingSubOrder.value.notice_date) : new Date(),
 );
 let paymentTarget = ref<Date | undefined>(
-  props.existingOverdueNotice
-    ? new Date(props.existingOverdueNotice.payment_target)
+  finalExistingSubOrder.value
+    ? new Date(finalExistingSubOrder.value.payment_target)
     : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
 );
 let paymentsUntil = ref<Date>(
-  props.existingOverdueNotice ? new Date(props.existingOverdueNotice.payments_until) : new Date(),
+  finalExistingSubOrder.value ? new Date(finalExistingSubOrder.value.payments_until) : new Date(),
 );
-let itemsArray = ref<InvoiceDocument[]>(props.existingOverdueNotice?.invoice_documents || []);
+let itemsArray = ref<InvoiceDocument[]>(finalExistingSubOrder.value?.invoice_documents || []);
 
 let enrichedItems = computed(() => {
   return itemsArray.value.map((item) => ({
@@ -113,7 +116,7 @@ async function onClickedSearchInvoice() {
 async function onClickedDelete() {
   confirm.showConfirmation("Möchten Sie die Mahnung wirklich löschen?", async () => {
     try {
-      await deleteSubOrder(props.existingOverdueNotice!.id, DocumentKind.overdueNotice);
+      await deleteSubOrder(finalExistingSubOrder.value!.id, DocumentKind.overdueNotice);
       notifications.showNotification("Die Mahnung wurde gelöscht.");
       emit("deleted");
     } catch (error) {
@@ -123,8 +126,8 @@ async function onClickedDelete() {
 }
 
 async function onClickSave() {
-  if (props.existingOverdueNotice != null) {
-    await updateOverdueNotice(props.existingOverdueNotice.id, {
+  if (finalExistingSubOrder.value != null) {
+    await updateOverdueNotice(finalExistingSubOrder.value.id, {
       payments_until: paymentsUntil.value?.toISOString(),
       notice_date: noticeDate.value?.toISOString(),
       notice_level: noticeLevel.value,
@@ -137,7 +140,7 @@ async function onClickSave() {
     });
     notifications.showNotification("Die Mahnungsänderung wurde gespeichert.");
   } else {
-    await createOverdueNotice({
+    const newNotice = await createOverdueNotice({
       order_id: props.order.id,
       payments_until: paymentsUntil.value?.toISOString() as string,
       notice_date: noticeDate.value?.toISOString() as string,
@@ -150,6 +153,7 @@ async function onClickSave() {
       invoice_documents: itemsArray.value.map((item) => item.id),
     });
     notifications.showNotification("Eine neue Mahnung wurde erstellt.");
+    finalExistingSubOrder.value = newNotice;
   }
 }
 </script>
@@ -157,13 +161,13 @@ async function onClickSave() {
 <template>
   <div class="flex flex-row justify-end gap-8">
     <CreateDocumentButton
-      v-if="existingOverdueNotice"
+      v-if="finalExistingSubOrder"
       :kind="DocumentKind.overdueNotice"
-      :id="existingOverdueNotice.id"
+      :id="finalExistingSubOrder.id"
     />
     <div class="grow" />
     <Button
-      v-if="existingOverdueNotice"
+      v-if="finalExistingSubOrder"
       @click="onClickedDelete"
       label="Mahnung löschen"
       severity="danger"
