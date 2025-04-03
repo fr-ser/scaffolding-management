@@ -16,7 +16,7 @@ onMounted(() => {
 
 <template>
   <div class="h-screen flex flex-col overflow-hidden w-full">
-    <Toast class="w-3/4 sm:w-max" />
+    <Toast class="w-3/4 sm:w-max" group="global" />
     <ConfirmDialog class="w-max"></ConfirmDialog>
     <NavigationBar />
     <div class="px-3 py-3 bg-neutral-100 grow overflow-auto">
