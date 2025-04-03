@@ -48,4 +48,4 @@ deploy-no-test: build
 	@echo "To replace the old version you should run 'cd /home/pi/apps/deployment && make update' on the raspberry"
 
 #: Deploy the application to the raspberry pi
-deploy: test-all deploy-no-test
+deploy: build test-all deploy-no-test
