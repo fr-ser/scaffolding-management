@@ -7,10 +7,10 @@ import { onMounted, ref } from "vue";
 import { getOrders } from "@/backendClient";
 import { formatIsoDateString } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
-import type { Order } from "@/global/types/entities";
+import type { DetailedOrder } from "@/global/types/entities";
 import { getOrderEditPath } from "@/helpers/routes";
 
-const ordersList = ref<Order[]>([]);
+const ordersList = ref<DetailedOrder[]>([]);
 
 const paginationStep = 20;
 const take = ref(paginationStep);
@@ -18,7 +18,7 @@ const hasMore = ref(true);
 
 async function loadData() {
   const response = await getOrders({ detailed: true, overdue: true, take: take.value });
-  ordersList.value = response.data;
+  ordersList.value = response.data as DetailedOrder[];
   hasMore.value = response.data.length !== response.totalCount;
 }
 

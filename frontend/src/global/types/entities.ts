@@ -41,7 +41,7 @@ export interface Client extends CreatedAtUpdatedAt {
 export interface Order extends CreatedAtUpdatedAt {
   id: string;
   client_id: string;
-  client: Client;
+  client?: Client;
   offer?: Offer;
   invoices?: Invoice[];
   overdue_notices?: OverdueNotice[];
@@ -51,6 +51,13 @@ export interface Order extends CreatedAtUpdatedAt {
   can_have_cash_discount: boolean;
   discount_duration: number;
   discount_percentage: number;
+}
+
+export interface DetailedOrder extends Order {
+  client: Client;
+  offer?: Offer;
+  invoices: Invoice[];
+  overdue_notices: OverdueNotice[];
 }
 
 export interface Invoice extends CreatedAtUpdatedAt {
