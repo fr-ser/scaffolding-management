@@ -180,43 +180,43 @@ function onClickCreateOverdueNotice() {
 </script>
 
 <template>
+  <div class="flex flex-row justify-between mb-3">
+    <Button
+      @click="router.push(getOrderListPath())"
+      icon="pi pi-arrow-left"
+      size="small"
+      severity="secondary"
+      text
+      raised
+      data-testid="order-return-button"
+    />
+    <Button
+      v-if="userStore.permissions.includes(UserPermissions.ORDERS_UPDATE)"
+      @click="onSaveOrder"
+      type="button"
+      label="Auftrag Speichern"
+      :disabled="isSaveButtonDisabled"
+      data-testid="order-save-button"
+    />
+    <Button
+      v-if="userStore.permissions.includes(UserPermissions.ORDERS_CREATE_DELETE) && isEditing"
+      @click="confirmDelete"
+      type="button"
+      label="Löschen"
+      severity="danger"
+      text
+      raised
+    />
+  </div>
   <div v-if="isLoading" class="flex justify-center">
     <ProgressSpinner />
   </div>
-  <form v-else>
-    <div class="flex flex-row justify-between mb-3">
-      <Button
-        @click="router.push(getOrderListPath())"
-        icon="pi pi-arrow-left"
-        size="small"
-        severity="secondary"
-        text
-        raised
-        data-testid="order-return-button"
-      />
-      <Button
-        v-if="userStore.permissions.includes(UserPermissions.ORDERS_UPDATE)"
-        @click="onSaveOrder"
-        type="button"
-        label="Auftrag Speichern"
-        :disabled="isSaveButtonDisabled"
-        data-testid="order-save-button"
-      />
-      <Button
-        v-if="userStore.permissions.includes(UserPermissions.ORDERS_CREATE_DELETE) && isEditing"
-        @click="confirmDelete"
-        type="button"
-        label="Löschen"
-        severity="danger"
-        text
-        raised
-      />
-    </div>
+  <div v-else>
     <Card>
       <template #content>
         <div class="flex flex-col gap-y-5">
           <p class="font-bold">Daten</p>
-          <div class="flex flex-row flex-wrap gap-2">
+          <div class="flex flex-row flex-wrap gap-6">
             <FloatLabel class="grow">
               <InputText id="order-title" v-model="orderInfo.title" class="w-full" />
               <label for="order-title">Bauvorhaben</label>
@@ -232,7 +232,7 @@ function onClickCreateOverdueNotice() {
             </FloatLabel>
           </div>
           <p class="font-bold">Skonto</p>
-          <div class="flex flex-row flex-wrap justify-between gap-1 mt-3">
+          <div class="flex flex-row flex-wrap justify-between gap-6 mt-3">
             <FloatLabel>
               <Dropdown
                 v-model="orderInfo.can_have_cash_discount"
@@ -291,6 +291,13 @@ function onClickCreateOverdueNotice() {
               }"
             />
           </div>
+        </div>
+      </template>
+    </Card>
+
+    <Card class="mt-2">
+      <template #content>
+        <div class="flex flex-col gap-y-5">
           <div v-if="isEditing && userStore.permissions.includes(UserPermissions.SUB_ORDERS_EDIT)">
             <p class="font-bold mb-2">Unteraufträge</p>
             <div class="flex flex-row gap-2">
@@ -344,6 +351,11 @@ function onClickCreateOverdueNotice() {
             </TabView>
           </div>
         </div>
+      </template>
+    </Card>
+
+    <Card class="mt-2">
+      <template #content>
         <OrderDocuments
           v-if="isEditing && userStore.permissions.includes(UserPermissions.DOCUMENTS_VIEW)"
           :id="(orderInfo as Order).id"
@@ -351,5 +363,5 @@ function onClickCreateOverdueNotice() {
         <OrderAttachments v-if="isEditing" :order-id="(orderInfo as Order).id" />
       </template>
     </Card>
-  </form>
+  </div>
 </template>
