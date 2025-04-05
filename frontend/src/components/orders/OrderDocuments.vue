@@ -20,6 +20,7 @@ const props = defineProps<{
 let visible = ref(false);
 let documents = ref<(OfferDocument | OverdueNoticeDocument | InvoiceDocument)[]>([]);
 let isLoading = ref<boolean>(false);
+
 function getDocumentType(doc: OfferDocument | OverdueNoticeDocument | InvoiceDocument) {
   if ("offer_id" in doc) {
     return DocumentKind.offer;

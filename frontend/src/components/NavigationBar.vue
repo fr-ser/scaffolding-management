@@ -26,9 +26,9 @@ const items = computed(() => {
 
   if (userStore.permissions.includes(UserPermissions.SUB_ORDERS_VIEW)) {
     baseRoutes.push({
-      label: "Übersicht",
+      label: "Berichte",
       icon: "pi pi-sitemap",
-      route: routes.getOverviewPath(),
+      route: routes.getReportingPath(),
     });
   }
 
