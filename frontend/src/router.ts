@@ -9,7 +9,7 @@ import DocumentListView from "@/views/DocumentListView.vue";
 import DocumentView from "@/views/DocumentView.vue";
 import OrderListView from "@/views/OrderListView.vue";
 import OrderView from "@/views/OrderView.vue";
-import OverviewView from "@/views/OverviewView.vue";
+import ReportingView from "@/views/ReportingView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,8 +35,8 @@ const router = createRouter({
       component: OrderListView,
     },
     {
-      path: routes.getOverviewPath(),
-      component: OverviewView,
+      path: routes.getReportingPath(),
+      component: ReportingView,
     },
     {
       path: routes.getOrderEditPath(":id"),

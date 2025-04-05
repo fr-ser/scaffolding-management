@@ -94,7 +94,13 @@ export async function updateClient(id: string, client: ClientUpdate): Promise<Cl
 }
 
 export async function getOrders(
-  parameters = {} as { search?: string; take?: number; detailed?: true; overdue?: true },
+  parameters = {} as {
+    search?: string;
+    take?: number;
+    detailed?: true;
+    overdue?: true;
+    clientId?: string;
+  },
 ): Promise<PaginationResponse<Order>> {
   const response = await axiosInstance.get(`/api/orders`, { params: parameters });
   return response.data;

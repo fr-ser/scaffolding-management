@@ -33,10 +33,11 @@ ordersRouter.get(
   "",
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const { skip = 0, take = 100 } = req.query as PaginationQueryParameters;
-    const { search, overdue, detailed } = req.query as {
+    const { search, overdue, detailed, clientId } = req.query as {
       search?: string;
       overdue?: boolean;
       detailed?: boolean;
+      clientId?: string;
     };
 
     const dataSource = getAppDataSource();
@@ -47,6 +48,7 @@ ordersRouter.get(
       .orderBy("order.created_at", "DESC")
       .limit(take)
       .offset(skip);
+
     if (detailed) {
       const permissions = getPermissionsForUser((req as basicAuth.IBasicAuthedRequest).auth.user);
       if (!permissions.includes(UserPermissions.SUB_ORDERS_VIEW)) {
@@ -71,6 +73,10 @@ ordersRouter.get(
           titleSearch: search,
         },
       );
+    }
+
+    if (clientId) {
+      databaseQuery = databaseQuery.andWhere("order.client_id = :clientId", { clientId });
     }
 
     if (overdue) {

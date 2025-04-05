@@ -12,7 +12,7 @@ export function getClientCreatePath() {
   return "/clients-create";
 }
 
-export function getOverviewPath() {
+export function getReportingPath() {
   return "/overview";
 }
 
