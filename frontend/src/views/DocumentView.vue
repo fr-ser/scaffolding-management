@@ -17,8 +17,8 @@ import DocumentFooter from "@/components/documents/DocumentFooter.vue";
 import DocumentInvoiceItemTable from "@/components/documents/DocumentInvoiceItemTable.vue";
 import DocumentText from "@/components/documents/DocumentText.vue";
 import DocumentTitle from "@/components/documents/DocumentTitle.vue";
-import useConfirmations from "@/compositions/useConfirmations";
-import useNotifications from "@/compositions/useNotifications";
+import useConfirmations from "@/composables/useConfirmations";
+import useNotifications from "@/composables/useNotifications";
 import { neverFunction } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
 import type {

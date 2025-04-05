@@ -5,7 +5,7 @@ import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
 
 import { createDocumentBySubOrder } from "@/backendClient";
-import useConfirmations from "@/compositions/useConfirmations";
+import useConfirmations from "@/composables/useConfirmations";
 import { DocumentKind } from "@/global/types/appTypes";
 import { getDocumentListPath, getDocumentViewPath } from "@/helpers/routes";
 

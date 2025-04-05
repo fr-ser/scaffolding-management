@@ -12,11 +12,12 @@ import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { createClient, deleteClient, getClient, getOrders, updateClient } from "@/backendClient";
-import useConfirmations from "@/compositions/useConfirmations";
-import useNotifications from "@/compositions/useNotifications";
+import { useClientValidation } from "@/composables/useClientLogic";
+import useConfirmations from "@/composables/useConfirmations";
+import useNotifications from "@/composables/useNotifications";
 import { ClientSalutation } from "@/global/types/appTypes";
 import { UserPermissions } from "@/global/types/backendTypes";
-import type { ClientCreate, ClientUpdate } from "@/global/types/dataEditTypes";
+import type { ClientUpdate } from "@/global/types/dataEditTypes";
 import type { Order } from "@/global/types/entities";
 import { getClientListPath, getOrderEditPath } from "@/helpers/routes";
 import { useUserStore } from "@/store";
@@ -66,7 +67,7 @@ async function onClickDelete() {
   }
 }
 
-let userInfo = ref<ClientUpdate | ClientCreate>({});
+let currentClient = ref<ClientUpdate>({}); // the client as shown in the frontend
 
 let birthdayDate = ref<Date>();
 const genders = Object.values(ClientSalutation);
@@ -78,18 +79,23 @@ const isEditing = computed(() => {
   return Boolean(route.params.id);
 });
 
+const clientValidation = useClientValidation();
+
 const onSaveClient = async () => {
   let requestBody = {
-    ...userInfo.value,
+    ...currentClient.value,
   };
   if (birthdayDate.value) {
     requestBody.birthday = birthdayDate.value.toISOString();
   }
+
+  const cleanPayload = clientValidation.validateAndCleanClientPayload(requestBody);
+
   if (isEditing.value) {
-    await updateClient(`${route.params.id}`, requestBody);
+    await updateClient(`${route.params.id}`, cleanPayload);
     notifications.showNotification("Die Änderung der Kundendaten wurde gespeichert");
   } else {
-    await createClient(requestBody);
+    await createClient(cleanPayload);
     router.push(getClientListPath());
     notifications.showNotification("Ein neuer Kunde wurde erstellt");
   }
@@ -97,10 +103,16 @@ const onSaveClient = async () => {
 function onClientList() {
   router.push(getClientListPath());
 }
+
 onMounted(async () => {
   if (isEditing.value) {
-    userInfo.value = await getClient(route.params.id as string);
-    birthdayDate.value = userInfo.value.birthday ? new Date(userInfo.value.birthday) : undefined;
+    const clientData = await getClient(route.params.id as string);
+
+    currentClient.value = {
+      ...clientData,
+    };
+
+    birthdayDate.value = clientData.birthday ? new Date(clientData.birthday) : undefined;
   }
 });
 </script>
@@ -134,21 +146,21 @@ onMounted(async () => {
         <div class="mb-4 font-bold">Name</div>
         <div class="card flex flex-col justify-center gap-y-6">
           <Dropdown
-            v-model="userInfo.salutation"
+            v-model="currentClient.salutation"
             :options="genders"
             placeholder="Anrede"
             class="w-full md:w-[14rem]"
           />
           <FloatLabel>
-            <InputText id="first-name" v-model="userInfo.first_name" class="w-full" />
+            <InputText id="first-name" v-model="currentClient.first_name" class="w-full" />
             <label for="first-name">Vorname</label>
           </FloatLabel>
           <FloatLabel>
-            <InputText id="last-name" v-model="userInfo.last_name" class="w-full" />
+            <InputText id="last-name" v-model="currentClient.last_name" class="w-full" />
             <label for="last-name">Nachname</label>
           </FloatLabel>
           <FloatLabel>
-            <InputText id="company-name" v-model="userInfo.company_name" class="w-full" />
+            <InputText id="company-name" v-model="currentClient.company_name" class="w-full" />
             <label for="company-name">Firma</label>
           </FloatLabel>
         </div>
@@ -159,16 +171,16 @@ onMounted(async () => {
         <div class="mb-4 font-bold">Adresse</div>
         <div class="card flex flex-col justify-center gap-y-6">
           <FloatLabel>
-            <InputText id="street" v-model="userInfo.street_and_number" class="w-full" />
+            <InputText id="street" v-model="currentClient.street_and_number" class="w-full" />
             <label for="street">Straße und Nr.</label>
           </FloatLabel>
 
           <FloatLabel>
-            <InputText id="plz" v-model="userInfo.postal_code" class="w-full" />
+            <InputText id="plz" v-model="currentClient.postal_code" class="w-full" />
             <label for="plz">PLZ</label>
           </FloatLabel>
           <FloatLabel>
-            <InputText id="city" v-model="userInfo.city" class="w-full" />
+            <InputText id="city" v-model="currentClient.city" class="w-full" />
             <label for="city">Stadt</label>
           </FloatLabel>
         </div>
@@ -179,16 +191,16 @@ onMounted(async () => {
         <div class="mb-4 font-bold">Kontakt</div>
         <div class="card flex flex-col justify-center gap-y-6">
           <FloatLabel>
-            <InputText id="landline" v-model="userInfo.landline_phone" class="w-full" />
+            <InputText id="landline" v-model="currentClient.landline_phone" class="w-full" />
             <label for="landline">Festnetz</label>
           </FloatLabel>
 
           <FloatLabel>
-            <InputText id="mobil" v-model="userInfo.mobile_phone" class="w-full" />
+            <InputText id="mobil" v-model="currentClient.mobile_phone" class="w-full" />
             <label for="mobil">Mobil</label>
           </FloatLabel>
           <FloatLabel>
-            <InputText id="email" v-model="userInfo.email" class="w-full" />
+            <InputText id="email" v-model="currentClient.email" class="w-full" />
             <label for="email">E-Mail</label>
           </FloatLabel>
         </div>
@@ -211,7 +223,7 @@ onMounted(async () => {
           <FloatLabel>
             <Textarea
               id="comment"
-              v-model="userInfo.comment"
+              v-model="currentClient.comment"
               class="w-full"
               autoResize
               rows="5"

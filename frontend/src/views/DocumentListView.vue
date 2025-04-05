@@ -7,8 +7,8 @@ import InputText from "primevue/inputtext";
 import { onMounted, ref, watch } from "vue";
 
 import { deleteDocument, getDocumentPdf, getDocuments } from "@/backendClient";
-import useConfirmations from "@/compositions/useConfirmations";
-import useNotifications from "@/compositions/useNotifications";
+import useConfirmations from "@/composables/useConfirmations";
+import useNotifications from "@/composables/useNotifications";
 import { neverFunction } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
 import type {

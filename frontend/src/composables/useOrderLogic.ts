@@ -1,6 +1,6 @@
 import { deleteOrder, isAppErrorCode } from "@/backendClient";
-import useConfirmations from "@/compositions/useConfirmations";
-import useNotifications from "@/compositions/useNotifications";
+import useConfirmations from "@/composables/useConfirmations";
+import useNotifications from "@/composables/useNotifications";
 import { ErrorCode } from "@/global/types/backendTypes";
 
 export default function useOrderLogic() {

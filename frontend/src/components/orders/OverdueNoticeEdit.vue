@@ -17,8 +17,8 @@ import {
   updateOverdueNotice,
 } from "@/backendClient";
 import CreateDocumentButton from "@/components/orders/CreateDocumentButton.vue";
-import useConfirmations from "@/compositions/useConfirmations";
-import useNotifications from "@/compositions/useNotifications";
+import useConfirmations from "@/composables/useConfirmations";
+import useNotifications from "@/composables/useNotifications";
 import { formatIsoDateString, formatNumber, getItemSum, getVatRate } from "@/global/helpers";
 import {
   DocumentKind,

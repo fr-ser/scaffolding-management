@@ -8,8 +8,8 @@ import ProgressSpinner from "primevue/progressspinner";
 import { ref } from "vue";
 
 import { deleteOrderAttachment, getOrderAttachments } from "@/backendClient";
-import useConfirmation from "@/compositions/useConfirmations";
-import useNotifications from "@/compositions/useNotifications";
+import useConfirmation from "@/composables/useConfirmations";
+import useNotifications from "@/composables/useNotifications";
 import { type DropboxFile, UserPermissions } from "@/global/types/backendTypes";
 import { useUserStore } from "@/store";
 

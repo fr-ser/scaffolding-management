@@ -5,7 +5,7 @@ import InputText from "primevue/inputtext";
 import { computed, onMounted, ref, watch } from "vue";
 
 import { getOrders } from "@/backendClient";
-import useOrderLogic from "@/compositions/useOrderLogic";
+import useOrderLogic from "@/composables/useOrderLogic";
 import { UserPermissions } from "@/global/types/backendTypes";
 import type { Order } from "@/global/types/entities";
 import { getOrderCreatePath, getOrderEditPath } from "@/helpers/routes";
