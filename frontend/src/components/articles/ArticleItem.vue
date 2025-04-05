@@ -9,6 +9,7 @@ import Textarea from "primevue/textarea";
 import { ref } from "vue";
 
 import { createArticle, deleteArticle, updateArticle } from "@/backendClient";
+import { useArticleValidation } from "@/composables/useArticleLogic";
 import useConfirmations from "@/composables/useConfirmations";
 import useNotifications from "@/composables/useNotifications";
 import { ArticleKind } from "@/global/types/appTypes";
@@ -28,17 +29,22 @@ const articlesType = Object.values(ArticleKind);
 
 const editableArticle = ref(props.article);
 
-const onUpdateArticle = async () => {
+const validation = useArticleValidation();
+
+const onClickSave = async () => {
+  const payload = validation.validateAndCleanPayload(editableArticle.value);
+
   if (props.isNew) {
-    await createArticle(editableArticle.value);
+    await createArticle(payload);
     notifications.showNotification("Ein neuer Artikel wurde erstellt");
     emit("reloadArticleView");
   } else {
-    await updateArticle(`${editableArticle.value.id}`, editableArticle.value);
+    await updateArticle(`${payload.id}`, payload);
     notifications.showNotification("Die Änderungen wurden gespeichert");
   }
 };
-async function confirmDelete() {
+
+async function onClickDelete() {
   const confirmationResult = await confirm.showConfirmation(
     "Sind Sie sich sicher, dass der Artikel gelöscht werden soll?",
   );
@@ -109,7 +115,7 @@ async function confirmDelete() {
           </FloatLabel>
           <div class="flex flex-row flex-wrap justify-end">
             <Button
-              @click="confirmDelete"
+              @click="onClickDelete"
               v-if="!isNew"
               icon="pi pi-times"
               severity="danger"
@@ -119,7 +125,7 @@ async function confirmDelete() {
               data-testid="article-delete-button"
             />
             <Button
-              @click="onUpdateArticle"
+              @click="onClickSave"
               icon="pi pi-save"
               text
               rounded
