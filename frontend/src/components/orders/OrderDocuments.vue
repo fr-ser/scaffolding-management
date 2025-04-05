@@ -4,7 +4,7 @@ import Dialog from "primevue/dialog";
 import ProgressSpinner from "primevue/progressspinner";
 import { ref } from "vue";
 
-import { getDocumentsByOrder, getDocumentsBySubOrder } from "@/backendClient";
+import { getDocumentsByOrder } from "@/backendClient";
 import { DocumentKind } from "@/global/types/appTypes";
 import {
   type InvoiceDocument,
@@ -15,7 +15,6 @@ import { getDocumentViewPath } from "@/helpers/routes";
 
 const props = defineProps<{
   id: string | number;
-  kind?: DocumentKind;
 }>();
 
 let visible = ref(false);
@@ -30,37 +29,23 @@ function getDocumentType(doc: OfferDocument | OverdueNoticeDocument | InvoiceDoc
     return DocumentKind.invoice;
   }
 }
-function buttonLabel() {
-  if (!props.kind) {
-    return "Alle Auftragsdokumente anzeigen";
-  }
-  if (props.kind === DocumentKind.offer) {
-    return "Alle Angebotsdokumente anzeigen";
-  }
-  if (props.kind === DocumentKind.invoice) {
-    return "Alle Rechnungsdokumente anzeigen";
-  } else {
-    return "Alle Mahnungsdokumente anzeigen";
-  }
-}
+
 async function buttonDocumentFunction() {
   visible.value = true;
   isLoading.value = true;
-  if (!props.kind) {
-    documents.value = await getDocumentsByOrder(props.id as string);
-  } else {
-    documents.value = await getDocumentsBySubOrder(props.id as number, props.kind as DocumentKind);
-  }
+
+  documents.value = await getDocumentsByOrder(props.id as string);
+
   isLoading.value = false;
 }
 </script>
 
 <template>
-  <div v-if="!kind" class="font-bold my-2">Dokumente</div>
+  <div class="font-bold my-2">Dokumente</div>
   <div class="flex flex-row gap-4">
     <Button
       @click="buttonDocumentFunction"
-      :label="`${buttonLabel()}`"
+      label="Alle Auftragsdokumente anzeigen"
       severity="secondary"
       outlined
       size="small"
