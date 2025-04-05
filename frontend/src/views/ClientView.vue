@@ -78,6 +78,7 @@ const route = useRoute();
 const isEditing = computed(() => {
   return Boolean(route.params.id);
 });
+
 const onSaveClient = async () => {
   let requestBody = {
     ...userInfo.value,
@@ -232,6 +233,7 @@ onMounted(async () => {
       severity="secondary"
       outlined
       size="small"
+      data-testid="show-orders-button"
     />
   </div>
   <Dialog class="w-full sm:w-4/6" v-model:visible="isOrderDialogVisible" modal header="Aufträge">
@@ -245,10 +247,17 @@ onMounted(async () => {
       v-for="order in clientOrders"
       :key="order.id"
     >
-      <div class="border border-slate-300 hover:border-primary ps-4 py-1">{{ order.id }}</div>
+      <div
+        class="border border-slate-300 hover:border-primary ps-4 py-1"
+        data-testid="client-order"
+      >
+        {{ order.id }} - {{ order.title }}
+      </div>
     </router-link>
     <div class="flex flex-row justify-center mt-4">
-      <Button v-if="hasMoreOrders" @click="loadMoreOrders">Weitere Aufträge laden</Button>
+      <Button v-if="hasMoreOrders" @click="loadMoreOrders" data-testid="show-more-button"
+        >Weitere Aufträge laden</Button
+      >
     </div>
   </Dialog>
 </template>

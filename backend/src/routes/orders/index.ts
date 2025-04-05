@@ -145,9 +145,7 @@ ordersRouter.get(
     const dataSource = getAppDataSource();
 
     const permissions = getPermissionsForUser((req as basicAuth.IBasicAuthedRequest).auth.user);
-    let relations = {
-      client: true,
-    } as FindOptionsRelations<Order>;
+    let relations = { client: true } as FindOptionsRelations<Order>;
 
     if (permissions.includes(UserPermissions.SUB_ORDERS_VIEW)) {
       relations = {
