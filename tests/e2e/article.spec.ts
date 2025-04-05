@@ -14,6 +14,8 @@ test("create, edit and delete an article", async ({ page }) => {
 
   await newArticleCard.getByLabel("Titel").fill("title " + timestamp);
   await newArticleCard.getByLabel("Bezeichnung").fill("test description");
+  await newArticleCard.getByTestId("article-kind-dropdown").click();
+  await page.getByRole("option", { name: "Artikel" }).click();
   await newArticleCard.getByLabel("Einheit").fill("test unit");
   await newArticleCard.getByTestId("price-input").locator("input").fill("1,23");
 

@@ -70,7 +70,6 @@ async function onClickDelete() {
 let currentClient = ref<ClientUpdate>({}); // the client as shown in the frontend
 
 let birthdayDate = ref<Date>();
-const genders = Object.values(ClientSalutation);
 
 const router = useRouter();
 const route = useRoute();
@@ -100,6 +99,7 @@ const onSaveClient = async () => {
     notifications.showNotification("Ein neuer Kunde wurde erstellt");
   }
 };
+
 function onClientList() {
   router.push(getClientListPath());
 }
@@ -147,7 +147,7 @@ onMounted(async () => {
         <div class="card flex flex-col justify-center gap-y-6">
           <Dropdown
             v-model="currentClient.salutation"
-            :options="genders"
+            :options="Object.values(ClientSalutation)"
             placeholder="Anrede"
             class="w-full md:w-[14rem]"
           />

@@ -12,7 +12,7 @@ import CreateDocumentButton from "@/components/orders/CreateDocumentButton.vue";
 import SubOrderItem from "@/components/orders/SubOrderItem.vue";
 import useConfirmations from "@/composables/useConfirmations";
 import useNotifications from "@/composables/useNotifications";
-import { useOfferValidation } from "@/composables/useOrderLogic";
+import { getBaseOfferAndInvoiceItem, useOfferValidation } from "@/composables/useOrderLogic";
 import { formatNumber, getItemSum, getVatRate } from "@/global/helpers";
 import { ArticleKind, DocumentKind, OfferStatus } from "@/global/types/appTypes";
 import type { OfferItemCreate } from "@/global/types/dataEditTypes";
@@ -35,7 +35,9 @@ const notifications = useNotifications();
 
 let status = ref(finalExistingSubOrder.value?.status || OfferStatus.initial);
 let description = ref(finalExistingSubOrder.value?.description || "");
-let offerItemsArray = ref<OfferItemCreate[]>(finalExistingSubOrder.value?.items || []);
+let offerItemsArray = ref<OfferItemCreate[]>(
+  finalExistingSubOrder.value?.items || [getBaseOfferAndInvoiceItem()],
+);
 let offerDate = ref<Date>(
   finalExistingSubOrder.value ? new Date(finalExistingSubOrder.value.offered_at) : new Date(),
 );
