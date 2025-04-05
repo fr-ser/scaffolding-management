@@ -19,7 +19,7 @@ const props = defineProps<{
 
 const userStore = useUserStore();
 const notification = useNotifications();
-const confirmation = useConfirmation();
+const confirm = useConfirmation();
 
 const isModalVisible = ref(false);
 const isFileBeingUploaded = ref(false);
@@ -43,19 +43,19 @@ function onUpload(event: FileUploadUploadEvent) {
   }
 }
 
-function onDeleteClick(fileName: string) {
-  confirmation.showConfirmation(
+async function onDeleteClick(fileName: string) {
+  const confirmationResult = confirm.showConfirmation(
     `Soll die Datei '${fileName}' wirklich gelöscht werden?`,
-    async () => {
-      try {
-        await deleteOrderAttachment(props.orderId, fileName);
-        notification.showNotification(`Die Datei '${fileName}' wurde gelöscht`);
-        attachments.value = attachments.value.filter((file) => file.name !== fileName);
-      } catch (error) {
-        notification.showNotification("Die Datei konnte nicht gelöscht werden.", "error");
-      }
-    },
   );
+  if (!confirmationResult) return;
+
+  try {
+    await deleteOrderAttachment(props.orderId, fileName);
+    notification.showNotification(`Die Datei '${fileName}' wurde gelöscht`);
+    attachments.value = attachments.value.filter((file) => file.name !== fileName);
+  } catch (error) {
+    notification.showNotification("Die Datei konnte nicht gelöscht werden.", "error");
+  }
 }
 </script>
 

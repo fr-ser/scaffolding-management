@@ -59,20 +59,20 @@ function getDocumentTypeById(id: string) {
   throw new Error(`No document found for ID: ${id}`);
 }
 
-function removeDocument(doc: OfferDocument | OverdueNoticeDocument | InvoiceDocument) {
-  confirm.showConfirmation(
+async function removeDocument(doc: OfferDocument | OverdueNoticeDocument | InvoiceDocument) {
+  const confirmationResult = await confirm.showConfirmation(
     "Sind Sie sicher, dass Sie das Dokument löschen möchten?",
-    async function () {
-      try {
-        let kind = getDocumentType(doc);
-        await deleteDocument(doc.id, kind);
-        loadData();
-        notifications.showNotification("Das Dokument wurde gelöscht");
-      } catch (error) {
-        notifications.showNotification("Das Dokument konnte nicht gelöscht werden.", "error");
-      }
-    },
   );
+  if (!confirmationResult) return;
+
+  try {
+    let kind = getDocumentType(doc);
+    await deleteDocument(doc.id, kind);
+    loadData();
+    notifications.showNotification("Das Dokument wurde gelöscht");
+  } catch (error) {
+    notifications.showNotification("Das Dokument konnte nicht gelöscht werden.", "error");
+  }
 }
 
 watch(areAllDocumentsSelected, (currentValue) => {
@@ -83,7 +83,11 @@ watch(areAllDocumentsSelected, (currentValue) => {
   }
 });
 
-async function createPdf() {
+async function onClickCreatePdf() {
+  const confirmationResult = await confirm.showConfirmation(
+    `Wollen Sie für die folgenden Dokumente eine PDF-Datei erstellen: ${documentSelection.value.join(", ")}?`,
+  );
+  if (!confirmationResult) return;
   let selectedValuesArray = documentSelection.value.map(function (id) {
     return { kind: getDocumentTypeById(id), id };
   });
@@ -94,11 +98,6 @@ async function createPdf() {
   if (documentSelection.value.length > 1) fileName = "dokumente.pdf";
   saveAs(response, fileName);
 }
-
-const confirmCreatePdf = () => {
-  const message = `Wollen Sie für die folgenden Dokumente eine PDF-Datei erstellen: ${documentSelection.value.join(", ")}?`;
-  confirm.showConfirmation(message, createPdf);
-};
 
 watch(search, debounce(loadData, 250));
 
@@ -118,7 +117,7 @@ onMounted(async () => {
         <InputText v-model="search" placeholder="Suche" class="pl-10 w-full" />
       </span>
       <Button
-        @click="confirmCreatePdf"
+        @click="onClickCreatePdf"
         type="button"
         label="PDF speichern"
         :disabled="documentSelection.length === 0"

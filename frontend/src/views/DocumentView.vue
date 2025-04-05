@@ -72,28 +72,29 @@ async function getDocument() {
   } else neverFunction(kind);
 }
 
-function sendClick() {
-  confirm.showConfirmation("Möchten Sie die E-Mail senden?", async function () {
-    try {
-      await sendDocumentAsEmail({
-        kind,
-        id: route.params.id as string,
-        recipient: emailRecipient.value,
-        message: emailMessage.value,
-        subject: emailSubject.value,
-        attachmentName: emailAttachmentName.value,
-      });
-    } catch (error) {
-      notification.showNotification(
-        "Die E-Mail wurde nicht versandt. Es gab ein technisches Problem.",
-        "error",
-      );
-      return;
-    }
+async function sendClick() {
+  const confirmationResult = await confirm.showConfirmation("Möchten Sie die E-Mail senden?");
+  if (!confirmationResult) return;
 
-    notification.showNotification("Die E-Mail wurde versandt.");
-    isEmailDialogVisible.value = false;
-  });
+  try {
+    await sendDocumentAsEmail({
+      kind,
+      id: route.params.id as string,
+      recipient: emailRecipient.value,
+      message: emailMessage.value,
+      subject: emailSubject.value,
+      attachmentName: emailAttachmentName.value,
+    });
+  } catch (error) {
+    notification.showNotification(
+      "Die E-Mail wurde nicht versandt. Es gab ein technisches Problem.",
+      "error",
+    );
+    return;
+  }
+
+  notification.showNotification("Die E-Mail wurde versandt.");
+  isEmailDialogVisible.value = false;
 }
 
 onMounted(async () => {

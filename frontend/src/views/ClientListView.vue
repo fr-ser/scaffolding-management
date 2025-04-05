@@ -55,7 +55,12 @@ function getClientLabel(client: Client) {
   return label;
 }
 
-async function removeClient(client: Client) {
+async function onClickDelete(client: Client) {
+  const confirmationResult = await confirm.showConfirmation(
+    "Sind Sie sich sicher, dass der Kunde gelöscht werden soll?",
+  );
+  if (!confirmationResult) return;
+
   try {
     await deleteClient(client.id);
     loadData();
@@ -64,15 +69,6 @@ async function removeClient(client: Client) {
     notifications.showNotification("Der Kunde konnte nicht gelöscht werden.", "error");
   }
 }
-
-const confirmDelete = (client: Client) => {
-  confirm.showConfirmation(
-    "Sind Sie sich sicher, dass der Kunde gelöscht werden soll?",
-    async () => {
-      removeClient(client);
-    },
-  );
-};
 
 watch(search, debounce(loadData, 250));
 
@@ -126,7 +122,7 @@ onMounted(async () => {
               </router-link>
               <Button
                 v-if="userStore.permissions.includes(UserPermissions.CLIENTS_EDIT)"
-                @click.stop.prevent="confirmDelete(client)"
+                @click="onClickDelete(client)"
                 label="Löschen"
                 icon="pi pi-times"
                 severity="danger"

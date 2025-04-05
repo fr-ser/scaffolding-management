@@ -51,7 +51,12 @@ async function loadMoreOrders() {
   hasMoreOrders.value = response.data.length !== response.totalCount;
 }
 
-const onDeleteClient = async () => {
+async function onClickDelete() {
+  const confirmationResult = await confirm.showConfirmation(
+    "Sind Sie sich sicher, dass der Kunde gelöscht werden soll?",
+  );
+  if (!confirmationResult) return;
+
   try {
     await deleteClient(`${route.params.id}`);
     router.push(getClientListPath());
@@ -59,13 +64,7 @@ const onDeleteClient = async () => {
   } catch (error) {
     notifications.showNotification("Der Kunde konnte nicht gelöscht werden.", "error");
   }
-};
-const confirmDelete = () => {
-  confirm.showConfirmation(
-    "Sind Sie sich sicher, dass der Kunde gelöscht werden soll?",
-    onDeleteClient,
-  );
-};
+}
 
 let userInfo = ref<ClientUpdate | ClientCreate>({});
 
@@ -120,7 +119,7 @@ onMounted(async () => {
     <div v-if="userStore.permissions.includes(UserPermissions.CLIENTS_EDIT)" class="flex gap-x-2">
       <Button @click="onSaveClient" label="Speichern" text raised />
       <Button
-        @click="confirmDelete"
+        @click="onClickDelete"
         v-if="isEditing"
         label="Löschen"
         severity="danger"

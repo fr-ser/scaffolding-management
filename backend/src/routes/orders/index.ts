@@ -206,7 +206,12 @@ ordersRouter.delete(
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
     try {
-      res.json(await dataSource.manager.delete(Order, { id: req.params.id }));
+      await dataSource.transaction(async (transactionalEntityManager) => {
+        await transactionalEntityManager.delete(OverdueNotice, { order_id: req.params.id });
+        await transactionalEntityManager.delete(Invoice, { order_id: req.params.id });
+        await transactionalEntityManager.delete(Offer, { order_id: req.params.id });
+        await transactionalEntityManager.delete(Order, { id: req.params.id });
+      });
     } catch (error) {
       if (error.code !== SQLITE_CONSTRAINT_ERROR_CODE) {
         next(error);
@@ -214,17 +219,20 @@ ordersRouter.delete(
       }
 
       const subOrderCounts = await Promise.all([
-        dataSource.manager.countBy(Invoice, { order_id: req.params.id }),
-        dataSource.manager.countBy(Offer, { order_id: req.params.id }),
-        dataSource.manager.countBy(OverdueNotice, { order_id: req.params.id }),
+        dataSource.manager.countBy(InvoiceDocument, { order_id: req.params.id }),
+        dataSource.manager.countBy(OfferDocument, { order_id: req.params.id }),
+        dataSource.manager.countBy(OverdueNoticeDocument, { order_id: req.params.id }),
       ]);
 
       if (subOrderCounts.reduce((a, b) => a + b, 0) > 0) {
-        next(new ApiError(ErrorCode.FK_CONSTRAINT_SUB_ORDER));
+        next(new ApiError(ErrorCode.FK_CONSTRAINT_DOCUMENT));
+      } else {
+        next(error);
       }
-
-      next(error);
+      return;
     }
+
+    res.sendStatus(201);
   },
 );
 

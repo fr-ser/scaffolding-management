@@ -4,6 +4,7 @@ import { neverFunction } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
 import type {
   DropboxFile,
+  ErrorCode,
   PaginationResponse,
   SaveDocumentsAsPdfPayload,
   SendDocumentsAsEMail,
@@ -237,4 +238,14 @@ export async function deleteOrderAttachment(orderId: string, fileName: string) {
 export async function getUserData() {
   const response = await axiosInstance.get(`/api/users`);
   return response.data as UserData;
+}
+
+export function isAppErrorCode(error: unknown, code: ErrorCode): boolean {
+  if (axios.isAxiosError(error)) {
+    console.log("isAxiosError", error);
+    const response = error.response?.data as { error: { code: ErrorCode } };
+    return response != null && response?.error?.code === code;
+  }
+  console.log("not isAxiosError", error);
+  return false;
 }

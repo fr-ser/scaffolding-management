@@ -114,15 +114,18 @@ async function onClickedSearchInvoice() {
 }
 
 async function onClickedDelete() {
-  confirm.showConfirmation("Möchten Sie die Mahnung wirklich löschen?", async () => {
-    try {
-      await deleteSubOrder(finalExistingSubOrder.value!.id, DocumentKind.overdueNotice);
-      notifications.showNotification("Die Mahnung wurde gelöscht.");
-      emit("deleted");
-    } catch (error) {
-      notifications.showNotification("Die Mahnung konnte nicht gelöscht werden.", "error");
-    }
-  });
+  const confirmationResult = await confirm.showConfirmation(
+    "Möchten Sie die Mahnung wirklich löschen?",
+  );
+  if (!confirmationResult) return;
+
+  try {
+    await deleteSubOrder(finalExistingSubOrder.value!.id, DocumentKind.overdueNotice);
+    notifications.showNotification("Die Mahnung wurde gelöscht.");
+    emit("deleted");
+  } catch (error) {
+    notifications.showNotification("Die Mahnung konnte nicht gelöscht werden.", "error");
+  }
 }
 
 async function onClickSave() {

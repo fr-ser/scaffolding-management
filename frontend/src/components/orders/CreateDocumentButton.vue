@@ -20,16 +20,15 @@ const toastGroup = ref(`document-creation-${props.kind}-${props.id}`);
 
 const documentLink = ref(getDocumentListPath());
 
-const confirmCreateDocument = () => {
-  documentLink.value = "2";
-  confirm.showConfirmation("Wollen Sie ein Dokument erstellen?", async () => {
-    const newDocument = await createDocumentBySubOrder(props.id, props.kind);
+async function confirmCreateDocument() {
+  const confirmationResult = await confirm.showConfirmation("Wollen Sie ein Dokument erstellen?");
+  if (!confirmationResult) return;
+  const newDocument = await createDocumentBySubOrder(props.id, props.kind);
 
-    documentLink.value = getDocumentViewPath(props.kind, newDocument.id);
+  documentLink.value = getDocumentViewPath(props.kind, newDocument.id);
 
-    toast.add({ severity: "success", group: toastGroup.value, life: 5000 });
-  });
-};
+  toast.add({ severity: "success", group: toastGroup.value, life: 5000 });
+}
 </script>
 
 <template>
