@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Calendar from "primevue/calendar";
-import Card from "primevue/card";
+import Divider from "primevue/divider";
 import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import Textarea from "primevue/textarea";
@@ -108,7 +108,7 @@ async function onSaveOffer() {
 </script>
 
 <template>
-  <div class="flex flex-row justify-end gap-8">
+  <div class="flex flex-row flex-wrap gap-y-2 gap-x-8 sm:justify-end">
     <CreateDocumentButton
       v-if="finalExistingSubOrder"
       :kind="DocumentKind.offer"
@@ -125,84 +125,73 @@ async function onSaveOffer() {
     />
     <Button @click="onSaveOffer" label="Angebot speichern" text raised />
   </div>
-  <Card class="mt-2">
-    <template #content>
-      <section
-        class="flex flex-col flex-wrap justify-items-start gap-2 sm:flex-row sm:gap-8 sm:items-center"
-      >
-        <FloatLabel>
-          <Calendar
-            id="offer-date"
-            v-model="offerDate"
-            dateFormat="dd/mm/yy"
-            showIcon
-            iconDisplay="input"
-          />
-          <label for="offer-date">Angebotsdatum</label>
-        </FloatLabel>
-        <FloatLabel>
-          <Calendar
-            id="offered-until"
-            v-model="validityDate"
-            dateFormat="dd/mm/yy"
-            showIcon
-            iconDisplay="input"
-          />
-          <label for="offered-until">Gültig bis</label>
-        </FloatLabel>
-        <FloatLabel class="min-w-32">
-          <Dropdown
-            id="offer-status"
-            v-model="status"
-            :options="Object.values(OfferStatus)"
-            class="w-full"
-          />
-          <label for="offer-status">Angebotsstatus</label>
-        </FloatLabel>
-      </section>
-      <FloatLabel class="mt-8">
-        <Textarea
-          id="description"
-          v-model="description"
-          class="w-full"
-          autoResize
-          rows="2"
-          cols="30"
-        />
-        <label for="description">Beschreibung</label>
-      </FloatLabel>
-    </template>
-  </Card>
-  <Card class="mt-2">
-    <template #content>
-      <div class="flex flex-row justify-between flex-wrap gap-4">
-        <div class="grow flex flex-row gap-10 items-center">
-          <div class="font-bold">Summe:</div>
-          <span>Netto: {{ formatNumber(itemsNetSum, { currency: true }) }} </span>
-          <span>USt: {{ formatNumber(itemsNetSum * vatRate, { currency: true }) }}</span>
-          <span>Brutto: {{ formatNumber(itemsNetSum * (1 + vatRate), { currency: true }) }} </span>
-        </div>
-        <div class="flex gap-2">
-          <Button
-            @click="
-              onItemCreate(ArticleKind.item);
-              notifications.showNotification('Artikel hinzugefügt');
-            "
-            icon="pi pi-plus"
-            label="Artikel"
-          />
-          <Button
-            @click="
-              onItemCreate(ArticleKind.heading);
-              notifications.showNotification('Hinweis hinzugefügt');
-            "
-            icon="pi pi-plus"
-            label="Hinweis"
-          />
-        </div>
-      </div>
-    </template>
-  </Card>
+  <section
+    class="mt-10 flex flex-col flex-wrap justify-items-start gap-x-2 gap-y-6 sm:flex-row sm:items-center"
+  >
+    <FloatLabel>
+      <Calendar
+        id="offer-date"
+        v-model="offerDate"
+        dateFormat="dd/mm/yy"
+        showIcon
+        iconDisplay="input"
+      />
+      <label for="offer-date">Angebotsdatum</label>
+    </FloatLabel>
+    <FloatLabel>
+      <Calendar
+        id="offered-until"
+        v-model="validityDate"
+        dateFormat="dd/mm/yy"
+        showIcon
+        iconDisplay="input"
+      />
+      <label for="offered-until">Gültig bis</label>
+    </FloatLabel>
+    <FloatLabel class="min-w-32">
+      <Dropdown
+        id="offer-status"
+        v-model="status"
+        :options="Object.values(OfferStatus)"
+        class="w-full"
+      />
+      <label for="offer-status">Angebotsstatus</label>
+    </FloatLabel>
+  </section>
+  <FloatLabel class="mt-8">
+    <Textarea id="description" v-model="description" class="w-full" autoResize rows="2" cols="30" />
+    <label for="description">Beschreibung</label>
+  </FloatLabel>
+
+  <Divider />
+
+  <div class="flex flex-row justify-between flex-wrap gap-4">
+    <div class="grow flex flex-row flex-wrap gap-x-10 gap-y-2 items-center">
+      <div class="font-bold">Summe:</div>
+      <span>Netto: {{ formatNumber(itemsNetSum, { currency: true }) }} </span>
+      <span>USt: {{ formatNumber(itemsNetSum * vatRate, { currency: true }) }}</span>
+      <span>Brutto: {{ formatNumber(itemsNetSum * (1 + vatRate), { currency: true }) }} </span>
+    </div>
+    <div class="flex gap-2">
+      <Button
+        @click="
+          onItemCreate(ArticleKind.item);
+          notifications.showNotification('Artikel hinzugefügt');
+        "
+        icon="pi pi-plus"
+        label="Artikel"
+      />
+      <Button
+        @click="
+          onItemCreate(ArticleKind.heading);
+          notifications.showNotification('Hinweis hinzugefügt');
+        "
+        icon="pi pi-plus"
+        label="Hinweis"
+      />
+    </div>
+  </div>
+
   <SubOrderItem
     v-for="(item, idx) in offerItemsArray"
     :index="idx + 1"

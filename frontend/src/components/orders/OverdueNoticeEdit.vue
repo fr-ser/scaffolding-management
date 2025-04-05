@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Calendar from "primevue/calendar";
-import Card from "primevue/card";
 import Dialog from "primevue/dialog";
+import Divider from "primevue/divider";
 import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import InputNumber from "primevue/inputnumber";
@@ -159,7 +159,7 @@ async function onClickSave() {
 </script>
 
 <template>
-  <div class="flex flex-row justify-end gap-8">
+  <div class="flex flex-row flex-wrap gap-y-2 gap-x-8 sm:justify-end">
     <CreateDocumentButton
       v-if="finalExistingSubOrder"
       :kind="DocumentKind.overdueNotice"
@@ -176,137 +176,124 @@ async function onClickSave() {
     />
     <Button @click="onClickSave" label="Mahnung speichern" text raised />
   </div>
-  <Card class="mt-2">
-    <template #content>
-      <section
-        class="flex flex-col flex-wrap justify-items-start gap-2 sm:flex-row sm:gap-8 sm:items-center"
-      >
-        <FloatLabel>
-          <Calendar
-            id="payments-until"
-            v-model="paymentsUntil"
-            dateFormat="dd/mm/yy"
-            showIcon
-            iconDisplay="input"
-          />
-          <label for="payments-until">Zahlungen berücksichtigt bis:</label>
-        </FloatLabel>
-        <FloatLabel>
-          <Calendar
-            id="notice-date"
-            v-model="noticeDate"
-            dateFormat="dd/mm/yy"
-            showIcon
-            iconDisplay="input"
-          />
-          <label for="notice-date">Mahndatum:</label>
-        </FloatLabel>
-        <FloatLabel>
-          <Dropdown
-            id="overdueType"
-            v-model="noticeLevel"
-            :options="Object.values(OverdueNoticeLevel)"
-            placeholder="overdue-notice-level"
-          />
-          <label for="overdue-notice-level">Mahnstufe:</label>
-        </FloatLabel>
-        <FloatLabel>
-          <Calendar
-            id="payment-target"
-            v-model="paymentTarget"
-            dateFormat="dd/mm/yy"
-            showIcon
-            iconDisplay="input"
-          />
-          <label for="payment-target">Zahlungsziel:</label>
-        </FloatLabel>
-        <FloatLabel class="min-w-32">
-          <Dropdown
-            id="payment-status"
-            v-model="paymentStatus"
-            :options="Object.values(PaymentStatus)"
-            class="w-full"
-          />
-          <label for="payment-status">Zahlungsstatus:</label>
-        </FloatLabel>
-        <FloatLabel>
-          <InputNumber
-            id="notice-costs"
-            v-model="noticeCosts"
-            locale="de-DE"
-            :minFractionDigits="0"
-            :maxFractionDigits="10"
-          />
-          <label for="notice-costs">Mahnkosten:</label>
-        </FloatLabel>
-        <FloatLabel>
-          <InputNumber
-            id="default-interest"
-            v-model="defaultInterest"
-            locale="de-DE"
-            :minFractionDigits="0"
-            :maxFractionDigits="10"
-          />
-          <label for="default-interest">Verzugszinsen:</label>
-        </FloatLabel>
-      </section>
+  <section
+    class="mt-10 flex flex-col flex-wrap justify-items-start gap-x-2 gap-y-6 sm:flex-row sm:items-center"
+  >
+    <FloatLabel>
+      <Calendar
+        id="payments-until"
+        v-model="paymentsUntil"
+        dateFormat="dd/mm/yy"
+        showIcon
+        iconDisplay="input"
+      />
+      <label for="payments-until">Zahlungen berücksichtigt bis:</label>
+    </FloatLabel>
+    <FloatLabel>
+      <Calendar
+        id="notice-date"
+        v-model="noticeDate"
+        dateFormat="dd/mm/yy"
+        showIcon
+        iconDisplay="input"
+      />
+      <label for="notice-date">Mahndatum:</label>
+    </FloatLabel>
+    <FloatLabel>
+      <Dropdown
+        id="overdueType"
+        v-model="noticeLevel"
+        :options="Object.values(OverdueNoticeLevel)"
+        placeholder="overdue-notice-level"
+      />
+      <label for="overdue-notice-level">Mahnstufe:</label>
+    </FloatLabel>
+    <FloatLabel>
+      <Calendar
+        id="payment-target"
+        v-model="paymentTarget"
+        dateFormat="dd/mm/yy"
+        showIcon
+        iconDisplay="input"
+      />
+      <label for="payment-target">Zahlungsziel:</label>
+    </FloatLabel>
+    <FloatLabel class="min-w-32">
+      <Dropdown
+        id="payment-status"
+        v-model="paymentStatus"
+        :options="Object.values(PaymentStatus)"
+        class="w-full"
+      />
+      <label for="payment-status">Zahlungsstatus:</label>
+    </FloatLabel>
+    <FloatLabel>
+      <InputNumber
+        id="notice-costs"
+        v-model="noticeCosts"
+        locale="de-DE"
+        :minFractionDigits="0"
+        :maxFractionDigits="10"
+      />
+      <label for="notice-costs">Mahnkosten:</label>
+    </FloatLabel>
+    <FloatLabel>
+      <InputNumber
+        id="default-interest"
+        v-model="defaultInterest"
+        locale="de-DE"
+        :minFractionDigits="0"
+        :maxFractionDigits="10"
+      />
+      <label for="default-interest">Verzugszinsen:</label>
+    </FloatLabel>
+  </section>
 
-      <FloatLabel class="mt-8">
-        <Textarea
-          id="description"
-          v-model="description"
-          class="w-full"
-          autoResize
-          rows="2"
-          cols="30"
-        />
-        <label for="description">Beschreibung</label>
-      </FloatLabel>
-    </template>
-  </Card>
+  <FloatLabel class="mt-8">
+    <Textarea id="description" v-model="description" class="w-full" autoResize rows="2" cols="30" />
+    <label for="description">Beschreibung</label>
+  </FloatLabel>
 
-  <Card class="mt-2">
-    <template #content>
-      <div class="flex flex-row justify-between flex-wrap gap-4">
-        <div class="grow flex flex-row gap-10 items-center">
-          <div class="font-bold">Summe:</div>
-          <span>Netto: {{ formatNumber(itemsSum.net, { currency: true }) }} </span>
-          <span>USt: {{ formatNumber(itemsSum.vat, { currency: true }) }}</span>
-          <span>Brutto: {{ formatNumber(itemsSum.gross, { currency: true }) }} </span>
+  <Divider />
+
+  <div class="flex flex-row justify-between flex-wrap gap-4">
+    <div class="grow flex flex-row flex-wrap gap-x-10 gap-y-2 items-center">
+      <div class="font-bold">Summe:</div>
+      <span>Netto: {{ formatNumber(itemsSum.net, { currency: true }) }} </span>
+      <span>USt: {{ formatNumber(itemsSum.vat, { currency: true }) }}</span>
+      <span>Brutto: {{ formatNumber(itemsSum.gross, { currency: true }) }} </span>
+    </div>
+    <div class="flex gap-2">
+      <Button @click="onClickedSearchInvoice" icon="pi pi-plus" label="Rechnung hinzufügen" />
+    </div>
+  </div>
+
+  <div class="mt-2" v-for="item in enrichedItems" :key="item.invoiceDocument.id">
+    <Divider />
+    <div class="flex flex-row justify-between items-center gap-4">
+      <div class="flex flex-row flex-wrap gap-6">
+        <div><span class="underline">Nummer:</span> {{ item.invoiceDocument.id }}</div>
+        <div>
+          <span class="underline">Datum:</span>
+          {{ formatIsoDateString(item.invoiceDocument.invoice_date) }}
         </div>
-        <div class="flex gap-2">
-          <Button @click="onClickedSearchInvoice" icon="pi pi-plus" label="Rechnung hinzufügen" />
+        <div>
+          <span class="underline">Fällig bis:</span>
+          {{ formatIsoDateString(item.invoiceDocument.payment_target) }}
+        </div>
+        <div>
+          <span class="underline">Betrag (Brutto):</span>
+          {{ formatNumber(item.netSum * (1 + item.vatRate), { currency: true }) }}
         </div>
       </div>
-    </template>
-  </Card>
-  <Card class="mt-2" v-for="item in enrichedItems" :key="item.invoiceDocument.id">
-    <template #content>
-      <div class="flex flex-row justify-between items-center gap-4">
-        <div class="flex flex-row flex-wrap gap-6">
-          <div><span class="underline">Nummer:</span> {{ item.invoiceDocument.id }}</div>
-          <div>
-            <span class="underline">Datum:</span>
-            {{ formatIsoDateString(item.invoiceDocument.invoice_date) }}
-          </div>
-          <div>
-            <span class="underline">Fällig bis:</span>
-            {{ formatIsoDateString(item.invoiceDocument.payment_target) }}
-          </div>
-          <div>
-            <span class="underline">Betrag (Brutto):</span>
-            {{ formatNumber(item.netSum * (1 + item.vatRate), { currency: true }) }}
-          </div>
-        </div>
-        <Button
-          class="shrink-0"
-          @click="onClickRemoveInvoice(item.invoiceDocument.id)"
-          icon="pi pi-trash"
-          label="Entfernen"
-        />
-      </div>
-    </template>
-  </Card>
+      <Button
+        class="shrink-0"
+        @click="onClickRemoveInvoice(item.invoiceDocument.id)"
+        icon="pi pi-trash"
+        label="Entfernen"
+      />
+    </div>
+  </div>
 
   <Dialog
     class="w-full sm:w-4/6"

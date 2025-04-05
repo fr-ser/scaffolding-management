@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Calendar from "primevue/calendar";
-import Card from "primevue/card";
+import Divider from "primevue/divider";
 import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import Textarea from "primevue/textarea";
@@ -124,7 +124,7 @@ async function onSaveInvoice() {
 </script>
 
 <template>
-  <div class="flex flex-row justify-end gap-8">
+  <div class="flex flex-row flex-wrap gap-y-2 gap-x-8 sm:justify-end">
     <CreateDocumentButton
       v-if="finalExistingSubOrder"
       :kind="DocumentKind.invoice"
@@ -141,115 +141,104 @@ async function onSaveInvoice() {
     />
     <Button @click="onSaveInvoice" label="Rechnung speichern" text raised />
   </div>
-  <Card class="mt-2">
-    <template #content>
-      <div class="flex flex-row flex-wrap gap-8">
-        <section
-          class="flex flex-col flex-wrap justify-items-start gap-2 sm:flex-row sm:gap-8 sm:items-center"
-        >
-          <FloatLabel>
-            <Calendar
-              id="invoice-date-input"
-              v-model="invoiceDate"
-              dateFormat="dd/mm/yy"
-              showIcon
-              iconDisplay="input"
-            />
-            <label for="invoice-date-input">Rechnungsdatum</label>
-          </FloatLabel>
-          <FloatLabel>
-            <Calendar
-              id="payment-target-input"
-              v-model="paymentTarget"
-              dateFormat="dd/mm/yy"
-              showIcon
-              iconDisplay="input"
-            />
-            <label for="payment-target-input">Zahlungsziel</label>
-          </FloatLabel>
-          <FloatLabel class="min-w-32">
-            <Dropdown
-              id="invoice-info-status"
-              v-model="status"
-              :options="Object.values(PaymentStatus)"
-              class="w-full"
-            />
-            <label for="invoice-info-status">Zahlungsstatus:</label>
-          </FloatLabel>
-        </section>
-        <section
-          class="flex flex-col justify-items-start gap-2 sm:flex-row sm:gap-8 sm:items-center flex-wrap"
-        >
-          <div
-            class="flex flex-row justify-start gap-2 items-center w-full sm:w-auto"
-            v-for="(item, idx) in serviceDates"
-            :key="idx"
-          >
-            <FloatLabel class="w-full sm:w-auto">
-              <Calendar
-                :id="`calendar-${idx + 1}`"
-                v-model="item.date"
-                dateFormat="dd/mm/yy"
-                showIcon
-                iconDisplay="input"
-                class="w-full sm:w-auto"
-              />
-              <label :for="`calendar-${idx + 1}`"> Leistungsdatum {{ idx + 1 }} </label>
-            </FloatLabel>
-            <Button @click="onServiceDateDelete(idx)" icon="pi pi-times" severity="danger" text />
-          </div>
-          <Button
-            @click="serviceDates.push({})"
-            icon="pi pi-plus"
-            label="Leistungsdatum"
-            rounded
-            text
-          />
-        </section>
-      </div>
-      <FloatLabel class="mt-8">
-        <Textarea
-          id="description"
-          v-model="description"
-          class="w-full"
-          autoResize
-          rows="2"
-          cols="30"
+  <div class="flex flex-row flex-wrap gap-8">
+    <section
+      class="mt-10 flex flex-col flex-wrap justify-items-start gap-x-2 gap-y-6 sm:flex-row sm:items-center"
+    >
+      <FloatLabel>
+        <Calendar
+          id="invoice-date-input"
+          v-model="invoiceDate"
+          dateFormat="dd/mm/yy"
+          showIcon
+          iconDisplay="input"
         />
-        <label for="description">Beschreibung</label>
+        <label for="invoice-date-input">Rechnungsdatum</label>
       </FloatLabel>
-    </template>
-  </Card>
-  <Card class="mt-2">
-    <template #content>
-      <div class="flex flex-row justify-between flex-wrap gap-4">
-        <div class="grow flex flex-row gap-10 items-center">
-          <div class="font-bold">Summe:</div>
-          <span>Netto: {{ formatNumber(itemsNetSum, { currency: true }) }} </span>
-          <span>USt: {{ formatNumber(itemsNetSum * vatRate, { currency: true }) }}</span>
-          <span>Brutto: {{ formatNumber(itemsNetSum * (1 + vatRate), { currency: true }) }} </span>
-        </div>
-        <div class="flex gap-2">
-          <Button
-            @click="
-              onItemCreate(ArticleKind.item);
-              notifications.showNotification('Artikel hinzugefügt');
-            "
-            icon="pi pi-plus"
-            label="Artikel"
+      <FloatLabel>
+        <Calendar
+          id="payment-target-input"
+          v-model="paymentTarget"
+          dateFormat="dd/mm/yy"
+          showIcon
+          iconDisplay="input"
+        />
+        <label for="payment-target-input">Zahlungsziel</label>
+      </FloatLabel>
+      <FloatLabel class="min-w-32">
+        <Dropdown
+          id="invoice-info-status"
+          v-model="status"
+          :options="Object.values(PaymentStatus)"
+          class="w-full"
+        />
+        <label for="invoice-info-status">Zahlungsstatus:</label>
+      </FloatLabel>
+    </section>
+    <section
+      class="flex flex-col justify-items-start gap-2 sm:flex-row sm:gap-8 sm:items-center flex-wrap"
+    >
+      <div
+        class="flex flex-row justify-start gap-2 items-center w-full sm:w-auto"
+        v-for="(item, idx) in serviceDates"
+        :key="idx"
+      >
+        <FloatLabel class="w-full sm:w-auto">
+          <Calendar
+            :id="`calendar-${idx + 1}`"
+            v-model="item.date"
+            dateFormat="dd/mm/yy"
+            showIcon
+            iconDisplay="input"
+            class="w-full sm:w-auto"
           />
-          <Button
-            @click="
-              onItemCreate(ArticleKind.heading);
-              notifications.showNotification('Hinweis hinzugefügt');
-            "
-            icon="pi pi-plus"
-            label="Hinweis"
-          />
-        </div>
+          <label :for="`calendar-${idx + 1}`"> Leistungsdatum {{ idx + 1 }} </label>
+        </FloatLabel>
+        <Button @click="onServiceDateDelete(idx)" icon="pi pi-times" severity="danger" text />
       </div>
-    </template>
-  </Card>
+      <Button
+        @click="serviceDates.push({})"
+        icon="pi pi-plus"
+        label="Leistungsdatum"
+        rounded
+        text
+      />
+    </section>
+  </div>
+  <FloatLabel class="mt-8">
+    <Textarea id="description" v-model="description" class="w-full" autoResize rows="2" cols="30" />
+    <label for="description">Beschreibung</label>
+  </FloatLabel>
+
+  <Divider />
+
+  <div class="flex flex-row justify-between flex-wrap gap-4">
+    <div class="grow flex flex-row flex-wrap gap-x-10 gap-y-2 items-center">
+      <div class="font-bold">Summe:</div>
+      <span>Netto: {{ formatNumber(itemsNetSum, { currency: true }) }} </span>
+      <span>USt: {{ formatNumber(itemsNetSum * vatRate, { currency: true }) }}</span>
+      <span>Brutto: {{ formatNumber(itemsNetSum * (1 + vatRate), { currency: true }) }} </span>
+    </div>
+    <div class="flex gap-2">
+      <Button
+        @click="
+          onItemCreate(ArticleKind.item);
+          notifications.showNotification('Artikel hinzugefügt');
+        "
+        icon="pi pi-plus"
+        label="Artikel"
+      />
+      <Button
+        @click="
+          onItemCreate(ArticleKind.heading);
+          notifications.showNotification('Hinweis hinzugefügt');
+        "
+        icon="pi pi-plus"
+        label="Hinweis"
+      />
+    </div>
+  </div>
+
   <SubOrderItem
     v-for="(item, idx) in invoiceItemsArray"
     :index="idx + 1"

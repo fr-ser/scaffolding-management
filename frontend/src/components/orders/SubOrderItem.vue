@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from "primevue/button";
-import Card from "primevue/card";
 import Dialog from "primevue/dialog";
+import Divider from "primevue/divider";
 import FloatLabel from "primevue/floatlabel";
 import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
@@ -63,92 +63,89 @@ watch(
 </script>
 
 <template>
-  <Card class="my-2">
-    <template #content>
-      <div class="flex flex-col gap-y-6">
-        <div class="flex flex-row justify-between items-center">
-          <p class="font-bold">Position {{ index }}</p>
-          <div v-if="editableItem.price != null && editableItem.amount != null">
-            Netto:
-            {{
-              formatNumber(editableItem.price * editableItem.amount, {
-                currency: true,
-              })
-            }}
-            - Brutto:
-            {{
-              formatNumber(editableItem.price * editableItem.amount * (1 + vatRate), {
-                currency: true,
-              })
-            }}
-          </div>
-          <div>
-            <Button
-              @click="openArticlesList(props.item.kind)"
-              class="mr-3"
-              icon="pi pi-search"
-              size="small"
-              severity="secondary"
-              text
-              raised
-            />
-            <Button @click="onDeleteOfferItem" icon="pi pi-times" severity="danger" text raised />
-          </div>
-        </div>
-        <div class="flex gap-6 flex-col sm:flex-row">
-          <section data-name="description" class="grow flex flex-col gap-6">
-            <FloatLabel>
-              <InputText id="titel" v-model="editableItem.title" class="w-full" />
-              <label for="titel">Titel</label>
-            </FloatLabel>
-            <FloatLabel>
-              <Textarea
-                id="text"
-                v-model="editableItem.description"
-                class="w-full"
-                autoResize
-                rows="4"
-                cols="30"
-              />
-              <label for="text">Bezeichnung</label>
-            </FloatLabel>
-          </section>
-          <section
-            data-name="amount"
-            v-if="item.kind === ArticleKind.item"
-            class="basis-48 flex flex-col gap-6"
-          >
-            <FloatLabel>
-              <InputNumber
-                id="number"
-                v-model="editableItem.amount"
-                locale="de-DE"
-                :minFractionDigits="0"
-                :maxFractionDigits="10"
-                class="w-full"
-              />
-              <label for="number">Anzahl</label>
-            </FloatLabel>
-            <FloatLabel>
-              <InputText id="unit" v-model="editableItem.unit" class="w-full" />
-              <label for="unit">Einheit</label>
-            </FloatLabel>
-            <FloatLabel>
-              <InputNumber
-                id="price"
-                v-model="editableItem.price"
-                locale="de-DE"
-                :minFractionDigits="0"
-                :maxFractionDigits="10"
-                class="w-full"
-              />
-              <label for="unit">Preis</label>
-            </FloatLabel>
-          </section>
-        </div>
+  <Divider class="mt-6" />
+  <div class="mb-2 flex flex-col gap-y-6">
+    <div class="flex flex-row justify-between items-center">
+      <p class="font-bold mr-4">Position {{ index }}</p>
+      <div v-if="editableItem.price != null && editableItem.amount != null">
+        Netto:
+        {{
+          formatNumber(editableItem.price * editableItem.amount, {
+            currency: true,
+          })
+        }}
+        - Brutto:
+        {{
+          formatNumber(editableItem.price * editableItem.amount * (1 + vatRate), {
+            currency: true,
+          })
+        }}
       </div>
-    </template>
-  </Card>
+      <div>
+        <Button
+          @click="openArticlesList(props.item.kind)"
+          class="mr-3"
+          icon="pi pi-search"
+          size="small"
+          severity="secondary"
+          text
+          raised
+        />
+        <Button @click="onDeleteOfferItem" icon="pi pi-times" severity="danger" text raised />
+      </div>
+    </div>
+    <div class="flex gap-6 flex-col sm:flex-row">
+      <section data-name="description" class="grow flex flex-col gap-6">
+        <FloatLabel>
+          <InputText id="titel" v-model="editableItem.title" class="w-full" />
+          <label for="titel">Titel</label>
+        </FloatLabel>
+        <FloatLabel>
+          <Textarea
+            id="text"
+            v-model="editableItem.description"
+            class="w-full"
+            autoResize
+            rows="4"
+            cols="30"
+          />
+          <label for="text">Bezeichnung</label>
+        </FloatLabel>
+      </section>
+      <section
+        data-name="amount"
+        v-if="item.kind === ArticleKind.item"
+        class="basis-48 flex flex-col gap-6"
+      >
+        <FloatLabel>
+          <InputNumber
+            id="number"
+            v-model="editableItem.amount"
+            locale="de-DE"
+            :minFractionDigits="0"
+            :maxFractionDigits="10"
+            class="w-full"
+          />
+          <label for="number">Anzahl</label>
+        </FloatLabel>
+        <FloatLabel>
+          <InputText id="unit" v-model="editableItem.unit" class="w-full" />
+          <label for="unit">Einheit</label>
+        </FloatLabel>
+        <FloatLabel>
+          <InputNumber
+            id="price"
+            v-model="editableItem.price"
+            locale="de-DE"
+            :minFractionDigits="0"
+            :maxFractionDigits="10"
+            class="w-full"
+          />
+          <label for="unit">Preis</label>
+        </FloatLabel>
+      </section>
+    </div>
+  </div>
   <Dialog class="w-full sm:w-4/6" v-model:visible="isArticlesListVisible" modal header="Artikel">
     <div v-for="article in filteredArticles" :key="article.id">
       <div
