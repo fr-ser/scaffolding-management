@@ -5,8 +5,8 @@ import InputText from "primevue/inputtext";
 import { computed, onMounted, ref, watch } from "vue";
 
 import { deleteClient, getClients } from "@/backendClient";
-import useConfirmations from "@/compositions/useConfirmations";
-import useNotifications from "@/compositions/useNotifications";
+import useConfirmations from "@/composables/useConfirmations";
+import useNotifications from "@/composables/useNotifications";
 import { UserPermissions } from "@/global/types/backendTypes";
 import type { Client } from "@/global/types/entities";
 import { getClientCreatePath, getClientEditPath } from "@/helpers/routes";

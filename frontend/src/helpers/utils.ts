@@ -42,3 +42,10 @@ export function getGrossAmount(item: OfferItem | OfferItemCreate, date: string) 
     return undefined;
   }
 }
+
+export class ValidationError extends Error {
+  constructor(message?: string) {
+    super(message || "ValidationError");
+    this.name = "ValidationError";
+  }
+}
