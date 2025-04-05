@@ -12,6 +12,7 @@ import CreateDocumentButton from "@/components/orders/CreateDocumentButton.vue";
 import SubOrderItem from "@/components/orders/SubOrderItem.vue";
 import useConfirmations from "@/composables/useConfirmations";
 import useNotifications from "@/composables/useNotifications";
+import { useInvoiceValidation } from "@/composables/useOrderLogic";
 import { formatNumber, getItemSum, getVatRate } from "@/global/helpers";
 import { ArticleKind, DocumentKind, PaymentStatus } from "@/global/types/appTypes";
 import type { InvoiceItemCreate } from "@/global/types/dataEditTypes";
@@ -95,31 +96,26 @@ async function onDeleteInvoice() {
   }
 }
 
+const validation = useInvoiceValidation();
+
 async function onSaveInvoice() {
+  const payload = validation.validateAndCleanPayload({
+    order_id: props.order.id,
+    status: status.value,
+    description: description.value,
+    invoice_date: invoiceDate.value?.toISOString() as string,
+    payment_target: paymentTarget.value?.toISOString() as string,
+    service_dates: serviceDates.value
+      .filter((item) => Boolean(item.date))
+      .map((element) => formatDateToIsoString(element.date as Date)),
+    items: invoiceItemsArray.value,
+  });
+
   if (finalExistingSubOrder.value != null) {
-    await updateInvoice(finalExistingSubOrder.value.id, {
-      status: status.value,
-      description: description.value,
-      invoice_date: invoiceDate.value?.toISOString(),
-      payment_target: paymentTarget.value?.toISOString(),
-      service_dates: serviceDates.value
-        .filter((item) => Boolean(item.date))
-        .map((element) => formatDateToIsoString(element.date as Date)),
-      items: invoiceItemsArray.value,
-    });
+    await updateInvoice(finalExistingSubOrder.value.id, payload);
     notifications.showNotification("Die Rechnungsänderung wurde gespeichert.");
   } else {
-    const newInvoice = await createInvoice({
-      order_id: props.order.id,
-      status: status.value,
-      description: description.value,
-      invoice_date: invoiceDate.value?.toISOString() as string,
-      payment_target: paymentTarget.value?.toISOString() as string,
-      service_dates: serviceDates.value
-        .filter((item) => Boolean(item.date))
-        .map((element) => formatDateToIsoString(element.date as Date)),
-      items: invoiceItemsArray.value,
-    });
+    const newInvoice = await createInvoice(payload);
     notifications.showNotification("Eine neue Rechnung wurde erstellt.");
     finalExistingSubOrder.value = newInvoice;
   }

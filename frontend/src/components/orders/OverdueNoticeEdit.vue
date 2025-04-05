@@ -19,6 +19,7 @@ import {
 import CreateDocumentButton from "@/components/orders/CreateDocumentButton.vue";
 import useConfirmations from "@/composables/useConfirmations";
 import useNotifications from "@/composables/useNotifications";
+import { useOverdueNoticeValidation } from "@/composables/useOrderLogic";
 import { formatIsoDateString, formatNumber, getItemSum, getVatRate } from "@/global/helpers";
 import {
   DocumentKind,
@@ -128,33 +129,27 @@ async function onClickedDelete() {
   }
 }
 
+const validation = useOverdueNoticeValidation();
+
 async function onClickSave() {
+  const payload = validation.validateAndCleanPayload({
+    order_id: props.order.id,
+    payments_until: paymentsUntil.value?.toISOString() as string,
+    notice_date: noticeDate.value?.toISOString() as string,
+    notice_level: noticeLevel.value,
+    payment_target: paymentTarget.value?.toISOString() as string,
+    payment_status: paymentStatus.value,
+    notice_costs: noticeCosts.value,
+    default_interest: defaultInterest.value,
+    description: description.value,
+    invoice_documents: itemsArray.value.map((item) => item.id),
+  });
+
   if (finalExistingSubOrder.value != null) {
-    await updateOverdueNotice(finalExistingSubOrder.value.id, {
-      payments_until: paymentsUntil.value?.toISOString(),
-      notice_date: noticeDate.value?.toISOString(),
-      notice_level: noticeLevel.value,
-      payment_target: paymentTarget.value?.toISOString(),
-      payment_status: paymentStatus.value,
-      notice_costs: noticeCosts.value,
-      default_interest: defaultInterest.value,
-      description: description.value,
-      invoice_documents: itemsArray.value.map((item) => item.id),
-    });
+    await updateOverdueNotice(finalExistingSubOrder.value.id, payload);
     notifications.showNotification("Die Mahnungsänderung wurde gespeichert.");
   } else {
-    const newNotice = await createOverdueNotice({
-      order_id: props.order.id,
-      payments_until: paymentsUntil.value?.toISOString() as string,
-      notice_date: noticeDate.value?.toISOString() as string,
-      notice_level: noticeLevel.value,
-      payment_target: paymentTarget.value?.toISOString() as string,
-      payment_status: paymentStatus.value,
-      notice_costs: noticeCosts.value,
-      default_interest: defaultInterest.value,
-      description: description.value,
-      invoice_documents: itemsArray.value.map((item) => item.id),
-    });
+    const newNotice = await createOverdueNotice(payload);
     notifications.showNotification("Eine neue Mahnung wurde erstellt.");
     finalExistingSubOrder.value = newNotice;
   }
