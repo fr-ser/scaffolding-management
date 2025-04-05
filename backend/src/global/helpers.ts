@@ -83,9 +83,15 @@ export function round(number: number, decimals: number = 0): number {
 /**
  * This function formats a date input (provided as ISO string) into a date
  * formatted for humans (e.g. 2021-12-31 -> 31.12.2021)
+ *
+ * Upon request padded dates are used: 2021-01-02 -> 02.01.2021
  */
 export function formatIsoDateString(isoDate: string): string {
-  return new Date(isoDate).toLocaleDateString("de-DE");
+  return new Date(isoDate).toLocaleDateString("de-DE", {
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric",
+  });
 }
 
 export function maybeMultiply(a?: number, b?: number) {
