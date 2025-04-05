@@ -81,15 +81,18 @@ const itemsNetSum = computed(() => {
 });
 
 async function onDeleteInvoice() {
-  confirm.showConfirmation("Möchten Sie die Rechnung wirklich löschen?", async () => {
-    try {
-      await deleteSubOrder(finalExistingSubOrder.value!.id, DocumentKind.invoice);
-      notifications.showNotification("Die Rechnung wurde gelöscht.");
-      emit("deleted");
-    } catch (error) {
-      notifications.showNotification("Die Rechnung konnte nicht gelöscht werden.", "error");
-    }
-  });
+  const confirmationResult = await confirm.showConfirmation(
+    "Möchten Sie die Rechnung wirklich löschen?",
+  );
+  if (!confirmationResult) return;
+
+  try {
+    await deleteSubOrder(finalExistingSubOrder.value!.id, DocumentKind.invoice);
+    notifications.showNotification("Die Rechnung wurde gelöscht.");
+    emit("deleted");
+  } catch (error) {
+    notifications.showNotification("Die Rechnung konnte nicht gelöscht werden.", "error");
+  }
 }
 
 async function onSaveInvoice() {

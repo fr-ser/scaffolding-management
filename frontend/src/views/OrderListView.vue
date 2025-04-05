@@ -4,9 +4,8 @@ import Card from "primevue/card";
 import InputText from "primevue/inputtext";
 import { computed, onMounted, ref, watch } from "vue";
 
-import { deleteOrder, getOrders } from "@/backendClient";
-import useConfirmations from "@/compositions/useConfirmations";
-import useNotifications from "@/compositions/useNotifications";
+import { getOrders } from "@/backendClient";
+import useOrderLogic from "@/compositions/useOrderLogic";
 import { UserPermissions } from "@/global/types/backendTypes";
 import type { Order } from "@/global/types/entities";
 import { getOrderCreatePath, getOrderEditPath } from "@/helpers/routes";
@@ -14,6 +13,7 @@ import { debounce } from "@/helpers/utils";
 import { useUserStore } from "@/store";
 
 const userStore = useUserStore();
+const { deleteOrderWithConfirmation } = useOrderLogic();
 
 const editButtonText = computed(() => {
   return userStore.permissions.includes(UserPermissions.ORDERS_UPDATE)
@@ -39,26 +39,12 @@ async function loadMore() {
   await loadData();
 }
 
-const confirm = useConfirmations();
-const notifications = useNotifications();
-
-async function removeOrder(order: Order) {
-  try {
-    await deleteOrder(order.id);
+async function onClickDeleteOrder(order: Order) {
+  const success = await deleteOrderWithConfirmation(order.id);
+  if (success) {
     loadData();
-    notifications.showNotification("Der Auftrag wurde gelöscht");
-  } catch (error) {
-    notifications.showNotification("Der Auftrag konnte nicht gelöscht werden.", "error");
   }
 }
-const confirmDelete = (order: Order) => {
-  confirm.showConfirmation(
-    "Sind Sie sich sicher, dass der Auftrag gelöscht werden soll?",
-    async () => {
-      removeOrder(order);
-    },
-  );
-};
 
 watch(search, debounce(loadData, 250));
 
@@ -112,7 +98,7 @@ onMounted(async () => {
               </router-link>
               <Button
                 v-if="userStore.permissions.includes(UserPermissions.ORDERS_CREATE_DELETE)"
-                @click.stop.prevent="confirmDelete(order)"
+                @click="onClickDeleteOrder(order)"
                 label="Löschen"
                 icon="pi pi-times"
                 severity="danger"

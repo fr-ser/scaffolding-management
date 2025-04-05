@@ -71,15 +71,18 @@ const itemsNetSum = computed(function () {
 });
 
 async function onDeleteOffer() {
-  confirm.showConfirmation("Möchten Sie das Angebot wirklich löschen?", async function () {
-    try {
-      await deleteSubOrder(finalExistingSubOrder.value!.id, DocumentKind.offer);
-      notifications.showNotification("Das Angebot wurde gelöscht.");
-      emit("deleted");
-    } catch (error) {
-      notifications.showNotification("Das Angebot konnte nicht gelöscht werden.", "error");
-    }
-  });
+  const confirmationResult = await confirm.showConfirmation(
+    "Möchten Sie das Angebot wirklich löschen?",
+  );
+  if (!confirmationResult) return;
+
+  try {
+    await deleteSubOrder(finalExistingSubOrder.value!.id, DocumentKind.offer);
+    notifications.showNotification("Das Angebot wurde gelöscht.");
+    emit("deleted");
+  } catch (error) {
+    notifications.showNotification("Das Angebot konnte nicht gelöscht werden.", "error");
+  }
 }
 
 async function onSaveOffer() {

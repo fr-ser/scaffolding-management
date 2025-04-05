@@ -13,21 +13,14 @@ import Textarea from "primevue/textarea";
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import {
-  createOrder,
-  deleteOrder,
-  getClient,
-  getClients,
-  getOrder,
-  updateOrder,
-} from "@/backendClient";
+import { createOrder, getClient, getClients, getOrder, updateOrder } from "@/backendClient";
 import InvoiceEdit from "@/components/orders/InvoiceEdit.vue";
 import OfferEdit from "@/components/orders/OfferEdit.vue";
 import OrderAttachments from "@/components/orders/OrderAttachments.vue";
 import OrderDocuments from "@/components/orders/OrderDocuments.vue";
 import OverdueNoticeEdit from "@/components/orders/OverdueNoticeEdit.vue";
-import useConfirmations from "@/compositions/useConfirmations";
 import useNotifications from "@/compositions/useNotifications";
+import useOrderLogic from "@/compositions/useOrderLogic";
 import { formatIsoDateString } from "@/global/helpers";
 import { DocumentKind, OrderStatus } from "@/global/types/appTypes";
 import { UserPermissions } from "@/global/types/backendTypes";
@@ -94,8 +87,8 @@ const searchClient = (event: any) => {
     filteredClients.value = (await getClients({ search: event.query.trim() })).data;
   }, 250)();
 };
-const confirm = useConfirmations();
 const notifications = useNotifications();
+const { deleteOrderWithConfirmation } = useOrderLogic();
 
 const onSaveOrder = async () => {
   const payload: OrderCreate = orderInfo.value as OrderCreate;
@@ -111,23 +104,6 @@ const onSaveOrder = async () => {
     router.push(getOrderListPath());
     notifications.showNotification("Ein neuer Auftrag wurde erstellt");
   }
-};
-
-const removeOrder = async () => {
-  try {
-    await deleteOrder(`${route.params.id}`);
-    router.push(getOrderListPath());
-    notifications.showNotification("Der Auftrag wurde gelöscht");
-  } catch (error) {
-    notifications.showNotification("Der Auftrag konnte nicht gelöscht werden.", "error");
-  }
-};
-
-const confirmDelete = () => {
-  confirm.showConfirmation(
-    "Sind Sie sich sicher, dass der Auftrag gelöscht werden soll?",
-    removeOrder,
-  );
 };
 
 async function loadOrderData() {
@@ -150,6 +126,13 @@ async function loadOrderData() {
         (newOrder.overdue_notices as OverdueNotice[]).findIndex((item) => item.id === id) || 0;
   }
   //if the query is "offer" we show the default tab
+}
+
+async function onClickDeleteOrder() {
+  const success = await deleteOrderWithConfirmation(route.params.id as string);
+  if (success) {
+    router.push(getOrderListPath());
+  }
 }
 
 onMounted(async () => {
@@ -200,7 +183,7 @@ function onClickCreateOverdueNotice() {
     />
     <Button
       v-if="userStore.permissions.includes(UserPermissions.ORDERS_CREATE_DELETE) && isEditing"
-      @click="confirmDelete"
+      @click="onClickDeleteOrder"
       type="button"
       label="Löschen"
       severity="danger"
@@ -331,7 +314,7 @@ function onClickCreateOverdueNotice() {
                   :existing-invoice="item"
                 />
               </TabPanel>
-              <TabPanel v-if="showNewInvoiceTab" :header="`Neue Rechnung`">
+              <TabPanel v-if="showNewInvoiceTab" header="Neue Rechnung">
                 <InvoiceEdit @deleted="loadOrderData" :order="orderInfo as Order" />
               </TabPanel>
               <TabPanel
@@ -345,7 +328,7 @@ function onClickCreateOverdueNotice() {
                   :existing-overdue-notice="item"
                 />
               </TabPanel>
-              <TabPanel v-if="showNewOverdueNoticeTab" :header="`Neue Mahnung`">
+              <TabPanel v-if="showNewOverdueNoticeTab" header="Neue Mahnung">
                 <OverdueNoticeEdit @deleted="loadOrderData" :order="orderInfo as Order" />
               </TabPanel>
             </TabView>

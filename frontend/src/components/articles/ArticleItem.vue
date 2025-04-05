@@ -38,8 +38,12 @@ const onUpdateArticle = async () => {
     notifications.showNotification("Die Änderungen wurden gespeichert");
   }
 };
+async function confirmDelete() {
+  const confirmationResult = await confirm.showConfirmation(
+    "Sind Sie sich sicher, dass der Artikel gelöscht werden soll?",
+  );
+  if (!confirmationResult) return;
 
-const onDeleteArticle = async () => {
   try {
     await deleteArticle(`${editableArticle.value.id}`);
     emit("reloadArticleView");
@@ -47,13 +51,7 @@ const onDeleteArticle = async () => {
   } catch (error) {
     notifications.showNotification("Der Artikel konnte nicht gelöscht werden.", "error");
   }
-};
-const confirmDelete = () => {
-  confirm.showConfirmation(
-    "Sind Sie sich sicher, dass der Artikel gelöscht werden soll?",
-    onDeleteArticle,
-  );
-};
+}
 </script>
 
 <template>
