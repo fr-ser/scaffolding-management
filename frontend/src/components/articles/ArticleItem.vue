@@ -25,8 +25,6 @@ const props = defineProps<{
 const confirm = useConfirmations();
 const notifications = useNotifications();
 
-const articlesType = Object.values(ArticleKind);
-
 const editableArticle = ref(props.article);
 
 const validation = useArticleValidation();
@@ -84,16 +82,12 @@ async function onClickDelete() {
         </div>
         <div class="grow md:grow-0 min-w-72 flex flex-col flex-wrap justify-end gap-6">
           <FloatLabel>
-            <!-- The following warning is logged in the browser console:
-              "Incorrect use of <label for=FORM_ELEMENT>"
-              It is because of this outstanding bug: 
-              https://github.com/primefaces/primevue/issues/2924
-              -->
             <Dropdown
               v-model="editableArticle.kind"
-              :options="articlesType"
+              :options="Object.values(ArticleKind)"
               class="w-full"
               id="article-kind"
+              data-testid="article-kind-dropdown"
             />
             <label for="article-kind">Art</label>
           </FloatLabel>

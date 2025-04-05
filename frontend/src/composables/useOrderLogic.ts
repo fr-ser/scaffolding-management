@@ -133,10 +133,7 @@ function validateOfferOrInvoiceItems(
       throw new ValidationError();
     }
 
-    if (
-      item.kind === ArticleKind.item &&
-      (!Boolean(item.unit) || !Boolean(item.amount) || !Boolean(item.price))
-    ) {
+    if (item.kind === ArticleKind.item && (!item.unit || !item.amount || !item.price)) {
       notifications.showNotification(
         `Position ${itemIndex + 1}: Ein Artikel muss Anzahl, Preis und Einheit haben`,
         "error",
@@ -160,5 +157,13 @@ export function useOverdueNoticeValidation() {
 
       return cleaned;
     },
+  };
+}
+
+export function getBaseOfferAndInvoiceItem() {
+  return {
+    kind: ArticleKind.heading,
+    title: "Hinweis Standmiete",
+    description: "Bei Verlängerung über vier Wochen berechnen wir 10% von der Nettosumme pro KW.",
   };
 }

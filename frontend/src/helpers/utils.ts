@@ -54,16 +54,14 @@ export class ValidationError extends Error {
  * This function replaces all empty strings in an object with null.
  * The primary use of this is to clean up data before sending it to the backend.
  */
-export function replaceEmptyStringsWithNull<T extends any>(data: T): T {
+export function replaceEmptyStringsWithNull<T extends object>(data: T): T {
   // The heavy use of "any" is here to allow a generic function for all kinds of inputs
   const result = {} as any;
 
   const untypedData = data as any;
-  for (const key in untypedData) {
-    if (untypedData.hasOwnProperty(key)) {
-      result[key] = untypedData[key] === "" ? null : untypedData[key];
-    }
-  }
+  Object.keys(data).forEach((key) => {
+    result[key] = untypedData[key] === "" ? null : untypedData[key];
+  });
 
   return result;
 }

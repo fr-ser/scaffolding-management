@@ -12,7 +12,7 @@ import CreateDocumentButton from "@/components/orders/CreateDocumentButton.vue";
 import SubOrderItem from "@/components/orders/SubOrderItem.vue";
 import useConfirmations from "@/composables/useConfirmations";
 import useNotifications from "@/composables/useNotifications";
-import { useInvoiceValidation } from "@/composables/useOrderLogic";
+import { getBaseOfferAndInvoiceItem, useInvoiceValidation } from "@/composables/useOrderLogic";
 import { formatNumber, getItemSum, getVatRate } from "@/global/helpers";
 import { ArticleKind, DocumentKind, PaymentStatus } from "@/global/types/appTypes";
 import type { InvoiceItemCreate } from "@/global/types/dataEditTypes";
@@ -36,7 +36,9 @@ const notifications = useNotifications();
 
 let status = ref(finalExistingSubOrder.value?.status || PaymentStatus.initial);
 let description = ref(finalExistingSubOrder.value?.description || "");
-let invoiceItemsArray = ref<InvoiceItemCreate[]>(finalExistingSubOrder.value?.items || []);
+let invoiceItemsArray = ref<InvoiceItemCreate[]>(
+  finalExistingSubOrder.value?.items || [getBaseOfferAndInvoiceItem()],
+);
 let invoiceDate = ref<Date>(
   finalExistingSubOrder.value ? new Date(finalExistingSubOrder.value.invoice_date) : new Date(),
 );
