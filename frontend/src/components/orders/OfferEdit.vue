@@ -12,6 +12,7 @@ import CreateDocumentButton from "@/components/orders/CreateDocumentButton.vue";
 import SubOrderItem from "@/components/orders/SubOrderItem.vue";
 import useConfirmations from "@/composables/useConfirmations";
 import useNotifications from "@/composables/useNotifications";
+import { useOfferValidation } from "@/composables/useOrderLogic";
 import { formatNumber, getItemSum, getVatRate } from "@/global/helpers";
 import { ArticleKind, DocumentKind, OfferStatus } from "@/global/types/appTypes";
 import type { OfferItemCreate } from "@/global/types/dataEditTypes";
@@ -85,25 +86,23 @@ async function onDeleteOffer() {
   }
 }
 
+const validation = useOfferValidation();
+
 async function onSaveOffer() {
+  const payload = validation.validateAndCleanPayload({
+    order_id: props.order.id,
+    status: status.value,
+    description: description.value,
+    offered_at: offerDate.value?.toISOString() as string,
+    offer_valid_until: validityDate.value?.toISOString() as string,
+    items: offerItemsArray.value,
+  });
+
   if (finalExistingSubOrder.value != null) {
-    await updateOffer(finalExistingSubOrder.value.id, {
-      status: status.value,
-      description: description.value,
-      offered_at: offerDate.value?.toISOString() as string,
-      offer_valid_until: validityDate.value?.toISOString() as string,
-      items: offerItemsArray.value,
-    });
+    await updateOffer(finalExistingSubOrder.value.id, payload);
     notifications.showNotification("Die Angebotsänderung wurde gespeichert.");
   } else {
-    const newOffer = await createOffer({
-      order_id: props.order.id,
-      status: status.value,
-      description: description.value,
-      offered_at: offerDate.value?.toISOString() as string,
-      offer_valid_until: validityDate.value?.toISOString() as string,
-      items: offerItemsArray.value,
-    });
+    const newOffer = await createOffer(payload);
     notifications.showNotification("Ein neues Angebot wurde erstellt.");
     finalExistingSubOrder.value = newOffer;
   }

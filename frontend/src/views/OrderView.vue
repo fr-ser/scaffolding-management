@@ -20,7 +20,7 @@ import OrderAttachments from "@/components/orders/OrderAttachments.vue";
 import OrderDocuments from "@/components/orders/OrderDocuments.vue";
 import OverdueNoticeEdit from "@/components/orders/OverdueNoticeEdit.vue";
 import useNotifications from "@/composables/useNotifications";
-import useOrderLogic from "@/composables/useOrderLogic";
+import useOrderLogic, { useOrderValidation } from "@/composables/useOrderLogic";
 import { formatIsoDateString } from "@/global/helpers";
 import { DocumentKind, OrderStatus } from "@/global/types/appTypes";
 import { UserPermissions } from "@/global/types/backendTypes";
@@ -72,10 +72,6 @@ const getClientLabel = (client: Client) => {
   return full_name;
 };
 
-const isSaveButtonDisabled = computed(() => {
-  return !(orderInfo.value.title && selectedClient.value?.id);
-});
-
 const searchClient = (event: any) => {
   debounce(async () => {
     if (!event.query.trim().length) {
@@ -90,17 +86,19 @@ const searchClient = (event: any) => {
 const notifications = useNotifications();
 const { deleteOrderWithConfirmation } = useOrderLogic();
 
-const onSaveOrder = async () => {
-  const payload: OrderCreate = orderInfo.value as OrderCreate;
+const validation = useOrderValidation();
 
-  if (selectedClient.value) {
-    payload.client_id = selectedClient.value.id;
-  }
+const onSaveOrder = async () => {
+  const payload = validation.validateAndCleanPayload({
+    ...orderInfo.value,
+    client_id: selectedClient.value?.id,
+  });
+
   if (isEditing.value) {
     await updateOrder(`${route.params.id}`, orderInfo.value);
     notifications.showNotification("Der Auftrag wurde gespeichert");
   } else {
-    await createOrder(payload);
+    await createOrder(payload as OrderCreate);
     router.push(getOrderListPath());
     notifications.showNotification("Ein neuer Auftrag wurde erstellt");
   }
@@ -178,7 +176,6 @@ function onClickCreateOverdueNotice() {
       @click="onSaveOrder"
       type="button"
       label="Auftrag Speichern"
-      :disabled="isSaveButtonDisabled"
       data-testid="order-save-button"
     />
     <Button
@@ -278,7 +275,7 @@ function onClickCreateOverdueNotice() {
       </template>
     </Card>
 
-    <Card class="mt-2">
+    <Card class="mt-2" v-if="isEditing">
       <template #content>
         <div class="flex flex-col gap-y-5">
           <div v-if="isEditing && userStore.permissions.includes(UserPermissions.SUB_ORDERS_EDIT)">
@@ -337,7 +334,7 @@ function onClickCreateOverdueNotice() {
       </template>
     </Card>
 
-    <Card class="mt-2">
+    <Card class="mt-2" v-if="isEditing">
       <template #content>
         <OrderDocuments
           v-if="isEditing && userStore.permissions.includes(UserPermissions.DOCUMENTS_VIEW)"

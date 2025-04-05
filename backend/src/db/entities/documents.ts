@@ -105,7 +105,7 @@ export class InvoiceDocument extends BaseDocument {
   @Column({ type: "text" })
   payment_target: string;
 
-  @Column({ type: "int" })
+  @Column({ type: "boolean" })
   can_have_cash_discount: boolean;
 
   @Column({ type: "real", nullable: true })

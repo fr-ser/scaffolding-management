@@ -46,7 +46,7 @@ export class Order {
   @Column({ type: "text", nullable: true })
   description: string;
 
-  @Column({ type: "int" })
+  @Column({ type: "boolean" })
   can_have_cash_discount: boolean;
 
   @Column({ type: "real", nullable: true })

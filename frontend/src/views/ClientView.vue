@@ -89,7 +89,7 @@ const onSaveClient = async () => {
     requestBody.birthday = birthdayDate.value.toISOString();
   }
 
-  const cleanPayload = clientValidation.validateAndCleanClientPayload(requestBody);
+  const cleanPayload = clientValidation.validateAndCleanPayload(requestBody);
 
   if (isEditing.value) {
     await updateClient(`${route.params.id}`, cleanPayload);
