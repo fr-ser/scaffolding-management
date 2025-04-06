@@ -157,7 +157,7 @@ documentsRouter.post(
             }),
           ),
       ])) as AnyDocument[][]
-    ).flatMap((item) => item);
+    ).flat();
 
     if (allDocuments.length !== payload.length) {
       next(new ApiError(ErrorCode.PDF_NOT_ALL_DOCUMENTS_FOUND));

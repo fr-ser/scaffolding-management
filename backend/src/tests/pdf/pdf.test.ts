@@ -27,6 +27,7 @@ test("offer PDF generation", async () => {
   const resultPDF = await renderMultiplePDF([
     { kind: DocumentKind.offer, document: await getOfferDocument() },
   ]);
+
   const pdfLines = String(resultPDF).split("\n");
   const snapshotLines = String(fs.readFileSync("src/tests/pdf/offer_snapshot.pdf")).split("\n");
 
@@ -34,7 +35,7 @@ test("offer PDF generation", async () => {
     const pdfLine = pdfLines[index];
     const snapshotLine = snapshotLines[index];
 
-    if (snapshotLine.startsWith("(D:20250314")) continue; //  timestamps
+    if (snapshotLine.startsWith("(D:20250407")) continue; //  timestamps
     if (snapshotLine.startsWith("/ID [<")) continue; // some ID, no idea what it is
 
     expect(pdfLine).toBe(snapshotLine);

@@ -367,6 +367,7 @@ const createDocument = function createDocument(
 
   function createTableBottomText() {
     pdfFile.fontSize(10).font("Helvetica-Bold");
+
     newPageCheck(pdfFile, pdfFileData.currY, pdfFile.currentLineHeight() * 3.5, pdfFileData);
 
     pdfFile

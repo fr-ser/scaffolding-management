@@ -40,6 +40,7 @@ export function newPageCheck(
     doc.addPage(pageOptions);
     argPDocData.totalPages++;
     argPDocData.currY = appPageOptions.headerEnd;
+    doc.y = argPDocData.currY;
     return true;
   } else return false;
 }

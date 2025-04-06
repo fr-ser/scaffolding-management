@@ -396,6 +396,7 @@ async function main() {
 
   console.log("Created seed database");
 }
+
 main()
   .then(() => {
     console.log("Finished creating local database");

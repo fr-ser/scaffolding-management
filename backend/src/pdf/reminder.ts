@@ -244,13 +244,16 @@ export function setReminderSubSumTableText(pdfFile: PDFKit.PDFDocument, pdfFileD
   if (pdfFileData.totalPages === 1 && pdfFileData.currY < mmToPx(240))
     pdfFileData.currY = mmToPx(240);
   pdfFile.font("Helvetica");
+
   newPageCheck(pdfFile, pdfFileData.currY, pdfFile.currentLineHeight() * 2, pdfFileData);
+
   pdfFile
     .text(" ", appPageOptions.horizontalMargin, pdfFileData.currY)
     .text("Überweisen Sie bitte den offenen Betrag auf das unten aufgeführte Geschäftskonto.");
   pdfFileData.currY = pdfFile.y;
 
   newPageCheck(pdfFile, pdfFileData.currY, pdfFile.currentLineHeight() * 4, pdfFileData);
+
   pdfFile
     .text(" ", appPageOptions.horizontalMargin, pdfFileData.currY)
     .text("Mit freundlichen Grüßen")
