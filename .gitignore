@@ -15,3 +15,5 @@ node_modules/
 .env.*
 !.env.development
 
+# app artifacts
+*.pdf

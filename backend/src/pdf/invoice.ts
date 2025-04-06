@@ -35,7 +35,9 @@ export const setInvoiceSubSumTableText = function setInvoiceSubSumTableText(
   if (pdfFileData.totalPages === 1 && pdfFileData.currY < mmToPx(225))
     pdfFileData.currY = mmToPx(225);
   pdfFile.font("Helvetica");
+
   newPageCheck(pdfFile, pdfFileData.currY, pdfFile.currentLineHeight() * 3, pdfFileData);
+
   pdfFile
     .text(" ", appPageOptions.horizontalMargin, pdfFileData.currY)
     .text("Überweisen Sie bitte den offenen Betrag auf das unten aufgeführte Geschäftskonto.")
@@ -51,6 +53,7 @@ export const setInvoiceSubSumTableText = function setInvoiceSubSumTableText(
   };
 
   newPageCheck(pdfFile, pdfFileData.currY, pdfFile.currentLineHeight() * 4, pdfFileData);
+
   pdfFile
     .text(" ", appPageOptions.horizontalMargin, pdfFileData.currY)
     .text(
@@ -68,6 +71,7 @@ export const setInvoiceSubSumTableText = function setInvoiceSubSumTableText(
   pdfFileData.currY = pdfFile.y;
 
   newPageCheck(pdfFile, pdfFileData.currY, pdfFile.currentLineHeight() * 4, pdfFileData);
+
   pdfFile
     .text(" ", appPageOptions.horizontalMargin, pdfFileData.currY)
     .text("Mit freundlichen Grüßen")
