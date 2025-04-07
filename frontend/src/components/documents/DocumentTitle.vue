@@ -60,7 +60,9 @@ const content = computed(() => {
   <section class="flex flex-row justify-between">
     <div>
       <p class="font-bold">Empfänger:</p>
-      <p class="font-bold">{{ result.client_company_name }}</p>
+      <p class="font-bold">
+        {{ result.client_company_name || result.client_first_name + " " + result.client_last_name }}
+      </p>
       <p>{{ result.client_street_and_number }}</p>
       <p>{{ result.client_postal_code }} {{ result.client_city }}</p>
     </div>
