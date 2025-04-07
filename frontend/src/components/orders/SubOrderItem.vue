@@ -18,6 +18,7 @@ const props = defineProps<{
   index: number;
   item: OfferItemCreate | InvoiceItemCreate;
   vatDate: string;
+  isAppManagedPosition?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -90,6 +91,7 @@ watch(
           severity="secondary"
           text
           raised
+          :disabled="isAppManagedPosition"
         />
         <Button @click="onDeleteOfferItem" icon="pi pi-times" severity="danger" text raised />
       </div>
@@ -97,7 +99,12 @@ watch(
     <div class="flex gap-6 flex-col sm:flex-row">
       <section data-name="description" class="grow flex flex-col gap-6">
         <FloatLabel>
-          <InputText id="titel" v-model="editableItem.title" class="w-full" />
+          <InputText
+            id="titel"
+            v-model="editableItem.title"
+            class="w-full"
+            :disabled="isAppManagedPosition"
+          />
           <label for="titel">Titel</label>
         </FloatLabel>
         <FloatLabel>
@@ -108,6 +115,7 @@ watch(
             autoResize
             rows="4"
             cols="30"
+            :disabled="isAppManagedPosition"
           />
           <label for="text">Bezeichnung</label>
         </FloatLabel>
@@ -125,11 +133,17 @@ watch(
             :minFractionDigits="0"
             :maxFractionDigits="10"
             class="w-full"
+            :disabled="isAppManagedPosition"
           />
           <label for="number">Anzahl</label>
         </FloatLabel>
         <FloatLabel>
-          <InputText id="unit" v-model="editableItem.unit" class="w-full" />
+          <InputText
+            id="unit"
+            v-model="editableItem.unit"
+            class="w-full"
+            :disabled="isAppManagedPosition"
+          />
           <label for="unit">Einheit</label>
         </FloatLabel>
         <FloatLabel>
@@ -140,6 +154,7 @@ watch(
             :minFractionDigits="0"
             :maxFractionDigits="10"
             class="w-full"
+            :disabled="isAppManagedPosition"
           />
           <label for="unit">Preis</label>
         </FloatLabel>

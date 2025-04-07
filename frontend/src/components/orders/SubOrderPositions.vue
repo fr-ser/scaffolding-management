@@ -4,6 +4,7 @@ import { computed, nextTick, ref } from "vue";
 
 import SubOrderItem from "@/components/orders/SubOrderItem.vue";
 import useNotifications from "@/composables/useNotifications";
+import { getAutomaticRentalNote } from "@/composables/useOrderLogic";
 import { formatNumber, getItemSum, getVatRate } from "@/global/helpers";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { InvoiceItemCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
@@ -16,10 +17,12 @@ interface ExtendedItem extends OfferItemCreate {
 const props = defineProps<{
   subOrderPositions: ExtendedItem[];
   vatDate: Date;
+  hasAutomaticRentalNote: boolean;
 }>();
 
 const emit = defineEmits<{
   updatePositions: [ExtendedItem[]];
+  removeAutomaticRentalNote: [];
 }>();
 
 const vatRate = computed(() => {
@@ -30,6 +33,10 @@ const notifications = useNotifications();
 
 const itemsNetSum = computed(() => {
   return getItemSum(props.subOrderPositions);
+});
+
+const automaticRentalNoteItem = computed(() => {
+  return getAutomaticRentalNote(itemsNetSum.value);
 });
 
 function onItemDelete(index: number) {
@@ -109,4 +116,13 @@ async function onItemCreate(kind: ArticleKind) {
     @updated="onItemUpdate(idx, item)"
   />
   <div ref="scrollAnchor" style="height: 1px"></div>
+  <SubOrderItem
+    v-if="hasAutomaticRentalNote"
+    :is-app-managed-position="true"
+    :index="subOrderPositions.length + 1"
+    :item="automaticRentalNoteItem"
+    :key="automaticRentalNoteItem.description"
+    :vat-date="vatDate.toISOString()"
+    @deleted="emit('removeAutomaticRentalNote')"
+  />
 </template>

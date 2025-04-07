@@ -12,7 +12,8 @@ import CreateDocumentButton from "@/components/orders/CreateDocumentButton.vue";
 import SubOrderPositions from "@/components/orders/SubOrderPositions.vue";
 import useConfirmations from "@/composables/useConfirmations";
 import useNotifications from "@/composables/useNotifications";
-import { getBaseOfferAndInvoiceItem, useInvoiceValidation } from "@/composables/useOrderLogic";
+import { getAutomaticRentalNote, useInvoiceValidation } from "@/composables/useOrderLogic";
+import { getItemSum } from "@/global/helpers";
 import { DocumentKind, PaymentStatus } from "@/global/types/appTypes";
 import type { InvoiceItemCreate } from "@/global/types/dataEditTypes";
 import type { Invoice, Order } from "@/global/types/entities";
@@ -33,11 +34,11 @@ const emit = defineEmits<{
 const confirm = useConfirmations();
 const notifications = useNotifications();
 
+const hasAutomaticRentalNote = ref(!props.existingInvoice);
+
 let status = ref(finalExistingSubOrder.value?.status || PaymentStatus.initial);
 let description = ref(finalExistingSubOrder.value?.description || "");
-let invoiceItemsArray = ref<InvoiceItemCreate[]>(
-  finalExistingSubOrder.value?.items || [getBaseOfferAndInvoiceItem()],
-);
+let invoiceItemsArray = ref<InvoiceItemCreate[]>(finalExistingSubOrder.value?.items || []);
 let invoiceDate = ref<Date>(
   finalExistingSubOrder.value ? new Date(finalExistingSubOrder.value.invoice_date) : new Date(),
 );
@@ -72,6 +73,11 @@ async function onDeleteInvoice() {
 const validation = useInvoiceValidation();
 
 async function onSaveInvoice() {
+  let payloadItems: InvoiceItemCreate[] = [...invoiceItemsArray.value];
+  if (hasAutomaticRentalNote.value) {
+    payloadItems.push(getAutomaticRentalNote(getItemSum(invoiceItemsArray.value)));
+  }
+
   const payload = validation.validateAndCleanPayload({
     order_id: props.order.id,
     status: status.value,
@@ -81,7 +87,7 @@ async function onSaveInvoice() {
     service_dates: serviceDates.value
       .filter((item) => Boolean(item.date))
       .map((element) => formatDateToIsoString(element.date as Date)),
-    items: invoiceItemsArray.value,
+    items: payloadItems,
   });
 
   if (finalExistingSubOrder.value != null) {
@@ -192,5 +198,7 @@ function onUpdatePositions(positions: InvoiceItemCreate[]) {
     :vat-date="invoiceDate || new Date()"
     :sub-order-positions="invoiceItemsArray"
     @update-positions="onUpdatePositions"
+    :has-automatic-rental-note="hasAutomaticRentalNote"
+    @remove-automatic-rental-note="hasAutomaticRentalNote = false"
   />
 </template>

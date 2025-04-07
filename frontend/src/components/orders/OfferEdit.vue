@@ -12,7 +12,8 @@ import CreateDocumentButton from "@/components/orders/CreateDocumentButton.vue";
 import SubOrderPositions from "@/components/orders/SubOrderPositions.vue";
 import useConfirmations from "@/composables/useConfirmations";
 import useNotifications from "@/composables/useNotifications";
-import { getBaseOfferAndInvoiceItem, useOfferValidation } from "@/composables/useOrderLogic";
+import { getAutomaticRentalNote, useOfferValidation } from "@/composables/useOrderLogic";
+import { getItemSum } from "@/global/helpers";
 import { DocumentKind, OfferStatus } from "@/global/types/appTypes";
 import type { OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Offer, Order } from "@/global/types/entities";
@@ -32,11 +33,11 @@ const emit = defineEmits<{
 const confirm = useConfirmations();
 const notifications = useNotifications();
 
+const hasAutomaticRentalNote = ref(!props.existingOffer);
+
 let status = ref(finalExistingSubOrder.value?.status || OfferStatus.initial);
 let description = ref(finalExistingSubOrder.value?.description || "");
-let offerItemsArray = ref<OfferItemCreate[]>(
-  finalExistingSubOrder.value?.items || [getBaseOfferAndInvoiceItem()],
-);
+let offerItemsArray = ref<OfferItemCreate[]>(finalExistingSubOrder.value?.items || []);
 let offerDate = ref<Date>(
   finalExistingSubOrder.value ? new Date(finalExistingSubOrder.value.offered_at) : new Date(),
 );
@@ -64,13 +65,18 @@ async function onDeleteOffer() {
 const validation = useOfferValidation();
 
 async function onSaveOffer() {
+  let payloadItems: OfferItemCreate[] = [...offerItemsArray.value];
+  if (hasAutomaticRentalNote.value) {
+    payloadItems.push(getAutomaticRentalNote(getItemSum(offerItemsArray.value)));
+  }
+
   const payload = validation.validateAndCleanPayload({
     order_id: props.order.id,
     status: status.value,
     description: description.value,
     offered_at: offerDate.value?.toISOString() as string,
     offer_valid_until: validityDate.value?.toISOString() as string,
-    items: offerItemsArray.value,
+    items: payloadItems,
   });
 
   if (finalExistingSubOrder.value != null) {
@@ -150,5 +156,7 @@ function onUpdatePositions(positions: OfferItemCreate[]) {
     :vat-date="offerDate || new Date()"
     :sub-order-positions="offerItemsArray"
     @update-positions="onUpdatePositions"
+    :has-automatic-rental-note="hasAutomaticRentalNote"
+    @remove-automatic-rental-note="hasAutomaticRentalNote = false"
   />
 </template>

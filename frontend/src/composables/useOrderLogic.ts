@@ -160,10 +160,11 @@ export function useOverdueNoticeValidation() {
   };
 }
 
-export function getBaseOfferAndInvoiceItem() {
+export function getAutomaticRentalNote(netSum: number) {
+  const percentage = netSum > 1000 ? "5" : "10";
   return {
     kind: ArticleKind.heading,
     title: "Hinweis Standmiete",
-    description: "Bei Verlängerung über vier Wochen berechnen wir 10% von der Nettosumme pro KW.",
+    description: `Bei Verlängerung über vier Wochen berechnen wir ${percentage}% von der Nettosumme pro KW.`,
   };
 }
