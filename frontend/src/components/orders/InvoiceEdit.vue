@@ -5,16 +5,15 @@ import Divider from "primevue/divider";
 import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import Textarea from "primevue/textarea";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 
 import { createInvoice, deleteSubOrder, updateInvoice } from "@/backendClient";
 import CreateDocumentButton from "@/components/orders/CreateDocumentButton.vue";
-import SubOrderItem from "@/components/orders/SubOrderItem.vue";
+import SubOrderPositions from "@/components/orders/SubOrderPositions.vue";
 import useConfirmations from "@/composables/useConfirmations";
 import useNotifications from "@/composables/useNotifications";
 import { getBaseOfferAndInvoiceItem, useInvoiceValidation } from "@/composables/useOrderLogic";
-import { formatNumber, getItemSum, getVatRate } from "@/global/helpers";
-import { ArticleKind, DocumentKind, PaymentStatus } from "@/global/types/appTypes";
+import { DocumentKind, PaymentStatus } from "@/global/types/appTypes";
 import type { InvoiceItemCreate } from "@/global/types/dataEditTypes";
 import type { Invoice, Order } from "@/global/types/entities";
 import { formatDateToIsoString } from "@/helpers/utils";
@@ -51,37 +50,9 @@ let serviceDates = ref<{ date?: Date }[]>(
   finalExistingSubOrder.value?.service_dates.map((date) => ({ date: new Date(date) })) || [],
 );
 
-const vatRate = computed(() => {
-  return getVatRate({ isoDate: invoiceDate.value?.toISOString() });
-});
-
 function onServiceDateDelete(index: number) {
   serviceDates.value = serviceDates.value.filter((_, itemIndex) => itemIndex !== index);
 }
-
-function onItemDelete(index: number) {
-  invoiceItemsArray.value = invoiceItemsArray.value.filter(
-    (_, elementIndex) => elementIndex !== index,
-  );
-}
-
-function onItemUpdate(index: number, item: InvoiceItemCreate) {
-  invoiceItemsArray.value = invoiceItemsArray.value.map((element, elementIndex) => {
-    if (elementIndex === index) {
-      return item;
-    } else {
-      return element;
-    }
-  });
-}
-
-function onItemCreate(kind: ArticleKind) {
-  invoiceItemsArray.value.push({ kind, title: "", description: "" });
-}
-
-const itemsNetSum = computed(() => {
-  return getItemSum(invoiceItemsArray.value);
-});
 
 async function onDeleteInvoice() {
   const confirmationResult = await confirm.showConfirmation(
@@ -121,6 +92,10 @@ async function onSaveInvoice() {
     notifications.showNotification("Eine neue Rechnung wurde erstellt.");
     finalExistingSubOrder.value = newInvoice;
   }
+}
+
+function onUpdatePositions(positions: InvoiceItemCreate[]) {
+  invoiceItemsArray.value = positions;
 }
 </script>
 
@@ -213,40 +188,9 @@ async function onSaveInvoice() {
 
   <Divider />
 
-  <div class="flex flex-row justify-between flex-wrap gap-4">
-    <div class="grow flex flex-row flex-wrap gap-x-10 gap-y-2 items-center">
-      <div class="font-bold">Summe:</div>
-      <span>Netto: {{ formatNumber(itemsNetSum, { currency: true }) }} </span>
-      <span>USt: {{ formatNumber(itemsNetSum * vatRate, { currency: true }) }}</span>
-      <span>Brutto: {{ formatNumber(itemsNetSum * (1 + vatRate), { currency: true }) }} </span>
-    </div>
-    <div class="flex gap-2">
-      <Button
-        @click="
-          onItemCreate(ArticleKind.item);
-          notifications.showNotification('Artikel hinzugefügt');
-        "
-        icon="pi pi-plus"
-        label="Artikel"
-      />
-      <Button
-        @click="
-          onItemCreate(ArticleKind.heading);
-          notifications.showNotification('Hinweis hinzugefügt');
-        "
-        icon="pi pi-plus"
-        label="Hinweis"
-      />
-    </div>
-  </div>
-
-  <SubOrderItem
-    v-for="(item, idx) in invoiceItemsArray"
-    :index="idx + 1"
-    :item="item"
-    :key="idx"
-    :vat-date="(invoiceDate || new Date()).toISOString()"
-    @deleted="onItemDelete(idx)"
-    @updated="onItemUpdate(idx, item)"
+  <SubOrderPositions
+    :vat-date="invoiceDate || new Date()"
+    :sub-order-positions="invoiceItemsArray"
+    @update-positions="onUpdatePositions"
   />
 </template>

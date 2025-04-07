@@ -5,16 +5,15 @@ import Divider from "primevue/divider";
 import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import Textarea from "primevue/textarea";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 
 import { createOffer, deleteSubOrder, updateOffer } from "@/backendClient";
 import CreateDocumentButton from "@/components/orders/CreateDocumentButton.vue";
-import SubOrderItem from "@/components/orders/SubOrderItem.vue";
+import SubOrderPositions from "@/components/orders/SubOrderPositions.vue";
 import useConfirmations from "@/composables/useConfirmations";
 import useNotifications from "@/composables/useNotifications";
 import { getBaseOfferAndInvoiceItem, useOfferValidation } from "@/composables/useOrderLogic";
-import { formatNumber, getItemSum, getVatRate } from "@/global/helpers";
-import { ArticleKind, DocumentKind, OfferStatus } from "@/global/types/appTypes";
+import { DocumentKind, OfferStatus } from "@/global/types/appTypes";
 import type { OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Offer, Order } from "@/global/types/entities";
 
@@ -46,32 +45,6 @@ let validityDate = ref<Date>(
     ? new Date(finalExistingSubOrder.value.offer_valid_until)
     : new Date(),
 );
-
-const vatRate = computed(() => {
-  return getVatRate({ isoDate: offerDate.value?.toISOString() });
-});
-
-function onItemDelete(index: number) {
-  offerItemsArray.value = offerItemsArray.value.filter((_, elementIndex) => elementIndex !== index);
-}
-
-function onItemUpdate(index: number, item: OfferItemCreate) {
-  offerItemsArray.value = offerItemsArray.value.map((element, elementIndex) => {
-    if (elementIndex === index) {
-      return item;
-    } else {
-      return element;
-    }
-  });
-}
-
-function onItemCreate(kind: ArticleKind) {
-  offerItemsArray.value.push({ kind, title: "", description: "" });
-}
-
-const itemsNetSum = computed(function () {
-  return getItemSum(offerItemsArray.value);
-});
 
 async function onDeleteOffer() {
   const confirmationResult = await confirm.showConfirmation(
@@ -108,6 +81,10 @@ async function onSaveOffer() {
     notifications.showNotification("Ein neues Angebot wurde erstellt.");
     finalExistingSubOrder.value = newOffer;
   }
+}
+
+function onUpdatePositions(positions: OfferItemCreate[]) {
+  offerItemsArray.value = positions;
 }
 </script>
 
@@ -169,40 +146,9 @@ async function onSaveOffer() {
 
   <Divider />
 
-  <div class="flex flex-row justify-between flex-wrap gap-4">
-    <div class="grow flex flex-row flex-wrap gap-x-10 gap-y-2 items-center">
-      <div class="font-bold">Summe:</div>
-      <span>Netto: {{ formatNumber(itemsNetSum, { currency: true }) }} </span>
-      <span>USt: {{ formatNumber(itemsNetSum * vatRate, { currency: true }) }}</span>
-      <span>Brutto: {{ formatNumber(itemsNetSum * (1 + vatRate), { currency: true }) }} </span>
-    </div>
-    <div class="flex gap-2">
-      <Button
-        @click="
-          onItemCreate(ArticleKind.item);
-          notifications.showNotification('Artikel hinzugefügt');
-        "
-        icon="pi pi-plus"
-        label="Artikel"
-      />
-      <Button
-        @click="
-          onItemCreate(ArticleKind.heading);
-          notifications.showNotification('Hinweis hinzugefügt');
-        "
-        icon="pi pi-plus"
-        label="Hinweis"
-      />
-    </div>
-  </div>
-
-  <SubOrderItem
-    v-for="(item, idx) in offerItemsArray"
-    :index="idx + 1"
-    :item="item"
-    :key="idx"
-    :vat-date="(offerDate || new Date()).toISOString()"
-    @deleted="onItemDelete(idx)"
-    @updated="onItemUpdate(idx, item)"
+  <SubOrderPositions
+    :vat-date="offerDate || new Date()"
+    :sub-order-positions="offerItemsArray"
+    @update-positions="onUpdatePositions"
   />
 </template>

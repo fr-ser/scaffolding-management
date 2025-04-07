@@ -65,3 +65,20 @@ export function replaceEmptyStringsWithNull<T extends object>(data: T): T {
 
   return result;
 }
+
+/**
+ * This function finds the nearest scrollable parent of an element.
+ */
+export function getScrollableParent(el: HTMLElement | null): HTMLElement | null {
+  while (el) {
+    const style = window.getComputedStyle(el);
+    const overflowY = style.overflowY;
+    const isScrollable = overflowY === "auto" || overflowY === "scroll";
+
+    if (isScrollable && el.scrollHeight > el.clientHeight) {
+      return el;
+    }
+    el = el.parentElement;
+  }
+  return null;
+}
