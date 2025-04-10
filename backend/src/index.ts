@@ -13,7 +13,7 @@ import {
 } from "@/config";
 import { closeDatabase, initializeAppDataSource } from "@/db";
 import { log } from "@/helpers/logging";
-import { getApp, getHttpRedirectApp } from "@/main";
+import { getApp } from "@/main";
 
 async function main() {
   log("Starting application");
@@ -23,7 +23,7 @@ async function main() {
   log(`Initialized database at ${DB_PATH}`);
 
   if (USE_HTTPS) {
-    const server = https
+    const httpsServer = https
       .createServer(
         {
           key: fs.readFileSync(HTTPS_KEY_PATH as string),
@@ -33,19 +33,13 @@ async function main() {
         app,
       )
       .listen(HTTPS_PORT, () => {
-        log(`HTTPS app started on port ${(server.address() as AddressInfo).port}`);
+        log(`HTTPS app started on port ${(httpsServer.address() as AddressInfo).port}`);
       });
-
-    const httpApp = getHttpRedirectApp();
-
-    const httpServer = httpApp.listen(HTTP_PORT, () => {
-      log(`HTTP app started on port ${(httpServer.address() as AddressInfo).port}`);
-    });
-  } else {
-    const server = app.listen(HTTP_PORT, () => {
-      log(`app started on port ${(server.address() as AddressInfo).port}`);
-    });
   }
+
+  const httpServer = app.listen(HTTP_PORT, () => {
+    log(`HTTP app started on port ${(httpServer.address() as AddressInfo).port}`);
+  });
 }
 
 main().catch((err) => {

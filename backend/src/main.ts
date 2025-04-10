@@ -32,6 +32,24 @@ export function getApp() {
     res.status(200).send("OK");
   });
 
+  // this endpoint needs to be public for SSL renewal
+  app.get("/.well-known/acme-challenge/:fileName", (req, res) => {
+    const filePath = path.resolve(
+      path.join(
+        STATIC_FILE_ROOT,
+        ".well-known",
+        "acme-challenge",
+        path.basename(req.params.fileName),
+      ),
+    );
+
+    res.sendFile(filePath, (err) => {
+      if (err) {
+        res.status(404);
+      }
+    });
+  });
+
   app.use(
     basicAuth({
       challenge: true,
@@ -62,34 +80,5 @@ export function getApp() {
     res.sendFile(path.resolve(path.join(STATIC_FILE_ROOT, "index.html")));
   });
 
-  return app;
-}
-
-export function getHttpRedirectApp() {
-  const app = express();
-
-  app.use(requestLogger);
-
-  // this endpoint needs to be public for SSL renewal
-  app.get("/.well-known/acme-challenge/:fileName", (req, res) => {
-    const filePath = path.resolve(
-      path.join(
-        STATIC_FILE_ROOT,
-        ".well-known",
-        "acme-challenge",
-        path.basename(req.params.fileName),
-      ),
-    );
-
-    res.sendFile(filePath, (err) => {
-      if (err) {
-        res.status(404);
-      }
-    });
-  });
-
-  app.use(function (request, response) {
-    response.redirect("https://" + request.hostname + request.url);
-  });
   return app;
 }
