@@ -20,7 +20,7 @@ export function timeoutCheck(
 }
 
 export const requestLogger = morgan(
-  ":date[iso] :method :url :status :res[content-length] - :response-time ms",
+  ":date[iso] :req[Host] :method :url :status :res[content-length] - :response-time ms",
   {
     // eslint-disable-next-line  @typescript-eslint/no-unused-vars
     skip: function shouldLoggerSkip(req: express.Request, _: express.Response): boolean {
