@@ -56,6 +56,7 @@ export const COMPANY_NAME = getRequired("VITE_COMPANY_NAME");
 export const COMPANY_STREET_AND_NUMBER = getRequired("VITE_COMPANY_STREET_AND_NUMBER");
 export const COMPANY_POSTAL_CODE_AND_CITY = getRequired("VITE_COMPANY_POSTAL_CODE_AND_CITY");
 export const COMPANY_VAT_CODE = getRequired("VITE_COMPANY_VAT_CODE");
+export const COMPANY_TAX_CODE = getRequired("VITE_COMPANY_TAX_CODE");
 export const COMPANY_PHONE = getRequired("VITE_COMPANY_PHONE");
 export const COMPANY_MOBILE_PHONE = getRequired("VITE_COMPANY_MOBILE_PHONE");
 export const COMPANY_EMAIL = getRequired("VITE_COMPANY_EMAIL");

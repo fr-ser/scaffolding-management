@@ -12,6 +12,7 @@ import {
   COMPANY_PHONE,
   COMPANY_POSTAL_CODE_AND_CITY,
   COMPANY_STREET_AND_NUMBER,
+  COMPANY_TAX_CODE,
   COMPANY_VAT_CODE,
   STATIC_FILE_ROOT,
 } from "@/config";
@@ -127,6 +128,7 @@ const createDocument = function createDocument(
         .font("Helvetica")
         .text(COMPANY_STREET_AND_NUMBER)
         .text(COMPANY_POSTAL_CODE_AND_CITY)
+        .text(`St-Nr: ${COMPANY_TAX_CODE}`)
         .text(`USt-Id: ${COMPANY_VAT_CODE}`);
 
       pdfFile
