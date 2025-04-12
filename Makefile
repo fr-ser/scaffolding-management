@@ -45,7 +45,8 @@ deploy-no-test: build
 	scp -P $${PI_SSH_PORT} ./backend/package*.json pi@$${PI_SSH_ADDRESS}:/home/pi/apps/next-scaffolding
 	scp -P $${PI_SSH_PORT} -r ./deployment pi@$${PI_SSH_ADDRESS}:/home/pi/apps
 
-	@echo "To replace the old version you should run 'cd /home/pi/apps/deployment && make update' on the raspberry"
+	@echo "To replace the old version you should run 'make upgrade-on-raspberry' here or"
+	@echo "run 'cd /home/pi/apps/deployment && make update' on the raspberry"
 
 #: Deploy the application to the raspberry pi
 deploy: build test-all deploy-no-test

@@ -14,7 +14,7 @@ The task jobs:
 The job to update the dynamic DNS:
 
 ```txt
-*/5 * * * * /home/pi/dyndns/dynv6.sh
+*/5 * * * * /home/pi/dyndns/update-ip.sh
 ```
 
 The job to truncate large log files:
