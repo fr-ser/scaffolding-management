@@ -16,7 +16,7 @@ test("invoice PDF generation", async () => {
     const pdfLine = pdfLines[index];
     const snapshotLine = snapshotLines[index];
 
-    if (snapshotLine.startsWith("(D:20250314")) continue; //  timestamps
+    if (snapshotLine.startsWith("(D:20250412")) continue; //  timestamps
     if (snapshotLine.startsWith("/ID [<")) continue; // some ID, no idea what it is
 
     expect(pdfLine).toBe(snapshotLine);
@@ -35,7 +35,7 @@ test("offer PDF generation", async () => {
     const pdfLine = pdfLines[index];
     const snapshotLine = snapshotLines[index];
 
-    if (snapshotLine.startsWith("(D:20250407")) continue; //  timestamps
+    if (snapshotLine.startsWith("(D:20250412")) continue; //  timestamps
     if (snapshotLine.startsWith("/ID [<")) continue; // some ID, no idea what it is
 
     expect(pdfLine).toBe(snapshotLine);
@@ -55,7 +55,7 @@ test("overdue notice PDF generation", async () => {
     const pdfLine = pdfLines[index];
     const snapshotLine = snapshotLines[index];
 
-    if (snapshotLine.startsWith("(D:20250314")) continue; //  timestamps
+    if (snapshotLine.startsWith("(D:20250412")) continue; //  timestamps
     if (snapshotLine.startsWith("/ID [<")) continue; // some ID, no idea what it is
 
     expect(pdfLine).toBe(snapshotLine);
