@@ -1,5 +1,16 @@
 # Deployment
 
+## Environment
+
+When the environment files need to be updated it has to be done in two places:
+
+- `.env.production` - local
+  - This needs to be done inside the repository before building the frontend
+  - The variables are interpolated into the frontend code itself
+
+- `.env` - raspberry
+  - This needs to be done on the raspberry pi before restarting the backend
+
 ## CRON
 
 Aside from the application deployment there are some cron jobs which should be created.

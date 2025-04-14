@@ -40,6 +40,8 @@ test-all:
 	npm run test
 
 deploy-no-test: build
+	@test -f .env.production || (echo "Production env for the frontend not found!" && exit 1)
+
 	ssh -p $${PI_SSH_PORT} pi@$${PI_SSH_ADDRESS} 'mkdir -p /home/pi/apps/next-scaffolding'
 	scp -P $${PI_SSH_PORT} -r ./backend/dist pi@$${PI_SSH_ADDRESS}:/home/pi/apps/next-scaffolding
 	scp -P $${PI_SSH_PORT} ./backend/package*.json pi@$${PI_SSH_ADDRESS}:/home/pi/apps/next-scaffolding
