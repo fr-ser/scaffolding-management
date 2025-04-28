@@ -13,6 +13,7 @@ import { formatNumber, getVatRate } from "@/global/helpers";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { InvoiceItemCreate, OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Article } from "@/global/types/entities";
+import { debounce } from "@/helpers/utils";
 
 const props = defineProps<{
   index: number;
@@ -26,15 +27,28 @@ const emit = defineEmits<{
   deleted: [];
 }>();
 
+const articleSearch = ref("");
 let filteredArticles = ref<Article[]>([]);
 let isArticlesListVisible = ref(false);
 
 let editableItem = ref<OfferItemCreate | InvoiceItemCreate>(props.item);
 
-async function openArticlesList(kind: ArticleKind) {
+async function loadArticles() {
+  const articlesList = (await getArticles({ search: articleSearch.value })).data;
+  filteredArticles.value = articlesList.filter((article) => article.kind === props.item.kind);
+}
+
+watch(
+  articleSearch,
+  debounce(async () => {
+    if (isArticlesListVisible.value) await loadArticles();
+  }, 250),
+);
+
+async function openArticlesList() {
+  articleSearch.value = "";
   isArticlesListVisible.value = true;
-  const articlesList = (await getArticles()).data;
-  filteredArticles.value = articlesList.filter((article) => article.kind === kind);
+  await loadArticles();
 }
 
 let vatRate = computed(() => {
@@ -84,7 +98,7 @@ watch(
       </div>
       <div>
         <Button
-          @click="openArticlesList(props.item.kind)"
+          @click="openArticlesList()"
           class="mr-3"
           icon="pi pi-search"
           size="small"
@@ -162,12 +176,14 @@ watch(
     </div>
   </div>
   <Dialog class="w-full sm:w-4/6" v-model:visible="isArticlesListVisible" modal header="Artikel">
+    <InputText placeholder="Suche" class="w-full" v-model="articleSearch" />
+    <Divider />
     <div v-for="article in filteredArticles" :key="article.id">
       <div
         @click="chooseArticle(article)"
         class="border border-slate-300 hover:border-primary ps-4 py-1 my-2"
       >
-        {{ article.title }}
+        {{ article.id }} - {{ article.title }}
       </div>
     </div>
   </Dialog>
