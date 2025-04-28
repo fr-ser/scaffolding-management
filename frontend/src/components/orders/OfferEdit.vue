@@ -17,6 +17,7 @@ import { getItemSum } from "@/global/helpers";
 import { DocumentKind, OfferStatus } from "@/global/types/appTypes";
 import type { OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Offer, Order } from "@/global/types/entities";
+import { ValidationError } from "@/helpers/utils";
 
 const props = defineProps<{
   existingOffer?: Offer;
@@ -70,14 +71,20 @@ async function onSaveOffer() {
     payloadItems.push(getAutomaticRentalNote(getItemSum(offerItemsArray.value)));
   }
 
-  const payload = validation.validateAndCleanPayload({
-    order_id: props.order.id,
-    status: status.value,
-    description: description.value,
-    offered_at: offerDate.value?.toISOString() as string,
-    offer_valid_until: validityDate.value?.toISOString() as string,
-    items: payloadItems,
-  });
+  let payload;
+  try {
+    payload = validation.validateAndCleanPayload({
+      order_id: props.order.id,
+      status: status.value,
+      description: description.value,
+      offered_at: offerDate.value?.toISOString() as string,
+      offer_valid_until: validityDate.value?.toISOString() as string,
+      items: payloadItems,
+    });
+  } catch (err) {
+    if (err instanceof ValidationError) return;
+    else throw err;
+  }
 
   if (finalExistingSubOrder.value != null) {
     await updateOffer(finalExistingSubOrder.value.id, payload);
