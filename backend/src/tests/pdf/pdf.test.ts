@@ -9,6 +9,7 @@ test("invoice PDF generation", async () => {
   const resultPDF = await renderMultiplePDF([
     { kind: DocumentKind.invoice, document: await getInvoiceDocument() },
   ]);
+
   const pdfLines = String(resultPDF).split("\n");
   const snapshotLines = String(fs.readFileSync("src/tests/pdf/invoice_snapshot.pdf")).split("\n");
 
@@ -16,7 +17,7 @@ test("invoice PDF generation", async () => {
     const pdfLine = pdfLines[index];
     const snapshotLine = snapshotLines[index];
 
-    if (snapshotLine.startsWith("(D:20250412")) continue; //  timestamps
+    if (snapshotLine.startsWith("(D:20250428")) continue; //  timestamps
     if (snapshotLine.startsWith("/ID [<")) continue; // some ID, no idea what it is
 
     expect(pdfLine).toBe(snapshotLine);

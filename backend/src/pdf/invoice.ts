@@ -12,7 +12,7 @@ export function setInvoiceInformationTable(pdfFile: PDFKit.PDFDocument, document
     .text("Rechnungsnummer:");
 
   pdfFile
-    .text(formatIsoDateString(document.creation_date), mmToPx(170), mmToPx(42), {
+    .text(formatIsoDateString(document.invoice_date), mmToPx(170), mmToPx(42), {
       width: mmToPx(25),
       align: "center",
     })

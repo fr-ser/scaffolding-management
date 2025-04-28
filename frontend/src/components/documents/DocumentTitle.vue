@@ -25,12 +25,14 @@ const content = computed(() => {
       dateName: "Angebotsdatum",
       numberName: "Angebotsnummer",
       titleKind: "Angebot",
+      date: (props.result as OfferDocument).offered_at,
     };
   } else if (props.kind === DocumentKind.invoice) {
     return {
       dateName: "Rechnungsdatum",
       numberName: "Rechnungsnummer",
       titleKind: "Rechnung",
+      date: (props.result as InvoiceDocument).invoice_date,
     };
   } else if (props.kind === DocumentKind.overdueNotice) {
     let titleKind: string = (props.result as OverdueNoticeDocument).notice_level;
@@ -41,6 +43,7 @@ const content = computed(() => {
       dateName: "Mahndatum",
       numberName: "Belegnummer",
       titleKind,
+      date: (props.result as OverdueNoticeDocument).notice_date,
     };
   } else return neverFunction(props.kind);
 });
@@ -72,7 +75,7 @@ const content = computed(() => {
         <tbody>
           <tr>
             <td>{{ `${content.dateName}: ` }}</td>
-            <td>{{ formatIsoDateString(result.creation_date) }}</td>
+            <td>{{ formatIsoDateString(content.date) }}</td>
           </tr>
           <tr>
             <td>Kundennummer:</td>
