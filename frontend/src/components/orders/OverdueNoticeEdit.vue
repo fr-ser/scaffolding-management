@@ -28,6 +28,7 @@ import {
   PaymentStatus,
 } from "@/global/types/appTypes";
 import type { InvoiceDocument, Order, OverdueNotice } from "@/global/types/entities";
+import { ValidationError } from "@/helpers/utils";
 
 const props = defineProps<{
   existingOverdueNotice?: OverdueNotice;
@@ -132,18 +133,24 @@ async function onClickedDelete() {
 const validation = useOverdueNoticeValidation();
 
 async function onClickSave() {
-  const payload = validation.validateAndCleanPayload({
-    order_id: props.order.id,
-    payments_until: paymentsUntil.value?.toISOString() as string,
-    notice_date: noticeDate.value?.toISOString() as string,
-    notice_level: noticeLevel.value,
-    payment_target: paymentTarget.value?.toISOString() as string,
-    payment_status: paymentStatus.value,
-    notice_costs: noticeCosts.value,
-    default_interest: defaultInterest.value,
-    description: description.value,
-    invoice_documents: itemsArray.value.map((item) => item.id),
-  });
+  let payload;
+  try {
+    payload = validation.validateAndCleanPayload({
+      order_id: props.order.id,
+      payments_until: paymentsUntil.value?.toISOString() as string,
+      notice_date: noticeDate.value?.toISOString() as string,
+      notice_level: noticeLevel.value,
+      payment_target: paymentTarget.value?.toISOString() as string,
+      payment_status: paymentStatus.value,
+      notice_costs: noticeCosts.value,
+      default_interest: defaultInterest.value,
+      description: description.value,
+      invoice_documents: itemsArray.value.map((item) => item.id),
+    });
+  } catch (err) {
+    if (err instanceof ValidationError) return;
+    else throw err;
+  }
 
   if (finalExistingSubOrder.value != null) {
     await updateOverdueNotice(finalExistingSubOrder.value.id, payload);

@@ -17,7 +17,7 @@ import { getItemSum } from "@/global/helpers";
 import { DocumentKind, PaymentStatus } from "@/global/types/appTypes";
 import type { InvoiceItemCreate } from "@/global/types/dataEditTypes";
 import type { Invoice, Order } from "@/global/types/entities";
-import { formatDateToIsoString } from "@/helpers/utils";
+import { ValidationError, formatDateToIsoString } from "@/helpers/utils";
 
 const props = defineProps<{
   existingInvoice?: Invoice;
@@ -78,17 +78,23 @@ async function onSaveInvoice() {
     payloadItems.push(getAutomaticRentalNote(getItemSum(invoiceItemsArray.value)));
   }
 
-  const payload = validation.validateAndCleanPayload({
-    order_id: props.order.id,
-    status: status.value,
-    description: description.value,
-    invoice_date: invoiceDate.value?.toISOString() as string,
-    payment_target: paymentTarget.value?.toISOString() as string,
-    service_dates: serviceDates.value
-      .filter((item) => Boolean(item.date))
-      .map((element) => formatDateToIsoString(element.date as Date)),
-    items: payloadItems,
-  });
+  let payload;
+  try {
+    payload = validation.validateAndCleanPayload({
+      order_id: props.order.id,
+      status: status.value,
+      description: description.value,
+      invoice_date: invoiceDate.value?.toISOString() as string,
+      payment_target: paymentTarget.value?.toISOString() as string,
+      service_dates: serviceDates.value
+        .filter((item) => Boolean(item.date))
+        .map((element) => formatDateToIsoString(element.date as Date)),
+      items: payloadItems,
+    });
+  } catch (err) {
+    if (err instanceof ValidationError) return;
+    else throw err;
+  }
 
   if (finalExistingSubOrder.value != null) {
     await updateInvoice(finalExistingSubOrder.value.id, payload);
@@ -123,9 +129,9 @@ function onUpdatePositions(positions: InvoiceItemCreate[]) {
     />
     <Button @click="onSaveInvoice" label="Rechnung speichern" text raised />
   </div>
-  <div class="flex flex-row flex-wrap gap-8">
+  <div class="flex flex-row flex-wrap gap-8 pt-10">
     <section
-      class="mt-10 flex flex-col flex-wrap justify-items-start gap-x-2 gap-y-6 sm:flex-row sm:items-center"
+      class="flex flex-col flex-wrap justify-items-start gap-x-2 gap-y-6 sm:flex-row sm:items-center"
     >
       <FloatLabel>
         <Calendar
