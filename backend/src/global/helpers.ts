@@ -45,20 +45,30 @@ export function getVatRate(options: GetVatRateOptions): number {
  *
  * Defaults:
  * - currency: false
- * - decimals: 0 (2 if currency is true)
+ * - minDecimals: 0 (2 if currency is true): Superseded by currency flag
+ * - maxDecimals: 5 (2 if currency is true): Superseded by currency flag
  * - undefinedAs: "-"
  */
 export function formatNumber(
   number: number | undefined,
-  options?: { currency?: boolean; decimals?: number; undefinedAs?: string },
+  options?: {
+    currency?: boolean;
+    minDecimals?: number;
+    maxDecimals?: number;
+    undefinedAs?: string;
+  },
 ): string {
-  let chosenDecimals: number;
-  if (options?.decimals) {
-    chosenDecimals = options.decimals;
-  } else if (options?.currency) {
-    chosenDecimals = 2;
-  } else {
-    chosenDecimals = 0;
+  let minDecimals = 0;
+  let maxDecimals = 5;
+  if (options?.minDecimals != null) {
+    minDecimals = options.minDecimals;
+  }
+  if (options?.maxDecimals != null) {
+    maxDecimals = options.maxDecimals;
+  }
+  if (options?.currency) {
+    minDecimals = 2;
+    maxDecimals = 2;
   }
 
   if (number == null) {
@@ -66,8 +76,8 @@ export function formatNumber(
   }
 
   let result = number.toLocaleString("de-DE", {
-    minimumFractionDigits: chosenDecimals,
-    maximumFractionDigits: chosenDecimals,
+    minimumFractionDigits: minDecimals,
+    maximumFractionDigits: maxDecimals,
   });
 
   if (options?.currency) {

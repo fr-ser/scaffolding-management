@@ -304,7 +304,7 @@ const createDocument = function createDocument(
             align: "center",
           })
           .text(
-            formatNumber(item.price * item.amount, { decimals: 2 }),
+            formatNumber(item.price * item.amount, { maxDecimals: 2 }),
             tParams.c5x,
             pdfFileData.currY,
             {
@@ -317,7 +317,7 @@ const createDocument = function createDocument(
             align: "center",
           })
           .text(
-            formatNumber(item.price * item.amount * vatRate, { decimals: 2 }),
+            formatNumber(item.price * item.amount * vatRate, { maxDecimals: 2 }),
             tParams.c7x,
             pdfFileData.currY,
             {
@@ -326,7 +326,7 @@ const createDocument = function createDocument(
             },
           )
           .text(
-            formatNumber(item.price * item.amount * (1 + vatRate), { decimals: 2 }),
+            formatNumber(item.price * item.amount * (1 + vatRate), { maxDecimals: 2 }),
             tParams.c8x,
             pdfFileData.currY,
             {
