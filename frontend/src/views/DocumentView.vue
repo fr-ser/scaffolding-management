@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { saveAs } from "file-saver";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import InputText from "primevue/inputtext";
@@ -7,6 +8,7 @@ import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import {
+  getDocumentPdf,
   getInvoiceDocument,
   getOfferDocument,
   getOverdueNoticeDocument,
@@ -97,6 +99,14 @@ async function sendClick() {
   isEmailDialogVisible.value = false;
 }
 
+async function onClickSavePdf() {
+  const documentId = route.params.id as string;
+  notification.showNotification("Ein PDF-Dokument wird erstellt...");
+  const response = await getDocumentPdf([{ kind, id: documentId }]);
+
+  saveAs(response, documentId + ".pdf");
+}
+
 onMounted(async () => {
   await getDocument();
   if (result.value == null) return;
@@ -131,6 +141,7 @@ Tel.: ${VITE_COMPANY_PHONE}
         <Button icon="pi pi-arrow-left" size="small" severity="secondary" text raised />
       </router-link>
       <div class="flex gap-x-2">
+        <Button label="PDF speichern" severity="info" text raised @click="onClickSavePdf" />
         <router-link :to="getOrderEditPath(result?.order_id as string)">
           <Button label="Auftrag anzeigen" severity="info" text raised />
         </router-link>
