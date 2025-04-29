@@ -10,6 +10,8 @@ test("invoice PDF generation", async () => {
     { kind: DocumentKind.invoice, document: await getInvoiceDocument() },
   ]);
 
+  fs.writeFileSync("src/tests/pdf/invoice_snapshot.2.pdf", resultPDF);
+
   const pdfLines = String(resultPDF).split("\n");
   const snapshotLines = String(fs.readFileSync("src/tests/pdf/invoice_snapshot.pdf")).split("\n");
 
@@ -17,7 +19,7 @@ test("invoice PDF generation", async () => {
     const pdfLine = pdfLines[index];
     const snapshotLine = snapshotLines[index];
 
-    if (snapshotLine.startsWith("(D:20250428")) continue; //  timestamps
+    if (snapshotLine.startsWith("(D:20250429")) continue; //  timestamps
     if (snapshotLine.startsWith("/ID [<")) continue; // some ID, no idea what it is
 
     expect(pdfLine).toBe(snapshotLine);
@@ -29,6 +31,8 @@ test("offer PDF generation", async () => {
     { kind: DocumentKind.offer, document: await getOfferDocument() },
   ]);
 
+  fs.writeFileSync("src/tests/pdf/offer_snapshot.2.pdf", resultPDF);
+
   const pdfLines = String(resultPDF).split("\n");
   const snapshotLines = String(fs.readFileSync("src/tests/pdf/offer_snapshot.pdf")).split("\n");
 
@@ -36,7 +40,7 @@ test("offer PDF generation", async () => {
     const pdfLine = pdfLines[index];
     const snapshotLine = snapshotLines[index];
 
-    if (snapshotLine.startsWith("(D:20250412")) continue; //  timestamps
+    if (snapshotLine.startsWith("(D:20250429")) continue; //  timestamps
     if (snapshotLine.startsWith("/ID [<")) continue; // some ID, no idea what it is
 
     expect(pdfLine).toBe(snapshotLine);
