@@ -4,7 +4,9 @@ import { formatIsoDateString, formatNumber, round } from "../../../backend/src/g
 
 test("formatNumber", () => {
   expect(formatNumber(1234)).toBe("1.234");
-  expect(formatNumber(12.34, { decimals: 2 })).toBe("12,34");
+  expect(formatNumber(1.234)).toBe("1,234");
+  expect(formatNumber(12.34, { maxDecimals: 2 })).toBe("12,34");
+  expect(formatNumber(12.349, { maxDecimals: 2 })).toBe("12,35");
   expect(formatNumber(12.34, { currency: true })).toBe("12,34 €");
 });
 

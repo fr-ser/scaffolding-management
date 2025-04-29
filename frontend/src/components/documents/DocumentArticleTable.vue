@@ -55,14 +55,14 @@ const allItemsNetSum = computed(() => {
           <div class="font-bold">{{ item.title }}</div>
           {{ item.description }}
         </td>
-        <td>{{ item.kind === ArticleKind.heading ? "" : item.amount }}</td>
+        <td>{{ item.kind === ArticleKind.heading ? "" : formatNumber(item.amount) }}</td>
         <td>{{ item.kind === ArticleKind.heading ? "" : item.unit }}</td>
-        <td>{{ item.kind === ArticleKind.heading ? "" : item.price }}</td>
+        <td>{{ item.kind === ArticleKind.heading ? "" : formatNumber(item.price) }}</td>
         <td>
           {{
             item.kind === ArticleKind.heading
               ? ""
-              : formatNumber(maybeMultiply(item.amount, item.price), { decimals: 2 })
+              : formatNumber(maybeMultiply(item.amount, item.price), { maxDecimals: 2 })
           }}
         </td>
         <td>
@@ -88,7 +88,7 @@ const allItemsNetSum = computed(() => {
                     item.price,
                     `${kind === DocumentKind.invoice ? "" : (document as OfferDocument).offered_at}`,
                   ),
-                  { decimals: 2 },
+                  { maxDecimals: 2 },
                 )
           }}
         </td>
@@ -101,7 +101,7 @@ const allItemsNetSum = computed(() => {
                     item,
                     `${kind === DocumentKind.invoice ? "" : (document as OfferDocument).offered_at}`,
                   ),
-                  { decimals: 2 },
+                  { maxDecimals: 2 },
                 )
           }}
         </td>
