@@ -39,14 +39,14 @@ const allItemsNetSum = computed(() => {
   <table class="w-full item-table">
     <thead>
       <tr>
-        <th>Bezeichnung</th>
-        <th>Anzahl</th>
-        <th>Einheit</th>
-        <th>Preis</th>
-        <th>Netto</th>
-        <th>USt.%</th>
-        <th>USt.</th>
-        <th>Gesamt</th>
+        <th style="width: 280px">Bezeichnung</th>
+        <th style="width: 50px">Anzahl</th>
+        <th style="width: 50px">Einheit</th>
+        <th style="width: 50px">Preis</th>
+        <th style="width: 50px">Netto</th>
+        <th style="width: 40px">USt.%</th>
+        <th style="width: 50px">USt.</th>
+        <th style="width: 60px">Gesamt</th>
       </tr>
     </thead>
     <tbody>
