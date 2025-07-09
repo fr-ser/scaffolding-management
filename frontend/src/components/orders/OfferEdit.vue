@@ -45,7 +45,7 @@ let offerDate = ref<Date>(
 let validityDate = ref<Date>(
   finalExistingSubOrder.value
     ? new Date(finalExistingSubOrder.value.offer_valid_until)
-    : new Date(),
+    : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days in milliseconds
 );
 
 async function onDeleteOffer() {
