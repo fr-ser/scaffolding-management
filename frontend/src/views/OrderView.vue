@@ -95,7 +95,7 @@ const onSaveOrder = async () => {
   });
 
   if (isEditing.value) {
-    await updateOrder(`${route.params.id}`, orderInfo.value);
+    await updateOrder(`${route.params.id}`, payload);
     notifications.showNotification("Der Auftrag wurde gespeichert");
   } else {
     await createOrder(payload as OrderCreate);
