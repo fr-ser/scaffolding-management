@@ -56,3 +56,7 @@ deploy: build test-all deploy-no-test
 #: update the application on the raspberry pi - causes downtime
 upgrade-on-raspberry:
 	ssh -p $${PI_SSH_PORT} pi@$${PI_SSH_ADDRESS} 'cd /home/pi/apps/deployment && make update'
+
+#: connect to raspberry pi via ssh
+ssh-raspberry:
+	ssh -p $${PI_SSH_PORT} pi@$${PI_SSH_ADDRESS}
