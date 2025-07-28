@@ -169,7 +169,11 @@ invoicesRouter.post(
     }
 
     const maxId =
-      // We have documents with IDs like this: R2023-10-01, R-2023-10-02
+      // For reasons beyond understanding (product requirements)
+      // we have documents with IDs like this:
+      // - R2023-10-01
+      // - R-2023-10-02
+      // - 2023-10-03
       (
         await dataSource.manager.query(`
           SELECT max(cast(substr(replace(id, 'R-', 'R'),10) as integer)) as max_id
@@ -179,7 +183,7 @@ invoicesRouter.post(
       )[0].max_id || 0;
 
     const document = dataSource.manager.create(InvoiceDocument, {
-      id: `R${invoice.invoice_date.substring(0, 7)}-${String(maxId + 1).padStart(2, "0")}`,
+      id: `${invoice.invoice_date.substring(0, 7)}-${String(maxId + 1).padStart(2, "0")}`,
       order_id: invoice.order_id,
       creation_date: new Date().toISOString().substring(0, 10),
       client_id: invoice.order.client_id,
