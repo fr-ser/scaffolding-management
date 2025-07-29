@@ -176,11 +176,14 @@ invoicesRouter.post(
       // - 2023-10-03
       (
         await dataSource.manager.query(`
-          SELECT max(cast(substr(replace(id, 'R-', 'R'),10) as integer)) as max_id
-          from invoice_document
-          where id LIKE '%${invoice.invoice_date.substring(0, 7)}-%'
+          SELECT id from invoice_document where id LIKE '%${invoice.invoice_date.substring(0, 7)}-%'
         `)
-      )[0].max_id || 0;
+      )
+        .map((doc: { id: string }) => parseInt(doc.id.split("-")[2]))
+        .reduce((acc: number, id: number) => {
+          if (acc > id) return acc;
+          else return id;
+        }, 0);
 
     const document = dataSource.manager.create(InvoiceDocument, {
       id: `${invoice.invoice_date.substring(0, 7)}-${String(maxId + 1).padStart(2, "0")}`,
