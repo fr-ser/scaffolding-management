@@ -39,24 +39,24 @@ test-all:
 	cd frontend && npm run test
 	npm run test
 
-deploy-no-test: build
+deploy-build-no-test: build
 	@test -f .env.production || (echo "Production env for the frontend not found!" && exit 1)
 
-	ssh -p $${PI_SSH_PORT} pi@$${PI_SSH_ADDRESS} 'mkdir -p /home/pi/apps/next-scaffolding'
-	scp -P $${PI_SSH_PORT} -r ./backend/dist pi@$${PI_SSH_ADDRESS}:/home/pi/apps/next-scaffolding
-	scp -P $${PI_SSH_PORT} ./backend/package*.json pi@$${PI_SSH_ADDRESS}:/home/pi/apps/next-scaffolding
-	scp -P $${PI_SSH_PORT} -r ./deployment pi@$${PI_SSH_ADDRESS}:/home/pi/apps
+	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS} 'mkdir -p ~/apps/next-scaffolding'
+	scp -P $${SSH_PORT} -r ./backend/dist $${SSH_USER}@$${SSH_ADDRESS}:~/apps/next-scaffolding
+	scp -P $${SSH_PORT} ./backend/package*.json $${SSH_USER}@$${SSH_ADDRESS}:~/apps/next-scaffolding
+	scp -P $${SSH_PORT} -r ./deployment $${SSH_USER}@$${SSH_ADDRESS}:~/apps
 
-	@echo "To replace the old version you should run 'make upgrade-on-raspberry' here or"
-	@echo "run 'cd /home/pi/apps/deployment && make update' on the raspberry"
+	@echo "To replace the old version you should run 'make deploy-upgrade' here or"
+	@echo "run 'cd ~/apps/deployment && make update' on the deployment target"
 
-#: Deploy the application to the raspberry pi
-deploy: build test-all deploy-no-test
+#: Deploy the application to the deployment target
+deploy-build: build test-all deploy-build-no-test
 
-#: update the application on the raspberry pi - causes downtime
-upgrade-on-raspberry:
-	ssh -p $${PI_SSH_PORT} pi@$${PI_SSH_ADDRESS} 'cd /home/pi/apps/deployment && make update'
+#: update the application on the deployment target - causes downtime
+deploy-upgrade:
+	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS} 'cd ~/apps/deployment && make update'
 
-#: connect to raspberry pi via ssh
-ssh-raspberry:
-	ssh -p $${PI_SSH_PORT} pi@$${PI_SSH_ADDRESS}
+#: connect to deploy target via ssh
+deploy-ssh:
+	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS}
