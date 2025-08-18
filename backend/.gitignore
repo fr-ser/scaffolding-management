@@ -8,7 +8,3 @@ dist
 # script artifacts
 backup.json
 
-# local development artifacts
-.envrc
-*.db
-*.db.backup
