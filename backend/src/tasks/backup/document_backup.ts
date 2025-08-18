@@ -14,17 +14,21 @@ import { getFilesInFolder, renameFile, uploadFile } from "@/services/dropbox";
 
 export async function backupDocuments(dataSource: DataSource) {
   let documentBackupLastTime = "1970-01-01";
+
   const metaFiles = await getFilesInFolder(`${DROPBOX_PATH_PREFIX}/backup/documents/meta/`);
   if (metaFiles.length === 0) {
     log("Warning: No previous document backup start date found");
   } else {
     documentBackupLastTime = metaFiles[0];
   }
+
+  const sinceTimestamp = new Date(documentBackupLastTime).getTime() / 1000;
+
   const allDocuments = (
     (await Promise.all([
       dataSource.manager
         .find(InvoiceDocument, {
-          where: { created_at: MoreThanOrEqual(new Date(documentBackupLastTime).getTime()) },
+          where: { created_at: MoreThanOrEqual(sinceTimestamp) },
           relations: { items: true },
         })
         .then((result) =>
@@ -34,7 +38,7 @@ export async function backupDocuments(dataSource: DataSource) {
         ),
       dataSource.manager
         .find(OfferDocument, {
-          where: { created_at: MoreThanOrEqual(new Date(documentBackupLastTime).getTime()) },
+          where: { created_at: MoreThanOrEqual(sinceTimestamp) },
           relations: { items: true },
         })
         .then((result) =>
@@ -44,7 +48,7 @@ export async function backupDocuments(dataSource: DataSource) {
         ),
       dataSource.manager
         .find(OverdueNoticeDocument, {
-          where: { created_at: MoreThanOrEqual(new Date(documentBackupLastTime).getTime()) },
+          where: { created_at: MoreThanOrEqual(sinceTimestamp) },
           relations: { invoice_documents: { items: true } },
         })
         .then((result) =>
@@ -55,7 +59,7 @@ export async function backupDocuments(dataSource: DataSource) {
     ])) as AnyDocument[][]
   ).flatMap((item) => item);
 
-  log(`Found ${allDocuments.length} to back up`);
+  log(`Found ${allDocuments.length} to back up since ${documentBackupLastTime}`);
 
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
@@ -65,7 +69,8 @@ export async function backupDocuments(dataSource: DataSource) {
   const temporaryFolder = await fs.mkdtemp(join(tmpdir(), "backup-"));
   const temporaryPdfPath = temporaryFolder + "/temp.pdf";
   for (const document of allDocuments) {
-    await fs.writeFile(temporaryPdfPath, await renderMultiplePDF([document]));
+    const pdfBuffer = await renderMultiplePDF([document]);
+    await fs.writeFile(temporaryPdfPath, pdfBuffer as Uint8Array);
     await uploadFile(
       `${DROPBOX_PATH_PREFIX}/backup/documents/${yesterdayYear}/${yesterdayMonth}/${document.document.id}`,
       temporaryPdfPath,
