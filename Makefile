@@ -60,3 +60,11 @@ deploy-upgrade:
 #: connect to deploy target via ssh
 deploy-ssh:
 	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS}
+
+#: copy the production database to the local machine
+scp-database-to-local:
+	scp -P $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS}:~/apps/scaffolding/production.db ./production.db
+
+#: copy the local database to the deployment machine
+scp-database-to-deploy:
+	scp -P $${SSH_PORT} ./production.db $${SSH_USER}@$${SSH_ADDRESS}:~/apps/scaffolding/production.copy.db

@@ -16,5 +16,13 @@ node_modules/
 !.env.development
 deployment/production
 
+# local development artifacts
+.envrc
+
 # app artifacts
 *.pdf
+
+# database
+*.db
+*.db.backup
+
