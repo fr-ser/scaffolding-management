@@ -6,11 +6,32 @@ import { DataSource, MoreThanOrEqual } from "typeorm";
 
 import { DROPBOX_PATH_PREFIX } from "@/config";
 import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/db/entities/documents";
+import { neverFunction } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
 import { AnyDocument } from "@/global/types/backendTypes";
 import { log } from "@/helpers/logging";
 import { renderMultiplePDF } from "@/pdf/renderPDF";
 import { getFilesInFolder, renameFile, uploadFile } from "@/services/dropbox";
+
+function getDocumentDate(document: AnyDocument): string {
+  switch (document.kind) {
+    case DocumentKind.invoice:
+      return document.document.invoice_date;
+    case DocumentKind.offer:
+      return document.document.offered_at;
+    case DocumentKind.overdueNotice:
+      return document.document.notice_date;
+    default:
+      return neverFunction(document);
+  }
+}
+
+function formatDateForPath(dateString: string): { year: string; month: string } {
+  const date = new Date(dateString);
+  const year = date.getFullYear().toString();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  return { year, month };
+}
 
 export async function backupDocuments(dataSource: DataSource) {
   let documentBackupLastTime = "1970-01-01";
@@ -63,19 +84,20 @@ export async function backupDocuments(dataSource: DataSource) {
 
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayYear = yesterday.getFullYear();
-  const yesterdayMonth = String(yesterday.getMonth() + 1).padStart(2, "0");
 
   const temporaryFolder = await fs.mkdtemp(join(tmpdir(), "backup-"));
   const temporaryPdfPath = temporaryFolder + "/temp.pdf";
   for (const document of allDocuments) {
+    const documentDate = getDocumentDate(document);
+    const { year, month } = formatDateForPath(documentDate);
+
     const pdfBuffer = await renderMultiplePDF([document]);
     await fs.writeFile(temporaryPdfPath, pdfBuffer as Uint8Array);
     await uploadFile(
-      `${DROPBOX_PATH_PREFIX}/backup/documents/${yesterdayYear}/${yesterdayMonth}/${document.document.id}`,
+      `${DROPBOX_PATH_PREFIX}/backup/documents/${year}/${month}/${document.document.id}`,
       temporaryPdfPath,
     );
-    log(`Uploaded ${document.document.id}`);
+    log(`Uploaded ${document.document.id} (date: ${documentDate})`);
   }
   log(`All documents are backed up`);
 
