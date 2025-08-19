@@ -96,6 +96,7 @@ export async function backupDocuments(dataSource: DataSource) {
     await uploadFile(
       `${DROPBOX_PATH_PREFIX}/backup/documents/${year}/${month}/${document.document.id}`,
       temporaryPdfPath,
+      { overwrite: true },
     );
     log(`Uploaded ${document.document.id} (date: ${documentDate})`);
   }

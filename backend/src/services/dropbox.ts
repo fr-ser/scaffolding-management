@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 
-import { Dropbox } from "dropbox";
+import { Dropbox, files } from "dropbox";
 
 import { DROPBOX_CLIENT_ID, DROPBOX_CLIENT_SECRET, DROPBOX_REFRESH_TOKEN } from "@/config";
 
@@ -36,8 +36,24 @@ export async function getFilesInFolder(folderPath: string) {
   return entries;
 }
 
-export async function uploadFile(path: string, filePath: string) {
-  await dbx.filesUpload({ contents: await fs.readFile(filePath), path });
+export async function uploadFile(
+  path: string,
+  filePath: string,
+  options?: { overwrite?: boolean },
+) {
+  const uploadOptions: files.UploadArg = {
+    contents: await fs.readFile(filePath),
+    path,
+  };
+
+  // Set the mode based on options
+  if (options?.overwrite) {
+    uploadOptions.mode = { ".tag": "overwrite" };
+  } else {
+    uploadOptions.mode = { ".tag": "add" }; // Default mode that fails if file exists
+  }
+
+  await dbx.filesUpload(uploadOptions);
 }
 
 export async function renameFile(fromPath: string, toPath: string) {
