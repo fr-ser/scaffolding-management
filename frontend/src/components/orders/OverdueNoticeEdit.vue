@@ -239,7 +239,9 @@ async function onClickSave() {
         locale="de-DE"
         :minFractionDigits="0"
         :maxFractionDigits="10"
+        :inputProps="{ inputmode: 'decimal' }"
       />
+      <!-- inputmode: decimal is required to show comma/dot on a mobile iOS keyboard -->
       <label for="notice-costs">Mahnkosten:</label>
     </FloatLabel>
     <FloatLabel>
@@ -249,7 +251,9 @@ async function onClickSave() {
         locale="de-DE"
         :minFractionDigits="0"
         :maxFractionDigits="10"
+        :inputProps="{ inputmode: 'decimal' }"
       />
+      <!-- inputmode: decimal is required to show comma/dot on a mobile iOS keyboard -->
       <label for="default-interest">Verzugszinsen:</label>
     </FloatLabel>
   </section>
