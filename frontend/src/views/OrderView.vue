@@ -241,7 +241,9 @@ function onClickCreateOverdueNotice() {
                 :minFractionDigits="0"
                 :maxFractionDigits="10"
                 class="w-full"
+                :inputProps="{ inputmode: 'decimal' }"
               />
+              <!-- inputmode: decimal is required to show comma/dot on a mobile iOS keyboard -->
               <label for="percent">Skonto(%)</label>
             </FloatLabel>
           </div>

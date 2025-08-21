@@ -148,7 +148,9 @@ watch(
             :maxFractionDigits="10"
             class="w-full"
             :disabled="isAppManagedPosition"
+            :inputProps="{ inputmode: 'decimal' }"
           />
+          <!-- inputmode: decimal is required to show comma/dot on a mobile iOS keyboard -->
           <label for="number">Anzahl</label>
         </FloatLabel>
         <FloatLabel>
@@ -169,7 +171,9 @@ watch(
             :maxFractionDigits="10"
             class="w-full"
             :disabled="isAppManagedPosition"
+            :inputProps="{ inputmode: 'decimal' }"
           />
+          <!-- inputmode: decimal is required to show comma/dot on a mobile iOS keyboard -->
           <label for="unit">Preis</label>
         </FloatLabel>
       </section>

@@ -103,8 +103,10 @@ async function onClickDelete() {
               class="w-full"
               inputId="price"
               v-model="editableArticle.price"
+              :inputProps="{ inputmode: 'decimal' }"
               data-testid="price-input"
             />
+            <!-- inputmode: decimal is required to show comma/dot on a mobile iOS keyboard -->
             <label for="price">Preis</label>
           </FloatLabel>
           <div class="flex flex-row flex-wrap justify-end">
