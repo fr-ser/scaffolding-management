@@ -111,9 +111,7 @@ onMounted(async () => {
     <div class="flex w-full gap-x-6 mb-3 items-center">
       <Checkbox class="mx-5" v-model="areAllDocumentsSelected" :binary="true" />
       <span class="relative grow flex flex-row items-center">
-        <i
-          class="pi pi-search absolute top-2/4 -mt-2 left-3 text-surface-400 dark:text-surface-600"
-        />
+        <i class="pi pi-search absolute top-2/4 -mt-2 left-3 text-surface-400" />
         <InputText v-model="search" placeholder="Suche" class="pl-10 w-full" />
       </span>
       <Button
