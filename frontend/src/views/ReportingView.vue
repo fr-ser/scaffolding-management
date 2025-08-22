@@ -46,12 +46,9 @@ onMounted(async () => {
           <div>
             <router-link :to="getOrderEditPath(order.id)">
               <span class="font-bold">Auftrag:</span>
-              {{
-                `${order.client.street_and_number},  ${order.client.postal_code}  ${order.client.city} `
-              }}
+              {{ order.title }}
               <span class="font-bold"> - Kunde:</span
               >{{ ` ${order.client.first_name} ${order.client.last_name}` }}
-
               <i class="pi pi-external-link ml-1"></i>
             </router-link>
             <ul class="list-disc pl-6 underline mt-3">
@@ -59,7 +56,6 @@ onMounted(async () => {
                 <router-link :to="getOrderEditPath(order.id, DocumentKind.offer, order.offer.id)">
                   <span>Angebot vom:</span>{{ `${formatIsoDateString(order.offer.offered_at)}` }}
                   <span> - Angebotsstatus:</span> {{ `${order.offer.status}` }}
-
                   <i class="pi pi-external-link ml-1"></i>
                 </router-link>
               </li>
@@ -85,7 +81,6 @@ onMounted(async () => {
                 <router-link :to="getOrderEditPath(order.id, DocumentKind.overdueNotice, item.id)">
                   <span>Mahnung vom: {{ formatIsoDateString(item.notice_date) }}</span>
                   <span> - Zahlungsstatus: {{ item.payment_status }} </span>
-
                   <i class="pi pi-external-link ml-1"></i>
                 </router-link>
               </li>
@@ -95,7 +90,6 @@ onMounted(async () => {
       </template>
     </Card>
   </div>
-
   <div class="flex justify-center">
     <Button v-if="hasMore" @click="loadMore">Weitere Aufträge laden</Button>
   </div>
