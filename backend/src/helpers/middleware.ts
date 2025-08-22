@@ -19,8 +19,10 @@ export function timeoutCheck(
   next();
 }
 
+morgan.token("protocol", (req: express.Request) => req.protocol);
+
 export const requestLogger = morgan(
-  ":date[iso] :req[Host] :method :url :status :res[content-length] - :response-time ms",
+  ":date[iso] :remote-addr :protocol :req[Host] :method :url :status :res[content-length] - :response-time[0] ms",
   {
     // eslint-disable-next-line  @typescript-eslint/no-unused-vars
     skip: function shouldLoggerSkip(req: express.Request, _: express.Response): boolean {
