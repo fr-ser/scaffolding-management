@@ -76,7 +76,7 @@ export function getApp() {
   app.use(apiErrorHandler);
 
   // this "catch all" route is required for frontend routing
-  app.get("*", (_, res) => {
+  app.get("/{*splat}", (_, res) => {
     res.sendFile(path.resolve(path.join(STATIC_FILE_ROOT, "index.html")));
   });
 
