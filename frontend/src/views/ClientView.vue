@@ -246,6 +246,7 @@ onMounted(async () => {
       label="Aufträge des Kunden anzeigen"
       severity="secondary"
       outlined
+      raised
       size="small"
       data-testid="show-orders-button"
     />
