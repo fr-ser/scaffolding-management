@@ -14,7 +14,17 @@ const app = createApp(App);
 app.use(ConfirmationService);
 app.use(ToastService);
 
-app.use(PrimeVue, { theme: { preset: Lara } });
+app.use(PrimeVue, {
+  theme: {
+    preset: Lara,
+    options: {
+      cssLayer: {
+        name: "primevue",
+        order: "theme, base, primevue",
+      },
+    },
+  },
+});
 
 app.use(createPinia());
 app.use(router);
