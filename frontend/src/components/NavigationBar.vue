@@ -50,10 +50,16 @@ const items = computed(() => {
 
   return baseRoutes;
 });
+
+function isSubRoute(path: string) {
+  if (route.path === "/") return false;
+  else return route.path.startsWith(path);
+}
 </script>
 
 <template>
   <Menubar
+    class="p-1!"
     :model="items"
     :pt="{
       // fixes https://github.com/primefaces/primevue/issues/6141
@@ -64,15 +70,26 @@ const items = computed(() => {
     }"
   >
     <template #item="{ item, props }">
-      <RouterLink v-slot="{ href, navigate }" :to="item.route" custom>
-        <a :href="href" v-bind="props.action" @click="navigate">
+      <RouterLink v-slot="{ href, navigate, isActive }" :to="item.route" custom>
+        <a
+          :href="href"
+          v-bind="props.action"
+          @click="navigate"
+          :class="{ 'menu-item-active': isActive || isSubRoute(item.route) }"
+        >
           <span :class="item.icon" />
-          <span class="ml-2">{{ item.label }}</span>
+          <span>{{ item.label }}</span>
         </a>
       </RouterLink>
     </template>
-    <template #end>
-      <h1 class="font-semibold">{{ route.meta?.label }}</h1>
-    </template>
   </Menubar>
 </template>
+
+<style scoped lang="scss">
+.menu-item-active {
+  background-color: rgb(var(--surface-50));
+  color: rgb(var(--primary-700));
+  border-bottom: 2px solid rgb(var(--primary-500));
+  font-weight: 500;
+}
+</style>
