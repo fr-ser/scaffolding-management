@@ -10,7 +10,7 @@ test("create, edit and delete a client", async ({ page }) => {
   // create
   await page.getByTestId("client-create-button").click();
 
-  await page.getByLabel("Anrede").click();
+  await page.getByTestId("salutation-select").click();
   await page.getByRole("option", { name: "Herr Dr." }).click();
   await page.getByLabel("Vorname").fill("test first name");
   await page.getByLabel("Nachname").fill("test last name " + timestamp);

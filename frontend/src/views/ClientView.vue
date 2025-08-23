@@ -151,6 +151,7 @@ onMounted(async () => {
               v-model="currentClient.salutation"
               :options="Object.values(ClientSalutation)"
               class="w-full md:w-[14rem]"
+              data-testid="salutation-select"
             />
             <label for="salutation">Anrede</label>
           </FloatLabel>
