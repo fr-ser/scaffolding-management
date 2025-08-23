@@ -7,4 +7,7 @@
 
 :root {
     --p-floatlabel-over-active-top: -1rem;
+    /* tabs */
+    --p-tabs-tab-border-width: 0 0 2px 0;
+    --p-tabs-tab-background: transparent;
 }
