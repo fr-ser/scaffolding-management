@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Button from "primevue/button";
-import Calendar from "primevue/calendar";
+import DatePicker from "primevue/datepicker";
 import Divider from "primevue/divider";
 import FloatLabel from "primevue/floatlabel";
 import Select from "primevue/select";
@@ -134,7 +134,7 @@ function onUpdatePositions(positions: InvoiceItemCreate[]) {
       class="flex flex-col flex-wrap justify-items-start gap-x-2 gap-y-6 sm:flex-row sm:items-center"
     >
       <FloatLabel>
-        <Calendar
+        <DatePicker
           id="invoice-date-input"
           v-model="invoiceDate"
           dateFormat="dd/mm/yy"
@@ -144,7 +144,7 @@ function onUpdatePositions(positions: InvoiceItemCreate[]) {
         <label for="invoice-date-input">Rechnungsdatum</label>
       </FloatLabel>
       <FloatLabel>
-        <Calendar
+        <DatePicker
           id="payment-target-input"
           v-model="paymentTarget"
           dateFormat="dd/mm/yy"
@@ -172,15 +172,15 @@ function onUpdatePositions(positions: InvoiceItemCreate[]) {
         :key="idx"
       >
         <FloatLabel class="w-full sm:w-auto">
-          <Calendar
-            :id="`calendar-${idx + 1}`"
+          <DatePicker
+            :id="`service-date-${idx + 1}`"
             v-model="item.date"
             dateFormat="dd/mm/yy"
             showIcon
             iconDisplay="input"
             class="w-full sm:w-auto"
           />
-          <label :for="`calendar-${idx + 1}`"> Leistungsdatum {{ idx + 1 }} </label>
+          <label :for="`service-date-${idx + 1}`"> Leistungsdatum {{ idx + 1 }} </label>
         </FloatLabel>
         <Button @click="onServiceDateDelete(idx)" icon="pi pi-times" severity="danger" text />
       </div>
