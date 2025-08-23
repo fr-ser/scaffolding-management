@@ -1,6 +1,7 @@
 module.exports = {
   apps: [
     {
+      interpreter: "/root/.nvm/versions/node/v22.18.0/bin/node",
       name: "scaffolding",
       script: "./dist/src/index.js",
       cwd: "../scaffolding/",
