@@ -256,7 +256,7 @@ onMounted(async () => {
     <div v-if="isOrderDialogLoading" class="flex justify-center">
       <ProgressSpinner />
     </div>
-    {{ clientOrders.length === 0 ? "Keine Dokumente vorhanden" : null }}
+    {{ clientOrders.length === 0 ? "Keine Aufträge vorhanden" : null }}
     <router-link
       class="block mt-2"
       :to="getOrderEditPath(order.id)"
