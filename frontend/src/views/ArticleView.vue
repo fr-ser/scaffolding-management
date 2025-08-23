@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import Button from "primevue/button";
+import IconField from "primevue/iconfield";
+import InputIcon from "primevue/inputicon";
 import InputText from "primevue/inputtext";
 import { onMounted, ref, watch } from "vue";
 
@@ -52,16 +54,15 @@ onMounted(async () => {
 <template>
   <div class="flex flex-col overflow-hidden h-full">
     <div class="flex w-full gap-x-6 mb-3">
-      <span class="relative grow flex flex-row items-center">
-        <i class="pi pi-search absolute top-2/4 -mt-2 left-3 text-surface-400" />
+      <IconField class="grow">
+        <InputIcon class="pi pi-search" />
         <InputText
           v-model="search"
-          name="article-search"
           placeholder="Suche (ID, Titel oder Beschreibung)"
           class="pl-10 w-full"
           data-testid="article-search-input"
         />
-      </span>
+      </IconField>
       <Button
         @click="createNewArticle"
         label="Artikel erstellen"
