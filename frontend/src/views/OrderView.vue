@@ -7,8 +7,11 @@ import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import ProgressSpinner from "primevue/progressspinner";
 import Select from "primevue/select";
+import Tab from "primevue/tab";
+import TabList from "primevue/tablist";
 import TabPanel from "primevue/tabpanel";
-import TabView from "primevue/tabview";
+import TabPanels from "primevue/tabpanels";
+import Tabs from "primevue/tabs";
 import Textarea from "primevue/textarea";
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -25,7 +28,7 @@ import { formatIsoDateString } from "@/global/helpers";
 import { DocumentKind, OrderStatus } from "@/global/types/appTypes";
 import { UserPermissions } from "@/global/types/backendTypes";
 import type { OrderCreate } from "@/global/types/dataEditTypes";
-import type { Client, Invoice, Order, OverdueNotice } from "@/global/types/entities";
+import type { Client, Invoice, Offer, Order, OverdueNotice } from "@/global/types/entities";
 import { getOrderListPath } from "@/helpers/routes";
 import { debounce } from "@/helpers/utils";
 import { useUserStore } from "@/store";
@@ -158,6 +161,57 @@ let showNewOverdueNoticeTab = ref<boolean>(false);
 function onClickCreateOverdueNotice() {
   showNewOverdueNoticeTab.value = true;
 }
+
+const tabData = computed(() => {
+  const tabs = [];
+  const typedOrder = orderInfo.value as Order;
+  if (showOfferTab.value) {
+    tabs.push({
+      label: "Angebot",
+      key: "Angebot",
+      kind: DocumentKind.offer,
+      item: typedOrder.offer,
+    });
+  }
+
+  for (const element of typedOrder.invoices || []) {
+    tabs.push({
+      label: `Rechnung ${formatIsoDateString(element.invoice_date)}`,
+      key: element.id,
+      kind: DocumentKind.invoice,
+      item: element,
+    });
+  }
+
+  if (showNewInvoiceTab.value) {
+    tabs.push({
+      label: "Neue Rechnung",
+      key: "Neue Rechnung",
+      kind: DocumentKind.invoice,
+      item: null,
+    });
+  }
+
+  for (const element of typedOrder.overdue_notices || []) {
+    tabs.push({
+      label: `Mahnung ${formatIsoDateString(element.notice_date)}`,
+      key: element.id,
+      kind: DocumentKind.overdueNotice,
+      item: element,
+    });
+  }
+
+  if (showNewOverdueNoticeTab.value) {
+    tabs.push({
+      label: "Neue Mahnung",
+      key: "Neue Mahnung",
+      kind: DocumentKind.overdueNotice,
+      item: null,
+    });
+  }
+
+  return tabs;
+});
 </script>
 
 <template>
@@ -291,46 +345,38 @@ function onClickCreateOverdueNotice() {
               <Button label="Rechnung erstellen" @click="onClickCreateInvoice" />
               <Button label="Mahnung erstellen" @click="onClickCreateOverdueNotice" />
             </div>
-            <TabView
+            <Tabs
               v-if="userStore.permissions.includes(UserPermissions.SUB_ORDERS_VIEW)"
-              :active-index="activeTabIndex"
+              :value="activeTabIndex"
             >
-              <TabPanel v-if="showOfferTab" header="Angebot">
-                <OfferEdit
-                  @deleted="loadOrderData"
-                  :order="orderInfo as Order"
-                  :existing-offer="(orderInfo as Order).offer"
-                />
-              </TabPanel>
-              <TabPanel
-                v-for="item in (orderInfo as Order).invoices"
-                :key="item.id"
-                :header="`Rechnung ${formatIsoDateString(item.invoice_date)}`"
-              >
-                <InvoiceEdit
-                  @deleted="loadOrderData"
-                  :order="orderInfo as Order"
-                  :existing-invoice="item"
-                />
-              </TabPanel>
-              <TabPanel v-if="showNewInvoiceTab" header="Neue Rechnung">
-                <InvoiceEdit @deleted="loadOrderData" :order="orderInfo as Order" />
-              </TabPanel>
-              <TabPanel
-                v-for="item in (orderInfo as Order).overdue_notices"
-                :key="item.id"
-                :header="`Mahnung ${formatIsoDateString(item.notice_date)}`"
-              >
-                <OverdueNoticeEdit
-                  @deleted="loadOrderData"
-                  :order="orderInfo as Order"
-                  :existing-overdue-notice="item"
-                />
-              </TabPanel>
-              <TabPanel v-if="showNewOverdueNoticeTab" header="Neue Mahnung">
-                <OverdueNoticeEdit @deleted="loadOrderData" :order="orderInfo as Order" />
-              </TabPanel>
-            </TabView>
+              <TabList>
+                <Tab v-for="(tab, index) in tabData" :key="tab.key" :value="index">{{
+                  tab.label
+                }}</Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel v-for="(tab, index) in tabData" :key="tab.key" :value="index">
+                  <OfferEdit
+                    v-if="tab.kind === DocumentKind.offer"
+                    @deleted="loadOrderData"
+                    :order="orderInfo as Order"
+                    :existing-offer="tab.item as Offer"
+                  />
+                  <InvoiceEdit
+                    v-else-if="tab.kind === DocumentKind.invoice"
+                    @deleted="loadOrderData"
+                    :order="orderInfo as Order"
+                    :existing-invoice="tab.item as Invoice"
+                  />
+                  <OverdueNoticeEdit
+                    v-else-if="tab.kind === DocumentKind.overdueNotice"
+                    @deleted="loadOrderData"
+                    :order="orderInfo as Order"
+                    :existing-overdue-notice="tab.item as OverdueNotice"
+                  />
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
           </div>
         </div>
       </template>
