@@ -59,7 +59,6 @@ function isSubRoute(path: string) {
 
 <template>
   <Menubar
-    class="p-1"
     :model="items"
     :pt="{
       // fixes https://github.com/primefaces/primevue/issues/6141
@@ -87,9 +86,9 @@ function isSubRoute(path: string) {
 
 <style scoped lang="scss">
 .menu-item-active {
-  background-color: rgb(var(--surface-50));
-  color: rgb(var(--primary-700));
-  border-bottom: 2px solid rgb(var(--primary-500));
+  background-color: var(--p-surface-50);
+  color: var(--p-primary-700);
+  border-bottom: 2px solid var(--p-primary-500);
   font-weight: 500;
 }
 </style>

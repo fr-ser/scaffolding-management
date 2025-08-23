@@ -111,7 +111,7 @@ const invoiceTotals = computed(() => {
   }
 
   td {
-    border: 1px solid rgba(96, 125, 139, 0.5);
+    border: 1px solid var(--document-table-border-color);
     text-align: center;
   }
 }
