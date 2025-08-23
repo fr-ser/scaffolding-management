@@ -3,10 +3,10 @@ import Button from "primevue/button";
 import Calendar from "primevue/calendar";
 import Card from "primevue/card";
 import Dialog from "primevue/dialog";
-import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import InputText from "primevue/inputtext";
 import ProgressSpinner from "primevue/progressspinner";
+import Select from "primevue/select";
 import Textarea from "primevue/textarea";
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -145,12 +145,15 @@ onMounted(async () => {
       <template #content>
         <div class="mb-4 font-bold">Name</div>
         <div class="card flex flex-col justify-center gap-y-6">
-          <Dropdown
-            v-model="currentClient.salutation"
-            :options="Object.values(ClientSalutation)"
-            placeholder="Anrede"
-            class="w-full md:w-[14rem]"
-          />
+          <FloatLabel class="w-full md:w-56">
+            <Select
+              id="salutation"
+              v-model="currentClient.salutation"
+              :options="Object.values(ClientSalutation)"
+              class="w-full md:w-[14rem]"
+            />
+            <label for="salutation">Anrede</label>
+          </FloatLabel>
           <FloatLabel>
             <InputText id="first-name" v-model="currentClient.first_name" class="w-full" />
             <label for="first-name">Vorname</label>

@@ -3,10 +3,10 @@ import Button from "primevue/button";
 import Calendar from "primevue/calendar";
 import Dialog from "primevue/dialog";
 import Divider from "primevue/divider";
-import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import InputNumber from "primevue/inputnumber";
 import ProgressSpinner from "primevue/progressspinner";
+import Select from "primevue/select";
 import Textarea from "primevue/textarea";
 import { computed, ref } from "vue";
 
@@ -205,7 +205,7 @@ async function onClickSave() {
       <label for="notice-date">Mahndatum:</label>
     </FloatLabel>
     <FloatLabel>
-      <Dropdown
+      <Select
         id="overdueType"
         v-model="noticeLevel"
         :options="Object.values(OverdueNoticeLevel)"
@@ -224,7 +224,7 @@ async function onClickSave() {
       <label for="payment-target">Zahlungsziel:</label>
     </FloatLabel>
     <FloatLabel class="min-w-32">
-      <Dropdown
+      <Select
         id="payment-status"
         v-model="paymentStatus"
         :options="Object.values(PaymentStatus)"

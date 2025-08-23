@@ -2,8 +2,8 @@
 import Button from "primevue/button";
 import Calendar from "primevue/calendar";
 import Divider from "primevue/divider";
-import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
+import Select from "primevue/select";
 import Textarea from "primevue/textarea";
 import { ref } from "vue";
 
@@ -143,7 +143,7 @@ function onUpdatePositions(positions: OfferItemCreate[]) {
       <label for="offered-until">Gültig bis</label>
     </FloatLabel>
     <FloatLabel class="min-w-32">
-      <Dropdown
+      <Select
         id="offer-status"
         v-model="status"
         :options="Object.values(OfferStatus)"

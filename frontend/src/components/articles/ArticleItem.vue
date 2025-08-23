@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Card from "primevue/card";
-import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
+import Select from "primevue/select";
 import Textarea from "primevue/textarea";
 import { ref } from "vue";
 
@@ -82,7 +82,7 @@ async function onClickDelete() {
         </div>
         <div class="grow md:grow-0 min-w-72 flex flex-col flex-wrap justify-end gap-6">
           <FloatLabel>
-            <Dropdown
+            <Select
               v-model="editableArticle.kind"
               :options="Object.values(ArticleKind)"
               class="w-full"
