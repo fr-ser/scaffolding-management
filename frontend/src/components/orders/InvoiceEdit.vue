@@ -2,8 +2,8 @@
 import Button from "primevue/button";
 import Calendar from "primevue/calendar";
 import Divider from "primevue/divider";
-import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
+import Select from "primevue/select";
 import Textarea from "primevue/textarea";
 import { ref } from "vue";
 
@@ -154,7 +154,7 @@ function onUpdatePositions(positions: InvoiceItemCreate[]) {
         <label for="payment-target-input">Zahlungsziel</label>
       </FloatLabel>
       <FloatLabel class="min-w-32">
-        <Dropdown
+        <Select
           id="invoice-info-status"
           v-model="status"
           :options="Object.values(PaymentStatus)"

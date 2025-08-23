@@ -2,11 +2,11 @@
 import AutoComplete from "primevue/autocomplete";
 import Button from "primevue/button";
 import Card from "primevue/card";
-import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import ProgressSpinner from "primevue/progressspinner";
+import Select from "primevue/select";
 import TabPanel from "primevue/tabpanel";
 import TabView from "primevue/tabview";
 import Textarea from "primevue/textarea";
@@ -202,7 +202,7 @@ function onClickCreateOverdueNotice() {
               <label for="order-title">Bauvorhaben</label>
             </FloatLabel>
             <FloatLabel>
-              <Dropdown
+              <Select
                 v-model="orderInfo.status"
                 :options="orderStatusTypes"
                 class="min-w-32"
@@ -214,7 +214,7 @@ function onClickCreateOverdueNotice() {
           <p class="font-bold">Skonto</p>
           <div class="flex flex-row flex-wrap justify-between gap-6 mt-3">
             <FloatLabel>
-              <Dropdown
+              <Select
                 v-model="orderInfo.can_have_cash_discount"
                 :options="discountChoice"
                 class="min-w-48"
@@ -225,7 +225,7 @@ function onClickCreateOverdueNotice() {
               <label for="select-discount">Skontoberechtigt</label>
             </FloatLabel>
             <FloatLabel>
-              <Dropdown
+              <Select
                 v-model="orderInfo.discount_duration"
                 :options="discountPeriodChoice"
                 class="min-w-48"
