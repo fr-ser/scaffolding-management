@@ -3,6 +3,8 @@ import { saveAs } from "file-saver";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import Checkbox from "primevue/checkbox";
+import IconField from "primevue/iconfield";
+import InputIcon from "primevue/inputicon";
 import InputText from "primevue/inputtext";
 import { onMounted, ref, watch } from "vue";
 
@@ -95,7 +97,7 @@ async function onClickCreatePdf() {
   notifications.showNotification("Ein PDF-Dokument wurde erstellt");
 
   let fileName = documentSelection.value[0] + ".pdf";
-  if (documentSelection.value.length > 1) fileName = "dokumente.pdf";
+  if (documentSelection.value.length > 1) fileName = "Dokumente.pdf";
   saveAs(response, fileName);
 }
 
@@ -110,10 +112,11 @@ onMounted(async () => {
   <div class="flex flex-col overflow-hidden h-full">
     <div class="flex w-full gap-x-6 mb-3 items-center">
       <Checkbox class="mx-5" v-model="areAllDocumentsSelected" :binary="true" />
-      <span class="relative grow flex flex-row items-center">
-        <i class="pi pi-search absolute top-2/4 -mt-2 left-3 text-surface-400" />
+
+      <IconField class="grow">
+        <InputIcon class="pi pi-search" />
         <InputText v-model="search" placeholder="Suche" class="pl-10 w-full" />
-      </span>
+      </IconField>
       <Button
         @click="onClickCreatePdf"
         type="button"
