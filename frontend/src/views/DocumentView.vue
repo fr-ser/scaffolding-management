@@ -172,7 +172,7 @@ Tel.: ${VITE_COMPANY_PHONE}
       <DocumentFooter />
     </div>
 
-    <Dialog v-model:visible="isEmailDialogVisible" modal header="E-Mail:">
+    <Dialog class="w-4/5" v-model:visible="isEmailDialogVisible" modal header="E-Mail:">
       <div class="flex flex-col gap-2">
         <label for="recipient">An:</label>
         <InputText id="recipient" v-model="emailRecipient" />
@@ -183,7 +183,7 @@ Tel.: ${VITE_COMPANY_PHONE}
       </div>
       <div class="flex flex-col gap-2">
         <label for="message">Nachricht:</label>
-        <Textarea v-model="emailMessage" autoResize />
+        <Textarea class="leading-none" v-model="emailMessage" autoResize />
       </div>
       <div class="flex flex-col gap-2">
         <label for="attachment">Dateiname (Anhang):</label>
