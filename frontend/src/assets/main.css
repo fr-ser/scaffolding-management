@@ -5,3 +5,6 @@
 
 @import "primeicons/primeicons.css";
 
+:root {
+    --p-floatlabel-over-active-top: -1rem;
+}
