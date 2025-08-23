@@ -18,8 +18,8 @@ Aside from the application deployment there are some cron jobs which should be c
 The task jobs:
 
 ```txt
-0 4 * * * cd ~/apps/scaffolding && /root/.nvm/versions/node/v18.20.8/bin/node dist/src/tasks/backup/task.js >> cron.log 2>&1
-0 3 * * 1 cd ~/apps/scaffolding && /root/.nvm/versions/node/v18.20.8/bin/node dist/src/tasks/email_notification/task.js >> cron.log 2>&1
+0 4 * * * cd ~/apps/scaffolding && /root/.nvm/versions/node/v22.18.0/bin/node dist/src/tasks/backup/task.js >> cron.log 2>&1
+0 3 * * 1 cd ~/apps/scaffolding && /root/.nvm/versions/node/v22.18.0/bin/node dist/src/tasks/email_notification/task.js >> cron.log 2>&1
 ```
 
 The job to truncate large log files:
