@@ -59,7 +59,7 @@ function isSubRoute(path: string) {
 
 <template>
   <Menubar
-    class="p-1!"
+    class="p-1"
     :model="items"
     :pt="{
       // fixes https://github.com/primefaces/primevue/issues/6141
