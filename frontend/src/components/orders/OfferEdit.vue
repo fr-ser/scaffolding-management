@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Button from "primevue/button";
-import Calendar from "primevue/calendar";
+import DatePicker from "primevue/datepicker";
 import Divider from "primevue/divider";
 import FloatLabel from "primevue/floatlabel";
 import Select from "primevue/select";
@@ -123,7 +123,7 @@ function onUpdatePositions(positions: OfferItemCreate[]) {
     class="mt-10 flex flex-col flex-wrap justify-items-start gap-x-2 gap-y-6 sm:flex-row sm:items-center"
   >
     <FloatLabel>
-      <Calendar
+      <DatePicker
         id="offer-date"
         v-model="offerDate"
         dateFormat="dd/mm/yy"
@@ -133,7 +133,7 @@ function onUpdatePositions(positions: OfferItemCreate[]) {
       <label for="offer-date">Angebotsdatum</label>
     </FloatLabel>
     <FloatLabel>
-      <Calendar
+      <DatePicker
         id="offered-until"
         v-model="validityDate"
         dateFormat="dd/mm/yy"

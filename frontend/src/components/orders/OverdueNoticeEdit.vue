@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Button from "primevue/button";
-import Calendar from "primevue/calendar";
+import DatePicker from "primevue/datepicker";
 import Dialog from "primevue/dialog";
 import Divider from "primevue/divider";
 import FloatLabel from "primevue/floatlabel";
@@ -185,7 +185,7 @@ async function onClickSave() {
     class="mt-10 flex flex-col flex-wrap justify-items-start gap-x-2 gap-y-6 sm:flex-row sm:items-center"
   >
     <FloatLabel>
-      <Calendar
+      <DatePicker
         id="payments-until"
         v-model="paymentsUntil"
         dateFormat="dd/mm/yy"
@@ -195,7 +195,7 @@ async function onClickSave() {
       <label for="payments-until">Zahlungen berücksichtigt bis:</label>
     </FloatLabel>
     <FloatLabel>
-      <Calendar
+      <DatePicker
         id="notice-date"
         v-model="noticeDate"
         dateFormat="dd/mm/yy"
@@ -214,7 +214,7 @@ async function onClickSave() {
       <label for="overdue-notice-level">Mahnstufe:</label>
     </FloatLabel>
     <FloatLabel>
-      <Calendar
+      <DatePicker
         id="payment-target"
         v-model="paymentTarget"
         dateFormat="dd/mm/yy"

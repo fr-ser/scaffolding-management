@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from "primevue/button";
-import Calendar from "primevue/calendar";
 import Card from "primevue/card";
+import DatePicker from "primevue/datepicker";
 import Dialog from "primevue/dialog";
 import FloatLabel from "primevue/floatlabel";
 import InputText from "primevue/inputtext";
@@ -214,14 +214,14 @@ onMounted(async () => {
         <div class="mb-4 font-bold">Sonstiges</div>
         <div class="card flex flex-col justify-center gap-y-6">
           <FloatLabel>
-            <Calendar
-              id="calendar"
+            <DatePicker
+              id="birthday"
               v-model="birthdayDate"
               dateFormat="dd/mm/yy"
               showIcon
               iconDisplay="input"
             />
-            <label for="calendar">Geburtstag</label>
+            <label for="birthday">Geburtstag</label>
           </FloatLabel>
           <FloatLabel>
             <Textarea
