@@ -1,5 +1,5 @@
 import { showGlobalErrorToast } from "./composables/useNotifications";
-import Lara from "@primeuix/themes/lara";
+import Aura from "@primeuix/themes/aura";
 import { createPinia } from "pinia";
 import PrimeVue from "primevue/config";
 import ConfirmationService from "primevue/confirmationservice";
@@ -16,10 +16,11 @@ app.use(ToastService);
 
 app.use(PrimeVue, {
   theme: {
-    preset: Lara,
+    preset: Aura,
     options: {
       cssLayer: {
         name: "primevue",
+        // the ordering makes sure tailwind classes have higher specificity
         order: "theme, base, primevue",
       },
     },
