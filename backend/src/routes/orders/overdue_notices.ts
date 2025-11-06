@@ -7,6 +7,7 @@ import { OverdueNotice } from "@/db/entities/overdue_notice";
 import { ErrorCode, UserPermissions } from "@/global/types/backendTypes";
 import { OverdueNoticeCreate, OverdueNoticeUpdate } from "@/global/types/dataEditTypes";
 import { ApiError } from "@/helpers/apiErrors";
+import { findFirstUnusedNumber } from "@/helpers/findFirstUnusedNumber";
 
 export const overdueNoticesRouter = express.Router();
 
@@ -138,18 +139,15 @@ overdueNoticesRouter.post(
       return;
     }
 
-    const maxId =
-      // We have documents with IDs like this: M2023-10-01, M-2023-10-02
-      (
-        await dataSource.manager.query(`
-          SELECT max(cast(substr(replace(id, 'M-', 'M'),10) as integer)) as max_id
-          from overdue_notice_document
-          where id LIKE '%${overdueNotice.notice_date.substring(0, 7)}-%'
-        `)
-      )[0].max_id || 0;
+    const documentsOfTheMonth = await dataSource.manager.query(`
+      SELECT id from overdue_notice_document where id LIKE '%${overdueNotice.notice_date.substring(0, 7)}-%'
+    `);
+    const firstUnusedNumber = findFirstUnusedNumber(
+      documentsOfTheMonth.map((doc: { id: string }) => doc.id),
+    );
 
     const document = dataSource.manager.create(OverdueNoticeDocument, {
-      id: `M${overdueNotice.notice_date.substring(0, 7)}-${String(maxId + 1).padStart(2, "0")}`,
+      id: `M${overdueNotice.notice_date.substring(0, 7)}-${String(firstUnusedNumber).padStart(2, "0")}`,
       order_id: overdueNotice.order_id,
       creation_date: new Date().toISOString().substring(0, 10),
       client_id: overdueNotice.order.client_id,
