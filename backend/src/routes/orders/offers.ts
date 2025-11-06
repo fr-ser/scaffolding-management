@@ -9,6 +9,7 @@ import { OfferItem } from "@/db/entities/order_items";
 import { ErrorCode, UserPermissions } from "@/global/types/backendTypes";
 import { OfferCreate, OfferUpdate } from "@/global/types/dataEditTypes";
 import { ApiError } from "@/helpers/apiErrors";
+import { findFirstUnusedNumber } from "@/helpers/findFirstUnusedNumber";
 
 export const offersRouter = express.Router();
 
@@ -169,19 +170,16 @@ offersRouter.post(
       return;
     }
 
-    const maxId =
-      // We have documents with IDs like this: A2023-10-01, A-2023-10-02
-      (
-        await dataSource.manager.query(`
-          SELECT max(cast(substr(replace(id, 'A-', 'A'),10) as integer)) as max_id
-          from offer_document
-          where id LIKE '%${offer.offered_at.substring(0, 7)}-%'
-        `)
-      )[0].max_id || 0;
+    const documentsOfTheMonth = await dataSource.manager.query(`
+      SELECT id from offer_document where id LIKE '%${offer.offered_at.substring(0, 7)}-%'
+    `);
+    const firstUnusedNumber = findFirstUnusedNumber(
+      documentsOfTheMonth.map((doc: { id: string }) => doc.id),
+    );
 
     try {
       const document = dataSource.manager.create(OfferDocument, {
-        id: `A${offer.offered_at.substring(0, 7)}-${String(maxId + 1).padStart(2, "0")}`,
+        id: `A${offer.offered_at.substring(0, 7)}-${String(firstUnusedNumber).padStart(2, "0")}`,
         order_id: offer.order_id,
         creation_date: new Date().toISOString().substring(0, 10),
         client_id: offer.order.client_id,

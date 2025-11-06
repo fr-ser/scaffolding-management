@@ -9,6 +9,7 @@ import { InvoiceItem } from "@/db/entities/order_items";
 import { ErrorCode, UserPermissions } from "@/global/types/backendTypes";
 import { InvoiceCreate, InvoiceUpdate } from "@/global/types/dataEditTypes";
 import { ApiError } from "@/helpers/apiErrors";
+import { findFirstUnusedNumber } from "@/helpers/findFirstUnusedNumber";
 
 export const invoicesRouter = express.Router();
 
@@ -168,25 +169,15 @@ invoicesRouter.post(
       return;
     }
 
-    const maxId =
-      // For reasons beyond understanding (product requirements)
-      // we have documents with IDs like this:
-      // - R2023-10-01
-      // - R-2023-10-02
-      // - 2023-10-03
-      (
-        await dataSource.manager.query(`
-          SELECT id from invoice_document where id LIKE '%${invoice.invoice_date.substring(0, 7)}-%'
-        `)
-      )
-        .map((doc: { id: string }) => parseInt(doc.id.split("-")[2]))
-        .reduce((acc: number, id: number) => {
-          if (acc > id) return acc;
-          else return id;
-        }, 0);
+    const documentsOfTheMonth = await dataSource.manager.query(`
+      SELECT id from invoice_document where id LIKE '%${invoice.invoice_date.substring(0, 7)}-%'
+    `);
+    const firstUnusedNumber = findFirstUnusedNumber(
+      documentsOfTheMonth.map((doc: { id: string }) => doc.id),
+    );
 
     const document = dataSource.manager.create(InvoiceDocument, {
-      id: `${invoice.invoice_date.substring(0, 7)}-${String(maxId + 1).padStart(2, "0")}`,
+      id: `${invoice.invoice_date.substring(0, 7)}-${String(firstUnusedNumber).padStart(2, "0")}`,
       order_id: invoice.order_id,
       creation_date: new Date().toISOString().substring(0, 10),
       client_id: invoice.order.client_id,

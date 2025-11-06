@@ -36,10 +36,11 @@ describe("invoice routes", () => {
     await rm(temporaryDirectory, { recursive: true });
   });
 
-  test.each(["R-2023-12-01", "R2023-12-02", "2023-12-02"])(
+  test.each(["R-2023-12-01", "R2023-12-01", "2023-12-01"])(
     "use correct new document ID: %s",
     async (id) => {
       // given
+      await appDataSource.manager.clear(InvoiceDocument);
       await getInvoiceDocument({ id }, appDataSource);
       const invoice = await getInvoice({ invoice_date: "2023-12-12" }, appDataSource);
 
@@ -51,9 +52,29 @@ describe("invoice routes", () => {
       // then
       expect(response.status).toBe(200);
       const newDocument = await appDataSource.manager.findOne(InvoiceDocument, {
-        where: { id: "2023-12-03" },
+        where: { id: "2023-12-02" },
       });
-      expect(newDocument).toBeDefined();
+      expect(newDocument).toBeTruthy();
     },
   );
+
+  test("should use the first unused document number for the month", async () => {
+    // given
+    await appDataSource.manager.clear(InvoiceDocument);
+    await getInvoiceDocument({ id: "2025-11-01" }, appDataSource);
+    await getInvoiceDocument({ id: "2025-11-03" }, appDataSource);
+    const invoice = await getInvoice({ invoice_date: "2025-11-06" }, appDataSource);
+
+    // when
+    const response = await fetch(
+      getRequest(server, `api/orders/invoices/${invoice.id}/documents`, { method: "POST" }),
+    );
+
+    // then
+    expect(response.status).toBe(200);
+    const newDocument = await appDataSource.manager.findOne(InvoiceDocument, {
+      where: { id: "2025-11-02" },
+    });
+    expect(newDocument).toBeTruthy();
+  });
 });
