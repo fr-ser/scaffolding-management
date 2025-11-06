@@ -1,7 +1,11 @@
 import { DataSource } from "typeorm";
 
 import { Client as DbClient } from "@/db/entities/client";
-import { InvoiceDocument as DbInvoiceDocument } from "@/db/entities/documents";
+import {
+  InvoiceDocument as DbInvoiceDocument,
+  OfferDocument as DbOfferDocument,
+  OverdueNoticeDocument as DbOverdueNoticeDocument,
+} from "@/db/entities/documents";
 import { Invoice as DbInvoice } from "@/db/entities/invoice";
 import { Offer as DbOffer } from "@/db/entities/offer";
 import { Order as DbOrder } from "@/db/entities/order";
@@ -95,72 +99,118 @@ export async function getInvoiceDocument(
   return invoiceDocument;
 }
 
-export async function getOfferDocument(): Promise<OfferDocument> {
-  return {
-    id: "document_id",
-    created_at: 1,
-    updated_at: 1,
-    creation_date: "1992-12-12",
-    client_id: "client_id",
-    client_email: "client@mail.com",
-    client_company_name: "client_company_name",
-    client_first_name: "client_first_name",
-    client_last_name: "client_last_name",
-    client_street_and_number: "client_street_and_number",
-    client_postal_code: "client_postal_code",
-    client_city: "client_city",
-    order_title: "order_title",
-    order_id: "order_id",
-    offer_id: 1,
-    items: [
-      {
-        id: 1,
-        offer_document_id: "document_id",
-        kind: ArticleKind.heading,
-        title: "title1",
-        description: "description1",
-      },
-      {
-        id: 2,
-        offer_document_id: "document_id",
-        kind: ArticleKind.item,
-        title: "title2",
-        description: "description2",
-        unit: "unit",
-        price: 10,
-        amount: 100,
-      },
-    ],
-    offered_at: "1993-12-12",
-    offer_valid_until: "1995-12-12",
+export async function getOfferDocument(
+  override: Partial<OfferDocument> = {},
+  saveInDb?: DataSource,
+): Promise<OfferDocument> {
+  let offerId: number;
+  let offer: Offer | undefined;
+
+  if (override.offer_id) {
+    offerId = override.offer_id;
+  } else {
+    offer = await getOffer({}, saveInDb);
+    offerId = offer.id;
+  }
+
+  const offerDocument = {
+    ...{
+      id: "document_id",
+      created_at: 1,
+      updated_at: 1,
+      creation_date: "1992-12-12",
+      client_id: "client_id",
+      client_email: "client@mail.com",
+      client_company_name: "client_company_name",
+      client_first_name: "client_first_name",
+      client_last_name: "client_last_name",
+      client_street_and_number: "client_street_and_number",
+      client_postal_code: "client_postal_code",
+      client_city: "client_city",
+      order_title: "order_title",
+      order_id: "order_id",
+      offer_id: offerId,
+      items: [
+        {
+          id: 1,
+          offer_document_id: "document_id",
+          kind: ArticleKind.heading,
+          title: "title1",
+          description: "description1",
+        },
+        {
+          id: 2,
+          offer_document_id: "document_id",
+          kind: ArticleKind.item,
+          title: "title2",
+          description: "description2",
+          unit: "unit",
+          price: 10,
+          amount: 100,
+        },
+      ],
+      offered_at: "1993-12-12",
+      offer_valid_until: "1995-12-12",
+    },
+    ...override,
   };
+
+  if (saveInDb) {
+    if (offer) await saveInDb.getRepository(DbOffer).save(offer);
+    await saveInDb.getRepository(DbOfferDocument).save(offerDocument);
+  }
+
+  return offerDocument;
 }
 
-export async function getOverdueNoticeDocument(): Promise<OverdueNoticeDocument> {
-  return {
-    id: "document_id",
-    created_at: 1,
-    updated_at: 1,
-    creation_date: "1992-12-12",
-    client_id: "client_id",
-    client_email: "client@mail.com",
-    client_company_name: "client_company_name",
-    client_first_name: "client_first_name",
-    client_last_name: "client_last_name",
-    client_street_and_number: "client_street_and_number",
-    client_postal_code: "client_postal_code",
-    client_city: "client_city",
-    order_title: "order_title",
-    order_id: "order_id",
-    overdue_notice_id: 1,
-    notice_level: OverdueNoticeLevel.first,
-    notice_date: "1993-12-12",
-    payments_until: "1994-12-12",
-    payment_target: "1995-12-12",
-    notice_costs: 55,
-    default_interest: 2.5,
-    invoice_documents: [await getInvoiceDocument()],
+export async function getOverdueNoticeDocument(
+  override: Partial<OverdueNoticeDocument> = {},
+  saveInDb?: DataSource,
+): Promise<OverdueNoticeDocument> {
+  let overdueNoticeId: number;
+  let overdueNotice: OverdueNotice | undefined;
+
+  if (override.overdue_notice_id) {
+    overdueNoticeId = override.overdue_notice_id;
+  } else {
+    overdueNotice = await getOverdueNotice({}, saveInDb);
+    overdueNoticeId = overdueNotice.id;
+  }
+
+  const overdueNoticeDocument = {
+    ...{
+      id: "document_id",
+      created_at: 1,
+      updated_at: 1,
+      creation_date: "1992-12-12",
+      client_id: "client_id",
+      client_email: "client@mail.com",
+      client_company_name: "client_company_name",
+      client_first_name: "client_first_name",
+      client_last_name: "client_last_name",
+      client_street_and_number: "client_street_and_number",
+      client_postal_code: "client_postal_code",
+      client_city: "client_city",
+      order_title: "order_title",
+      order_id: "order_id",
+      overdue_notice_id: overdueNoticeId,
+      notice_level: OverdueNoticeLevel.first,
+      notice_date: "1993-12-12",
+      payments_until: "1994-12-12",
+      payment_target: "1995-12-12",
+      notice_costs: 55,
+      default_interest: 2.5,
+      invoice_documents: [await getInvoiceDocument({}, saveInDb)],
+    },
+    ...override,
   };
+
+  if (saveInDb) {
+    if (overdueNotice) await saveInDb.getRepository(DbOverdueNotice).save(overdueNotice);
+    await saveInDb.getRepository(DbOverdueNoticeDocument).save(overdueNoticeDocument);
+  }
+
+  return overdueNoticeDocument;
 }
 
 export function getClient(clientOverride: Partial<Client> = {}): Client {
