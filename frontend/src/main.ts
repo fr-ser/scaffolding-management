@@ -18,6 +18,8 @@ app.use(PrimeVue, {
   theme: {
     preset: Aura,
     options: {
+      // disabling dark mode for now as otherwise every view needs to be verified for dark mode compatibility
+      darkModeSelector: ".never-dark-mode",
       cssLayer: {
         name: "primevue",
         // the ordering makes sure tailwind classes have higher specificity
