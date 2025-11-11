@@ -9,12 +9,7 @@ import { Invoice } from "@/db/entities/invoice";
 import { Offer } from "@/db/entities/offer";
 import { Order } from "@/db/entities/order";
 import { OverdueNotice } from "@/db/entities/overdue_notice";
-import {
-  DocumentKind,
-  OfferStatus,
-  OverdueNoticePaymentStatus,
-  PaymentStatus,
-} from "@/global/types/appTypes";
+import { DocumentKind, OverdueNoticePaymentStatus, PaymentStatus } from "@/global/types/appTypes";
 import {
   ErrorCode,
   PaginationQueryParameters,
@@ -26,6 +21,7 @@ import { attachmentsRouter } from "@/routes/orders/attachments";
 import { invoicesRouter } from "@/routes/orders/invoices";
 import { offersRouter } from "@/routes/orders/offers";
 import { overdueNoticesRouter } from "@/routes/orders/overdue_notices";
+import { reportRouter } from "@/routes/orders/reports";
 
 export const ordersRouter = express.Router();
 
@@ -33,9 +29,8 @@ ordersRouter.get(
   "",
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const { skip = 0, take = 100 } = req.query as PaginationQueryParameters;
-    const { search, overdue, detailed, clientId } = req.query as {
+    const { search, detailed, clientId } = req.query as {
       search?: string;
-      overdue?: boolean;
       detailed?: boolean;
       clientId?: string;
     };
@@ -58,7 +53,7 @@ ordersRouter.get(
       databaseQuery = databaseQuery.leftJoinAndSelect("order.client", "client");
     }
 
-    if (detailed && !overdue) {
+    if (detailed) {
       // here we join all sub orders as they are not filtered
       databaseQuery = databaseQuery.leftJoinAndSelect("order.offer", "offer");
       databaseQuery = databaseQuery.leftJoinAndSelect("order.overdue_notices", "overdue_notices");
@@ -77,39 +72,6 @@ ordersRouter.get(
 
     if (clientId) {
       databaseQuery = databaseQuery.andWhere("order.client_id = :clientId", { clientId });
-    }
-
-    if (overdue) {
-      databaseQuery = databaseQuery.leftJoinAndSelect(
-        "order.offer",
-        "offer",
-        "(offer.status = :overdueOfferStatus and date('now') > date(offer.offer_valid_until))",
-        {
-          overdueOfferStatus: OfferStatus.created,
-        },
-      );
-      databaseQuery = databaseQuery.leftJoinAndSelect(
-        "order.overdue_notices",
-        "overdue_notices",
-        "(overdue_notices.payment_status in(:...overdueOverdueNoticeStatus) and date('now') > date(overdue_notices.payment_target))",
-        {
-          overdueOverdueNoticeStatus: [
-            OverdueNoticePaymentStatus.open,
-            OverdueNoticePaymentStatus.partiallyPaid,
-          ],
-        },
-      );
-      databaseQuery = databaseQuery.leftJoinAndSelect(
-        "order.invoices",
-        "invoices",
-        "(invoices.status = :overdueInvoiceStatus and date('now') > date(invoices.payment_target))",
-        {
-          overdueInvoiceStatus: PaymentStatus.open,
-        },
-      );
-      databaseQuery = databaseQuery.andWhere(
-        "invoices.id is not null or overdue_notices.id is not null or offer.id is not null",
-      );
     }
 
     const result = await databaseQuery.getManyAndCount();
@@ -295,3 +257,4 @@ ordersRouter.use("/:orderId/attachments", attachmentsRouter);
 ordersRouter.use("/invoices", invoicesRouter);
 ordersRouter.use("/offers", offersRouter);
 ordersRouter.use("/overdue_notices", overdueNoticesRouter);
+ordersRouter.use("/reports", reportRouter);
