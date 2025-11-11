@@ -32,6 +32,7 @@ import type { Client, Invoice, Offer, Order, OverdueNotice } from "@/global/type
 import { getOrderListPath } from "@/helpers/routes";
 import { debounce } from "@/helpers/utils";
 import { useUserStore } from "@/store";
+import { FrontendOrderStatusMap } from "@/types";
 
 const userStore = useUserStore();
 
@@ -50,7 +51,6 @@ let orderInfo = ref<OrderCreate | Order>({
 
 let isLoading = ref<boolean>(true);
 
-const orderStatusTypes = Object.values(OrderStatus);
 const discountChoice = [
   { value: true, label: "ja" },
   { value: false, label: "nein" },
@@ -258,7 +258,11 @@ const tabData = computed(() => {
             <FloatLabel>
               <Select
                 v-model="orderInfo.status"
-                :options="orderStatusTypes"
+                optionLabel="value"
+                optionValue="key"
+                :options="
+                  Object.entries(FrontendOrderStatusMap).map(([key, value]) => ({ key, value }))
+                "
                 class="min-w-32"
                 id="order-status"
               />
