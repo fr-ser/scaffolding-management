@@ -1,14 +1,26 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Card from "primevue/card";
-import Checkbox from "primevue/checkbox";
-import { onMounted, ref } from "vue";
+import RadioButton from "primevue/radiobutton";
+import { onMounted, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 
-import { getOrders } from "@/backendClient";
+import { getOrderReport } from "@/backendClient";
 import { formatIsoDateString } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
 import type { DetailedOrder } from "@/global/types/entities";
 import { getOrderEditPath } from "@/helpers/routes";
+import { ReportType } from "@/types";
+
+const route = useRoute();
+
+let defaultReportType = ReportType.overdueOrders;
+
+if (Object.keys(ReportType).includes(route.query.report as string)) {
+  defaultReportType = ReportType[route.query.report as keyof typeof ReportType];
+}
+
+const reportType = ref(defaultReportType);
 
 const ordersList = ref<DetailedOrder[]>([]);
 
@@ -16,8 +28,12 @@ const paginationStep = 20;
 const take = ref(paginationStep);
 const hasMore = ref(true);
 
+watch(reportType, async () => {
+  await loadData();
+});
+
 async function loadData() {
-  const response = await getOrders({ detailed: true, overdue: true, take: take.value });
+  const response = await getOrderReport(reportType.value, { take: take.value });
   ordersList.value = response.data as DetailedOrder[];
   hasMore.value = response.data.length !== response.totalCount;
 }
@@ -35,8 +51,19 @@ onMounted(async () => {
 <template>
   <div class="mb-6 mt-2 ml-2">
     <div class="flex gap-2">
-      <Checkbox :model-value="true" input-id="overdue-filter" binary disabled />
-      <label for="overdue-filter">Überfällige Unteraufträge</label>
+      <div
+        v-for="reportTypeValue in ReportType"
+        :key="reportTypeValue"
+        class="flex items-center gap-2"
+      >
+        <RadioButton
+          v-model="reportType"
+          :inputId="reportTypeValue"
+          name="dynamic"
+          :value="reportTypeValue"
+        />
+        <label :for="reportTypeValue">{{ reportTypeValue }}</label>
+      </div>
     </div>
   </div>
   <div v-for="order in ordersList" :key="order.id">

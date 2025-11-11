@@ -1,3 +1,4 @@
+import { ReportType } from "./types";
 import axios from "axios";
 
 import { neverFunction } from "@/global/helpers";
@@ -27,6 +28,7 @@ import type {
 import {
   type Article,
   type Client,
+  type DetailedOrder,
   type Invoice,
   type InvoiceDocument,
   type Offer,
@@ -99,13 +101,31 @@ export async function getOrders(
     search?: string;
     take?: number;
     detailed?: true;
-    overdue?: true;
     clientId?: string;
   },
 ): Promise<PaginationResponse<Order>> {
   const response = await axiosInstance.get(`/api/orders`, { params: parameters });
   return response.data;
 }
+
+export async function getOrderReport(
+  reportType: ReportType,
+  parameters = {} as {
+    take?: number;
+  },
+): Promise<PaginationResponse<DetailedOrder>> {
+  let url = "";
+  if (reportType === ReportType.overdueOrders) {
+    url = `/api/orders/reports/overdue-orders`;
+  } else if (reportType === ReportType.preparedOrders) {
+    url = `/api/orders/reports/prepared-orders`;
+  } else {
+    neverFunction(reportType);
+  }
+  const response = await axiosInstance.get(url, { params: parameters });
+  return response.data;
+}
+
 export async function getOrder(id: string): Promise<Order> {
   const response = await axiosInstance.get(`/api/orders/${id}`);
   return response.data;

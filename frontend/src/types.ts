@@ -7,3 +7,8 @@ export const FrontendOrderStatusMap = {
   [OrderStatus.deconstructed]: "Abgebaut",
   [OrderStatus.blocked]: "Gesperrt",
 } as { [key in OrderStatus]: string };
+
+export enum ReportType {
+  overdueOrders = "Überfällige Unteraufträge",
+  preparedOrders = "Aufgebaute Aufträge",
+}
