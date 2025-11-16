@@ -6,8 +6,8 @@ import {
   getOverdueInvoices,
   getOverdueOffers,
   getOverdueOverdueNotices,
-} from "@/tasks/email_notification/data";
-import { sendNotificationEmail } from "@/tasks/email_notification/email";
+} from "@/tasks/overdue_email/data";
+import { sendNotificationEmail } from "@/tasks/overdue_email/email";
 
 /**
  * Get a reminder about about:
@@ -16,8 +16,8 @@ import { sendNotificationEmail } from "@/tasks/email_notification/email";
  * - overdue invoices
  * - overdue "overdue notices"
  */
-async function emailNotificationTask() {
-  log("Starting email notification task");
+async function overdueEmailTask() {
+  log("starting overdue email task");
 
   const dataSource = await initializeAppDataSource(DB_PATH);
 
@@ -36,10 +36,10 @@ async function emailNotificationTask() {
   });
 }
 
-emailNotificationTask()
+overdueEmailTask()
   .then(() => {
-    log("Email notification task finished");
+    log("overdue email task finished");
   })
   .catch((err) => {
-    log("Error in email notification task", err);
+    log("Error in overdue email task", err);
   });
