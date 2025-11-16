@@ -17,7 +17,7 @@ ${overdueInvoicesText}
 ${overdueOverdueNoticesText.trimEnd()}
 
 Weitere Informationen gibt es in der Webanwendung selbst unter:
-${APP_MAIL_PAGE_URL}
+${APP_MAIL_PAGE_URL}/overview?report=overdueOrders
 `.trim();
 
 function blockedOrdersTemplate(orders: Order[]) {
