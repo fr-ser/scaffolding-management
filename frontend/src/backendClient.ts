@@ -242,8 +242,21 @@ export async function getDocumentPdf(payload: SaveDocumentsAsPdfPayload): Promis
   return response.data;
 }
 
-export async function sendDocumentAsEmail(payload: SendDocumentsAsEMail) {
-  await axiosInstance.post(`/api/documents/send-email`, payload);
+export async function sendDocumentAsEmail(
+  payload: SendDocumentsAsEMail,
+  additionalAttachments: File[] = [],
+) {
+  const formData = new FormData();
+  formData.append("payload", JSON.stringify(payload));
+  for (const file of additionalAttachments) {
+    formData.append("additional-attachments", file);
+  }
+
+  await axiosInstance.post(`/api/documents/send-email`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 }
 
 export async function getOrderAttachments(id: string) {
