@@ -43,9 +43,9 @@ export function getApp() {
       ),
     );
 
-    res.sendFile(filePath, (err) => {
+    res.sendFile(filePath, { dotfiles: "allow" }, (err) => {
       if (err) {
-        res.status(404);
+        res.status(404).send("Not found");
       }
     });
   });
