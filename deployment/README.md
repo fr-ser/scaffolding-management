@@ -30,3 +30,9 @@ The job to truncate large log files:
 0 5 * * * echo "$(tail -n 10000 ~/apps/scaffolding/app.log)" > ~/apps/scaffolding/app.log
 0 5 * * * echo "$(tail -n 10000 ~/apps/scaffolding/cron.log)" > ~/apps/scaffolding/cron.log
 ```
+
+The job to renew certificates:
+
+```txt
+0 2 * * 1 certbot renew --webroot -w ~/apps/scaffolding/dist/static/
+```
