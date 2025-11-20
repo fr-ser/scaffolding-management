@@ -1,4 +1,5 @@
 import express from "express";
+import formidable from "formidable";
 import { In, SelectQueryBuilder } from "typeorm";
 
 import { checkPermissionMiddleware } from "@/authorization";
@@ -21,7 +22,7 @@ import { renderMultiplePDF } from "@/pdf/renderPDF";
 import { invoiceDocumentsRouter } from "@/routes/documents/invoice_documents";
 import { offerDocumentsRouter } from "@/routes/documents/offer_documents";
 import { overdueNoticeDocumentsRouter } from "@/routes/documents/overdue_notice_documents";
-import { sendMail } from "@/services/email";
+import { AttachmentInterface, sendMail } from "@/services/email";
 
 export const documentsRouter = express.Router();
 
@@ -182,7 +183,19 @@ documentsRouter.post(
   "/send-email",
   [checkPermissionMiddleware(UserPermissions.DOCUMENTS_SEND_EMAIL)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const payload = req.body as SendDocumentsAsEMail;
+    const form = formidable({});
+    let payload: SendDocumentsAsEMail;
+    let additionalAttachments: formidable.File[] = [];
+    try {
+      const [fields, files] = await form.parse(req);
+      payload = JSON.parse(fields.payload as unknown as string) as SendDocumentsAsEMail;
+      additionalAttachments = files["additional-attachments"] || [];
+    } catch (error) {
+      log("Error getting data from request", error);
+      next(error);
+      return;
+    }
+
     const dataSource = getAppDataSource();
 
     let dataForPdfGeneration;
@@ -222,9 +235,18 @@ documentsRouter.post(
       return;
     }
 
-    await sendMail([payload.recipient], payload.subject, payload.message, [
-      { filename: payload.attachmentName, content: pdfAsString },
-    ]);
+    const emailAttachments: AttachmentInterface[] = [
+      { filename: payload.attachmentName, content: pdfAsString, encoding: "base64" },
+    ];
+
+    for (const attachment of additionalAttachments) {
+      emailAttachments.push({
+        filename: attachment.originalFilename || "Anhang",
+        path: attachment.filepath,
+      });
+    }
+
+    await sendMail([payload.recipient], payload.subject, payload.message, emailAttachments);
 
     res.sendStatus(201);
   },
