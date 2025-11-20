@@ -9,9 +9,11 @@ import {
 } from "@/config";
 import { log } from "@/helpers/logging";
 
-interface AttachmentInterface {
+export interface AttachmentInterface {
   filename: string;
-  content: string;
+  content?: string;
+  path?: string;
+  encoding?: string;
 }
 
 const transporter = createTransport({
@@ -36,10 +38,6 @@ export async function sendMail(
     bcc: fromEmail,
     subject: subject,
     text: message,
-    attachments: attachments.map((attachment) => ({
-      filename: attachment.filename,
-      content: attachment.content,
-      encoding: "base64",
-    })),
+    attachments: attachments,
   });
 }
