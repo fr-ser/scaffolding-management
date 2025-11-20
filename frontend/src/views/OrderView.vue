@@ -58,7 +58,7 @@ const discountChoice = [
 const isEditing = computed(() => {
   return Boolean(route.params.id);
 });
-const discountPeriodChoice = [7, 14];
+const discountPeriodChoice = [3, 7, 14];
 
 let selectedClient = ref<Client>();
 
