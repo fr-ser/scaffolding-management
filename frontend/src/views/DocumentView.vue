@@ -31,15 +31,6 @@ const notification = useNotifications();
 const route = useRoute();
 const documentId = route.params.id as string;
 const kind = route.params.kind as DocumentKind;
-let emailKind = "";
-
-if (kind === DocumentKind.invoice) {
-  emailKind = "die Rechnung";
-} else if (kind === DocumentKind.offer) {
-  emailKind = "das Angebot";
-} else if (kind === DocumentKind.overdueNotice) {
-  emailKind = "die Mahnung";
-} else neverFunction(kind);
 
 const result = ref<OfferDocument | OverdueNoticeDocument | InvoiceDocument>();
 const isEmailDialogVisible = ref(false);
