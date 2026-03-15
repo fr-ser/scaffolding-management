@@ -9,8 +9,8 @@ When the environment files need to be updated it has to be done in two places:
   - This needs to be done inside the repository before building the frontend
   - The variables are interpolated into the frontend code itself
 
-- `.env` - raspberry
-  - This needs to be done on the raspberry pi before restarting the backend
+- `.env` - remote
+  - This needs to be done on the remote before restarting the backend
 
 ## CRON
 

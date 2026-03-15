@@ -10,6 +10,10 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 
+# IDE and user AI configs
+.claude
+.vscode
+
 # environment files
 .env
 .env.*
