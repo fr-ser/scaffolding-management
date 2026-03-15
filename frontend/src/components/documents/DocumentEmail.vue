@@ -7,7 +7,7 @@ import FileUpload, {
 } from "primevue/fileupload";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
-import { defineEmits, ref } from "vue";
+import { ref } from "vue";
 
 import { sendDocumentAsEmail } from "@/backendClient";
 import useConfirmations from "@/composables/useConfirmations";
@@ -15,6 +15,7 @@ import useNotifications from "@/composables/useNotifications";
 import { neverFunction } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
 import type {
+  CreditNoteDocument,
   InvoiceDocument,
   OfferDocument,
   OverdueNoticeDocument,
@@ -30,7 +31,7 @@ const VITE_COMPANY_HOMEPAGE = import.meta.env.VITE_COMPANY_HOMEPAGE;
 
 const props = defineProps<{
   kind: DocumentKind;
-  document: OfferDocument | OverdueNoticeDocument | InvoiceDocument;
+  document: OfferDocument | OverdueNoticeDocument | InvoiceDocument | CreditNoteDocument;
 }>();
 
 const emit = defineEmits(["hideDialog"]);
@@ -58,6 +59,8 @@ if (props.kind === DocumentKind.invoice) {
   emailKind = "das Angebot";
 } else if (props.kind === DocumentKind.overdueNotice) {
   emailKind = "die Mahnung";
+} else if (props.kind === DocumentKind.creditNote) {
+  emailKind = "die Gutschrift";
 } else neverFunction(props.kind);
 
 const emailRecipient = ref(props.document.client_email || "");

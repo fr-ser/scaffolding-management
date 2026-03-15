@@ -44,6 +44,7 @@ export interface Order extends CreatedAtUpdatedAt {
   client?: Client;
   offer?: Offer;
   invoices?: Invoice[];
+  credit_notes?: CreditNote[];
   overdue_notices?: OverdueNotice[];
   status: OrderStatus;
   title: string;
@@ -90,6 +91,22 @@ export interface OfferItem extends OrderItem {
 export interface InvoiceItem extends OrderItem {
   invoice_id: number;
   invoice: Invoice;
+}
+
+export interface CreditNote extends CreatedAtUpdatedAt {
+  id: number;
+  order_id: string;
+  order: Order;
+  credit_date: string;
+  status: PaymentStatus;
+  description: string;
+  referenced_invoice_document_ids?: string[];
+  items: CreditNoteItem[];
+}
+
+export interface CreditNoteItem extends OrderItem {
+  credit_note_id: number;
+  credit_note: CreditNote;
 }
 
 export interface Offer extends CreatedAtUpdatedAt {
@@ -164,6 +181,16 @@ export interface OfferDocumentItem extends DocumentItem {
 
 export interface InvoiceDocumentItem extends DocumentItem {
   invoice_document_id: string;
+}
+
+export interface CreditNoteDocument extends BaseDocument {
+  credit_note_id: number;
+  items: CreditNoteDocumentItem[];
+  credit_date: string;
+}
+
+export interface CreditNoteDocumentItem extends DocumentItem {
+  credit_note_document_id: string;
 }
 
 export interface OverdueNotice extends CreatedAtUpdatedAt {

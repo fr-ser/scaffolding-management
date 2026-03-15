@@ -9,7 +9,12 @@ import {
   PrimaryColumn,
 } from "typeorm";
 
-import { InvoiceDocumentItem, OfferDocumentItem } from "@/db/entities/document_items";
+import { CreditNote } from "@/db/entities/credit_note";
+import {
+  CreditNoteDocumentItem,
+  InvoiceDocumentItem,
+  OfferDocumentItem,
+} from "@/db/entities/document_items";
 import { Invoice } from "@/db/entities/invoice";
 import { Offer } from "@/db/entities/offer";
 import { OverdueNotice } from "@/db/entities/overdue_notice";
@@ -116,6 +121,25 @@ export class InvoiceDocument extends BaseDocument {
 
   @ManyToMany(() => OverdueNotice)
   overdue_notices: OverdueNotice[];
+}
+
+@Entity()
+export class CreditNoteDocument extends BaseDocument {
+  @Column({ type: "text" })
+  credit_note_id: number;
+
+  @ManyToOne(() => CreditNote)
+  @JoinColumn({ name: "credit_note_id" })
+  credit_note: CreditNote;
+
+  @OneToMany(
+    () => CreditNoteDocumentItem,
+    (credit_note_document_item) => credit_note_document_item.credit_note_document,
+  )
+  items: CreditNoteDocumentItem[];
+
+  @Column({ type: "text" })
+  credit_date: string;
 }
 
 @Entity()

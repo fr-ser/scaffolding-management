@@ -5,7 +5,12 @@ import { join } from "node:path";
 import { DataSource, MoreThanOrEqual } from "typeorm";
 
 import { DROPBOX_PATH_PREFIX } from "@/config";
-import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/db/entities/documents";
+import {
+  CreditNoteDocument,
+  InvoiceDocument,
+  OfferDocument,
+  OverdueNoticeDocument,
+} from "@/db/entities/documents";
 import { neverFunction } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
 import { AnyDocument } from "@/global/types/backendTypes";
@@ -21,6 +26,8 @@ function getDocumentDate(document: AnyDocument): string {
       return document.document.offered_at;
     case DocumentKind.overdueNotice:
       return document.document.notice_date;
+    case DocumentKind.creditNote:
+      return document.document.credit_date;
     default:
       return neverFunction(document);
   }
@@ -75,6 +82,16 @@ export async function backupDocuments(dataSource: DataSource) {
         .then((result) =>
           result.map((item) => {
             return { kind: DocumentKind.overdueNotice, document: item };
+          }),
+        ),
+      dataSource.manager
+        .find(CreditNoteDocument, {
+          where: { created_at: MoreThanOrEqual(sinceTimestamp) },
+          relations: { items: true },
+        })
+        .then((result) =>
+          result.map((item) => {
+            return { kind: DocumentKind.creditNote, document: item };
           }),
         ),
     ])) as AnyDocument[][]

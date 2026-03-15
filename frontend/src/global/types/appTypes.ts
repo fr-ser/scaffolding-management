@@ -40,6 +40,7 @@ export enum DocumentKind {
   offer = "Angebot",
   invoice = "Rechnung",
   overdueNotice = "Mahnung",
+  creditNote = "Gutschrift",
 }
 
 export enum ClientSalutation {

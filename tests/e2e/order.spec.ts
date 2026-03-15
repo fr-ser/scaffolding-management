@@ -20,8 +20,7 @@ test("create, edit and delete an order", async ({ page }) => {
 
   // check filtering
   await page.getByTestId("order-search-input").fill(timestamp);
-  await page.waitForTimeout(300); // debounce time
-  expect(await page.getByTestId("order-card").count()).toBe(1);
+  await expect(page.getByTestId("order-card")).toHaveCount(1); // toHaveCount retries, naturally absorbing the 250ms search debounce
 
   // edit
   await page.getByTestId("order-card").getByLabel("Anschauen / Bearbeiten").click();
@@ -34,11 +33,10 @@ test("create, edit and delete an order", async ({ page }) => {
 
   // delete
   await page.getByTestId("order-return-button").click();
+  await page.getByTestId("order-search-input").fill(timestamp);
+  await expect(page.getByTestId("order-card")).toHaveCount(1); // toHaveCount retries, naturally absorbing the 250ms search debounce
   await page.getByTestId("order-card").first().getByTestId("order-delete-button").click();
   await page.getByRole("alertdialog").getByText("Bestätigen").click();
   await expect(page.getByText("Der Auftrag wurde gelöscht")).toBeVisible();
-
-  await page.getByTestId("order-search-input").fill(timestamp);
-  await page.waitForTimeout(300); // debounce time
-  await expect(page.getByTestId("order-card")).not.toBeVisible();
+  await expect(page.getByTestId("order-card")).toHaveCount(0);
 });

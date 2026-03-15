@@ -1,107 +1,51 @@
-import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/global/types/entities";
+import {
+  CreditNoteDocument,
+  InvoiceDocument,
+  OfferDocument,
+  OverdueNoticeDocument,
+} from "@/global/types/entities";
+
+type AnyDocumentRecord =
+  | OfferDocument
+  | InvoiceDocument
+  | OverdueNoticeDocument
+  | CreditNoteDocument;
 
 export function mergeSortedDocuments(
-  arr1: OfferDocument[] | InvoiceDocument[] | OverdueNoticeDocument[],
-  arr2: OfferDocument[] | InvoiceDocument[] | OverdueNoticeDocument[],
-  arr3: OfferDocument[] | InvoiceDocument[] | OverdueNoticeDocument[],
-  options: { isAscending: boolean; maxItems: number },
+  ...args: [...AnyDocumentRecord[][], { isAscending: boolean; maxItems: number }]
 ) {
+  const options = args[args.length - 1] as { isAscending: boolean; maxItems: number };
+  const arrays = args.slice(0, -1) as AnyDocumentRecord[][];
   const { isAscending, maxItems } = options;
 
-  // Comparison function based on order and [itemProperty] property
-  const compare = (
-    a: OfferDocument | InvoiceDocument | OverdueNoticeDocument,
-    b: OfferDocument | InvoiceDocument | OverdueNoticeDocument,
-  ) => {
-    return isAscending ? a.created_at < b.created_at : a.created_at > b.created_at;
-  };
+  // Merge all pre-sorted arrays using a pointer-based n-way merge
+  const pointers = arrays.map(() => 0);
+  const mergedArray: AnyDocumentRecord[] = [];
+  const totalItems = arrays.reduce((sum, arr) => sum + arr.length, 0);
 
-  const mergedArray = [];
-  let i = 0,
-    j = 0,
-    k = 0;
+  while (mergedArray.length < totalItems) {
+    let bestIndex = -1;
+    let bestValue: AnyDocumentRecord | null = null;
 
-  // Compare elements from all three arrays and add the smallest/largest one to mergedArray
-  while (i < arr1.length && j < arr2.length && k < arr3.length) {
-    if (compare(arr1[i], arr2[j]) && compare(arr1[i], arr3[k])) {
-      mergedArray.push(arr1[i]);
-      i++;
-    } else if (compare(arr2[j], arr1[i]) && compare(arr2[j], arr3[k])) {
-      mergedArray.push(arr2[j]);
-      j++;
-    } else {
-      mergedArray.push(arr3[k]);
-      k++;
+    for (let i = 0; i < arrays.length; i++) {
+      if (pointers[i] >= arrays[i].length) continue;
+      const candidate = arrays[i][pointers[i]];
+      if (
+        bestValue === null ||
+        (isAscending
+          ? candidate.created_at < bestValue.created_at
+          : candidate.created_at > bestValue.created_at)
+      ) {
+        bestIndex = i;
+        bestValue = candidate;
+      }
     }
-    if (maxItems != null && mergedArray.length >= maxItems) {
-      return mergedArray;
-    }
-  }
 
-  // Merge remaining elements from arr1 and arr2
-  while (i < arr1.length && j < arr2.length) {
-    if (compare(arr1[i], arr2[j])) {
-      mergedArray.push(arr1[i]);
-      i++;
-    } else {
-      mergedArray.push(arr2[j]);
-      j++;
-    }
-    if (maxItems != null && mergedArray.length >= maxItems) {
-      return mergedArray;
-    }
-  }
+    if (bestIndex === -1) break;
 
-  // Merge remaining elements from arr1 and arr3
-  while (i < arr1.length && k < arr3.length) {
-    if (compare(arr1[i], arr3[k])) {
-      mergedArray.push(arr1[i]);
-      i++;
-    } else {
-      mergedArray.push(arr3[k]);
-      k++;
-    }
-    if (maxItems != null && mergedArray.length >= maxItems) {
-      return mergedArray;
-    }
-  }
+    mergedArray.push(bestValue!);
+    pointers[bestIndex]++;
 
-  // Merge remaining elements from arr2 and arr3
-  while (j < arr2.length && k < arr3.length) {
-    if (compare(arr2[j], arr3[k])) {
-      mergedArray.push(arr2[j]);
-      j++;
-    } else {
-      mergedArray.push(arr3[k]);
-      k++;
-    }
-    if (maxItems != null && mergedArray.length >= maxItems) {
-      return mergedArray;
-    }
-  }
-
-  // Add any remaining elements from arr1
-  while (i < arr1.length) {
-    mergedArray.push(arr1[i]);
-    i++;
-    if (maxItems != null && mergedArray.length >= maxItems) {
-      return mergedArray;
-    }
-  }
-
-  // Add any remaining elements from arr2
-  while (j < arr2.length) {
-    mergedArray.push(arr2[j]);
-    j++;
-    if (maxItems != null && mergedArray.length >= maxItems) {
-      return mergedArray;
-    }
-  }
-
-  // Add any remaining elements from arr3
-  while (k < arr3.length) {
-    mergedArray.push(arr3[k]);
-    k++;
     if (maxItems != null && mergedArray.length >= maxItems) {
       return mergedArray;
     }

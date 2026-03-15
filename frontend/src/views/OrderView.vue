@@ -17,6 +17,7 @@ import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { createOrder, getClient, getClients, getOrder, updateOrder } from "@/backendClient";
+import CreditNoteEdit from "@/components/orders/CreditNoteEdit.vue";
 import InvoiceEdit from "@/components/orders/InvoiceEdit.vue";
 import OfferEdit from "@/components/orders/OfferEdit.vue";
 import OrderAttachments from "@/components/orders/OrderAttachments.vue";
@@ -28,7 +29,14 @@ import { formatIsoDateString } from "@/global/helpers";
 import { DocumentKind, OrderStatus } from "@/global/types/appTypes";
 import { UserPermissions } from "@/global/types/backendTypes";
 import type { OrderCreate } from "@/global/types/dataEditTypes";
-import type { Client, Invoice, Offer, Order, OverdueNotice } from "@/global/types/entities";
+import type {
+  Client,
+  CreditNote,
+  Invoice,
+  Offer,
+  Order,
+  OverdueNotice,
+} from "@/global/types/entities";
 import { getOrderListPath } from "@/helpers/routes";
 import { debounce } from "@/helpers/utils";
 import { useUserStore } from "@/store";
@@ -120,11 +128,21 @@ async function loadOrderData() {
   } else if (route.query?.kind === DocumentKind.overdueNotice) {
     const id = parseInt(route.query?.subOrderId as string);
     const invoiceLength = newOrder?.invoices?.length || 0;
+    const creditNoteLength = newOrder?.credit_notes?.length || 0;
+
+    activeTabIndex.value =
+      invoiceLength +
+        creditNoteLength +
+        1 +
+        (newOrder.overdue_notices as OverdueNotice[]).findIndex((item) => item.id === id) || 0;
+  } else if (route.query?.kind === DocumentKind.creditNote) {
+    const id = parseInt(route.query?.subOrderId as string);
+    const invoiceLength = newOrder?.invoices?.length || 0;
 
     activeTabIndex.value =
       invoiceLength +
         1 +
-        (newOrder.overdue_notices as OverdueNotice[]).findIndex((item) => item.id === id) || 0;
+        (newOrder.credit_notes as CreditNote[]).findIndex((item) => item.id === id) || 0;
   }
   //if the query is "offer" we show the default tab
 }
@@ -157,6 +175,10 @@ let showNewInvoiceTab = ref<boolean>(false);
 function onClickCreateInvoice() {
   showNewInvoiceTab.value = true;
 }
+let showNewCreditNoteTab = ref<boolean>(false);
+function onClickCreateCreditNote() {
+  showNewCreditNoteTab.value = true;
+}
 let showNewOverdueNoticeTab = ref<boolean>(false);
 function onClickCreateOverdueNotice() {
   showNewOverdueNoticeTab.value = true;
@@ -188,6 +210,24 @@ const tabData = computed(() => {
       label: "Neue Rechnung",
       key: "Neue Rechnung",
       kind: DocumentKind.invoice,
+      item: null,
+    });
+  }
+
+  for (const element of typedOrder.credit_notes || []) {
+    tabs.push({
+      label: `Gutschrift ${formatIsoDateString(element.credit_date)}`,
+      key: `cn-${element.id}`,
+      kind: DocumentKind.creditNote,
+      item: element,
+    });
+  }
+
+  if (showNewCreditNoteTab.value) {
+    tabs.push({
+      label: "Neue Gutschrift",
+      key: "Neue Gutschrift",
+      kind: DocumentKind.creditNote,
       item: null,
     });
   }
@@ -347,6 +387,7 @@ const tabData = computed(() => {
                 @click="onClickCreateOffer"
               />
               <Button label="Rechnung erstellen" @click="onClickCreateInvoice" />
+              <Button label="Gutschrift erstellen" @click="onClickCreateCreditNote" />
               <Button label="Mahnung erstellen" @click="onClickCreateOverdueNotice" />
             </div>
             <Tabs
@@ -371,6 +412,12 @@ const tabData = computed(() => {
                     @deleted="loadOrderData"
                     :order="orderInfo as Order"
                     :existing-invoice="tab.item as Invoice"
+                  />
+                  <CreditNoteEdit
+                    v-else-if="tab.kind === DocumentKind.creditNote"
+                    @deleted="loadOrderData"
+                    :order="orderInfo as Order"
+                    :existing-credit-note="tab.item as CreditNote"
                   />
                   <OverdueNoticeEdit
                     v-else-if="tab.kind === DocumentKind.overdueNotice"

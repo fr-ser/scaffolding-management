@@ -20,6 +20,11 @@ import { formatNumber, getItemSum, getVatRate, neverFunction } from "@/global/he
 import { ArticleKind, DocumentKind, OverdueNoticeLevel } from "@/global/types/appTypes";
 import { AnyDocument } from "@/global/types/backendTypes";
 import {
+  setCreditNoteInformationTable,
+  setCreditNoteSubSumTableText,
+  setInitialCreditNoteText,
+} from "@/pdf/credit_note";
+import {
   setInitialInvoiceText,
   setInvoiceInformationTable,
   setInvoiceSubSumTableText,
@@ -72,6 +77,8 @@ const createDocument = function createDocument(
     vatRate = getVatRate({ isoDate: documentData.document.service_dates[0] });
   } else if (documentData.kind === DocumentKind.offer) {
     vatRate = getVatRate({ isoDate: documentData.document.offered_at });
+  } else if (documentData.kind === DocumentKind.creditNote) {
+    vatRate = getVatRate({ isoDate: documentData.document.credit_date });
   } else vatRate = 0;
 
   function createHeaderAndFooter() {
@@ -185,6 +192,8 @@ const createDocument = function createDocument(
       setInvoiceInformationTable(pdfFile, documentData.document);
     else if (documentData.kind === DocumentKind.overdueNotice)
       setReminderInformationTable(pdfFile, documentData.document);
+    else if (documentData.kind === DocumentKind.creditNote)
+      setCreditNoteInformationTable(pdfFile, documentData.document);
     else neverFunction(documentData);
   }
 
@@ -202,6 +211,7 @@ const createDocument = function createDocument(
     else if (documentData.kind === DocumentKind.invoice) setInitialInvoiceText(pdfFile);
     else if (documentData.kind === DocumentKind.overdueNotice)
       setInitialReminderText(pdfFile, documentData.document);
+    else if (documentData.kind === DocumentKind.creditNote) setInitialCreditNoteText(pdfFile);
     else neverFunction(documentData);
   }
 
@@ -250,8 +260,12 @@ const createDocument = function createDocument(
 
     pdfFileData.currY = pdfFile.y + 5;
 
-    if (documentData.kind !== DocumentKind.offer && documentData.kind !== DocumentKind.invoice) {
-      throw Error("Cannot generate article positions for an overdue notice");
+    if (
+      documentData.kind !== DocumentKind.offer &&
+      documentData.kind !== DocumentKind.invoice &&
+      documentData.kind !== DocumentKind.creditNote
+    ) {
+      throw Error("Cannot generate article positions for this document type");
     }
     for (const item of documentData.document.items) {
       if (
@@ -397,7 +411,11 @@ const createDocument = function createDocument(
     pdfFileData.prevY = pdfFileData.currY;
     pdfFileData.currY = pdfFile.y;
 
-    if (documentData.kind === DocumentKind.offer || documentData.kind === DocumentKind.invoice) {
+    if (
+      documentData.kind === DocumentKind.offer ||
+      documentData.kind === DocumentKind.invoice ||
+      documentData.kind === DocumentKind.creditNote
+    ) {
       const netSum = getItemSum(documentData.document.items);
 
       pdfFile
@@ -479,11 +497,17 @@ const createDocument = function createDocument(
       setInvoiceSubSumTableText(pdfFile, documentData.document, pdfFileData);
     else if (documentData.kind === DocumentKind.overdueNotice)
       setReminderSubSumTableText(pdfFile, pdfFileData);
+    else if (documentData.kind === DocumentKind.creditNote)
+      setCreditNoteSubSumTableText(pdfFile, pdfFileData);
   }
 
   createSubHeader();
   createTableTopText();
-  if (documentData.kind === DocumentKind.invoice || documentData.kind === DocumentKind.offer)
+  if (
+    documentData.kind === DocumentKind.invoice ||
+    documentData.kind === DocumentKind.offer ||
+    documentData.kind === DocumentKind.creditNote
+  )
     createOfferOrInvoiceTable();
   else if (documentData.kind === DocumentKind.overdueNotice)
     createRmdTable(pdfFile, documentData.document, pdfFileData);

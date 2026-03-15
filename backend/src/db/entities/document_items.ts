@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
-import { InvoiceDocument, OfferDocument } from "@/db/entities/documents";
+import { CreditNoteDocument, InvoiceDocument, OfferDocument } from "@/db/entities/documents";
 import { ArticleKind } from "@/global/types/appTypes";
 
 abstract class DocumentItem {
@@ -44,4 +44,14 @@ export class InvoiceDocumentItem extends DocumentItem {
   @ManyToOne(() => InvoiceDocument, { onDelete: "CASCADE" })
   @JoinColumn({ name: "invoice_document_id" })
   invoice_document: InvoiceDocument;
+}
+
+@Entity()
+export class CreditNoteDocumentItem extends DocumentItem {
+  @Column({ type: "text" })
+  credit_note_document_id: string;
+
+  @ManyToOne(() => CreditNoteDocument, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "credit_note_document_id" })
+  credit_note_document: CreditNoteDocument;
 }

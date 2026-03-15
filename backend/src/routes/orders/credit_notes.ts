@@ -2,48 +2,48 @@ import express from "express";
 
 import { checkPermissionMiddleware } from "@/authorization";
 import { getAppDataSource } from "@/db";
-import { OfferDocumentItem } from "@/db/entities/document_items";
-import { OfferDocument } from "@/db/entities/documents";
-import { Offer } from "@/db/entities/offer";
-import { OfferItem } from "@/db/entities/order_items";
+import { CreditNote } from "@/db/entities/credit_note";
+import { CreditNoteDocumentItem } from "@/db/entities/document_items";
+import { CreditNoteDocument } from "@/db/entities/documents";
+import { CreditNoteItem } from "@/db/entities/order_items";
 import { ErrorCode, UserPermissions } from "@/global/types/backendTypes";
-import { OfferCreate, OfferUpdate } from "@/global/types/dataEditTypes";
+import { CreditNoteCreate, CreditNoteUpdate } from "@/global/types/dataEditTypes";
 import { ApiError } from "@/helpers/apiErrors";
 import { findFirstUnusedNumber } from "@/helpers/findFirstUnusedNumber";
 
-export const offersRouter = express.Router();
+export const creditNotesRouter = express.Router();
 
-offersRouter.get(
+creditNotesRouter.get(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_VIEW)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
-    const offer = await dataSource.manager.findOne(Offer, {
+    const creditNote = await dataSource.manager.findOne(CreditNote, {
       where: { id: parseInt(req.params.id) },
     });
 
-    if (!offer) next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
-    else res.json(offer);
+    if (!creditNote) next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
+    else res.json(creditNote);
   },
 );
 
-offersRouter.post(
+creditNotesRouter.post(
   "",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
-    const payload = req.body as OfferCreate;
+    const payload = req.body as CreditNoteCreate;
 
-    const offer = dataSource.manager.create(Offer, { ...payload });
+    const creditNote = dataSource.manager.create(CreditNote, { ...payload });
 
     try {
       await dataSource.transaction(async (transactionalEntityManager) => {
-        await transactionalEntityManager.insert(Offer, offer);
+        await transactionalEntityManager.insert(CreditNote, creditNote);
 
         await transactionalEntityManager
           .createQueryBuilder()
           .insert()
-          .into(OfferItem)
+          .into(CreditNoteItem)
           .values(
             payload.items.map((item) => {
               return {
@@ -53,14 +53,14 @@ offersRouter.post(
                 unit: item.unit,
                 price: item.price,
                 amount: item.amount,
-                offer_id: offer.id,
+                credit_note_id: creditNote.id,
               };
             }),
           )
           .execute();
       });
 
-      res.json(offer);
+      res.json(creditNote);
     } catch (error) {
       next(error);
       return;
@@ -68,67 +68,14 @@ offersRouter.post(
   },
 );
 
-offersRouter.patch(
-  "/:id",
-  [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
-  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const offerId = parseInt(req.params.id);
-    const payload = req.body as OfferUpdate;
-    const dataSource = getAppDataSource();
-
-    const payloadWithoutItems = { ...payload, items: undefined, id: offerId };
-
-    try {
-      await dataSource.transaction(async (transactionalEntityManager) => {
-        await transactionalEntityManager.save(Offer, payloadWithoutItems);
-
-        if (payload.items == null) return;
-
-        await transactionalEntityManager.delete(OfferItem, {
-          offer_id: payloadWithoutItems.id,
-        });
-
-        await transactionalEntityManager
-          .createQueryBuilder()
-          .insert()
-          .into(OfferItem)
-          .values(
-            payload.items.map((item) => {
-              return {
-                kind: item.kind,
-                title: item.title,
-                description: item.description,
-                unit: item.unit,
-                price: item.price,
-                amount: item.amount,
-                offer_id: offerId,
-              };
-            }),
-          )
-          .execute();
-      });
-    } catch (error) {
-      next(error);
-      return;
-    }
-
-    const offer = await dataSource.manager.findOne(Offer, {
-      where: { id: parseInt(req.params.id) },
-    });
-
-    if (offer == null) next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
-    else res.json(offer);
-  },
-);
-
-offersRouter.delete(
+creditNotesRouter.delete(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
 
-    const documentCount = await dataSource.manager.countBy(OfferDocument, {
-      offer_id: parseInt(req.params.id),
+    const documentCount = await dataSource.manager.countBy(CreditNoteDocument, {
+      credit_note_id: parseInt(req.params.id),
     });
     if (documentCount > 0) {
       next(new ApiError(ErrorCode.FK_CONSTRAINT_DOCUMENT));
@@ -136,77 +83,128 @@ offersRouter.delete(
     }
 
     try {
-      res.json(await dataSource.manager.delete(Offer, { id: req.params.id }));
+      res.json(await dataSource.manager.delete(CreditNote, { id: req.params.id }));
     } catch (error) {
       next(error);
     }
   },
 );
 
-offersRouter.get(
+creditNotesRouter.patch(
+  "/:id",
+  [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
+  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const creditNoteId = parseInt(req.params.id);
+    const payload = req.body as CreditNoteUpdate;
+    const dataSource = getAppDataSource();
+
+    const creditNoteWithoutItems = { ...payload, items: undefined, id: creditNoteId };
+
+    try {
+      await dataSource.transaction(async (transactionalEntityManager) => {
+        await transactionalEntityManager.save(CreditNote, creditNoteWithoutItems);
+
+        if (payload.items == null) return;
+
+        await transactionalEntityManager.delete(CreditNoteItem, {
+          credit_note_id: creditNoteWithoutItems.id,
+        });
+
+        await transactionalEntityManager
+          .createQueryBuilder()
+          .insert()
+          .into(CreditNoteItem)
+          .values(
+            payload.items.map((item) => {
+              return {
+                kind: item.kind,
+                title: item.title,
+                description: item.description,
+                unit: item.unit,
+                price: item.price,
+                amount: item.amount,
+                credit_note_id: creditNoteId,
+              };
+            }),
+          )
+          .execute();
+      });
+    } catch (error) {
+      next(error);
+      return;
+    }
+
+    const creditNote = await dataSource.manager.findOne(CreditNote, {
+      where: { id: parseInt(req.params.id) },
+    });
+
+    if (creditNote == null) next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
+    else res.json(creditNote);
+  },
+);
+
+creditNotesRouter.get(
   "/:id/documents",
   [checkPermissionMiddleware(UserPermissions.DOCUMENTS_VIEW)],
   async (req: express.Request, res: express.Response) => {
     const dataSource = getAppDataSource();
-    res.json(
-      await dataSource.manager.find(OfferDocument, {
-        where: { offer_id: parseInt(req.params.id) },
-      }),
-    );
+    const documents = await dataSource.manager.find(CreditNoteDocument, {
+      where: { credit_note_id: parseInt(req.params.id) },
+    });
+    res.json(documents);
   },
 );
 
-offersRouter.post(
+creditNotesRouter.post(
   "/:id/documents",
   [checkPermissionMiddleware(UserPermissions.DOCUMENTS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const dataSource = getAppDataSource();
-    const offer = await dataSource.manager.findOne(Offer, {
+    const creditNote = await dataSource.manager.findOne(CreditNote, {
       where: { id: parseInt(req.params.id) },
       relations: { order: { client: true }, items: true },
     });
-    if (!offer) {
+    if (!creditNote) {
       next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
       return;
     }
 
     const documentsOfTheMonth = await dataSource.manager.query(`
-      SELECT id from offer_document where id LIKE 'A${offer.offered_at.substring(0, 7)}-%'
+      SELECT id from credit_note_document where id LIKE 'G${creditNote.credit_date.substring(0, 7)}-%'
     `);
     const firstUnusedNumber = findFirstUnusedNumber(
       documentsOfTheMonth.map((doc: { id: string }) => doc.id),
     );
 
-    try {
-      const document = dataSource.manager.create(OfferDocument, {
-        id: `A${offer.offered_at.substring(0, 7)}-${String(firstUnusedNumber).padStart(2, "0")}`,
-        order_id: offer.order_id,
-        creation_date: new Date().toISOString().substring(0, 10),
-        client_id: offer.order.client_id,
-        client_email: offer.order.client.email,
-        client_company_name: offer.order.client.company_name,
-        client_first_name: offer.order.client.first_name,
-        client_last_name: offer.order.client.last_name,
-        client_street_and_number: offer.order.client.street_and_number,
-        client_postal_code: offer.order.client.postal_code,
-        client_city: offer.order.client.city,
-        order_title: offer.order.title,
-        offer_id: offer.id,
-        offered_at: offer.offered_at,
-        offer_valid_until: offer.offer_valid_until,
-      });
+    const document = dataSource.manager.create(CreditNoteDocument, {
+      id: `G${creditNote.credit_date.substring(0, 7)}-${String(firstUnusedNumber).padStart(2, "0")}`,
+      order_id: creditNote.order_id,
+      creation_date: new Date().toISOString().substring(0, 10),
+      client_id: creditNote.order.client_id,
+      client_email: creditNote.order.client.email,
+      client_company_name: creditNote.order.client.company_name,
+      client_first_name: creditNote.order.client.first_name,
+      client_last_name: creditNote.order.client.last_name,
+      client_street_and_number: creditNote.order.client.street_and_number,
+      client_postal_code: creditNote.order.client.postal_code,
+      client_city: creditNote.order.client.city,
+      order_title: creditNote.order.title,
+      credit_note_id: creditNote.id,
+      credit_date: creditNote.credit_date,
+    });
 
+    try {
       await dataSource.transaction(async (transactionalEntityManager) => {
-        await transactionalEntityManager.insert(OfferDocument, document);
+        await transactionalEntityManager.insert(CreditNoteDocument, document);
 
         await transactionalEntityManager
           .createQueryBuilder()
           .insert()
-          .into(OfferDocumentItem)
+          .into(CreditNoteDocumentItem)
           .values(
-            offer.items.map((item) => {
+            creditNote.items.map((item) => {
               return {
-                offer_document_id: document.id,
+                credit_note_document_id: document.id,
                 kind: item.kind,
                 title: item.title,
                 description: item.description,

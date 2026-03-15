@@ -1,5 +1,10 @@
 import type { DocumentKind } from "./appTypes";
-import type { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "./entities";
+import type {
+  CreditNoteDocument,
+  InvoiceDocument,
+  OfferDocument,
+  OverdueNoticeDocument,
+} from "./entities";
 
 export enum UserPermissions {
   ARTICLES_EDIT = "ARTICLES_EDIT",
@@ -61,6 +66,10 @@ export type AnyDocument =
   | {
       kind: DocumentKind.overdueNotice;
       document: OverdueNoticeDocument;
+    }
+  | {
+      kind: DocumentKind.creditNote;
+      document: CreditNoteDocument;
     };
 
 export interface DropboxFile {

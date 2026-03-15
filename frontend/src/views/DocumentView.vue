@@ -5,6 +5,7 @@ import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import {
+  getCreditNoteDocument,
   getDocumentPdf,
   getInvoiceDocument,
   getOfferDocument,
@@ -20,6 +21,7 @@ import useNotifications from "@/composables/useNotifications";
 import { neverFunction } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
 import type {
+  CreditNoteDocument,
   InvoiceDocument,
   OfferDocument,
   OverdueNoticeDocument,
@@ -32,7 +34,7 @@ const route = useRoute();
 const documentId = route.params.id as string;
 const kind = route.params.kind as DocumentKind;
 
-const result = ref<OfferDocument | OverdueNoticeDocument | InvoiceDocument>();
+const result = ref<OfferDocument | OverdueNoticeDocument | InvoiceDocument | CreditNoteDocument>();
 const isEmailDialogVisible = ref(false);
 
 async function getDocument() {
@@ -44,6 +46,9 @@ async function getDocument() {
     return result;
   } else if (kind === DocumentKind.overdueNotice) {
     result.value = await getOverdueNoticeDocument(documentId);
+    return result;
+  } else if (kind === DocumentKind.creditNote) {
+    result.value = await getCreditNoteDocument(documentId);
     return result;
   } else neverFunction(kind);
 }
@@ -92,8 +97,8 @@ onMounted(async () => {
       />
       <DocumentArticleTable
         v-else
-        :document="result as InvoiceDocument | OfferDocument"
-        :kind="kind"
+        :document="result as InvoiceDocument | OfferDocument | CreditNoteDocument"
+        :kind="kind as DocumentKind.invoice | DocumentKind.offer | DocumentKind.creditNote"
       />
       <DocumentText :result="result" :kind="kind" />
       <DocumentFooter />

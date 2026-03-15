@@ -140,7 +140,7 @@ overdueNoticesRouter.post(
     }
 
     const documentsOfTheMonth = await dataSource.manager.query(`
-      SELECT id from overdue_notice_document where id LIKE '%${overdueNotice.notice_date.substring(0, 7)}-%'
+      SELECT id from overdue_notice_document where id LIKE 'M${overdueNotice.notice_date.substring(0, 7)}-%'
     `);
     const firstUnusedNumber = findFirstUnusedNumber(
       documentsOfTheMonth.map((doc: { id: string }) => doc.id),

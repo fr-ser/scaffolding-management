@@ -18,6 +18,7 @@ const props = defineProps<{
   subOrderPositions: ExtendedItem[];
   vatDate: Date;
   hasAutomaticRentalNote: boolean;
+  negate?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -32,7 +33,8 @@ const vatRate = computed(() => {
 const notifications = useNotifications();
 
 const itemsNetSum = computed(() => {
-  return getItemSum(props.subOrderPositions);
+  const sum = getItemSum(props.subOrderPositions);
+  return props.negate ? -sum : sum;
 });
 
 const automaticRentalNoteItem = computed(() => {
@@ -112,6 +114,7 @@ async function onItemCreate(kind: ArticleKind) {
     :item="item"
     :key="idx"
     :vat-date="vatDate.toISOString()"
+    :negate="negate"
     @deleted="onItemDelete(idx)"
     @updated="onItemUpdate(idx, item)"
   />
