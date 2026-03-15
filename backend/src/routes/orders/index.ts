@@ -4,7 +4,13 @@ import { FindOptionsRelations, Not } from "typeorm";
 
 import { checkPermissionMiddleware, getPermissionsForUser } from "@/authorization";
 import { getAppDataSource } from "@/db";
-import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/db/entities/documents";
+import { CreditNote } from "@/db/entities/credit_note";
+import {
+  CreditNoteDocument,
+  InvoiceDocument,
+  OfferDocument,
+  OverdueNoticeDocument,
+} from "@/db/entities/documents";
 import { Invoice } from "@/db/entities/invoice";
 import { Offer } from "@/db/entities/offer";
 import { Order } from "@/db/entities/order";
@@ -18,6 +24,7 @@ import {
 } from "@/global/types/backendTypes";
 import { ApiError, SQLITE_CONSTRAINT_ERROR_CODE } from "@/helpers/apiErrors";
 import { attachmentsRouter } from "@/routes/orders/attachments";
+import { creditNotesRouter } from "@/routes/orders/credit_notes";
 import { invoicesRouter } from "@/routes/orders/invoices";
 import { offersRouter } from "@/routes/orders/offers";
 import { overdueNoticesRouter } from "@/routes/orders/overdue_notices";
@@ -58,6 +65,7 @@ ordersRouter.get(
       databaseQuery = databaseQuery.leftJoinAndSelect("order.offer", "offer");
       databaseQuery = databaseQuery.leftJoinAndSelect("order.overdue_notices", "overdue_notices");
       databaseQuery = databaseQuery.leftJoinAndSelect("order.invoices", "invoices");
+      databaseQuery = databaseQuery.leftJoinAndSelect("order.credit_notes", "credit_notes");
     }
 
     if (search) {
@@ -115,6 +123,7 @@ ordersRouter.get(
         offer: { items: true },
         overdue_notices: { invoice_documents: { items: true } },
         invoices: { items: true },
+        credit_notes: { items: true },
       };
     }
 
@@ -137,6 +146,7 @@ ordersRouter.patch(
 
     delete req.body.overdue_notices;
     delete req.body.invoices;
+    delete req.body.credit_notes;
     delete req.body.offer;
     delete req.body.client;
     delete req.body.id;
@@ -149,6 +159,7 @@ ordersRouter.patch(
           offer: { items: true },
           overdue_notices: { invoice_documents: { items: true } },
           invoices: { items: true },
+          credit_notes: { items: true },
         },
         where: { id: req.params.id },
       });
@@ -171,6 +182,7 @@ ordersRouter.delete(
       await dataSource.transaction(async (transactionalEntityManager) => {
         await transactionalEntityManager.delete(OverdueNotice, { order_id: req.params.id });
         await transactionalEntityManager.delete(Invoice, { order_id: req.params.id });
+        await transactionalEntityManager.delete(CreditNote, { order_id: req.params.id });
         await transactionalEntityManager.delete(Offer, { order_id: req.params.id });
         await transactionalEntityManager.delete(Order, { id: req.params.id });
       });
@@ -184,6 +196,7 @@ ordersRouter.delete(
         dataSource.manager.countBy(InvoiceDocument, { order_id: req.params.id }),
         dataSource.manager.countBy(OfferDocument, { order_id: req.params.id }),
         dataSource.manager.countBy(OverdueNoticeDocument, { order_id: req.params.id }),
+        dataSource.manager.countBy(CreditNoteDocument, { order_id: req.params.id }),
       ]);
 
       if (subOrderCounts.reduce((a, b) => a + b, 0) > 0) {
@@ -248,6 +261,16 @@ ordersRouter.get(
         }),
       );
     }
+    if (kind == undefined || kind == DocumentKind.creditNote) {
+      promises.push(
+        dataSource.manager.find(CreditNoteDocument, {
+          where: {
+            credit_note: { order_id: req.params.id },
+          },
+          relations: withItems ? ["items"] : [],
+        }),
+      );
+    }
     const allDataResult = await Promise.all(promises);
     res.json(allDataResult.flat());
   },
@@ -257,4 +280,5 @@ ordersRouter.use("/:orderId/attachments", attachmentsRouter);
 ordersRouter.use("/invoices", invoicesRouter);
 ordersRouter.use("/offers", offersRouter);
 ordersRouter.use("/overdue_notices", overdueNoticesRouter);
+ordersRouter.use("/credit_notes", creditNotesRouter);
 ordersRouter.use("/reports", reportRouter);

@@ -16,6 +16,8 @@ import type {
   ArticleUpdate,
   ClientCreate,
   ClientUpdate,
+  CreditNoteCreate,
+  CreditNoteUpdate,
   InvoiceCreate,
   InvoiceUpdate,
   OfferCreate,
@@ -28,6 +30,8 @@ import type {
 import {
   type Article,
   type Client,
+  type CreditNote,
+  type CreditNoteDocument,
   type DetailedOrder,
   type Invoice,
   type InvoiceDocument,
@@ -45,6 +49,8 @@ function getUrlEntityForKind(kind: DocumentKind): string {
     return "overdue_notices";
   } else if (kind === DocumentKind.offer) {
     return "offers";
+  } else if (kind === DocumentKind.creditNote) {
+    return "credit_notes";
   } else return neverFunction(kind);
 }
 
@@ -163,6 +169,19 @@ export async function updateInvoice(id: number, invoice: InvoiceUpdate): Promise
   return response.data;
 }
 
+export async function createCreditNote(creditNote: CreditNoteCreate): Promise<CreditNote> {
+  const response = await axiosInstance.post(`/api/orders/credit_notes/`, creditNote);
+  return response.data;
+}
+
+export async function updateCreditNote(
+  id: number,
+  creditNote: CreditNoteUpdate,
+): Promise<CreditNote> {
+  const response = await axiosInstance.patch(`/api/orders/credit_notes/${id}`, creditNote);
+  return response.data;
+}
+
 export async function createOverdueNotice(
   overdue_notice: OverdueNoticeCreate,
 ): Promise<OverdueNotice> {
@@ -180,7 +199,9 @@ export async function updateOverdueNotice(
 
 export async function getDocuments(
   parameters = {} as { search?: string; take?: number },
-): Promise<PaginationResponse<OfferDocument | OverdueNoticeDocument | InvoiceDocument>> {
+): Promise<
+  PaginationResponse<OfferDocument | OverdueNoticeDocument | InvoiceDocument | CreditNoteDocument>
+> {
   const response = await axiosInstance.get(`/api/documents`, { params: parameters });
   return response.data;
 }
@@ -197,6 +218,10 @@ export async function getDocumentsByOrder(
 
 export async function getInvoiceDocument(id: string): Promise<InvoiceDocument> {
   const response = await axiosInstance.get(`/api/documents/invoices/${id}`);
+  return response.data;
+}
+export async function getCreditNoteDocument(id: string): Promise<CreditNoteDocument> {
+  const response = await axiosInstance.get(`/api/documents/credit_notes/${id}`);
   return response.data;
 }
 export async function getOfferDocument(id: string): Promise<OfferDocument> {

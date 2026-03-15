@@ -4,6 +4,7 @@ import { computed } from "vue";
 import { formatIsoDateString, neverFunction } from "@/global/helpers";
 import { DocumentKind, OverdueNoticeLevel } from "@/global/types/appTypes";
 import type {
+  CreditNoteDocument,
   InvoiceDocument,
   OfferDocument,
   OverdueNoticeDocument,
@@ -15,7 +16,7 @@ const VITE_COMPANY_POSTAL_CODE_AND_CITY = import.meta.env.VITE_COMPANY_POSTAL_CO
 const BASE_URL = import.meta.env.BASE_URL;
 
 const props = defineProps<{
-  result: OfferDocument | OverdueNoticeDocument | InvoiceDocument;
+  result: OfferDocument | OverdueNoticeDocument | InvoiceDocument | CreditNoteDocument;
   kind: DocumentKind;
 }>();
 
@@ -44,6 +45,13 @@ const content = computed(() => {
       numberName: "Belegnummer",
       titleKind,
       date: (props.result as OverdueNoticeDocument).notice_date,
+    };
+  } else if (props.kind === DocumentKind.creditNote) {
+    return {
+      dateName: "Gutschriftsdatum",
+      numberName: "Gutschriftsnummer",
+      titleKind: "Gutschrift",
+      date: (props.result as CreditNoteDocument).credit_date,
     };
   } else return neverFunction(props.kind);
 });
@@ -99,6 +107,13 @@ const content = computed(() => {
     <p>
       Sehr geehrte Damen und Herren,<br />
       vielen Dank für Ihren Auftrag, den wir wie folgt in Rechnung stellen.
+    </p>
+  </section>
+  <section v-if="props.kind === DocumentKind.creditNote" class="mb-10 mt-[4rem]">
+    <p class="font-bold">BV: {{ result.order_title }}</p>
+    <p>
+      Sehr geehrte Damen und Herren,<br />
+      wir schreiben Ihnen den folgenden Betrag gut.
     </p>
   </section>
   <section v-if="props.kind === DocumentKind.offer" class="mb-10 mt-[4rem]">

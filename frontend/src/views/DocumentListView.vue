@@ -14,6 +14,7 @@ import useNotifications from "@/composables/useNotifications";
 import { neverFunction } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
 import type {
+  CreditNoteDocument,
   InvoiceDocument,
   OfferDocument,
   OverdueNoticeDocument,
@@ -24,7 +25,9 @@ import { debounce } from "@/helpers/utils";
 const confirm = useConfirmations();
 const notifications = useNotifications();
 
-const documentsList = ref<(InvoiceDocument | OfferDocument | OverdueNoticeDocument)[]>([]);
+const documentsList = ref<
+  (InvoiceDocument | OfferDocument | OverdueNoticeDocument | CreditNoteDocument)[]
+>([]);
 const documentSelection = ref<string[]>([]);
 const areAllDocumentsSelected = ref(false);
 
@@ -44,13 +47,17 @@ async function loadMore() {
   await loadData();
 }
 
-function getDocumentType(doc: OfferDocument | OverdueNoticeDocument | InvoiceDocument) {
+function getDocumentType(
+  doc: OfferDocument | OverdueNoticeDocument | InvoiceDocument | CreditNoteDocument,
+) {
   if ("offer_id" in doc) {
     return DocumentKind.offer;
   } else if ("overdue_notice_id" in doc) {
     return DocumentKind.overdueNotice;
   } else if ("invoice_id" in doc) {
     return DocumentKind.invoice;
+  } else if ("credit_note_id" in doc) {
+    return DocumentKind.creditNote;
   } else return neverFunction(doc);
 }
 
@@ -61,7 +68,9 @@ function getDocumentTypeById(id: string) {
   throw new Error(`No document found for ID: ${id}`);
 }
 
-async function removeDocument(doc: OfferDocument | OverdueNoticeDocument | InvoiceDocument) {
+async function removeDocument(
+  doc: OfferDocument | OverdueNoticeDocument | InvoiceDocument | CreditNoteDocument,
+) {
   const confirmationResult = await confirm.showConfirmation(
     "Sind Sie sicher, dass Sie das Dokument löschen möchten?",
   );

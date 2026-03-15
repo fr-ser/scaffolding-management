@@ -20,6 +20,7 @@ const props = defineProps<{
   item: OfferItemCreate | InvoiceItemCreate;
   vatDate: string;
   isAppManagedPosition?: boolean;
+  negate?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -85,15 +86,16 @@ watch(
       <div v-if="editableItem.price != null && editableItem.amount != null">
         Netto:
         {{
-          formatNumber(editableItem.price * editableItem.amount, {
+          formatNumber((negate ? -1 : 1) * editableItem.price * editableItem.amount, {
             currency: true,
           })
         }}
         - Brutto:
         {{
-          formatNumber(editableItem.price * editableItem.amount * (1 + vatRate), {
-            currency: true,
-          })
+          formatNumber(
+            (negate ? -1 : 1) * editableItem.price * editableItem.amount * (1 + vatRate),
+            { currency: true },
+          )
         }}
       </div>
       <div>

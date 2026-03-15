@@ -1,6 +1,8 @@
 import type {
   Article,
   Client,
+  CreditNote,
+  CreditNoteItem,
   Invoice,
   InvoiceItem,
   Offer,
@@ -55,4 +57,17 @@ export type OverdueNoticeCreate = Omit<
 
 export type OverdueNoticeUpdate = Partial<Omit<OverdueNotice, "id" | "invoice_documents">> & {
   invoice_documents?: string[];
+};
+
+export type CreditNoteItemCreate = Omit<CreditNoteItem, "credit_note_id" | "credit_note" | "id">;
+
+export type CreditNoteCreate = Omit<
+  CreditNote,
+  "id" | "order" | "created_at" | "updated_at" | "items" | "sub_id"
+> & {
+  items: CreditNoteItemCreate[];
+};
+
+export type CreditNoteUpdate = Partial<Omit<CreditNote, "id" | "items">> & {
+  items?: CreditNoteItemCreate[];
 };

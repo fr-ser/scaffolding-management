@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
 
 import { Client } from "@/db/entities/client";
+import { CreditNote } from "@/db/entities/credit_note";
 import { Invoice } from "@/db/entities/invoice";
 import { Offer } from "@/db/entities/offer";
 import { OverdueNotice } from "@/db/entities/overdue_notice";
@@ -36,6 +37,9 @@ export class Order {
 
   @OneToMany(() => OverdueNotice, (overdue_notice) => overdue_notice.order)
   overdue_notices: OverdueNotice[];
+
+  @OneToMany(() => CreditNote, (credit_note) => credit_note.order)
+  credit_notes: CreditNote[];
 
   @Column({ type: "text" })
   status: OrderStatus;

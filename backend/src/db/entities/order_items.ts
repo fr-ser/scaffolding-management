@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
+import { CreditNote } from "@/db/entities/credit_note";
 import { Invoice } from "@/db/entities/invoice";
 import { Offer } from "@/db/entities/offer";
 import { ArticleKind } from "@/global/types/appTypes";
@@ -45,4 +46,14 @@ export class InvoiceItem extends OrderItem {
   @ManyToOne(() => Invoice, { onDelete: "CASCADE" })
   @JoinColumn({ name: "invoice_id" })
   invoice: Invoice;
+}
+
+@Entity()
+export class CreditNoteItem extends OrderItem {
+  @Column({ type: "integer" })
+  credit_note_id: number;
+
+  @ManyToOne(() => CreditNote, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "credit_note_id" })
+  credit_note: CreditNote;
 }

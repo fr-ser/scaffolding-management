@@ -4,6 +4,8 @@ import useNotifications from "@/composables/useNotifications";
 import { ArticleKind } from "@/global/types/appTypes";
 import { ErrorCode } from "@/global/types/backendTypes";
 import type {
+  CreditNoteCreate,
+  CreditNoteUpdate,
   InvoiceCreate,
   InvoiceUpdate,
   OfferCreate,
@@ -141,6 +143,26 @@ function validateOfferOrInvoiceItems(
       throw new ValidationError();
     }
   }
+}
+
+export function useCreditNoteValidation() {
+  const notifications = useNotifications();
+
+  return {
+    validateAndCleanPayload<T extends CreditNoteCreate | CreditNoteUpdate>(data: T): T {
+      if (!data.items || data.items.length === 0) {
+        notifications.showNotification("Mindestens eine Position ist nötig", "error");
+        throw new ValidationError();
+      }
+
+      const cleanedItems = data.items.map(replaceEmptyStringsWithNull);
+      const cleaned = { ...replaceEmptyStringsWithNull(data), items: cleanedItems };
+
+      validateOfferOrInvoiceItems(cleaned.items, notifications);
+
+      return cleaned;
+    },
+  };
 }
 
 export function useOverdueNoticeValidation() {

@@ -2,13 +2,14 @@
 import { formatIsoDateString } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
 import type {
+  CreditNoteDocument,
   InvoiceDocument,
   OfferDocument,
   OverdueNoticeDocument,
 } from "@/global/types/entities";
 
 const props = defineProps<{
-  result: OfferDocument | OverdueNoticeDocument | InvoiceDocument;
+  result: OfferDocument | OverdueNoticeDocument | InvoiceDocument | CreditNoteDocument;
   kind: DocumentKind;
 }>();
 
@@ -75,6 +76,13 @@ const VITE_COMPANY_NAME = import.meta.env.VITE_COMPANY_NAME;
 
     <section v-if="props.kind === DocumentKind.overdueNotice">
       Überweisen Sie bitte den offenen Betrag auf das unten aufgeführte Geschäftskonto. <br /><br />
+      Mit freundlichen Grüßen <br /><br />
+      {{ VITE_COMPANY_NAME }}
+    </section>
+
+    <section v-if="props.kind === DocumentKind.creditNote">
+      Der gutgeschriebene Betrag wird mit Ihrer nächsten Rechnung verrechnet oder auf Wunsch
+      erstattet.<br /><br />
       Mit freundlichen Grüßen <br /><br />
       {{ VITE_COMPANY_NAME }}
     </section>

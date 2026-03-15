@@ -10,12 +10,12 @@ import {
   neverFunction,
 } from "@/global/helpers";
 import { ArticleKind, DocumentKind } from "@/global/types/appTypes";
-import type { InvoiceDocument, OfferDocument } from "@/global/types/entities";
+import type { CreditNoteDocument, InvoiceDocument, OfferDocument } from "@/global/types/entities";
 import { getGrossAmount } from "@/helpers/utils";
 
 const props = defineProps<{
-  document: OfferDocument | InvoiceDocument;
-  kind: DocumentKind.invoice | DocumentKind.offer;
+  document: OfferDocument | InvoiceDocument | CreditNoteDocument;
+  kind: DocumentKind.invoice | DocumentKind.offer | DocumentKind.creditNote;
 }>();
 
 const vatRate = computed(() => {
@@ -25,6 +25,8 @@ const vatRate = computed(() => {
     vatDate = (props.document as InvoiceDocument).service_dates[0];
   } else if (props.kind === DocumentKind.offer) {
     vatDate = (props.document as OfferDocument).offered_at;
+  } else if (props.kind === DocumentKind.creditNote) {
+    vatDate = (props.document as CreditNoteDocument).credit_date;
   } else neverFunction(props.kind);
 
   return getVatRate({ isoDate: vatDate });
@@ -71,7 +73,7 @@ const allItemsNetSum = computed(() => {
               ? ""
               : `${
                   getVatRate({
-                    isoDate: `${kind === DocumentKind.invoice ? "" : (document as OfferDocument).offered_at}`,
+                    isoDate: `${kind === DocumentKind.invoice ? "" : kind === DocumentKind.creditNote ? (document as CreditNoteDocument).credit_date : (document as OfferDocument).offered_at}`,
                   }) *
                     100 +
                   " %"
@@ -86,7 +88,7 @@ const allItemsNetSum = computed(() => {
                   getVatAmount(
                     item.amount,
                     item.price,
-                    `${kind === DocumentKind.invoice ? "" : (document as OfferDocument).offered_at}`,
+                    `${kind === DocumentKind.invoice ? "" : kind === DocumentKind.creditNote ? (document as CreditNoteDocument).credit_date : (document as OfferDocument).offered_at}`,
                   ),
                   { maxDecimals: 2 },
                 )
@@ -99,7 +101,7 @@ const allItemsNetSum = computed(() => {
               : formatNumber(
                   getGrossAmount(
                     item,
-                    `${kind === DocumentKind.invoice ? "" : (document as OfferDocument).offered_at}`,
+                    `${kind === DocumentKind.invoice ? "" : kind === DocumentKind.creditNote ? (document as CreditNoteDocument).credit_date : (document as OfferDocument).offered_at}`,
                   ),
                   { maxDecimals: 2 },
                 )

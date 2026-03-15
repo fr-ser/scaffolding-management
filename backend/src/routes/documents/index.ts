@@ -4,7 +4,12 @@ import { In, SelectQueryBuilder } from "typeorm";
 
 import { checkPermissionMiddleware } from "@/authorization";
 import { getAppDataSource } from "@/db";
-import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/db/entities/documents";
+import {
+  CreditNoteDocument,
+  InvoiceDocument,
+  OfferDocument,
+  OverdueNoticeDocument,
+} from "@/db/entities/documents";
 import { neverFunction } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
 import {
@@ -19,6 +24,7 @@ import { ApiError } from "@/helpers/apiErrors";
 import { log } from "@/helpers/logging";
 import { mergeSortedDocuments } from "@/helpers/utils";
 import { renderMultiplePDF } from "@/pdf/renderPDF";
+import { creditNoteDocumentsRouter } from "@/routes/documents/credit_note_documents";
 import { invoiceDocumentsRouter } from "@/routes/documents/invoice_documents";
 import { offerDocumentsRouter } from "@/routes/documents/offer_documents";
 import { overdueNoticeDocumentsRouter } from "@/routes/documents/overdue_notice_documents";
@@ -41,6 +47,7 @@ documentsRouter.get(
     let baseInvoiceQuery: SelectQueryBuilder<InvoiceDocument>;
     let baseOfferQuery: SelectQueryBuilder<OfferDocument>;
     let baseOverdueNoticeQuery: SelectQueryBuilder<OverdueNoticeDocument>;
+    let baseCreditNoteQuery: SelectQueryBuilder<CreditNoteDocument>;
 
     if (!search) {
       baseInvoiceQuery = getAppDataSource().manager.createQueryBuilder(InvoiceDocument, "invoice");
@@ -48,6 +55,10 @@ documentsRouter.get(
       baseOverdueNoticeQuery = getAppDataSource().manager.createQueryBuilder(
         OverdueNoticeDocument,
         "overdue_notice",
+      );
+      baseCreditNoteQuery = getAppDataSource().manager.createQueryBuilder(
+        CreditNoteDocument,
+        "credit_note",
       );
     } else {
       const cleanSearch = search.trim();
@@ -67,24 +78,32 @@ documentsRouter.get(
         .where("(id LIKE '%' || :search || '%' OR order_title LIKE '%' || :search || '%')", {
           search: cleanSearch,
         });
+      baseCreditNoteQuery = getAppDataSource()
+        .manager.createQueryBuilder(CreditNoteDocument, "credit_note")
+        .where("(id LIKE '%' || :search || '%' OR order_title LIKE '%' || :search || '%')", {
+          search: cleanSearch,
+        });
     }
 
     const allDataResult = await Promise.all([
       baseInvoiceQuery.take(take).orderBy("created_at", "DESC").getMany(),
       baseOfferQuery.take(take).orderBy("created_at", "DESC").getMany(),
       baseOverdueNoticeQuery.take(take).orderBy("created_at", "DESC").getMany(),
+      baseCreditNoteQuery.take(take).orderBy("created_at", "DESC").getMany(),
       baseInvoiceQuery.getCount(),
       baseOfferQuery.getCount(),
       baseOverdueNoticeQuery.getCount(),
+      baseCreditNoteQuery.getCount(),
     ]);
 
-    const data = allDataResult.slice(0, 3) as [
+    const data = allDataResult.slice(0, 4) as [
       OfferDocument[],
       InvoiceDocument[],
       OverdueNoticeDocument[],
+      CreditNoteDocument[],
     ];
 
-    const counts = allDataResult.slice(3) as number[];
+    const counts = allDataResult.slice(4) as number[];
 
     res.json({
       data: mergeSortedDocuments(...data, {
@@ -92,7 +111,9 @@ documentsRouter.get(
         maxItems: take,
       }),
       totalCount: counts.reduce((acc, item) => acc + item, 0),
-    } as PaginationResponse<InvoiceDocument | OfferDocument | OverdueNoticeDocument>);
+    } as PaginationResponse<
+      InvoiceDocument | OfferDocument | OverdueNoticeDocument | CreditNoteDocument
+    >);
   },
 );
 
@@ -157,6 +178,22 @@ documentsRouter.post(
               return { kind: DocumentKind.overdueNotice, document: item };
             }),
           ),
+        dataSource.manager
+          .find(CreditNoteDocument, {
+            where: {
+              id: In(
+                payload
+                  .filter((item) => item.kind === DocumentKind.creditNote)
+                  .map((item) => item.id),
+              ),
+            },
+            relations: { items: true },
+          })
+          .then((result) =>
+            result.map((item) => {
+              return { kind: DocumentKind.creditNote, document: item };
+            }),
+          ),
       ])) as AnyDocument[][]
     ).flat();
 
@@ -218,6 +255,12 @@ documentsRouter.post(
         where: { id: payload.id },
       });
       dataForPdfGeneration = { kind: payload.kind, document };
+    } else if (payload.kind === DocumentKind.creditNote) {
+      const document = await dataSource.manager.findOne(CreditNoteDocument, {
+        relations: { items: true },
+        where: { id: payload.id },
+      });
+      dataForPdfGeneration = { kind: payload.kind, document };
     } else neverFunction(payload.kind);
 
     if (dataForPdfGeneration.document == null) {
@@ -255,3 +298,4 @@ documentsRouter.post(
 documentsRouter.use("/offers", offerDocumentsRouter);
 documentsRouter.use("/overdue_notices", overdueNoticeDocumentsRouter);
 documentsRouter.use("/invoices", invoiceDocumentsRouter);
+documentsRouter.use("/credit_notes", creditNoteDocumentsRouter);
