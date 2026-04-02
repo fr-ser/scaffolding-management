@@ -270,7 +270,10 @@ async function onClickSave() {
       <div class="font-bold">Summe:</div>
       <span>Netto: {{ formatNumber(itemsSum.net, { currency: true }) }} </span>
       <span>USt: {{ formatNumber(itemsSum.vat, { currency: true }) }}</span>
-      <span>Brutto: {{ formatNumber(itemsSum.gross, { currency: true }) }} </span>
+      <span
+        >Brutto:
+        {{ formatNumber(itemsSum.gross + noticeCosts + defaultInterest, { currency: true }) }}
+      </span>
     </div>
     <div class="flex gap-2">
       <Button @click="onClickedSearchInvoice" icon="pi pi-plus" label="Rechnung hinzufügen" />
