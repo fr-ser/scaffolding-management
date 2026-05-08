@@ -30,7 +30,7 @@ test("create, edit and delete a client", async ({ page }) => {
   await page.getByLabel("Speichern").click();
   await expect(page.getByText("Die Änderung der Kundendaten wurde gespeichert")).toBeVisible();
 
-  await page.reload();
+  await page.reload({ waitUntil: "networkidle" });
   await expect(page.getByLabel("Kommentar")).toHaveValue("edit comment");
 
   // check filtering
