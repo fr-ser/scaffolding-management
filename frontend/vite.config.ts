@@ -21,5 +21,23 @@ export default defineConfig(() => {
         ["/api"]: new URL("http://localhost:3001").origin,
       },
     },
+
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes("node_modules")) {
+              if (id.includes("@primeuix")) {
+                return "vendor-primeuix";
+              }
+              if (id.includes("primevue")) {
+                return "vendor-primevue";
+              }
+              return "vendor";
+            }
+          },
+        },
+      },
+    },
   };
 });
