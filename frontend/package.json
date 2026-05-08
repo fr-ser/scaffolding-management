@@ -15,10 +15,10 @@
     "format": "npm run lint -- --fix && prettier --write src/"
   },
   "dependencies": {
-    "@primeuix/themes": "^1.2.3",
+    "@primeuix/themes": "^2.0.3",
     "@tailwindcss/vite": "^4.1.12",
     "axios": "^1.7.2",
-    "date-fns": "^3.6.0",
+    "date-fns": "^4.1.0",
     "file-saver": "^2.0.5",
     "pinia": "^3.0.1",
     "primeicons": "^7.0.0",
@@ -26,7 +26,7 @@
     "tailwindcss": "^4.1.12",
     "tailwindcss-primeui": "^0.6.1",
     "vue": "^3.4.29",
-    "vue-router": "^4.3.3"
+    "vue-router": "^5.0.6"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",
