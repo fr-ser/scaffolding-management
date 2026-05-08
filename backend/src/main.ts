@@ -1,6 +1,5 @@
 import path from "node:path";
 
-import bodyParser from "body-parser";
 import compression from "compression";
 import cors from "cors";
 import "dotenv/config";
@@ -65,9 +64,9 @@ export function getApp(options?: { requestLogging?: boolean }) {
     }),
   );
 
-  app.use(bodyParser.json({ limit: "5mb" }));
-  app.use(bodyParser.text({ type: "text/plain", limit: "1mb" }));
-  app.use(bodyParser.text({ type: "text/html", limit: "3mb" }));
+  app.use(express.json({ limit: "5mb" }));
+  app.use(express.text({ type: "text/plain", limit: "1mb" }));
+  app.use(express.text({ type: "text/html", limit: "3mb" }));
   app.use(express.static(STATIC_FILE_ROOT));
   app.use("/api/users", usersRouter);
   app.use("/api/clients", clientsRouter);
