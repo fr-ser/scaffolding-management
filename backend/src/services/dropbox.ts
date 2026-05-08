@@ -28,7 +28,8 @@ export async function getFilesInFolder(folderPath: string) {
       cursor = cursorResult.cursor;
     }
   } catch (err) {
-    if (err?.error?.error?.path?.[".tag"] === "not_found") return [];
+    const dropboxErr = err as { error?: { error?: { path?: { ".tag"?: string } } } };
+    if (dropboxErr.error?.error?.path?.[".tag"] === "not_found") return [];
     throw err;
   }
 

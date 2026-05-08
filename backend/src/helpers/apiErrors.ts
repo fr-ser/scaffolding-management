@@ -12,3 +12,7 @@ export class ApiError extends Error {
 }
 
 export const SQLITE_CONSTRAINT_ERROR_CODE = "SQLITE_CONSTRAINT";
+
+export interface SQLiteError {
+  code?: string;
+}

@@ -10,52 +10,52 @@ import { OrderStatus } from "@/global/types/appTypes";
 @Entity()
 export class Order {
   @PrimaryColumn({ type: "text" })
-  id: string;
+  declare id: string;
 
   @Column({ type: "real", default: () => "unixepoch('subsec')" })
-  created_at: number;
+  declare created_at: number;
 
   @Column({
     type: "real",
     default: () => "unixepoch('subsec')",
     onUpdate: "unixepoch('subsec')",
   })
-  updated_at: number;
+  declare updated_at: number;
 
   @Column({ type: "text" })
-  client_id: string;
+  declare client_id: string;
 
   @ManyToOne(() => Client)
   @JoinColumn({ name: "client_id" })
-  client: Client;
+  declare client: Client;
 
   @OneToOne(() => Offer, (offer) => offer.order)
-  offer: Offer;
+  declare offer: Offer;
 
   @OneToMany(() => Invoice, (invoice) => invoice.order)
-  invoices: Invoice[];
+  declare invoices: Invoice[];
 
   @OneToMany(() => OverdueNotice, (overdue_notice) => overdue_notice.order)
-  overdue_notices: OverdueNotice[];
+  declare overdue_notices: OverdueNotice[];
 
   @OneToMany(() => CreditNote, (credit_note) => credit_note.order)
-  credit_notes: CreditNote[];
+  declare credit_notes: CreditNote[];
 
   @Column({ type: "text" })
-  status: OrderStatus;
+  declare status: OrderStatus;
 
   @Column({ type: "text" })
-  title: string;
+  declare title: string;
 
   @Column({ type: "text", nullable: true })
-  description: string;
+  declare description: string;
 
   @Column({ type: "boolean" })
-  can_have_cash_discount: boolean;
+  declare can_have_cash_discount: boolean;
 
   @Column({ type: "real", nullable: true })
-  discount_duration: number;
+  declare discount_duration: number;
 
   @Column({ type: "real", nullable: true })
-  discount_percentage: number;
+  declare discount_percentage: number;
 }

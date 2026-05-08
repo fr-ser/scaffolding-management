@@ -8,36 +8,36 @@ import { OfferStatus } from "@/global/types/appTypes";
 @Entity()
 export class Offer {
   @PrimaryGeneratedColumn()
-  id: number;
+  declare id: number;
 
   @Column({ type: "real", default: () => "unixepoch('subsec')" })
-  created_at: number;
+  declare created_at: number;
 
   @Column({ type: "real", default: () => "unixepoch('subsec')" })
-  updated_at: number;
+  declare updated_at: number;
 
   @Column({ type: "text" })
-  order_id: string;
+  declare order_id: string;
 
   @OneToOne(() => Order)
   @JoinColumn({ name: "order_id" })
-  order: Order;
+  declare order: Order;
 
   @Column({ type: "text" })
-  status: OfferStatus;
+  declare status: OfferStatus;
 
   @Column({ type: "text", nullable: true })
-  description: string;
+  declare description: string;
 
   @Column({ type: "text" })
-  offered_at: string;
+  declare offered_at: string;
 
   @Column({ type: "text" })
-  offer_valid_until: string;
+  declare offer_valid_until: string;
 
   @OneToMany(() => OfferItem, (offer_item) => offer_item.offer)
-  items: OfferItem[];
+  declare items: OfferItem[];
 
   @OneToMany(() => OfferDocument, (offer_document) => offer_document.offer)
-  documents: OfferDocument[];
+  declare documents: OfferDocument[];
 }

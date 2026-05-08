@@ -5,22 +5,22 @@ import { ArticleKind } from "@/global/types/appTypes";
 @Entity()
 export class Article {
   @PrimaryColumn({ type: "text" })
-  id: string;
+  declare id: string;
 
   @Column({ type: "real", default: () => "unixepoch('subsec')" })
-  created_at: number;
+  declare created_at: number;
 
   @Column({ type: "real", default: () => "unixepoch('subsec')" })
-  updated_at: number;
+  declare updated_at: number;
 
   @Column({ type: "text" })
-  kind: ArticleKind;
+  declare kind: ArticleKind;
 
   @Column({ type: "text" })
-  title: string;
+  declare title: string;
 
   @Column({ type: "text" })
-  description: string;
+  declare description: string;
 
   @Column({ type: "text", nullable: true })
   unit?: string;
