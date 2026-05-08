@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = process.env.PLAYWRIGHT_BACKEND_PORT || process.env.HTTP_PORT || 3001;
+const PORT = process.env.PLAYWRIGHT_BACKEND_PORT || 3099;
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -26,7 +26,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "make build run-server-production",
+    command: `HTTP_PORT=${PORT} make build run-server-production`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     stdout: process.env.CI ? "pipe" : "ignore",

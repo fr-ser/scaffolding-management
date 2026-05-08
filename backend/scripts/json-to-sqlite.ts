@@ -409,7 +409,7 @@ async function main() {
   try {
     fs.unlinkSync(TARGET_DB);
   } catch (error) {
-    if (error.code !== "ENOENT") throw error;
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
   }
   await initializeAppDataSource(TARGET_DB);
   const dataSource = getAppDataSource();

@@ -22,25 +22,25 @@ import { OverdueNoticeLevel } from "@/global/types/appTypes";
 
 abstract class BaseDocument {
   @PrimaryColumn({ type: "text" })
-  id: string;
+  declare id: string;
 
   @Column({ type: "text" })
-  creation_date: string;
+  declare creation_date: string;
 
   @Column({ type: "real", default: () => "unixepoch('subsec')" })
-  created_at: number;
+  declare created_at: number;
 
   @Column({ type: "real", default: () => "unixepoch('subsec')" })
-  updated_at: number;
+  declare updated_at: number;
 
   @Column({ type: "text" })
-  order_id: string;
+  declare order_id: string;
 
   // The below data duplicates the data in their source entities.
   // It is duplicated to be historically consistent. I.e. it will stay the same in the
   // document even when the client data is updated (after the document is created)
   @Column({ type: "text" })
-  client_id: string;
+  declare client_id: string;
 
   @Column({ type: "text", nullable: true })
   client_email?: string;
@@ -64,110 +64,110 @@ abstract class BaseDocument {
   client_city?: string;
 
   @Column({ type: "text" })
-  order_title: string;
+  declare order_title: string;
 }
 
 @Entity()
 export class OfferDocument extends BaseDocument {
   @Column({ type: "text" })
-  offer_id: number;
+  declare offer_id: number;
 
   @ManyToOne(() => Offer)
   @JoinColumn({ name: "offer_id" })
-  offer: Offer;
+  declare offer: Offer;
 
   @OneToMany(() => OfferDocumentItem, (offer_document_item) => offer_document_item.offer_document)
-  items: OfferDocumentItem[];
+  declare items: OfferDocumentItem[];
 
   @Column({ type: "text" })
-  offered_at: string;
+  declare offered_at: string;
 
   @Column({ type: "text" })
-  offer_valid_until: string;
+  declare offer_valid_until: string;
 }
 
 @Entity()
 export class InvoiceDocument extends BaseDocument {
   @Column({ type: "text" })
-  invoice_id: number;
+  declare invoice_id: number;
 
   @ManyToOne(() => Invoice)
   @JoinColumn({ name: "invoice_id" })
-  invoice: Invoice;
+  declare invoice: Invoice;
 
   @OneToMany(
     () => InvoiceDocumentItem,
     (invoice_document_item) => invoice_document_item.invoice_document,
   )
-  items: InvoiceDocumentItem[];
+  declare items: InvoiceDocumentItem[];
 
   @Column("simple-json")
-  service_dates: string[];
+  declare service_dates: string[];
 
   @Column({ type: "text" })
-  invoice_date: string;
+  declare invoice_date: string;
 
   @Column({ type: "text" })
-  payment_target: string;
+  declare payment_target: string;
 
   @Column({ type: "boolean" })
-  can_have_cash_discount: boolean;
+  declare can_have_cash_discount: boolean;
 
   @Column({ type: "real", nullable: true })
-  discount_duration: number;
+  declare discount_duration: number;
 
   @Column({ type: "real", nullable: true })
-  discount_percentage: number;
+  declare discount_percentage: number;
 
   @ManyToMany(() => OverdueNotice)
-  overdue_notices: OverdueNotice[];
+  declare overdue_notices: OverdueNotice[];
 }
 
 @Entity()
 export class CreditNoteDocument extends BaseDocument {
   @Column({ type: "text" })
-  credit_note_id: number;
+  declare credit_note_id: number;
 
   @ManyToOne(() => CreditNote)
   @JoinColumn({ name: "credit_note_id" })
-  credit_note: CreditNote;
+  declare credit_note: CreditNote;
 
   @OneToMany(
     () => CreditNoteDocumentItem,
     (credit_note_document_item) => credit_note_document_item.credit_note_document,
   )
-  items: CreditNoteDocumentItem[];
+  declare items: CreditNoteDocumentItem[];
 
   @Column({ type: "text" })
-  credit_date: string;
+  declare credit_date: string;
 }
 
 @Entity()
 export class OverdueNoticeDocument extends BaseDocument {
   @Column({ type: "text" })
-  overdue_notice_id: number;
+  declare overdue_notice_id: number;
 
   @ManyToOne(() => OverdueNotice)
   @JoinColumn({ name: "overdue_notice_id" })
-  overdue_notice: OverdueNotice;
+  declare overdue_notice: OverdueNotice;
 
   @Column({ type: "text" })
-  notice_level: OverdueNoticeLevel;
+  declare notice_level: OverdueNoticeLevel;
 
   @Column({ type: "text" })
-  notice_date: string;
+  declare notice_date: string;
 
   @Column({ type: "text" })
-  payments_until: string;
+  declare payments_until: string;
 
   @Column({ type: "text" })
-  payment_target: string;
+  declare payment_target: string;
 
   @Column({ type: "real" })
-  notice_costs: number;
+  declare notice_costs: number;
 
   @Column({ type: "real", nullable: true })
-  default_interest: number;
+  declare default_interest: number;
 
   @ManyToMany(() => InvoiceDocument)
   @JoinTable({
@@ -181,5 +181,5 @@ export class OverdueNoticeDocument extends BaseDocument {
       referencedColumnName: "id",
     },
   })
-  invoice_documents: InvoiceDocument[];
+  declare invoice_documents: InvoiceDocument[];
 }

@@ -7,16 +7,16 @@ import { ArticleKind } from "@/global/types/appTypes";
 
 export abstract class OrderItem {
   @PrimaryGeneratedColumn()
-  id: number;
+  declare id: number;
 
   @Column({ type: "text" })
-  kind: ArticleKind;
+  declare kind: ArticleKind;
 
   @Column({ type: "text" })
-  title: string;
+  declare title: string;
 
   @Column({ type: "text" })
-  description: string;
+  declare description: string;
 
   @Column({ type: "text", nullable: true })
   unit?: string;
@@ -31,29 +31,29 @@ export abstract class OrderItem {
 @Entity()
 export class OfferItem extends OrderItem {
   @Column({ type: "integer" })
-  offer_id: number;
+  declare offer_id: number;
 
   @ManyToOne(() => Offer, { onDelete: "CASCADE" })
   @JoinColumn({ name: "offer_id" })
-  offer: Offer;
+  declare offer: Offer;
 }
 
 @Entity()
 export class InvoiceItem extends OrderItem {
   @Column({ type: "integer" })
-  invoice_id: number;
+  declare invoice_id: number;
 
   @ManyToOne(() => Invoice, { onDelete: "CASCADE" })
   @JoinColumn({ name: "invoice_id" })
-  invoice: Invoice;
+  declare invoice: Invoice;
 }
 
 @Entity()
 export class CreditNoteItem extends OrderItem {
   @Column({ type: "integer" })
-  credit_note_id: number;
+  declare credit_note_id: number;
 
   @ManyToOne(() => CreditNote, { onDelete: "CASCADE" })
   @JoinColumn({ name: "credit_note_id" })
-  credit_note: CreditNote;
+  declare credit_note: CreditNote;
 }

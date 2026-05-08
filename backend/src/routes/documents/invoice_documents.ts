@@ -5,7 +5,7 @@ import { getAppDataSource } from "@/db";
 import { InvoiceDocument } from "@/db/entities/documents";
 import { OverdueNotice } from "@/db/entities/overdue_notice";
 import { ErrorCode, UserPermissions } from "@/global/types/backendTypes";
-import { ApiError, SQLITE_CONSTRAINT_ERROR_CODE } from "@/helpers/apiErrors";
+import { ApiError, SQLITE_CONSTRAINT_ERROR_CODE, SQLiteError } from "@/helpers/apiErrors";
 
 export const invoiceDocumentsRouter = express.Router();
 
@@ -45,7 +45,7 @@ invoiceDocumentsRouter.delete(
     try {
       res.json(await dataSource.manager.delete(InvoiceDocument, { id }));
     } catch (error) {
-      if (error.code !== SQLITE_CONSTRAINT_ERROR_CODE) {
+      if ((error as SQLiteError).code !== SQLITE_CONSTRAINT_ERROR_CODE) {
         next(error);
         return;
       }

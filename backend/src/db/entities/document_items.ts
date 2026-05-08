@@ -5,53 +5,53 @@ import { ArticleKind } from "@/global/types/appTypes";
 
 abstract class DocumentItem {
   @PrimaryGeneratedColumn()
-  id: number;
+  declare id: number;
 
   @Column({ type: "text" })
-  kind: ArticleKind;
+  declare kind: ArticleKind;
 
   @Column({ type: "text" })
-  title: string;
+  declare title: string;
 
   @Column({ type: "text" })
-  description: string;
+  declare description: string;
 
   @Column({ type: "text", nullable: true })
-  unit: string;
+  declare unit: string;
 
   @Column({ type: "real", nullable: true })
-  price: number;
+  declare price: number;
 
   @Column({ type: "real", nullable: true })
-  amount: number;
+  declare amount: number;
 }
 
 @Entity()
 export class OfferDocumentItem extends DocumentItem {
   @Column({ type: "text" })
-  offer_document_id: string;
+  declare offer_document_id: string;
 
   @ManyToOne(() => OfferDocument, { onDelete: "CASCADE" })
   @JoinColumn({ name: "offer_document_id" })
-  offer_document: OfferDocument;
+  declare offer_document: OfferDocument;
 }
 
 @Entity()
 export class InvoiceDocumentItem extends DocumentItem {
   @Column({ type: "text" })
-  invoice_document_id: string;
+  declare invoice_document_id: string;
 
   @ManyToOne(() => InvoiceDocument, { onDelete: "CASCADE" })
   @JoinColumn({ name: "invoice_document_id" })
-  invoice_document: InvoiceDocument;
+  declare invoice_document: InvoiceDocument;
 }
 
 @Entity()
 export class CreditNoteDocumentItem extends DocumentItem {
   @Column({ type: "text" })
-  credit_note_document_id: string;
+  declare credit_note_document_id: string;
 
   @ManyToOne(() => CreditNoteDocument, { onDelete: "CASCADE" })
   @JoinColumn({ name: "credit_note_document_id" })
-  credit_note_document: CreditNoteDocument;
+  declare credit_note_document: CreditNoteDocument;
 }

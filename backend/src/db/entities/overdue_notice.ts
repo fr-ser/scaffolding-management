@@ -15,20 +15,20 @@ import { OverdueNoticeLevel, OverdueNoticePaymentStatus } from "@/global/types/a
 @Entity()
 export class OverdueNotice {
   @PrimaryGeneratedColumn()
-  id: number;
+  declare id: number;
 
   @Column({ type: "real", default: () => "unixepoch('subsec')" })
-  created_at: number;
+  declare created_at: number;
 
   @Column({ type: "real", default: () => "unixepoch('subsec')" })
-  updated_at: number;
+  declare updated_at: number;
 
   @Column({ type: "text" })
-  order_id: string;
+  declare order_id: string;
 
   @ManyToOne(() => Order)
   @JoinColumn({ name: "order_id" })
-  order: Order;
+  declare order: Order;
 
   @ManyToMany(() => InvoiceDocument)
   @JoinTable({
@@ -39,32 +39,32 @@ export class OverdueNotice {
       referencedColumnName: "id",
     },
   })
-  invoice_documents: InvoiceDocument[];
+  declare invoice_documents: InvoiceDocument[];
 
   @Column({ type: "text", nullable: true })
-  sub_id: string;
+  declare sub_id: string;
 
   @Column({ type: "text", nullable: true })
-  description: string;
+  declare description: string;
 
   @Column({ type: "text" })
-  notice_date: string;
+  declare notice_date: string;
 
   @Column({ type: "text" })
-  payments_until: string;
+  declare payments_until: string;
 
   @Column({ type: "text" })
-  payment_target: string;
+  declare payment_target: string;
 
   @Column({ type: "text" })
-  notice_level: OverdueNoticeLevel;
+  declare notice_level: OverdueNoticeLevel;
 
   @Column({ type: "text" })
-  payment_status: OverdueNoticePaymentStatus;
+  declare payment_status: OverdueNoticePaymentStatus;
 
   @Column({ type: "real" })
-  notice_costs: number;
+  declare notice_costs: number;
 
   @Column({ type: "real", nullable: true })
-  default_interest: number;
+  declare default_interest: number;
 }
