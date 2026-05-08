@@ -222,7 +222,7 @@ documentsRouter.post(
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const form = formidable({});
     let payload: SendDocumentsAsEMail;
-    let additionalAttachments: formidable.File[] = [];
+    let additionalAttachments: formidable.File[];
     try {
       const [fields, files] = await form.parse(req);
       payload = JSON.parse(fields.payload as unknown as string) as SendDocumentsAsEMail;

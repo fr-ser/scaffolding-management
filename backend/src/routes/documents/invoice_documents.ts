@@ -13,10 +13,11 @@ invoiceDocumentsRouter.get(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.DOCUMENTS_VIEW)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
     const document = await dataSource.manager.findOne(InvoiceDocument, {
       relations: { items: true },
-      where: { id: req.params.id },
+      where: { id },
     });
 
     if (!document) next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
@@ -28,11 +29,12 @@ invoiceDocumentsRouter.delete(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.DOCUMENTS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
 
     const document = await dataSource.manager.findOne(InvoiceDocument, {
       relations: { items: true },
-      where: { id: req.params.id },
+      where: { id },
     });
 
     if (!document) {
@@ -41,7 +43,7 @@ invoiceDocumentsRouter.delete(
     }
 
     try {
-      res.json(await dataSource.manager.delete(InvoiceDocument, { id: req.params.id }));
+      res.json(await dataSource.manager.delete(InvoiceDocument, { id }));
     } catch (error) {
       if (error.code !== SQLITE_CONSTRAINT_ERROR_CODE) {
         next(error);
@@ -49,7 +51,7 @@ invoiceDocumentsRouter.delete(
       }
 
       const overdueNoticeCount = await dataSource.manager.countBy(OverdueNotice, {
-        invoice_documents: { id: req.params.id },
+        invoice_documents: { id },
       });
       if (overdueNoticeCount > 0) {
         next(new ApiError(ErrorCode.FK_CONSTRAINT_OVERDUE_NOTICE));

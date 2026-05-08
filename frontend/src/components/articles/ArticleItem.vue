@@ -52,7 +52,7 @@ async function onClickDelete() {
     await deleteArticle(`${editableArticle.value.id}`);
     emit("reloadArticleView");
     notifications.showNotification("Der Artikel wurde gelöscht");
-  } catch (error) {
+  } catch {
     notifications.showNotification("Der Artikel konnte nicht gelöscht werden.", "error");
   }
 }

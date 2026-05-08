@@ -36,18 +36,18 @@ const notifications = useNotifications();
 
 const hasAutomaticRentalNote = ref(!props.existingInvoice);
 
-let status = ref(finalExistingSubOrder.value?.status || PaymentStatus.initial);
-let description = ref(finalExistingSubOrder.value?.description || "");
-let invoiceItemsArray = ref<InvoiceItemCreate[]>(finalExistingSubOrder.value?.items || []);
-let invoiceDate = ref<Date>(
+const status = ref(finalExistingSubOrder.value?.status || PaymentStatus.initial);
+const description = ref(finalExistingSubOrder.value?.description || "");
+const invoiceItemsArray = ref<InvoiceItemCreate[]>(finalExistingSubOrder.value?.items || []);
+const invoiceDate = ref<Date>(
   finalExistingSubOrder.value ? new Date(finalExistingSubOrder.value.invoice_date) : new Date(),
 );
-let paymentTarget = ref<Date>(
+const paymentTarget = ref<Date>(
   finalExistingSubOrder.value
     ? new Date(finalExistingSubOrder.value.payment_target)
     : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
 );
-let serviceDates = ref<{ date?: Date }[]>(
+const serviceDates = ref<{ date?: Date }[]>(
   finalExistingSubOrder.value?.service_dates.map((date) => ({ date: new Date(date) })) || [],
 );
 
@@ -65,7 +65,7 @@ async function onDeleteInvoice() {
     await deleteSubOrder(finalExistingSubOrder.value!.id, DocumentKind.invoice);
     notifications.showNotification("Die Rechnung wurde gelöscht.");
     emit("deleted");
-  } catch (error) {
+  } catch {
     notifications.showNotification("Die Rechnung konnte nicht gelöscht werden.", "error");
   }
 }
@@ -73,7 +73,7 @@ async function onDeleteInvoice() {
 const validation = useInvoiceValidation();
 
 async function onSaveInvoice() {
-  let payloadItems: InvoiceItemCreate[] = [...invoiceItemsArray.value];
+  const payloadItems: InvoiceItemCreate[] = [...invoiceItemsArray.value];
   if (hasAutomaticRentalNote.value) {
     payloadItems.push(getAutomaticRentalNote(getItemSum(invoiceItemsArray.value)));
   }

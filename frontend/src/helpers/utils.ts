@@ -4,7 +4,10 @@ import { getVatRate } from "@/global/helpers";
 import type { OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { OfferItem } from "@/global/types/entities";
 
-export function debounce<F extends Function>(func: F, wait: number): F {
+export function debounce<T extends unknown[]>(
+  func: (...args: T) => void,
+  wait: number,
+): (...args: T) => void {
   let timeoutID: number;
 
   if (!Number.isInteger(wait)) {
@@ -12,15 +15,12 @@ export function debounce<F extends Function>(func: F, wait: number): F {
     wait = 300;
   }
 
-  // conversion through any necessary as it wont satisfy criteria otherwise
-  return function (this: any, ...args: any[]) {
+  return (...args: T) => {
     clearTimeout(timeoutID);
-    const context = this;
-
-    timeoutID = window.setTimeout(function () {
-      func.apply(context, args);
+    timeoutID = window.setTimeout(() => {
+      func(...args);
     }, wait);
-  } as any;
+  };
 }
 
 export function validEMail(strEMail: string) {
@@ -55,15 +55,12 @@ export class ValidationError extends Error {
  * The primary use of this is to clean up data before sending it to the backend.
  */
 export function replaceEmptyStringsWithNull<T extends object>(data: T): T {
-  // The heavy use of "any" is here to allow a generic function for all kinds of inputs
-  const result = {} as any;
-
-  const untypedData = data as any;
+  const result: Record<string, unknown> = {};
+  const untypedData = data as Record<string, unknown>;
   Object.keys(data).forEach((key) => {
     result[key] = untypedData[key] === "" ? null : untypedData[key];
   });
-
-  return result;
+  return result as T;
 }
 
 /**

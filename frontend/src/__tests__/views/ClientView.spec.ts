@@ -11,7 +11,9 @@ vi.mock("vue-router");
 vi.mock("@/backendClient");
 
 describe("ClientView", () => {
-  vi.mocked(useRoute).mockReturnValue({ params: { id: "1" } } as any);
+  vi.mocked(useRoute).mockReturnValue({ params: { id: "1" } } as unknown as ReturnType<
+    typeof useRoute
+  >);
   vi.mocked(getClient).mockResolvedValue(getClientMock());
   vi.mocked(getOrders).mockResolvedValue({ data: [getOrderMock()], totalCount: 1 });
 

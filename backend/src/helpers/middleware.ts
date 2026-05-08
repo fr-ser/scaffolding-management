@@ -35,7 +35,7 @@ export const requestLogger = morgan(
 
 export function apiErrorHandler(
   err: any, // eslint-disable-line @typescript-eslint/no-explicit-any
-  _: express.Request, // eslint-disable-line @typescript-eslint/no-unused-vars
+  _: express.Request,
   res: express.Response,
   _2: express.NextFunction, // eslint-disable-line @typescript-eslint/no-unused-vars
 ) {

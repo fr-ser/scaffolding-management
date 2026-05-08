@@ -95,11 +95,14 @@ onMounted(async () => {
         v-if="kind === DocumentKind.overdueNotice"
         :document="result as OverdueNoticeDocument"
       />
+      <!-- TypeScript union type | in binding is falsely detected as Vue 2 filter syntax -->
+      <!-- eslint-disable vue/no-deprecated-filter -->
       <DocumentArticleTable
         v-else
         :document="result as InvoiceDocument | OfferDocument | CreditNoteDocument"
         :kind="kind as DocumentKind.invoice | DocumentKind.offer | DocumentKind.creditNote"
       />
+      <!-- eslint-enable vue/no-deprecated-filter -->
       <DocumentText :result="result" :kind="kind" />
       <DocumentFooter />
     </div>

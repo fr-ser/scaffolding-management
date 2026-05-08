@@ -38,15 +38,15 @@ const emit = defineEmits<{
 const confirm = useConfirmations();
 const notifications = useNotifications();
 
-let status = ref(finalExistingSubOrder.value?.status || PaymentStatus.initial);
-let description = ref(finalExistingSubOrder.value?.description || "");
-let creditNoteItemsArray = ref<CreditNoteItemCreate[]>(
+const status = ref(finalExistingSubOrder.value?.status || PaymentStatus.initial);
+const description = ref(finalExistingSubOrder.value?.description || "");
+const creditNoteItemsArray = ref<CreditNoteItemCreate[]>(
   finalExistingSubOrder.value?.items?.map((item) => ({
     ...item,
     price: item.price != null ? Math.abs(item.price) : item.price,
   })) || [],
 );
-let creditDate = ref<Date>(
+const creditDate = ref<Date>(
   finalExistingSubOrder.value ? new Date(finalExistingSubOrder.value.credit_date) : new Date(),
 );
 
@@ -73,7 +73,7 @@ async function onDeleteCreditNote() {
     await deleteSubOrder(finalExistingSubOrder.value!.id, DocumentKind.creditNote);
     notifications.showNotification("Die Gutschrift wurde gelöscht.");
     emit("deleted");
-  } catch (error) {
+  } catch {
     notifications.showNotification("Die Gutschrift konnte nicht gelöscht werden.", "error");
   }
 }

@@ -71,7 +71,12 @@ test("add line items from inventory, manually, and as a heading", async ({ page 
   await page.goto(getDocumentListPath());
   await page.getByPlaceholder("Suche").fill("Line Items Test " + timestamp);
   await expect(page.getByText(/Angebot - A/)).toHaveCount(1);
-  await page.getByText(/Angebot - A/).first().locator("../..").getByRole("button", { name: "Löschen" }).click();
+  await page
+    .getByText(/Angebot - A/)
+    .first()
+    .locator("../..")
+    .getByRole("button", { name: "Löschen" })
+    .click();
   await page.getByRole("alertdialog").getByText("Bestätigen").click();
   await expect(page.getByText("Das Dokument wurde gelöscht")).toBeVisible();
 

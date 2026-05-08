@@ -15,9 +15,10 @@ overdueNoticesRouter.get(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_VIEW)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
     const overdue_notice = await dataSource.manager.findOne(OverdueNotice, {
-      where: { id: parseInt(req.params.id) },
+      where: { id: parseInt(id) },
     });
 
     if (!overdue_notice) next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
@@ -55,20 +56,21 @@ overdueNoticesRouter.patch(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
     const payload = req.body as OverdueNoticeUpdate;
-    let overdueNotice: OverdueNotice | null = null;
+    let overdueNotice: OverdueNotice | null;
 
     let invoiceDocumentUpdates = undefined;
     if (payload.invoice_documents) {
-      invoiceDocumentUpdates = payload.invoice_documents.map((id) => ({ id }));
+      invoiceDocumentUpdates = payload.invoice_documents.map((docId) => ({ id: docId }));
     }
     const payloadWithoutID = { ...payload, invoice_documents: undefined };
 
     try {
-      await dataSource.manager.update(OverdueNotice, req.params.id, payloadWithoutID);
+      await dataSource.manager.update(OverdueNotice, id, payloadWithoutID);
       overdueNotice = await dataSource.manager.findOne(OverdueNotice, {
-        where: { id: parseInt(req.params.id) },
+        where: { id: parseInt(id) },
         relations: { invoice_documents: true },
       });
 
@@ -93,10 +95,11 @@ overdueNoticesRouter.delete(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
 
     const documentCount = await dataSource.manager.countBy(OverdueNoticeDocument, {
-      overdue_notice_id: parseInt(req.params.id),
+      overdue_notice_id: parseInt(id),
     });
     if (documentCount > 0) {
       next(new ApiError(ErrorCode.FK_CONSTRAINT_DOCUMENT));
@@ -104,7 +107,7 @@ overdueNoticesRouter.delete(
     }
 
     try {
-      res.json(await dataSource.manager.delete(OverdueNotice, { id: req.params.id }));
+      res.json(await dataSource.manager.delete(OverdueNotice, { id }));
     } catch (error) {
       next(error);
     }
@@ -115,10 +118,11 @@ overdueNoticesRouter.get(
   "/:id/documents",
   [checkPermissionMiddleware(UserPermissions.DOCUMENTS_VIEW)],
   async (req: express.Request, res: express.Response) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
     res.json(
       await dataSource.manager.find(OverdueNoticeDocument, {
-        where: { overdue_notice_id: parseInt(req.params.id) },
+        where: { overdue_notice_id: parseInt(id) },
       }),
     );
   },
@@ -128,9 +132,10 @@ overdueNoticesRouter.post(
   "/:id/documents",
   [checkPermissionMiddleware(UserPermissions.DOCUMENTS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
     const overdueNotice = await dataSource.manager.findOne(OverdueNotice, {
-      where: { id: parseInt(req.params.id) },
+      where: { id: parseInt(id) },
       relations: { order: { client: true } },
       loadRelationIds: { relations: ["invoice_documents"] },
     });

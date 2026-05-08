@@ -17,9 +17,10 @@ offersRouter.get(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_VIEW)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
     const offer = await dataSource.manager.findOne(Offer, {
-      where: { id: parseInt(req.params.id) },
+      where: { id: parseInt(id) },
     });
 
     if (!offer) next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
@@ -72,7 +73,8 @@ offersRouter.patch(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const offerId = parseInt(req.params.id);
+    const { id } = req.params as Record<string, string>;
+    const offerId = parseInt(id);
     const payload = req.body as OfferUpdate;
     const dataSource = getAppDataSource();
 
@@ -113,7 +115,7 @@ offersRouter.patch(
     }
 
     const offer = await dataSource.manager.findOne(Offer, {
-      where: { id: parseInt(req.params.id) },
+      where: { id: offerId },
     });
 
     if (offer == null) next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
@@ -125,10 +127,11 @@ offersRouter.delete(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
 
     const documentCount = await dataSource.manager.countBy(OfferDocument, {
-      offer_id: parseInt(req.params.id),
+      offer_id: parseInt(id),
     });
     if (documentCount > 0) {
       next(new ApiError(ErrorCode.FK_CONSTRAINT_DOCUMENT));
@@ -136,7 +139,7 @@ offersRouter.delete(
     }
 
     try {
-      res.json(await dataSource.manager.delete(Offer, { id: req.params.id }));
+      res.json(await dataSource.manager.delete(Offer, { id }));
     } catch (error) {
       next(error);
     }
@@ -147,10 +150,11 @@ offersRouter.get(
   "/:id/documents",
   [checkPermissionMiddleware(UserPermissions.DOCUMENTS_VIEW)],
   async (req: express.Request, res: express.Response) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
     res.json(
       await dataSource.manager.find(OfferDocument, {
-        where: { offer_id: parseInt(req.params.id) },
+        where: { offer_id: parseInt(id) },
       }),
     );
   },
@@ -160,9 +164,10 @@ offersRouter.post(
   "/:id/documents",
   [checkPermissionMiddleware(UserPermissions.DOCUMENTS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
     const offer = await dataSource.manager.findOne(Offer, {
-      where: { id: parseInt(req.params.id) },
+      where: { id: parseInt(id) },
       relations: { order: { client: true }, items: true },
     });
     if (!offer) {

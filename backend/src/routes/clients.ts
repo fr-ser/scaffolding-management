@@ -71,16 +71,17 @@ clientsRouter.delete(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.CLIENTS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
     try {
-      res.json(await dataSource.manager.delete(Client, { id: req.params.id }));
+      res.json(await dataSource.manager.delete(Client, { id }));
     } catch (error) {
       if (error.code !== SQLITE_CONSTRAINT_ERROR_CODE) {
         next(error);
         return;
       }
       const ordersCount = await dataSource.manager.countBy(Order, {
-        client_id: req.params.id,
+        client_id: id,
       });
       if (ordersCount > 0) {
         next(new ApiError(ErrorCode.FK_CONSTRAINT_ORDER));
@@ -95,14 +96,13 @@ clientsRouter.patch(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.CLIENTS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
-    let client: Client | null = null;
 
+    let client: Client | null;
     try {
-      await dataSource.manager.update(Client, req.params.id, req.body);
-      client = await dataSource.manager.findOneBy(Client, {
-        id: req.params.id,
-      });
+      await dataSource.manager.update(Client, id, req.body);
+      client = await dataSource.manager.findOneBy(Client, { id });
     } catch (error) {
       next(error);
       return;
@@ -116,9 +116,10 @@ clientsRouter.patch(
 clientsRouter.get(
   "/:id",
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
     const client = await dataSource.manager.findOneBy(Client, {
-      id: req.params.id,
+      id,
     });
     if (!client) {
       next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));

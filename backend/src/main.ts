@@ -26,7 +26,6 @@ export function getApp() {
 
   app.use(requestLogger);
 
-  // eslint-disable-next-line  @typescript-eslint/no-unused-vars
   app.get("/api/health", (_, res) => {
     // this is a public endpoint (required for freshping)
     res.status(200).send("OK");

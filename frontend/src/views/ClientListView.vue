@@ -67,7 +67,7 @@ async function onClickDelete(client: Client) {
     await deleteClient(client.id);
     loadData();
     notifications.showNotification("Der Kunde wurde gelöscht");
-  } catch (error) {
+  } catch {
     notifications.showNotification("Der Kunde konnte nicht gelöscht werden.", "error");
   }
 }
