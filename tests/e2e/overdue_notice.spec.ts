@@ -69,10 +69,10 @@ test("create, issue document for, and delete an overdue notice", async ({ page }
   // Create an overdue notice document
   await page.getByRole("button", { name: "Dokument Erstellen" }).click();
   await page.getByRole("alertdialog").getByText("Bestätigen").click();
-  await expect(page.getByText("Ein Dokumente wurde erstellt:")).toBeVisible();
+  await expect(page.getByText("Ein Dokumente wurde erstellt:").last()).toBeVisible();
 
   // Navigate to the document and verify it is accessible
-  await page.getByRole("button", { name: "Link zum Dokument" }).click();
+  await page.getByRole("button", { name: "Link zum Dokument" }).last().click();
   await page.waitForURL("**/documents/**");
   await expect(page.getByText(/Mahnung/)).toBeVisible();
 
