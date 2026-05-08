@@ -1,75 +1,66 @@
-# command to list available commands with a preceding comment (requires "#:")
-help: 
-	@ echo '  Usage:'
-	@ echo '    make <target>'
-	@ echo ''
-	@ echo '  Targets:'
-	@grep -B1 -E "^[a-zA-Z0-9_-]+\:([^\=]|$$)" Makefile \
-		| grep -v -- -- \
-		| sed 'N;s/\n/###/' \
-		| sed -n 's/^#: \(.*\)###\(.*\):.*/\2:###\1/p' \
-		| column -t -s '###'
+# Top-level Makefile
+.PHONY: *
 
-#: installs dependencies (backend and frontend)
-install:
+help: ## Show help
+	@echo "Available commands:"
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
+		| awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-25s\033[0m %s\n", $$1, $$2}'
+
+install-all: ## install all the dependencies for both BE and FE
+	npm install
 	cd backend && npm install
 	cd frontend && npm install
-	npm install
 
-#: start the backend
-start-backend:
+start-be: ## start BE locally
 	cd backend && npm run dev
 
-#: start the frontend
-start-frontend:
+start-fe: ## start FE locally
 	cd frontend && npm run dev
 
-#: build all assets for production mode
-build:
+build-all: ## build backend and frontend for production
 	cd backend && rm -rf dist && npm run build
 	cd frontend && npm run build
 
-#: start server in production mode (serving both the API and frontend)
-run-server-production:
-	cd backend && STATIC_FILE_ROOT=dist/static CONFIG_PATH=../.env.development npm run start:server
+lint-all: ## run linting across root, backend, and frontend
+	npm run lint
+	cd backend && npm run lint
+	cd frontend && npm run lint
 
-format-all: ## Format files in root, backend, and frontend
-	npx eslint --fix
+format-all: ## format files across root, backend, and frontend
+	npm run format
 	cd backend && npm run format
 	cd frontend && npm run format
 
-#: run all tests
-test-all:
+test-all: ## run all tests across all levels
 	cd backend && npm run test
 	cd frontend && npm run test
 	npm run test
+	npm run test:e2e
 
-deploy-build-no-test: build
+test-e2e-dev: ## run playwright UI tests against the running development instance
+	PLAYWRIGHT_BACKEND_PORT=3001 npm run test:e2e -- --ui
+
+
+deploy-ssh: ## connect to deploy target via ssh
+	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS}
+
+deploy-database-to-local: ## copy the production database to the local machine
+	scp -P $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS}:~/apps/scaffolding/production.db ./production.db
+
+deploy-database-to-remote: ## copy the local database to the deployment machine
+	scp -P $${SSH_PORT} ./production.db $${SSH_USER}@$${SSH_ADDRESS}:~/apps/scaffolding/production.copy.db
+
+# Internal deployment steps
+deploy-build-no-test: build-all
 	@test -f .env.production || (echo "Production env for the frontend not found!" && exit 1)
-
 	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS} 'mkdir -p ~/apps/next-scaffolding'
 	scp -P $${SSH_PORT} -r ./backend/dist $${SSH_USER}@$${SSH_ADDRESS}:~/apps/next-scaffolding
 	scp -P $${SSH_PORT} ./backend/package*.json $${SSH_USER}@$${SSH_ADDRESS}:~/apps/next-scaffolding
 	scp -P $${SSH_PORT} -r ./deployment $${SSH_USER}@$${SSH_ADDRESS}:~/apps
-
 	@echo "To replace the old version you should run 'make deploy-upgrade' here or"
 	@echo "run 'cd ~/apps/deployment && make update' on the deployment target"
 
-#: Deploy the application to the deployment target
-deploy-build: build test-all deploy-build-no-test
+deploy-build: test-all deploy-build-no-test ## Build, test, and upload to production machine
 
-#: update the application on the deployment target - causes downtime
-deploy-upgrade:
+deploy-upgrade: ## update the application on the deployment target - causes downtime
 	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS} 'cd ~/apps/deployment && make update'
-
-#: connect to deploy target via ssh
-deploy-ssh:
-	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS}
-
-#: copy the production database to the local machine
-scp-database-to-local:
-	scp -P $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS}:~/apps/scaffolding/production.db ./production.db
-
-#: copy the local database to the deployment machine
-scp-database-to-deploy:
-	scp -P $${SSH_PORT} ./production.db $${SSH_USER}@$${SSH_ADDRESS}:~/apps/scaffolding/production.copy.db

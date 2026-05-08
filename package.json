@@ -4,11 +4,11 @@
   "description": "This app should provide basic functionalities to manage a very specific scaffolding business. The functionality basically includes:",
   "main": "index.js",
   "scripts": {
-    "format": "npm run test:lint -- --fix && prettier --write tests/",
-    "test:lint": "eslint tests/",
+    "format": "npm run lint -- --fix && prettier --write tests/",
+    "lint": "eslint tests/",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
-    "test": "npm run test:unit && npm run test:lint && npm run test:e2e"
+    "test": "npm run test:unit && npm run lint"
   },
   "author": "",
   "license": "ISC",

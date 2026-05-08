@@ -26,7 +26,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `HTTP_PORT=${PORT} make build run-server-production`,
+    command: `make build-all && cd backend && HTTP_PORT=${PORT} STATIC_FILE_ROOT=dist/static CONFIG_PATH=../.env.development node ./dist/src/index.js`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     stdout: process.env.CI ? "pipe" : "ignore",

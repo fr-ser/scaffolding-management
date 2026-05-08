@@ -21,9 +21,11 @@ The following tools are required to use the development setup
 
 ### Setup
 
-After the tools above are installed you can run `make install` to install all dependencies.
+After the tools above are installed you can run `make install-all` to install all dependencies.
 
-Then run `make start-backend` and `make start-frontend` in different terminals.
+Then run `cd backend && make db-seed` to create a local database with seed data.
+
+Then run `make start-be` and `make start-fe` in different terminals.
 Now you can visit the URL shown in the frontend command to visit the page.
 
 For the credentials see the backend README.
@@ -34,20 +36,21 @@ The backend and frontend have independent tests.
 
 In the overall repo you can also run e2e and unit tests, though.
 
-Run `make test-all` to run all available tests.
+Run `make test-all` to run all available tests across all levels.
+Run `npm run test` from the root to run root-level tests only.
 
 #### E2E Tests
 
 The following hints can help running e2e tests:
 
 - in order to run the tests against a running development environment use:
-  `PLAYWRIGHT_BACKEND_PORT=5173 npm run test:e2e`
+  `npm run test:e2e`
 - in order to run tests with a UI use:
-  `PLAYWRIGHT_BACKEND_PORT=5173 npm run test:e2e -- --ui`
+  `make test-e2e-dev`
 
 ## Deployment
 
-The application is manually deployed via the `make deploy` command.
+The application is manually deployed via the `make deploy-build` command.
 In order to do this SSH access to the target environment is required.
 
 These environment variables should be set:

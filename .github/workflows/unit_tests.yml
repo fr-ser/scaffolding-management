@@ -54,4 +54,4 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: test
-        run: npm run test:lint && npm run test:unit
+        run: npm run test
