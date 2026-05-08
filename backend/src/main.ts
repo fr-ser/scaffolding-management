@@ -17,14 +17,16 @@ import { documentsRouter } from "@/routes/documents";
 import { ordersRouter } from "@/routes/orders";
 import { usersRouter } from "@/routes/users";
 
-export function getApp() {
+export function getApp(options?: { requestLogging?: boolean }) {
   const app = express();
 
   app.use(cors());
   app.use(timeoutCheck);
   app.use(compression());
 
-  app.use(requestLogger);
+  if (options?.requestLogging) {
+    app.use(requestLogger);
+  }
 
   app.get("/api/health", (_, res) => {
     // this is a public endpoint (required for freshping)
