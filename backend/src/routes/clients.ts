@@ -11,7 +11,7 @@ import {
   PaginationResponse,
   UserPermissions,
 } from "@/global/types/backendTypes";
-import { ApiError, SQLITE_CONSTRAINT_ERROR_CODE, SQLiteError } from "@/helpers/apiErrors";
+import { ApiError, isSQLiteConstraintError } from "@/helpers/apiErrors";
 
 export const clientsRouter = express.Router();
 
@@ -76,7 +76,7 @@ clientsRouter.delete(
     try {
       res.json(await dataSource.manager.delete(Client, { id }));
     } catch (error) {
-      if ((error as SQLiteError).code !== SQLITE_CONSTRAINT_ERROR_CODE) {
+      if (!isSQLiteConstraintError(error)) {
         next(error);
         return;
       }

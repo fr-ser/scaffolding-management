@@ -22,7 +22,7 @@ import {
   PaginationResponse,
   UserPermissions,
 } from "@/global/types/backendTypes";
-import { ApiError, SQLITE_CONSTRAINT_ERROR_CODE, SQLiteError } from "@/helpers/apiErrors";
+import { ApiError, isSQLiteConstraintError } from "@/helpers/apiErrors";
 import { attachmentsRouter } from "@/routes/orders/attachments";
 import { creditNotesRouter } from "@/routes/orders/credit_notes";
 import { invoicesRouter } from "@/routes/orders/invoices";
@@ -190,7 +190,7 @@ ordersRouter.delete(
         await transactionalEntityManager.delete(Order, { id });
       });
     } catch (error) {
-      if ((error as SQLiteError).code !== SQLITE_CONSTRAINT_ERROR_CODE) {
+      if (!isSQLiteConstraintError(error)) {
         next(error);
         return;
       }

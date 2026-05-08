@@ -23,7 +23,7 @@ import { OverdueNotice } from "@/db/entities/overdue_notice";
 
 export function getDataSourceConfig(path: string) {
   return {
-    type: "sqlite",
+    type: "better-sqlite3",
     database: path,
     entities: [
       Client,
