@@ -17,7 +17,7 @@ import { getApp } from "@/main";
 
 async function main() {
   log("Starting application");
-  const app = getApp();
+  const app = getApp({ requestLogging: true });
 
   await initializeAppDataSource(DB_PATH);
   log(`Initialized database at ${DB_PATH}`);
