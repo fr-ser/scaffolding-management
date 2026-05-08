@@ -33,6 +33,11 @@ build:
 run-server-production:
 	cd backend && STATIC_FILE_ROOT=dist/static CONFIG_PATH=../.env.development npm run start:server
 
+format-all: ## Format files in root, backend, and frontend
+	npx eslint --fix
+	cd backend && npm run format
+	cd frontend && npm run format
+
 #: run all tests
 test-all:
 	cd backend && npm run test

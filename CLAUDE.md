@@ -149,6 +149,12 @@ Development env file: `.env.development`
 
 ## Style
 
+### Language
+
+The app UI is in German — all user-facing strings (labels, button text, toast messages, error messages, placeholder text) are and must remain German.
+All code must be in English: variable names, function names, comments, type names, test data values, and any other non-user-facing identifiers.
+In tests, UI selector strings (e.g. `getByRole("button", { name: "Speichern" })`) must match the German app text and are the only acceptable exception.
+
 ### Markdown / Documentation
 
 - Use one sentence per line in prose paragraphs (applies to CLAUDE.md and any other markdown docs in this repo).
