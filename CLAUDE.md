@@ -8,18 +8,42 @@ Full-stack business management application for a specific scaffolding rental com
 Backend: Node.js/Express/TypeORM/SQLite.
 Frontend: Vue 3/TypeScript/Vite/PrimeVue/TailwindCSS.
 
+## Tooling Conventions
+
+**Make** is for three things:
+
+- Cross-workspace commands that span multiple packages (`build-all`, `test-all`, `lint-all`, `format-all`, `install-all`)
+- Multi-step or complex commands that benefit from Makefile's sequential syntax (deployment targets)
+- Custom dev commands specific to this project (`start-be`/`start-fe`, `test-e2e-dev`)
+- Package-level custom commands live in that package's own `Makefile` (e.g. `backend/Makefile`)
+
+**npm run** is for the classic per-package commands only: `dev`, `build`, `test`, `lint`, `format`.
+These stay in `package.json` for familiarity — CI, editors, and developers expect them there.
+
+When adding a new command: if it is `dev/build/test/lint/format`, add it to the relevant `package.json`.
+Everything else goes in the `Makefile`.
+
 ## Common Commands
 
 ```bash
-make build             # Build both frontend and backend for production
-make test-all          # Run all tests (lint, unit, e2e)
+make build-all        # Build both frontend and backend for production
+make test-all         # Run all tests (all levels: root, backend, frontend)
+make test-e2e-dev     # Run Playwright tests with UI (against dev instance on :3001)
+make lint-all         # Lint across root, backend, and frontend
+make format-all       # Format across root, backend, and frontend
 ```
 
 **Backend (in `backend/`):**
 
 ```bash
-npm run build          # Compile TypeScript (tsc + tsc-alias)
-npm run test           # Lint + unit tests
+npm run build              # Compile TypeScript (tsc + tsc-alias)
+npm run test               # Lint + unit tests
+make db-seed               # Seed the development database
+make db-seed-overwrite     # Seed the development database, overwriting existing data
+make task-backup           # Run the backup task
+make task-overdue-email    # Run the overdue email task
+make task-prepared-orders-email  # Run the prepared orders email task
+make generate-pdf-snapshots      # Regenerate PDF test snapshots
 ```
 
 **Frontend (in `frontend/`):**
@@ -33,13 +57,13 @@ npm run format         # Auto-fix ESLint + Prettier
 **Tests (from root):**
 
 ```bash
-npm run test:unit      # Vitest unit tests (excludes e2e, excludes sub-packages)
-npm run test:lint      # ESLint across entire project
-npm run test:e2e       # Playwright E2E tests (requires running backend on :3001)
+make test-all          # Run all tests across the project
+npm run test           # Root-level tests only (unit + lint)
+npm run test:unit      # Vitest unit tests only
+npm run test:e2e       # Playwright E2E tests
+make test-e2e-dev      # E2E tests with UI (against dev instance on :3001)
 # Run single test file:
 npx vitest run backend/tests/someFile.test.ts
-# E2E with UI:
-PLAYWRIGHT_BACKEND_PORT=5173 npm run test:e2e -- --ui
 ```
 
 ## Architecture
@@ -131,7 +155,7 @@ Each document type mirrors the data of its source entity (Offer / Invoice / Over
 - **Admin** and **Partner** have full access
 - **Invoicing** can manage documents and update orders but not edit clients/articles
 - **Employee** is read-only.
-Users/passwords configured via environment variables.
+  Users/passwords configured via environment variables.
 
 ## Environment Configuration
 
@@ -158,7 +182,7 @@ In tests, UI selector strings (e.g. `getByRole("button", { name: "Speichern" })`
 ### Error Handling
 
 - Keep try-catch blocks as small as possible — only the operations that can actually throw should be inside.
-This makes error attribution clear and avoids the anti-pattern of thoughtless global try-catch sections with generic handling.
+  This makes error attribution clear and avoids the anti-pattern of thoughtless global try-catch sections with generic handling.
 
 ### Markdown / Documentation
 

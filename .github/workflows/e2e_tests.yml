@@ -18,15 +18,13 @@ jobs:
         with:
           node-version: 22.18.x
           cache: npm
-      - run: npm ci
-      - run: cd frontend && npm ci
-      - run: cd backend && npm ci
+      - run: make install-all
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
       - name: Seed/Create database
-        run: cd backend && npm run db:seed
+        run: cd backend && make db-seed
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npm run test:e2e
       - uses: actions/upload-artifact@v4
         if: always()
         with:
