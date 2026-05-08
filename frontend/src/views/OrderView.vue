@@ -47,7 +47,7 @@ const userStore = useUserStore();
 const router = useRouter();
 const route = useRoute();
 
-let orderInfo = ref<OrderCreate | Order>({
+const orderInfo = ref<OrderCreate | Order>({
   client_id: "",
   status: OrderStatus.offer,
   title: "",
@@ -57,7 +57,7 @@ let orderInfo = ref<OrderCreate | Order>({
   can_have_cash_discount: false,
 });
 
-let isLoading = ref<boolean>(true);
+const isLoading = ref<boolean>(true);
 
 const discountChoice = [
   { value: true, label: "ja" },
@@ -68,7 +68,7 @@ const isEditing = computed(() => {
 });
 const discountPeriodChoice = [3, 7, 14];
 
-let selectedClient = ref<Client>();
+const selectedClient = ref<Client>();
 
 const filteredClients = ref<Client[]>([]);
 
@@ -83,7 +83,7 @@ const getClientLabel = (client: Client) => {
   return full_name;
 };
 
-const searchClient = (event: any) => {
+const searchClient = (event: { query: string }) => {
   debounce(async () => {
     if (!event.query.trim().length) {
       // we update the list to allow showing all clients when clicking the dropdown
@@ -167,19 +167,19 @@ onMounted(async () => {
 
 const activeTabIndex = ref(0);
 
-let showOfferTab = ref<boolean>(false);
+const showOfferTab = ref<boolean>(false);
 function onClickCreateOffer() {
   showOfferTab.value = true;
 }
-let showNewInvoiceTab = ref<boolean>(false);
+const showNewInvoiceTab = ref<boolean>(false);
 function onClickCreateInvoice() {
   showNewInvoiceTab.value = true;
 }
-let showNewCreditNoteTab = ref<boolean>(false);
+const showNewCreditNoteTab = ref<boolean>(false);
 function onClickCreateCreditNote() {
   showNewCreditNoteTab.value = true;
 }
-let showNewOverdueNoticeTab = ref<boolean>(false);
+const showNewOverdueNoticeTab = ref<boolean>(false);
 function onClickCreateOverdueNotice() {
   showNewOverdueNoticeTab.value = true;
 }

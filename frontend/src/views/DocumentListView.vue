@@ -77,11 +77,11 @@ async function removeDocument(
   if (!confirmationResult) return;
 
   try {
-    let kind = getDocumentType(doc);
+    const kind = getDocumentType(doc);
     await deleteDocument(doc.id, kind);
     loadData();
     notifications.showNotification("Das Dokument wurde gelöscht");
-  } catch (error) {
+  } catch {
     notifications.showNotification("Das Dokument konnte nicht gelöscht werden.", "error");
   }
 }
@@ -99,7 +99,7 @@ async function onClickCreatePdf() {
     `Wollen Sie für die folgenden Dokumente eine PDF-Datei erstellen: ${documentSelection.value.join(", ")}?`,
   );
   if (!confirmationResult) return;
-  let selectedValuesArray = documentSelection.value.map(function (id) {
+  const selectedValuesArray = documentSelection.value.map(function (id) {
     return { kind: getDocumentTypeById(id), id };
   });
   const response = await getDocumentPdf(selectedValuesArray);

@@ -17,9 +17,10 @@ creditNotesRouter.get(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_VIEW)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
     const creditNote = await dataSource.manager.findOne(CreditNote, {
-      where: { id: parseInt(req.params.id) },
+      where: { id: parseInt(id) },
     });
 
     if (!creditNote) next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
@@ -72,10 +73,11 @@ creditNotesRouter.delete(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
 
     const documentCount = await dataSource.manager.countBy(CreditNoteDocument, {
-      credit_note_id: parseInt(req.params.id),
+      credit_note_id: parseInt(id),
     });
     if (documentCount > 0) {
       next(new ApiError(ErrorCode.FK_CONSTRAINT_DOCUMENT));
@@ -83,7 +85,7 @@ creditNotesRouter.delete(
     }
 
     try {
-      res.json(await dataSource.manager.delete(CreditNote, { id: req.params.id }));
+      res.json(await dataSource.manager.delete(CreditNote, { id }));
     } catch (error) {
       next(error);
     }
@@ -94,7 +96,8 @@ creditNotesRouter.patch(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const creditNoteId = parseInt(req.params.id);
+    const { id } = req.params as Record<string, string>;
+    const creditNoteId = parseInt(id);
     const payload = req.body as CreditNoteUpdate;
     const dataSource = getAppDataSource();
 
@@ -135,7 +138,7 @@ creditNotesRouter.patch(
     }
 
     const creditNote = await dataSource.manager.findOne(CreditNote, {
-      where: { id: parseInt(req.params.id) },
+      where: { id: creditNoteId },
     });
 
     if (creditNote == null) next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
@@ -147,9 +150,10 @@ creditNotesRouter.get(
   "/:id/documents",
   [checkPermissionMiddleware(UserPermissions.DOCUMENTS_VIEW)],
   async (req: express.Request, res: express.Response) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
     const documents = await dataSource.manager.find(CreditNoteDocument, {
-      where: { credit_note_id: parseInt(req.params.id) },
+      where: { credit_note_id: parseInt(id) },
     });
     res.json(documents);
   },
@@ -159,9 +163,10 @@ creditNotesRouter.post(
   "/:id/documents",
   [checkPermissionMiddleware(UserPermissions.DOCUMENTS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
     const creditNote = await dataSource.manager.findOne(CreditNote, {
-      where: { id: parseInt(req.params.id) },
+      where: { id: parseInt(id) },
       relations: { order: { client: true }, items: true },
     });
     if (!creditNote) {

@@ -47,14 +47,13 @@ articlesRouter.patch(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.ARTICLES_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
-    let article: Article | null = null;
 
+    let article: Article | null;
     try {
-      await dataSource.manager.update(Article, req.params.id, req.body);
-      article = await dataSource.manager.findOneBy(Article, {
-        id: req.params.id,
-      });
+      await dataSource.manager.update(Article, id, req.body);
+      article = await dataSource.manager.findOneBy(Article, { id });
     } catch (error) {
       next(error);
       return;
@@ -94,9 +93,10 @@ articlesRouter.delete(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.ARTICLES_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
     try {
-      res.json(await dataSource.manager.delete(Article, { id: req.params.id }));
+      res.json(await dataSource.manager.delete(Article, { id }));
     } catch (error) {
       next(error);
     }

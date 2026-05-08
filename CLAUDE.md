@@ -155,6 +155,11 @@ The app UI is in German — all user-facing strings (labels, button text, toast 
 All code must be in English: variable names, function names, comments, type names, test data values, and any other non-user-facing identifiers.
 In tests, UI selector strings (e.g. `getByRole("button", { name: "Speichern" })`) must match the German app text and are the only acceptable exception.
 
+### Error Handling
+
+- Keep try-catch blocks as small as possible — only the operations that can actually throw should be inside.
+This makes error attribution clear and avoids the anti-pattern of thoughtless global try-catch sections with generic handling.
+
 ### Markdown / Documentation
 
 - Use one sentence per line in prose paragraphs (applies to CLAUDE.md and any other markdown docs in this repo).

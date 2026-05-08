@@ -112,6 +112,7 @@ ordersRouter.post(
 ordersRouter.get(
   "/:id",
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
 
     const permissions = getPermissionsForUser((req as basicAuth.IBasicAuthedRequest).auth.user);
@@ -129,7 +130,7 @@ ordersRouter.get(
 
     const order = await dataSource.manager.findOne(Order, {
       relations,
-      where: { id: req.params.id },
+      where: { id },
     });
     if (!order) {
       next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
@@ -141,8 +142,9 @@ ordersRouter.patch(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.ORDERS_UPDATE)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
-    let order: Order | null = null;
+    let order: Order | null;
 
     delete req.body.overdue_notices;
     delete req.body.invoices;
@@ -152,7 +154,7 @@ ordersRouter.patch(
     delete req.body.id;
 
     try {
-      await dataSource.manager.update(Order, req.params.id, req.body);
+      await dataSource.manager.update(Order, id, req.body);
       order = await dataSource.manager.findOne(Order, {
         relations: {
           client: true,
@@ -161,7 +163,7 @@ ordersRouter.patch(
           invoices: { items: true },
           credit_notes: { items: true },
         },
-        where: { id: req.params.id },
+        where: { id },
       });
     } catch (error) {
       next(error);
@@ -177,14 +179,15 @@ ordersRouter.delete(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.ORDERS_CREATE_DELETE)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
     try {
       await dataSource.transaction(async (transactionalEntityManager) => {
-        await transactionalEntityManager.delete(OverdueNotice, { order_id: req.params.id });
-        await transactionalEntityManager.delete(Invoice, { order_id: req.params.id });
-        await transactionalEntityManager.delete(CreditNote, { order_id: req.params.id });
-        await transactionalEntityManager.delete(Offer, { order_id: req.params.id });
-        await transactionalEntityManager.delete(Order, { id: req.params.id });
+        await transactionalEntityManager.delete(OverdueNotice, { order_id: id });
+        await transactionalEntityManager.delete(Invoice, { order_id: id });
+        await transactionalEntityManager.delete(CreditNote, { order_id: id });
+        await transactionalEntityManager.delete(Offer, { order_id: id });
+        await transactionalEntityManager.delete(Order, { id });
       });
     } catch (error) {
       if (error.code !== SQLITE_CONSTRAINT_ERROR_CODE) {
@@ -193,10 +196,10 @@ ordersRouter.delete(
       }
 
       const subOrderCounts = await Promise.all([
-        dataSource.manager.countBy(InvoiceDocument, { order_id: req.params.id }),
-        dataSource.manager.countBy(OfferDocument, { order_id: req.params.id }),
-        dataSource.manager.countBy(OverdueNoticeDocument, { order_id: req.params.id }),
-        dataSource.manager.countBy(CreditNoteDocument, { order_id: req.params.id }),
+        dataSource.manager.countBy(InvoiceDocument, { order_id: id }),
+        dataSource.manager.countBy(OfferDocument, { order_id: id }),
+        dataSource.manager.countBy(OverdueNoticeDocument, { order_id: id }),
+        dataSource.manager.countBy(CreditNoteDocument, { order_id: id }),
       ]);
 
       if (subOrderCounts.reduce((a, b) => a + b, 0) > 0) {
@@ -215,6 +218,7 @@ ordersRouter.get(
   "/:id/documents",
   [checkPermissionMiddleware(UserPermissions.DOCUMENTS_VIEW)],
   async (req: express.Request, res: express.Response) => {
+    const { id } = req.params as Record<string, string>;
     const { withItems, kind, unpaid } = req.query as {
       withItems?: boolean;
       unpaid?: boolean;
@@ -230,7 +234,7 @@ ordersRouter.get(
         dataSource.manager.find(InvoiceDocument, {
           where: {
             invoice: {
-              order_id: req.params.id,
+              order_id: id,
               status: unpaid ? Not(PaymentStatus.paid) : undefined,
             },
           },
@@ -242,7 +246,7 @@ ordersRouter.get(
       promises.push(
         dataSource.manager.find(OfferDocument, {
           where: {
-            offer: { order_id: req.params.id },
+            offer: { order_id: id },
           },
           relations: withItems ? ["items"] : [],
         }),
@@ -253,7 +257,7 @@ ordersRouter.get(
         dataSource.manager.find(OverdueNoticeDocument, {
           where: {
             overdue_notice: {
-              order_id: req.params.id,
+              order_id: id,
               payment_status: unpaid ? Not(OverdueNoticePaymentStatus.paid) : undefined,
             },
           },
@@ -265,7 +269,7 @@ ordersRouter.get(
       promises.push(
         dataSource.manager.find(CreditNoteDocument, {
           where: {
-            credit_note: { order_id: req.params.id },
+            credit_note: { order_id: id },
           },
           relations: withItems ? ["items"] : [],
         }),

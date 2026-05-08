@@ -17,9 +17,10 @@ invoicesRouter.get(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_VIEW)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
     const invoice = await dataSource.manager.findOne(Invoice, {
-      where: { id: parseInt(req.params.id) },
+      where: { id: parseInt(id) },
     });
 
     if (!invoice) next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
@@ -72,10 +73,11 @@ invoicesRouter.delete(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
 
     const documentCount = await dataSource.manager.countBy(InvoiceDocument, {
-      invoice_id: parseInt(req.params.id),
+      invoice_id: parseInt(id),
     });
     if (documentCount > 0) {
       next(new ApiError(ErrorCode.FK_CONSTRAINT_DOCUMENT));
@@ -83,7 +85,7 @@ invoicesRouter.delete(
     }
 
     try {
-      res.json(await dataSource.manager.delete(Invoice, { id: req.params.id }));
+      res.json(await dataSource.manager.delete(Invoice, { id }));
     } catch (error) {
       next(error);
     }
@@ -94,7 +96,8 @@ invoicesRouter.patch(
   "/:id",
   [checkPermissionMiddleware(UserPermissions.SUB_ORDERS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const invoiceId = parseInt(req.params.id);
+    const { id } = req.params as Record<string, string>;
+    const invoiceId = parseInt(id);
     const payload = req.body as InvoiceUpdate;
     const dataSource = getAppDataSource();
 
@@ -135,7 +138,7 @@ invoicesRouter.patch(
     }
 
     const invoice = await dataSource.manager.findOne(Invoice, {
-      where: { id: parseInt(req.params.id) },
+      where: { id: invoiceId },
     });
 
     if (invoice == null) next(new ApiError(ErrorCode.ENTITY_NOT_FOUND));
@@ -147,9 +150,10 @@ invoicesRouter.get(
   "/:id/documents",
   [checkPermissionMiddleware(UserPermissions.DOCUMENTS_VIEW)],
   async (req: express.Request, res: express.Response) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
     const documents = await dataSource.manager.find(InvoiceDocument, {
-      where: { invoice_id: parseInt(req.params.id) },
+      where: { invoice_id: parseInt(id) },
     });
     res.json(documents);
   },
@@ -159,9 +163,10 @@ invoicesRouter.post(
   "/:id/documents",
   [checkPermissionMiddleware(UserPermissions.DOCUMENTS_EDIT)],
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id } = req.params as Record<string, string>;
     const dataSource = getAppDataSource();
     const invoice = await dataSource.manager.findOne(Invoice, {
-      where: { id: parseInt(req.params.id) },
+      where: { id: parseInt(id) },
       relations: { order: { client: true }, items: true },
     });
     if (!invoice) {

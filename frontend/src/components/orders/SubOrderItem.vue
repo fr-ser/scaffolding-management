@@ -29,10 +29,10 @@ const emit = defineEmits<{
 }>();
 
 const articleSearch = ref("");
-let filteredArticles = ref<Article[]>([]);
-let isArticlesListVisible = ref(false);
+const filteredArticles = ref<Article[]>([]);
+const isArticlesListVisible = ref(false);
 
-let editableItem = ref<OfferItemCreate | InvoiceItemCreate>(props.item);
+const editableItem = ref<OfferItemCreate | InvoiceItemCreate>(props.item);
 
 async function loadArticles() {
   const articlesList = (await getArticles({ search: articleSearch.value })).data;
@@ -52,7 +52,7 @@ async function openArticlesList() {
   await loadArticles();
 }
 
-let vatRate = computed(() => {
+const vatRate = computed(() => {
   return getVatRate({ isoDate: props.vatDate });
 });
 

@@ -36,13 +36,13 @@ const notifications = useNotifications();
 
 const hasAutomaticRentalNote = ref(!props.existingOffer);
 
-let status = ref(finalExistingSubOrder.value?.status || OfferStatus.initial);
-let description = ref(finalExistingSubOrder.value?.description || "");
-let offerItemsArray = ref<OfferItemCreate[]>(finalExistingSubOrder.value?.items || []);
-let offerDate = ref<Date>(
+const status = ref(finalExistingSubOrder.value?.status || OfferStatus.initial);
+const description = ref(finalExistingSubOrder.value?.description || "");
+const offerItemsArray = ref<OfferItemCreate[]>(finalExistingSubOrder.value?.items || []);
+const offerDate = ref<Date>(
   finalExistingSubOrder.value ? new Date(finalExistingSubOrder.value.offered_at) : new Date(),
 );
-let validityDate = ref<Date>(
+const validityDate = ref<Date>(
   finalExistingSubOrder.value
     ? new Date(finalExistingSubOrder.value.offer_valid_until)
     : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days in milliseconds
@@ -58,7 +58,7 @@ async function onDeleteOffer() {
     await deleteSubOrder(finalExistingSubOrder.value!.id, DocumentKind.offer);
     notifications.showNotification("Das Angebot wurde gelöscht.");
     emit("deleted");
-  } catch (error) {
+  } catch {
     notifications.showNotification("Das Angebot konnte nicht gelöscht werden.", "error");
   }
 }
@@ -66,7 +66,7 @@ async function onDeleteOffer() {
 const validation = useOfferValidation();
 
 async function onSaveOffer() {
-  let payloadItems: OfferItemCreate[] = [...offerItemsArray.value];
+  const payloadItems: OfferItemCreate[] = [...offerItemsArray.value];
   if (hasAutomaticRentalNote.value) {
     payloadItems.push(getAutomaticRentalNote(getItemSum(offerItemsArray.value)));
   }

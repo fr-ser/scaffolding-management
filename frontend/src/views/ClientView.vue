@@ -62,14 +62,14 @@ async function onClickDelete() {
     await deleteClient(`${route.params.id}`);
     router.push(getClientListPath());
     notifications.showNotification("Der Kunde wurde gelöscht");
-  } catch (error) {
+  } catch {
     notifications.showNotification("Der Kunde konnte nicht gelöscht werden.", "error");
   }
 }
 
-let currentClient = ref<ClientUpdate>({}); // the client as shown in the frontend
+const currentClient = ref<ClientUpdate>({}); // the client as shown in the frontend
 
-let birthdayDate = ref<Date>();
+const birthdayDate = ref<Date>();
 
 const router = useRouter();
 const route = useRoute();
@@ -81,7 +81,7 @@ const isEditing = computed(() => {
 const clientValidation = useClientValidation();
 
 const onSaveClient = async () => {
-  let requestBody = {
+  const requestBody = {
     ...currentClient.value,
   };
   if (birthdayDate.value) {

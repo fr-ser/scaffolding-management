@@ -51,7 +51,7 @@ const router = createRouter({
       component: DocumentListView,
     },
     {
-      path: routes.getDocumentViewPath(":kind" as any as DocumentKind, ":id"),
+      path: routes.getDocumentViewPath(":kind" as unknown as DocumentKind, ":id"),
       component: DocumentView,
     },
     {

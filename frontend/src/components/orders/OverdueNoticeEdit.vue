@@ -45,27 +45,27 @@ const emit = defineEmits<{
 const confirm = useConfirmations();
 const notifications = useNotifications();
 
-let noticeLevel = ref(finalExistingSubOrder.value?.notice_level || OverdueNoticeLevel.first);
-let paymentStatus = ref(
+const noticeLevel = ref(finalExistingSubOrder.value?.notice_level || OverdueNoticeLevel.first);
+const paymentStatus = ref(
   finalExistingSubOrder.value?.payment_status || OverdueNoticePaymentStatus.initial,
 );
-let noticeCosts = ref(finalExistingSubOrder.value?.notice_costs || 0);
-let defaultInterest = ref(finalExistingSubOrder.value?.default_interest || 0);
-let description = ref(finalExistingSubOrder.value?.description || "");
-let noticeDate = ref<Date>(
+const noticeCosts = ref(finalExistingSubOrder.value?.notice_costs || 0);
+const defaultInterest = ref(finalExistingSubOrder.value?.default_interest || 0);
+const description = ref(finalExistingSubOrder.value?.description || "");
+const noticeDate = ref<Date>(
   finalExistingSubOrder.value ? new Date(finalExistingSubOrder.value.notice_date) : new Date(),
 );
-let paymentTarget = ref<Date | undefined>(
+const paymentTarget = ref<Date | undefined>(
   finalExistingSubOrder.value
     ? new Date(finalExistingSubOrder.value.payment_target)
     : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
 );
-let paymentsUntil = ref<Date>(
+const paymentsUntil = ref<Date>(
   finalExistingSubOrder.value ? new Date(finalExistingSubOrder.value.payments_until) : new Date(),
 );
-let itemsArray = ref<InvoiceDocument[]>(finalExistingSubOrder.value?.invoice_documents || []);
+const itemsArray = ref<InvoiceDocument[]>(finalExistingSubOrder.value?.invoice_documents || []);
 
-let enrichedItems = computed(() => {
+const enrichedItems = computed(() => {
   return itemsArray.value.map((item) => ({
     invoiceDocument: item,
     vatRate: getVatRate({ isoDate: item.invoice_date }),
@@ -73,7 +73,7 @@ let enrichedItems = computed(() => {
   }));
 });
 
-let itemsSum = computed(() => {
+const itemsSum = computed(() => {
   return {
     net: itemsArray.value.reduce((sum, item) => sum + getItemSum(item.items), 0),
     vat: itemsArray.value.reduce(
@@ -125,7 +125,7 @@ async function onClickedDelete() {
     await deleteSubOrder(finalExistingSubOrder.value!.id, DocumentKind.overdueNotice);
     notifications.showNotification("Die Mahnung wurde gelöscht.");
     emit("deleted");
-  } catch (error) {
+  } catch {
     notifications.showNotification("Die Mahnung konnte nicht gelöscht werden.", "error");
   }
 }

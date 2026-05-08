@@ -101,7 +101,7 @@ async function sendClick() {
       },
       files.value,
     );
-  } catch (error) {
+  } catch {
     notification.showNotification(
       "Die E-Mail wurde nicht versandt. Es gab ein technisches Problem.",
       "error",

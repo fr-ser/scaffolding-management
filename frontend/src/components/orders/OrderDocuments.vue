@@ -17,9 +17,9 @@ const props = defineProps<{
   id: string | number;
 }>();
 
-let visible = ref(false);
-let documents = ref<(OfferDocument | OverdueNoticeDocument | InvoiceDocument)[]>([]);
-let isLoading = ref<boolean>(false);
+const visible = ref(false);
+const documents = ref<(OfferDocument | OverdueNoticeDocument | InvoiceDocument)[]>([]);
+const isLoading = ref<boolean>(false);
 
 function getDocumentType(doc: OfferDocument | OverdueNoticeDocument | InvoiceDocument) {
   if ("offer_id" in doc) {

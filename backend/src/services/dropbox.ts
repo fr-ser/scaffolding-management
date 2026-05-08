@@ -12,13 +12,12 @@ const dbx = new Dropbox({
 
 export async function getFilesInFolder(folderPath: string) {
   let entries: string[] = [];
-  let hasMore = false;
   try {
     const result = (await dbx.filesListFolder({ path: folderPath })).result;
     entries = entries.concat(
       result.entries.filter((entry) => entry[".tag"] === "file").map((entry) => entry.name),
     );
-    hasMore = result.has_more;
+    let hasMore = result.has_more;
     let cursor = result.cursor;
     while (hasMore) {
       const cursorResult = (await dbx.filesListFolderContinue({ cursor })).result;
