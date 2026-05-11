@@ -1,7 +1,13 @@
 import { COMPANY_NAME } from "@/config";
 import { formatIsoDateString, formatNumber, getItemSum, getVatRate } from "@/global/helpers";
 import { OverdueNoticeDocument } from "@/global/types/entities";
-import { PdfFileData, appPageOptions, mmToPx, newPageCheck } from "@/pdf/renderHelpers";
+import {
+  PdfFileData,
+  appPageOptions,
+  drawEpcQrCode,
+  mmToPx,
+  newPageCheck,
+} from "@/pdf/renderHelpers";
 
 const rmdTParams: { [index: string]: number } = {
   c1x: appPageOptions.horizontalMargin,
@@ -177,18 +183,20 @@ export function createRmdTable(
   });
   pdfFile.y += 20;
 
-  if (document.notice_costs > 0)
+  if (document.notice_costs > 0) {
     pdfFile.text(
       `Zzgl. Mahnkosten in Höhe von: ${formatNumber(document.notice_costs, { currency: true })}`,
       rmdTParams.c1x,
     );
-  if (document.default_interest != null)
+  }
+  if (document.default_interest != null) {
     pdfFile.text(
       `Zzgl. Verzugszinsen in Höhe von: ${formatNumber(document.default_interest, {
         currency: true,
       })}`,
       rmdTParams.c1x,
     );
+  }
 
   pdfFileData.currY = pdfFile.y + 10;
 }
@@ -240,16 +248,43 @@ export function setReminderSumTable(
     );
 }
 
-export function setReminderSubSumTableText(pdfFile: PDFKit.PDFDocument, pdfFileData: PdfFileData) {
+export async function setReminderSubSumTableText(
+  pdfFile: PDFKit.PDFDocument,
+  document: OverdueNoticeDocument,
+  pdfFileData: PdfFileData,
+) {
   if (pdfFileData.totalPages === 1 && pdfFileData.currY < mmToPx(240))
     pdfFileData.currY = mmToPx(240);
-  pdfFile.font("Helvetica");
+  pdfFile.font("Helvetica").fontSize(10);
 
   newPageCheck(pdfFile, pdfFileData.currY, pdfFile.currentLineHeight() * 2, pdfFileData);
 
   pdfFile
     .text(" ", appPageOptions.horizontalMargin, pdfFileData.currY)
     .text("Überweisen Sie bitte den offenen Betrag auf das unten aufgeführte Geschäftskonto.");
+
+  // EPC-QR Code
+  let prices = { net: 0, tax: 0, gross: 0 };
+  for (const invoice of document.invoice_documents) {
+    const netSum = getItemSum(invoice.items);
+    const vatRate = getVatRate({ isoDate: invoice.service_dates[0] });
+
+    prices = {
+      net: prices.net + netSum,
+      tax: prices.tax + netSum * vatRate,
+      gross: prices.gross + netSum * (1 + vatRate),
+    };
+  }
+  const totalGross = prices.gross + document.notice_costs + (document.default_interest ?? 0);
+
+  await drawEpcQrCode(
+    pdfFile,
+    totalGross,
+    document.id,
+    appPageOptions.pageWidth - appPageOptions.horizontalMargin - mmToPx(25),
+    pdfFileData.currY,
+  );
+
   pdfFileData.currY = pdfFile.y;
 
   newPageCheck(pdfFile, pdfFileData.currY, pdfFile.currentLineHeight() * 4, pdfFileData);

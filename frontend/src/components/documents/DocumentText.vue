@@ -65,19 +65,37 @@ const VITE_COMPANY_NAME = import.meta.env.VITE_COMPANY_NAME;
     <section v-if="props.kind === DocumentKind.invoice">
       Überweisen Sie bitte den offenen Betrag auf das unten aufgeführte Geschäftskonto.<br />
       Sie sind verpflichtet, die Rechnung zu Steuerzwecken zwei Jahre lang aufzubewahren.<br /><br />
-      Die aufgeführten Arbeiten wurden am
-      {{ (result as InvoiceDocument).service_dates.map(formatIsoDateString).join(", ") }}
-      ausgeführt.<br />
-      Zahlungsziel: Bitte zahlen Sie bis zum
-      {{ formatIsoDateString((result as InvoiceDocument).payment_target) }} ohne Abzug.<br /><br />
+      <div class="relative">
+        Die aufgeführten Arbeiten wurden am
+        {{ (result as InvoiceDocument).service_dates.map(formatIsoDateString).join(", ") }}
+        ausgeführt.<br />
+        Zahlungsziel: Bitte zahlen Sie bis zum
+        {{ formatIsoDateString((result as InvoiceDocument).payment_target) }} ohne Abzug.<br /><br />
+        <div class="absolute right-0 top-0 flex flex-col items-center">
+          <span class="text-[10px] text-slate-500 mb-1">Überweisung per QR-Code</span>
+          <div
+            class="border-2 border-dashed border-slate-400 w-24 h-24 flex items-center justify-center text-center text-[10px] text-slate-400 p-2"
+          >
+            (nur im PDF)
+          </div>
+        </div>
+      </div>
       Mit freundlichen Grüßen <br /><br />
       {{ VITE_COMPANY_NAME }}
     </section>
 
-    <section v-if="props.kind === DocumentKind.overdueNotice">
+    <section v-if="props.kind === DocumentKind.overdueNotice" class="relative">
       Überweisen Sie bitte den offenen Betrag auf das unten aufgeführte Geschäftskonto. <br /><br />
       Mit freundlichen Grüßen <br /><br />
       {{ VITE_COMPANY_NAME }}
+      <div class="absolute right-0 top-0 flex flex-col items-center">
+        <span class="text-[10px] text-slate-500 mb-1">Überweisung per QR-Code</span>
+        <div
+          class="border-2 border-dashed border-slate-400 w-24 h-24 flex items-center justify-center text-center text-[10px] text-slate-400 p-2"
+        >
+          (nur im PDF)
+        </div>
+      </div>
     </section>
 
     <section v-if="props.kind === DocumentKind.creditNote">
