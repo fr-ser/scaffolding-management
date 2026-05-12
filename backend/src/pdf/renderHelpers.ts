@@ -90,8 +90,8 @@ export async function drawEpcQrCode(
   y: number,
 ) {
   const savedY = doc.y;
-  const savedFont = (doc as any)._font?.name || "Helvetica";
-  const savedSize = (doc as any)._fontSize || 9;
+  const savedFont = (doc as unknown as { _font?: { name: string } })._font?.name || "Helvetica";
+  const savedSize = (doc as unknown as { _fontSize?: number })._fontSize || 9;
 
   const epcString = generateEpcQrCodeString(amount, reference);
   const qrBuffer = await QRCode.toBuffer(epcString, {
