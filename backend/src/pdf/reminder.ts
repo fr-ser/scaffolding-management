@@ -280,7 +280,7 @@ export async function setReminderSubSumTableText(
   await drawEpcQrCode(
     pdfFile,
     totalGross,
-    document.id,
+    `${document.id} am ${formatIsoDateString(document.notice_date)}`,
     appPageOptions.pageWidth - appPageOptions.horizontalMargin - mmToPx(25),
     pdfFileData.currY,
   );

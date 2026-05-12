@@ -74,6 +74,7 @@ export function generateEpcQrCodeString(amount: number, reference: string): stri
     COMPANY_IBAN,
     `EUR${amountStr}`,
     "", // Purpose Code (optional)
+    "", // Remittance Information (Structured)
     reference, // Remittance Information (Unstructured)
     "", // Advice
   ].join("\n");

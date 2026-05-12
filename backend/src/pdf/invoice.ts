@@ -82,7 +82,7 @@ export const setInvoiceSubSumTableText = async function setInvoiceSubSumTableTex
   await drawEpcQrCode(
     pdfFile,
     grossSum,
-    document.id,
+    `${document.id} am ${formatIsoDateString(document.invoice_date)}`,
     appPageOptions.pageWidth - appPageOptions.horizontalMargin - mmToPx(25),
     pdfFileData.currY,
   );
