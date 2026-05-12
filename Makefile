@@ -19,7 +19,9 @@ start-fe: ## start FE locally
 
 build-all: ## build backend and frontend for production
 	cd backend && rm -rf dist && npm run build
-	cd frontend && npm run build
+	cd frontend && npm run build -- $(BUILD_ARGS)
+	rm -rf backend/dist/static
+	cp -r frontend/dist backend/dist/static
 
 lint-all: ## run linting across root, backend, and frontend
 	npm run lint
@@ -64,3 +66,20 @@ deploy-build: test-all deploy-build-no-test ## Build, test, and upload to produc
 
 deploy-upgrade: ## update the application on the deployment target - causes downtime
 	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS} 'cd ~/apps/deployment && make update'
+
+uat-deploy: uat-build-no-test ## Build and upload to UAT machine
+	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS} 'mkdir -p ~/apps/uat-scaffolding'
+	scp -P $${SSH_PORT} -r ./backend/dist $${SSH_USER}@$${SSH_ADDRESS}:~/apps/uat-scaffolding
+	scp -P $${SSH_PORT} ./backend/package*.json $${SSH_USER}@$${SSH_ADDRESS}:~/apps/uat-scaffolding
+	scp -P $${SSH_PORT} -r ./deployment $${SSH_USER}@$${SSH_ADDRESS}:~/apps
+	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS} 'cd ~/apps/deployment && make update-uat'
+
+uat-build-no-test:
+	$(MAKE) build-all BUILD_ARGS="--mode development"
+	@test -f .env.development || (echo "Development env for the UAT not found!" && exit 1)
+
+uat-start: ## Start UAT on the server
+	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS} 'cd ~/apps/deployment && make start-uat'
+
+uat-stop: ## Stop UAT on the server
+	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS} 'cd ~/apps/deployment && make stop-uat'

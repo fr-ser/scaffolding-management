@@ -24,8 +24,7 @@ test("create, edit and delete an article", async ({ page }) => {
 
   // check filtering
   await page.getByTestId("article-search-input").fill(timestamp);
-  await page.waitForTimeout(300); // debounce time
-  expect(await page.getByTestId("article-card").count()).toBe(1);
+  await expect(page.getByTestId("article-card")).toHaveCount(1);
 
   // edit
   await page.getByLabel("Bezeichnung").fill("new-description");
@@ -33,10 +32,9 @@ test("create, edit and delete an article", async ({ page }) => {
   await expect(page.getByText("Die Änderungen wurden gespeichert")).toBeVisible();
 
   await page.reload();
-  await page.waitForLoadState("networkidle");
-  expect(
-    await page.getByTestId("article-card").first().getByLabel("Bezeichnung").inputValue(),
-  ).toBe("new-description");
+  await expect(page.getByTestId("article-card").first().getByLabel("Bezeichnung")).toHaveValue(
+    "new-description",
+  );
 
   // delete
   await page.getByTestId("article-card").first().getByTestId("article-delete-button").click();
@@ -44,6 +42,5 @@ test("create, edit and delete an article", async ({ page }) => {
   await expect(page.getByText("Der Artikel wurde gelöscht")).toBeVisible();
 
   await page.getByTestId("article-search-input").fill(timestamp);
-  await page.waitForTimeout(300); // debounce time
-  await expect(page.getByTestId("article-card")).not.toBeVisible();
+  await expect(page.getByTestId("article-card")).toHaveCount(0);
 });

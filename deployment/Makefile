@@ -17,6 +17,19 @@ update:
 	pm2 start pm2.config.js
 	pm2 save
 
+update-uat:
+	cd ~/apps/uat-scaffolding && npm install --omit=dev --no-audit
+	pm2 restart uat-scaffolding || pm2 start pm2.uat.config.js
+	pm2 save
+
+start-uat:
+	pm2 start pm2.uat.config.js
+	pm2 save
+
+stop-uat:
+	pm2 stop uat-scaffolding
+	pm2 save
+
 revert:
 	rm -rf ~/apps/next-scaffolding
 	mv ~/apps/scaffolding ~/apps/next-scaffolding

@@ -57,3 +57,12 @@ These environment variables should be set:
 
 - PI_SSH_PORT
 - PI_SSH_ADDRESS
+
+### UAT Environment
+
+The project includes a User Acceptance Testing (UAT) environment hosted on the same server as production but on a different port (default 3001).
+It uses the development configuration and is isolated from production data.
+
+- `make uat-deploy`: Build and deploy to the UAT environment.
+- `make uat-start`: Start the UAT service on the server.
+- `make uat-stop`: Stop the UAT service on the server.

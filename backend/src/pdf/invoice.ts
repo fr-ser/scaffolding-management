@@ -1,7 +1,13 @@
 import { COMPANY_NAME } from "@/config";
-import { formatIsoDateString, formatNumber } from "@/global/helpers";
+import { formatIsoDateString, formatNumber, getItemSum, getVatRate } from "@/global/helpers";
 import { InvoiceDocument } from "@/global/types/entities";
-import { PdfFileData, appPageOptions, mmToPx, newPageCheck } from "@/pdf/renderHelpers";
+import {
+  PdfFileData,
+  appPageOptions,
+  drawEpcQrCode,
+  mmToPx,
+  newPageCheck,
+} from "@/pdf/renderHelpers";
 
 export function setInvoiceInformationTable(pdfFile: PDFKit.PDFDocument, document: InvoiceDocument) {
   pdfFile
@@ -27,14 +33,14 @@ export const setInitialInvoiceText = function setInitialInvoiceText(pdfFile: PDF
     .text("vielen Dank für Ihren Auftrag, den wir wie folgt in Rechnung stellen.");
 };
 
-export const setInvoiceSubSumTableText = function setInvoiceSubSumTableText(
+export const setInvoiceSubSumTableText = async function setInvoiceSubSumTableText(
   pdfFile: PDFKit.PDFDocument,
   document: InvoiceDocument,
   pdfFileData: PdfFileData,
 ) {
   if (pdfFileData.totalPages === 1 && pdfFileData.currY < mmToPx(225))
     pdfFileData.currY = mmToPx(225);
-  pdfFile.font("Helvetica");
+  pdfFile.font("Helvetica").fontSize(10);
 
   newPageCheck(pdfFile, pdfFileData.currY, pdfFile.currentLineHeight() * 3, pdfFileData);
 
@@ -68,6 +74,19 @@ export const setInvoiceSubSumTableText = function setInvoiceSubSumTableText(
         ` von ${formatNumber(document.discount_percentage)}% berechtigt.`,
     );
   }
+
+  // EPC-QR Code
+  const netSum = getItemSum(document.items);
+  const vatRate = getVatRate({ isoDate: document.service_dates[0] });
+  const grossSum = netSum * (1 + vatRate);
+  await drawEpcQrCode(
+    pdfFile,
+    grossSum,
+    `${document.id} am ${formatIsoDateString(document.invoice_date)}`,
+    appPageOptions.pageWidth - appPageOptions.horizontalMargin - mmToPx(25),
+    pdfFileData.currY,
+  );
+
   pdfFileData.currY = pdfFile.y;
 
   newPageCheck(pdfFile, pdfFileData.currY, pdfFile.currentLineHeight() * 4, pdfFileData);

@@ -36,9 +36,8 @@ test("create, edit and delete a client", async ({ page }) => {
   // check filtering
   await page.getByTestId("return-button").click();
   await page.getByTestId("client-search-input").fill(timestamp);
-  await page.waitForTimeout(300); // debounce time
-  await expect(page.getByText(timestamp)).toBeVisible();
-  expect(await page.getByTestId("client-card").count()).toBe(1);
+  await expect(page.getByTestId("client-card")).toHaveCount(1);
+  await expect(page.getByTestId("client-card").first()).toContainText(timestamp);
 
   // delete
   await page

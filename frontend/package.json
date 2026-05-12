@@ -5,12 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
+    "build": "vite build",
     "preview": "vite preview",
-    "test": "npm run test:code && npm run lint && npm run type-check",
+    "test": "npm run test:code && npm run lint && npm run test:type-check",
     "test:code": "vitest run",
-    "build-only": "vite build && cp -r dist ../backend/dist/static",
-    "type-check": "vue-tsc --build --force",
+    "test:type-check": "vue-tsc --build --force",
     "lint": "eslint .",
     "format": "npm run lint -- --fix && prettier --write src/"
   },

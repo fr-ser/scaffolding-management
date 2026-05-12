@@ -49,7 +49,7 @@ import {
   pageOptions,
 } from "@/pdf/renderHelpers";
 
-const createDocument = function createDocument(
+const createDocument = async function createDocument(
   pdfFile: PDFKit.PDFDocument,
   documentData: AnyDocument,
 ) {
@@ -381,7 +381,7 @@ const createDocument = function createDocument(
     pdfFileData.currY += 10;
   }
 
-  function createTableBottomText() {
+  async function createTableBottomText() {
     pdfFile.fontSize(10).font("Helvetica-Bold");
 
     newPageCheck(pdfFile, pdfFileData.currY, pdfFile.currentLineHeight() * 3.5, pdfFileData);
@@ -494,9 +494,9 @@ const createDocument = function createDocument(
 
     if (documentData.kind === DocumentKind.offer) setOfferSubSumTableText(pdfFile, pdfFileData);
     else if (documentData.kind === DocumentKind.invoice)
-      setInvoiceSubSumTableText(pdfFile, documentData.document, pdfFileData);
+      await setInvoiceSubSumTableText(pdfFile, documentData.document, pdfFileData);
     else if (documentData.kind === DocumentKind.overdueNotice)
-      setReminderSubSumTableText(pdfFile, pdfFileData);
+      await setReminderSubSumTableText(pdfFile, documentData.document, pdfFileData);
     else if (documentData.kind === DocumentKind.creditNote)
       setCreditNoteSubSumTableText(pdfFile, pdfFileData);
   }
@@ -507,11 +507,12 @@ const createDocument = function createDocument(
     documentData.kind === DocumentKind.invoice ||
     documentData.kind === DocumentKind.offer ||
     documentData.kind === DocumentKind.creditNote
-  )
+  ) {
     createOfferOrInvoiceTable();
-  else if (documentData.kind === DocumentKind.overdueNotice)
+  } else if (documentData.kind === DocumentKind.overdueNotice) {
     createRmdTable(pdfFile, documentData.document, pdfFileData);
-  createTableBottomText();
+  }
+  await createTableBottomText();
   createHeaderAndFooter();
 
   pdfFile.flushPages();
@@ -527,31 +528,35 @@ export function renderMultiplePDF(
   asBase64: boolean = false,
 ): Promise<Buffer | string> {
   return new Promise((resolve, reject) => {
-    try {
-      // Create a document
-      const pdfFile = new PDFDocument(pageOptions);
+    // We use an async IIFE here to avoid the 'no-async-promise-executor' linting error
+    // while still allowing the use of 'await' for PDF generation logic.
+    (async () => {
+      try {
+        // Create a document
+        const pdfFile = new PDFDocument(pageOptions);
 
-      const bufferArr: Array<Buffer> = [];
-      pdfFile.on("data", (chunk: Buffer) => {
-        bufferArr.push(chunk);
-      });
+        const bufferArr: Array<Buffer> = [];
+        pdfFile.on("data", (chunk: Buffer) => {
+          bufferArr.push(chunk);
+        });
 
-      pdfFile.on("end", () => {
-        const tempBuffer = Buffer.concat(bufferArr);
-        if (asBase64) resolve(tempBuffer.toString("base64"));
-        else resolve(tempBuffer);
-      });
+        pdfFile.on("end", () => {
+          const tempBuffer = Buffer.concat(bufferArr);
+          if (asBase64) resolve(tempBuffer.toString("base64"));
+          else resolve(tempBuffer);
+        });
 
-      documents.forEach((item, index) => {
-        if (index > 0) pdfFile.addPage(pageOptions);
+        for (const [index, item] of documents.entries()) {
+          if (index > 0) pdfFile.addPage(pageOptions);
 
-        createDocument(pdfFile, item);
+          await createDocument(pdfFile, item);
 
-        // Finalize PDF file
-        if (index === documents.length - 1) pdfFile.end();
-      });
-    } catch (err) {
-      reject(err);
-    }
+          // Finalize PDF file
+          if (index === documents.length - 1) pdfFile.end();
+        }
+      } catch (err) {
+        reject(err);
+      }
+    })();
   });
 }
