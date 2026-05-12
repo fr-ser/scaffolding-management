@@ -32,9 +32,9 @@ test("create, edit and delete an article", async ({ page }) => {
   await expect(page.getByText("Die Änderungen wurden gespeichert")).toBeVisible();
 
   await page.reload();
-  await expect(
-    page.getByTestId("article-card").first().getByLabel("Bezeichnung"),
-  ).toHaveValue("new-description");
+  await expect(page.getByTestId("article-card").first().getByLabel("Bezeichnung")).toHaveValue(
+    "new-description",
+  );
 
   // delete
   await page.getByTestId("article-card").first().getByTestId("article-delete-button").click();
