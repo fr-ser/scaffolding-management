@@ -174,6 +174,14 @@ invoicesRouter.post(
       return;
     }
 
+    const existingDocumentCount = await dataSource.manager.countBy(InvoiceDocument, {
+      invoice_id: parseInt(id),
+    });
+    if (existingDocumentCount > 0) {
+      next(new ApiError(ErrorCode.DUPLICATE_DOCUMENT, 409));
+      return;
+    }
+
     const documentsOfTheMonth = await dataSource.manager.query(`
       SELECT id from invoice_document where id LIKE '%${invoice.invoice_date.substring(0, 7)}-%'
     `);
