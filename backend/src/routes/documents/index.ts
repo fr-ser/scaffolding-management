@@ -3,6 +3,7 @@ import formidable from "formidable";
 import { In, SelectQueryBuilder } from "typeorm";
 
 import { checkPermissionMiddleware } from "@/authorization";
+import { APP_MAIL_INVOICE_FROM } from "@/config";
 import { getAppDataSource } from "@/db";
 import {
   CreditNoteDocument,
@@ -289,7 +290,13 @@ documentsRouter.post(
       });
     }
 
-    await sendMail([payload.recipient], payload.subject, payload.message, emailAttachments);
+    await sendMail(
+      [payload.recipient],
+      payload.subject,
+      payload.message,
+      emailAttachments,
+      APP_MAIL_INVOICE_FROM,
+    );
 
     res.sendStatus(201);
   },
