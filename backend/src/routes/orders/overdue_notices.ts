@@ -144,6 +144,14 @@ overdueNoticesRouter.post(
       return;
     }
 
+    const existingDocumentCount = await dataSource.manager.countBy(OverdueNoticeDocument, {
+      overdue_notice_id: parseInt(id),
+    });
+    if (existingDocumentCount > 0) {
+      next(new ApiError(ErrorCode.DUPLICATE_DOCUMENT, 409));
+      return;
+    }
+
     const documentsOfTheMonth = await dataSource.manager.query(`
       SELECT id from overdue_notice_document where id LIKE 'M${overdueNotice.notice_date.substring(0, 7)}-%'
     `);
