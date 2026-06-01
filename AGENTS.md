@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI agents when working with code in this repository.
 
 ## Project Overview
 
@@ -186,7 +186,7 @@ In tests, UI selector strings (e.g. `getByRole("button", { name: "Speichern" })`
 
 ### Markdown / Documentation
 
-- Use one sentence per line in prose paragraphs (applies to CLAUDE.md and any other markdown docs in this repo).
+- Use one sentence per line in prose paragraphs (applies to this file and any other markdown docs in this repo).
 
 ## Deployment
 
