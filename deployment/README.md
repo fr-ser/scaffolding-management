@@ -11,6 +11,54 @@ When the environment files need to be updated it has to be done in two places:
 - `.env` - remote
   - This needs to be done on the remote before restarting the backend
 
+## Database Migrations
+
+Application startup does not run database migrations automatically.
+When a release contains a new TypeORM migration, run it explicitly on the deployment target.
+
+Test the migration on UAT before running it on production:
+
+```bash
+cd ~/apps/deployment && make migrate-uat
+```
+
+For production, take a fresh database backup before running the migration.
+The application should be stopped while the production database is copied or migrated, so there are no concurrent writes.
+
+For a production release that includes migrations, use the migration-aware upgrade command from the repository root:
+
+```bash
+make deploy-upgrade-with-migrations
+```
+
+This invokes the deployment target:
+
+```bash
+cd ~/apps/deployment && make update-with-migrations
+```
+
+That target creates a timestamped database backup, copies the existing production database into the new app directory, switches `next-scaffolding` into `scaffolding`, runs pending migrations, and only then starts PM2.
+
+To create only the backup against the currently active production app directory:
+
+```bash
+cd ~/apps/deployment && make backup-database
+```
+
+To run only the migration step against the currently active production app directory:
+
+```bash
+cd ~/apps/deployment && make migrate
+```
+
+The migration step runs the deployed JavaScript datasource:
+
+```bash
+cd ~/apps/scaffolding && CONFIG_PATH=.env ./node_modules/.bin/typeorm migration:run -d ./dist/src/db/dataSource.js
+```
+
+Do not use the backend development migration command for deployed production data, because production only deploys the compiled `dist/` output.
+
 ## CRON
 
 Aside from the application deployment there are some cron jobs which should be created.
