@@ -37,7 +37,7 @@ This invokes the deployment target:
 cd ~/apps/deployment && make update-with-migrations
 ```
 
-That target stops the production PM2 app, creates a timestamped database backup, copies the existing production database into the new app directory, switches `next-scaffolding` into `scaffolding`, runs pending migrations, and only then starts production again.
+That target stops the production PM2 app, creates a timestamped database backup, copies the existing production database and log files into the new app directory, switches `next-scaffolding` into `scaffolding`, runs pending migrations, and only then starts production again.
 
 To create only the backup against the currently active production app directory:
 

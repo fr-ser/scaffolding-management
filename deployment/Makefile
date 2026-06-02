@@ -23,6 +23,9 @@ copy-production-state:
 	cp -r ~/apps/scaffolding/.env ~/apps/next-scaffolding
 	@# copy over the database
 	cp  ~/apps/scaffolding/*.db ~/apps/next-scaffolding
+	@# keep logs across directory swaps
+	@if [ -f "$$HOME/apps/scaffolding/app.log" ]; then cp -p "$$HOME/apps/scaffolding/app.log" "$$HOME/apps/next-scaffolding/app.log"; else touch "$$HOME/apps/next-scaffolding/app.log"; fi
+	@if [ -f "$$HOME/apps/scaffolding/cron.log" ]; then cp -p "$$HOME/apps/scaffolding/cron.log" "$$HOME/apps/next-scaffolding/cron.log"; else touch "$$HOME/apps/next-scaffolding/cron.log"; fi
 
 activate-next:
 	rm -rf ~/apps/backup-scaffolding
