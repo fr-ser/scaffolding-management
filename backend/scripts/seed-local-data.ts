@@ -122,7 +122,7 @@ async function insertData(dataSource: DataSource) {
         const isEven = index % 2 === 0;
 
         return {
-          offer_id: () => `(SELECT id from offer where order_id='A${index + 1}')`,
+          offer_id: () => `(SELECT min(id) from offer where order_id='A${index + 1}')`,
           kind: isEven ? ArticleKind.item : ArticleKind.heading,
           title: `Title ${index + 1}`,
           description: `Description ${index + 1}`,
@@ -155,7 +155,7 @@ async function insertData(dataSource: DataSource) {
           client_city: `city ${index + 1}`,
           order_title: `Order Title ${index + 1}`,
           order_id: `A${index + 1}`,
-          offer_id: () => `(SELECT id from offer where order_id='A${index + 1}')`,
+          offer_id: () => `(SELECT min(id) from offer where order_id='A${index + 1}')`,
           offered_at: `2021-02-0${index + 1}`,
           offer_valid_until: `2021-03-0${index + 1}`,
         };
@@ -182,7 +182,7 @@ async function insertData(dataSource: DataSource) {
           client_city: `city ${index + 1}`,
           order_title: `Order Title ${index + 1}`,
           order_id: `A${index + 1}`,
-          offer_id: () => `(SELECT id from offer where order_id='A${index + 1}')`,
+          offer_id: () => `(SELECT min(id) from offer where order_id='A${index + 1}')`,
           offered_at: `2021-02-0${index + 1}`,
           offer_valid_until: `2021-03-0${index + 1}`,
         };

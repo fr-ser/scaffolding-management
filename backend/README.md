@@ -33,10 +33,12 @@ Run `make generate-pdf-snapshots` to regenerate the PDF snapshots used by backen
 
 ## One-off Scripts
 
-To run a one-off TypeScript script in the backend context (e.g. a data fix or manual migration):
+One-off TypeScript scripts in the backend context live in `scripts/one-off/` and use date-prefixed file names.
+
+To run one of them:
 
 ```bash
-cd backend && npm run build && CONFIG_PATH=../.env.development npx ts-node -r tsconfig-paths/register scripts/your-script.ts
+cd backend && npm run build && CONFIG_PATH=../.env.development npx ts-node -r tsconfig-paths/register scripts/one-off/YYYY-MM-DD-purpose.ts
 ```
 
 ## Migrations
