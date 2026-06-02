@@ -34,9 +34,9 @@ reportRouter.get(
       .offset(skip);
 
     databaseQuery = databaseQuery.leftJoinAndSelect(
-      "order.offer",
-      "offer",
-      "(offer.status = :overdueOfferStatus and date('now') > date(offer.offer_valid_until))",
+      "order.offers",
+      "offers",
+      "(offers.status = :overdueOfferStatus and date('now') > date(offers.offer_valid_until))",
       {
         overdueOfferStatus: OfferStatus.created,
       },
@@ -61,7 +61,7 @@ reportRouter.get(
       },
     );
     databaseQuery = databaseQuery.andWhere(
-      "invoices.id is not null or overdue_notices.id is not null or offer.id is not null",
+      "invoices.id is not null or overdue_notices.id is not null or offers.id is not null",
     );
 
     const result = await databaseQuery.getManyAndCount();

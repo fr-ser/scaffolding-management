@@ -62,7 +62,7 @@ ordersRouter.get(
 
     if (detailed) {
       // here we join all sub orders as they are not filtered
-      databaseQuery = databaseQuery.leftJoinAndSelect("order.offer", "offer");
+      databaseQuery = databaseQuery.leftJoinAndSelect("order.offers", "offers");
       databaseQuery = databaseQuery.leftJoinAndSelect("order.overdue_notices", "overdue_notices");
       databaseQuery = databaseQuery.leftJoinAndSelect("order.invoices", "invoices");
       databaseQuery = databaseQuery.leftJoinAndSelect("order.credit_notes", "credit_notes");
@@ -121,7 +121,7 @@ ordersRouter.get(
     if (permissions.includes(UserPermissions.SUB_ORDERS_VIEW)) {
       relations = {
         client: true,
-        offer: { items: true },
+        offers: { items: true },
         overdue_notices: { invoice_documents: { items: true } },
         invoices: { items: true },
         credit_notes: { items: true },
@@ -149,7 +149,7 @@ ordersRouter.patch(
     delete req.body.overdue_notices;
     delete req.body.invoices;
     delete req.body.credit_notes;
-    delete req.body.offer;
+    delete req.body.offers;
     delete req.body.client;
     delete req.body.id;
 
@@ -158,7 +158,7 @@ ordersRouter.patch(
       order = await dataSource.manager.findOne(Order, {
         relations: {
           client: true,
-          offer: { items: true },
+          offers: { items: true },
           overdue_notices: { invoice_documents: { items: true } },
           invoices: { items: true },
           credit_notes: { items: true },

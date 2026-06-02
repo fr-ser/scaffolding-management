@@ -29,6 +29,7 @@ const finalExistingSubOrder = ref<Offer | undefined>(props.existingOffer);
 
 const emit = defineEmits<{
   deleted: [];
+  saved: [id: number];
 }>();
 
 const confirm = useConfirmations();
@@ -89,10 +90,12 @@ async function onSaveOffer() {
   if (finalExistingSubOrder.value != null) {
     await updateOffer(finalExistingSubOrder.value.id, payload);
     notifications.showNotification("Die Angebotsänderung wurde gespeichert.");
+    emit("saved", finalExistingSubOrder.value.id);
   } else {
     const newOffer = await createOffer(payload);
     notifications.showNotification("Ein neues Angebot wurde erstellt.");
     finalExistingSubOrder.value = newOffer;
+    emit("saved", newOffer.id);
   }
 }
 

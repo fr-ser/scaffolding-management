@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 
 import { Client } from "@/db/entities/client";
 import { CreditNote } from "@/db/entities/credit_note";
@@ -29,8 +29,8 @@ export class Order {
   @JoinColumn({ name: "client_id" })
   declare client: Client;
 
-  @OneToOne(() => Offer, (offer) => offer.order)
-  declare offer: Offer;
+  @OneToMany(() => Offer, (offer) => offer.order)
+  declare offers: Offer[];
 
   @OneToMany(() => Invoice, (invoice) => invoice.order)
   declare invoices: Invoice[];

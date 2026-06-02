@@ -24,8 +24,8 @@ test("add line items from inventory, manually, and as a heading", async ({ page 
 
   // Create an offer as the document vehicle for this test
   await page.getByRole("button", { name: "Angebot erstellen" }).click();
-  await expect(page.getByRole("tab", { name: "Angebot" })).toBeVisible();
-  await page.getByRole("tab", { name: "Angebot" }).click();
+  await expect(page.getByRole("tab", { name: "Neues Angebot" })).toBeVisible();
+  await page.getByRole("tab", { name: "Neues Angebot" }).click();
 
   // Add line item 1: select an existing article from inventory
   await page.getByRole("button", { name: "Artikel" }).click();
@@ -86,8 +86,8 @@ test("add line items from inventory, manually, and as a heading", async ({ page 
   await page.getByTestId("order-card").getByLabel("Anschauen / Bearbeiten").click();
   await page.waitForURL("**/orders/**/edit");
 
-  await expect(page.getByRole("tab", { name: "Angebot" })).toBeVisible();
-  await page.getByRole("tab", { name: "Angebot" }).click();
+  await expect(page.getByRole("tab", { name: /Angebot / })).toBeVisible();
+  await page.getByRole("tab", { name: /Angebot / }).click();
   await page.getByRole("button", { name: "Angebot löschen" }).click();
   await page.getByRole("alertdialog").getByText("Bestätigen").click();
   await expect(page.getByText("Das Angebot wurde gelöscht.")).toBeVisible();

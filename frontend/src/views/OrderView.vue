@@ -98,6 +98,16 @@ const notifications = useNotifications();
 const { deleteOrderWithConfirmation } = useOrderLogic();
 
 const validation = useOrderValidation();
+type SubOrder = Offer | Invoice | CreditNote | OverdueNotice | null;
+type SubOrderTabData = {
+  label: string;
+  key: string;
+  kind: DocumentKind;
+  item: SubOrder;
+};
+
+// Above this count, group by document type so the tab row stays readable.
+const directTabThreshold = 4;
 
 const onSaveOrder = async () => {
   const payload = validation.validateAndCleanPayload({
@@ -117,34 +127,34 @@ const onSaveOrder = async () => {
 
 async function loadOrderData() {
   const newOrder = await getOrder(route.params.id as string);
-  orderInfo.value = newOrder;
-  showOfferTab.value = Boolean(newOrder.offer);
+  orderInfo.value = {
+    ...newOrder,
+    offers: newOrder.offers || [],
+    invoices: newOrder.invoices || [],
+    credit_notes: newOrder.credit_notes || [],
+    overdue_notices: newOrder.overdue_notices || [],
+  };
+  showNewOfferTab.value = false;
+  showNewInvoiceTab.value = false;
+  showNewCreditNoteTab.value = false;
+  showNewOverdueNoticeTab.value = false;
 
-  if (route.query?.kind === DocumentKind.invoice) {
+  if (route.query?.kind === DocumentKind.offer) {
     const id = parseInt(route.query?.subOrderId as string);
-
-    activeTabIndex.value =
-      1 + (newOrder.invoices as Invoice[]).findIndex((item) => item.id === id) || 0;
+    setActiveSubOrder(DocumentKind.offer, getSubOrderKey(DocumentKind.offer, id));
+  } else if (route.query?.kind === DocumentKind.invoice) {
+    const id = parseInt(route.query?.subOrderId as string);
+    setActiveSubOrder(DocumentKind.invoice, getSubOrderKey(DocumentKind.invoice, id));
   } else if (route.query?.kind === DocumentKind.overdueNotice) {
     const id = parseInt(route.query?.subOrderId as string);
-    const invoiceLength = newOrder?.invoices?.length || 0;
-    const creditNoteLength = newOrder?.credit_notes?.length || 0;
-
-    activeTabIndex.value =
-      invoiceLength +
-        creditNoteLength +
-        1 +
-        (newOrder.overdue_notices as OverdueNotice[]).findIndex((item) => item.id === id) || 0;
+    setActiveSubOrder(DocumentKind.overdueNotice, getSubOrderKey(DocumentKind.overdueNotice, id));
   } else if (route.query?.kind === DocumentKind.creditNote) {
     const id = parseInt(route.query?.subOrderId as string);
-    const invoiceLength = newOrder?.invoices?.length || 0;
-
-    activeTabIndex.value =
-      invoiceLength +
-        1 +
-        (newOrder.credit_notes as CreditNote[]).findIndex((item) => item.id === id) || 0;
+    setActiveSubOrder(DocumentKind.creditNote, getSubOrderKey(DocumentKind.creditNote, id));
+  } else {
+    activeTabKey.value = tabData.value[0]?.key || "";
+    activeGroupKey.value = groupedTabData.value[0]?.kind || DocumentKind.offer;
   }
-  //if the query is "offer" we show the default tab
 }
 
 async function onClickDeleteOrder() {
@@ -165,86 +175,144 @@ onMounted(async () => {
   isLoading.value = false;
 });
 
-const activeTabIndex = ref(0);
+const activeTabKey = ref("");
+const activeGroupKey = ref<DocumentKind>(DocumentKind.offer);
+const selectedGroupedTabKeys = ref<Record<string, string>>({});
 
-const showOfferTab = ref<boolean>(false);
+const showNewOfferTab = ref<boolean>(false);
 function onClickCreateOffer() {
-  showOfferTab.value = true;
+  showNewOfferTab.value = true;
+  setActiveSubOrder(DocumentKind.offer, getNewSubOrderKey(DocumentKind.offer));
 }
 const showNewInvoiceTab = ref<boolean>(false);
 function onClickCreateInvoice() {
   showNewInvoiceTab.value = true;
+  setActiveSubOrder(DocumentKind.invoice, getNewSubOrderKey(DocumentKind.invoice));
 }
 const showNewCreditNoteTab = ref<boolean>(false);
 function onClickCreateCreditNote() {
   showNewCreditNoteTab.value = true;
+  setActiveSubOrder(DocumentKind.creditNote, getNewSubOrderKey(DocumentKind.creditNote));
 }
 const showNewOverdueNoticeTab = ref<boolean>(false);
 function onClickCreateOverdueNotice() {
   showNewOverdueNoticeTab.value = true;
+  setActiveSubOrder(DocumentKind.overdueNotice, getNewSubOrderKey(DocumentKind.overdueNotice));
 }
 
-const tabData = computed(() => {
-  const tabs = [];
+function getSubOrderKey(kind: DocumentKind, id: number) {
+  return `${kind}-${id}`;
+}
+
+function getNewSubOrderKey(kind: DocumentKind) {
+  return `${kind}-new`;
+}
+
+function setActiveSubOrder(kind: DocumentKind, key: string) {
+  activeTabKey.value = key;
+  activeGroupKey.value = kind;
+  selectedGroupedTabKeys.value = {
+    ...selectedGroupedTabKeys.value,
+    [kind]: key,
+  };
+}
+
+async function onSubOrderSaved(kind: DocumentKind, id: number) {
+  // Replace a newly-created placeholder tab with the persisted sub-order tab.
+  if (kind === DocumentKind.offer) showNewOfferTab.value = false;
+  else if (kind === DocumentKind.invoice) showNewInvoiceTab.value = false;
+  else if (kind === DocumentKind.creditNote) showNewCreditNoteTab.value = false;
+  else if (kind === DocumentKind.overdueNotice) showNewOverdueNoticeTab.value = false;
+
+  await loadOrderData();
+  setActiveSubOrder(kind, getSubOrderKey(kind, id));
+}
+
+async function onSubOrderDeleted() {
+  await loadOrderData();
+}
+
+function getSelectedGroupedTab(kind: DocumentKind) {
+  const tabs = tabDataByKind.value[kind] || [];
+  return tabs.find((tab) => tab.key === selectedGroupedTabKeys.value[kind]) || tabs[0];
+}
+
+const tabDataByKind = computed<Record<DocumentKind, SubOrderTabData[]>>(() => {
+  const tabs = {
+    [DocumentKind.offer]: [] as SubOrderTabData[],
+    [DocumentKind.invoice]: [] as SubOrderTabData[],
+    [DocumentKind.creditNote]: [] as SubOrderTabData[],
+    [DocumentKind.overdueNotice]: [] as SubOrderTabData[],
+  };
   const typedOrder = orderInfo.value as Order;
-  if (showOfferTab.value) {
-    tabs.push({
-      label: "Angebot",
-      key: "Angebot",
+
+  for (const element of typedOrder.offers || []) {
+    tabs[DocumentKind.offer].push({
+      label: `Angebot ${formatIsoDateString(element.offered_at)}`,
+      key: getSubOrderKey(DocumentKind.offer, element.id),
       kind: DocumentKind.offer,
-      item: typedOrder.offer,
+      item: element,
+    });
+  }
+
+  if (showNewOfferTab.value) {
+    tabs[DocumentKind.offer].push({
+      label: "Neues Angebot",
+      key: getNewSubOrderKey(DocumentKind.offer),
+      kind: DocumentKind.offer,
+      item: null,
     });
   }
 
   for (const element of typedOrder.invoices || []) {
-    tabs.push({
+    tabs[DocumentKind.invoice].push({
       label: `Rechnung ${formatIsoDateString(element.invoice_date)}`,
-      key: element.id,
+      key: getSubOrderKey(DocumentKind.invoice, element.id),
       kind: DocumentKind.invoice,
       item: element,
     });
   }
 
   if (showNewInvoiceTab.value) {
-    tabs.push({
+    tabs[DocumentKind.invoice].push({
       label: "Neue Rechnung",
-      key: "Neue Rechnung",
+      key: getNewSubOrderKey(DocumentKind.invoice),
       kind: DocumentKind.invoice,
       item: null,
     });
   }
 
   for (const element of typedOrder.credit_notes || []) {
-    tabs.push({
+    tabs[DocumentKind.creditNote].push({
       label: `Gutschrift ${formatIsoDateString(element.credit_date)}`,
-      key: `cn-${element.id}`,
+      key: getSubOrderKey(DocumentKind.creditNote, element.id),
       kind: DocumentKind.creditNote,
       item: element,
     });
   }
 
   if (showNewCreditNoteTab.value) {
-    tabs.push({
+    tabs[DocumentKind.creditNote].push({
       label: "Neue Gutschrift",
-      key: "Neue Gutschrift",
+      key: getNewSubOrderKey(DocumentKind.creditNote),
       kind: DocumentKind.creditNote,
       item: null,
     });
   }
 
   for (const element of typedOrder.overdue_notices || []) {
-    tabs.push({
+    tabs[DocumentKind.overdueNotice].push({
       label: `Mahnung ${formatIsoDateString(element.notice_date)}`,
-      key: element.id,
+      key: getSubOrderKey(DocumentKind.overdueNotice, element.id),
       kind: DocumentKind.overdueNotice,
       item: element,
     });
   }
 
   if (showNewOverdueNoticeTab.value) {
-    tabs.push({
+    tabs[DocumentKind.overdueNotice].push({
       label: "Neue Mahnung",
-      key: "Neue Mahnung",
+      key: getNewSubOrderKey(DocumentKind.overdueNotice),
       kind: DocumentKind.overdueNotice,
       item: null,
     });
@@ -252,6 +320,31 @@ const tabData = computed(() => {
 
   return tabs;
 });
+
+const tabData = computed(() => Object.values(tabDataByKind.value).flat());
+
+const shouldUseGroupedTabs = computed(() => tabData.value.length > directTabThreshold);
+
+const groupedTabData = computed(() =>
+  [
+    { kind: DocumentKind.offer, label: "Angebote", tabs: tabDataByKind.value[DocumentKind.offer] },
+    {
+      kind: DocumentKind.invoice,
+      label: "Rechnungen",
+      tabs: tabDataByKind.value[DocumentKind.invoice],
+    },
+    {
+      kind: DocumentKind.creditNote,
+      label: "Gutschriften",
+      tabs: tabDataByKind.value[DocumentKind.creditNote],
+    },
+    {
+      kind: DocumentKind.overdueNotice,
+      label: "Mahnungen",
+      tabs: tabDataByKind.value[DocumentKind.overdueNotice],
+    },
+  ].filter((group) => group.tabs.length > 0),
+);
 </script>
 
 <template>
@@ -380,51 +473,126 @@ const tabData = computed(() => {
         <div class="flex flex-col gap-y-5">
           <div v-if="isEditing && userStore.permissions.includes(UserPermissions.SUB_ORDERS_EDIT)">
             <p class="font-bold mb-2">Unteraufträge</p>
-            <div class="flex flex-row gap-2">
-              <Button
-                v-if="(orderInfo as Order).offer == null"
-                label="Angebot erstellen"
-                @click="onClickCreateOffer"
-              />
+            <div class="flex flex-row flex-wrap gap-2">
+              <Button label="Angebot erstellen" @click="onClickCreateOffer" />
               <Button label="Rechnung erstellen" @click="onClickCreateInvoice" />
               <Button label="Gutschrift erstellen" @click="onClickCreateCreditNote" />
               <Button label="Mahnung erstellen" @click="onClickCreateOverdueNotice" />
             </div>
             <Tabs
-              v-if="userStore.permissions.includes(UserPermissions.SUB_ORDERS_VIEW)"
-              :value="activeTabIndex"
+              v-if="
+                userStore.permissions.includes(UserPermissions.SUB_ORDERS_VIEW) &&
+                tabData.length > 0 &&
+                !shouldUseGroupedTabs
+              "
+              v-model:value="activeTabKey"
             >
               <TabList>
-                <Tab v-for="(tab, index) in tabData" :key="tab.key" :value="index">{{
-                  tab.label
-                }}</Tab>
+                <Tab v-for="tab in tabData" :key="tab.key" :value="tab.key">{{ tab.label }}</Tab>
               </TabList>
               <TabPanels>
-                <TabPanel v-for="(tab, index) in tabData" :key="tab.key" :value="index">
+                <TabPanel v-for="tab in tabData" :key="tab.key" :value="tab.key">
                   <OfferEdit
                     v-if="tab.kind === DocumentKind.offer"
-                    @deleted="loadOrderData"
+                    @deleted="onSubOrderDeleted"
+                    @saved="(id) => onSubOrderSaved(DocumentKind.offer, id)"
                     :order="orderInfo as Order"
                     :existing-offer="tab.item as Offer"
                   />
                   <InvoiceEdit
                     v-else-if="tab.kind === DocumentKind.invoice"
-                    @deleted="loadOrderData"
+                    @deleted="onSubOrderDeleted"
+                    @saved="(id) => onSubOrderSaved(DocumentKind.invoice, id)"
                     :order="orderInfo as Order"
                     :existing-invoice="tab.item as Invoice"
                   />
                   <CreditNoteEdit
                     v-else-if="tab.kind === DocumentKind.creditNote"
-                    @deleted="loadOrderData"
+                    @deleted="onSubOrderDeleted"
+                    @saved="(id) => onSubOrderSaved(DocumentKind.creditNote, id)"
                     :order="orderInfo as Order"
                     :existing-credit-note="tab.item as CreditNote"
                   />
                   <OverdueNoticeEdit
                     v-else-if="tab.kind === DocumentKind.overdueNotice"
-                    @deleted="loadOrderData"
+                    @deleted="onSubOrderDeleted"
+                    @saved="(id) => onSubOrderSaved(DocumentKind.overdueNotice, id)"
                     :order="orderInfo as Order"
                     :existing-overdue-notice="tab.item as OverdueNotice"
                   />
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+            <Tabs
+              v-else-if="
+                userStore.permissions.includes(UserPermissions.SUB_ORDERS_VIEW) &&
+                tabData.length > 0
+              "
+              v-model:value="activeGroupKey"
+            >
+              <TabList>
+                <Tab v-for="group in groupedTabData" :key="group.kind" :value="group.kind">
+                  {{ group.label }} ({{ group.tabs.length }})
+                </Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel v-for="group in groupedTabData" :key="group.kind" :value="group.kind">
+                  <div class="flex flex-col gap-4">
+                    <div class="flex flex-row flex-wrap gap-2">
+                      <Button
+                        v-for="tab in group.tabs"
+                        :key="tab.key"
+                        @click="setActiveSubOrder(tab.kind, tab.key)"
+                        :label="tab.label"
+                        :severity="
+                          getSelectedGroupedTab(group.kind)?.key === tab.key
+                            ? undefined
+                            : 'secondary'
+                        "
+                        :outlined="getSelectedGroupedTab(group.kind)?.key !== tab.key"
+                        class="justify-start text-left"
+                        size="small"
+                      />
+                    </div>
+                    <div class="min-w-0 grow">
+                      <OfferEdit
+                        v-if="getSelectedGroupedTab(group.kind)?.kind === DocumentKind.offer"
+                        @deleted="onSubOrderDeleted"
+                        @saved="(id) => onSubOrderSaved(DocumentKind.offer, id)"
+                        :order="orderInfo as Order"
+                        :existing-offer="getSelectedGroupedTab(group.kind)?.item as Offer"
+                      />
+                      <InvoiceEdit
+                        v-else-if="getSelectedGroupedTab(group.kind)?.kind === DocumentKind.invoice"
+                        @deleted="onSubOrderDeleted"
+                        @saved="(id) => onSubOrderSaved(DocumentKind.invoice, id)"
+                        :order="orderInfo as Order"
+                        :existing-invoice="getSelectedGroupedTab(group.kind)?.item as Invoice"
+                      />
+                      <CreditNoteEdit
+                        v-else-if="
+                          getSelectedGroupedTab(group.kind)?.kind === DocumentKind.creditNote
+                        "
+                        @deleted="onSubOrderDeleted"
+                        @saved="(id) => onSubOrderSaved(DocumentKind.creditNote, id)"
+                        :order="orderInfo as Order"
+                        :existing-credit-note="
+                          getSelectedGroupedTab(group.kind)?.item as CreditNote
+                        "
+                      />
+                      <OverdueNoticeEdit
+                        v-else-if="
+                          getSelectedGroupedTab(group.kind)?.kind === DocumentKind.overdueNotice
+                        "
+                        @deleted="onSubOrderDeleted"
+                        @saved="(id) => onSubOrderSaved(DocumentKind.overdueNotice, id)"
+                        :order="orderInfo as Order"
+                        :existing-overdue-notice="
+                          getSelectedGroupedTab(group.kind)?.item as OverdueNotice
+                        "
+                      />
+                    </div>
+                  </div>
                 </TabPanel>
               </TabPanels>
             </Tabs>

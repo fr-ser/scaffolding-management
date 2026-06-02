@@ -79,10 +79,15 @@ onMounted(async () => {
               <i class="pi pi-external-link ml-1"></i>
             </router-link>
             <ul class="list-disc pl-6 underline mt-3">
-              <li class="underlined pb-2" v-if="order.offer">
-                <router-link :to="getOrderEditPath(order.id, DocumentKind.offer, order.offer.id)">
-                  <span>Angebot vom:</span>{{ `${formatIsoDateString(order.offer.offered_at)}` }}
-                  <span> - Angebotsstatus:</span> {{ `${order.offer.status}` }}
+              <li
+                class="underlined pb-2"
+                v-show="order.offers"
+                v-for="item in order.offers"
+                :key="item.id"
+              >
+                <router-link :to="getOrderEditPath(order.id, DocumentKind.offer, item.id)">
+                  <span>Angebot vom:</span>{{ `${formatIsoDateString(item.offered_at)}` }}
+                  <span> - Angebotsstatus:</span> {{ `${item.status}` }}
                   <i class="pi pi-external-link ml-1"></i>
                 </router-link>
               </li>

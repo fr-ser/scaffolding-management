@@ -298,7 +298,7 @@ export async function getOffer(
 
   const offer = {
     ...{
-      id: Date.now(),
+      id: Date.now() + Math.round(Math.random() * 1000000),
       created_at: 1,
       updated_at: 1,
       order_id: orderId,

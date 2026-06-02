@@ -112,6 +112,10 @@ describe("Order report routes", () => {
         { status: OfferStatus.created, offer_valid_until: yesterday },
         appDataSource,
       );
+      const secondOfferToFind = await getOffer(
+        { order: offerToFind.order, status: OfferStatus.created, offer_valid_until: yesterday },
+        appDataSource,
+      );
       await getOffer({ status: OfferStatus.created, offer_valid_until: tomorrow }, appDataSource); // this offer should not be found because the due date is not there yet
       await getOffer({ status: OfferStatus.initial }, appDataSource); // this offer should not be found
       await getOffer({ status: OfferStatus.confirmed }, appDataSource); // this offer should not be found
@@ -125,7 +129,9 @@ describe("Order report routes", () => {
 
       expect(responseData.totalCount).toBe(1);
       expect(responseData.data[0].id).toBe(offerToFind.order_id);
-      expect(responseData.data[0].offer.id).toBe(offerToFind.id);
+      expect(responseData.data[0].offers.map((item: { id: number }) => item.id)).toEqual(
+        expect.arrayContaining([offerToFind.id, secondOfferToFind.id]),
+      );
     });
 
     test("get orders", async () => {
@@ -146,7 +152,7 @@ describe("Order report routes", () => {
 
       expect(responseData.totalCount).toBe(1);
       expect(responseData.data[0].id).toBe(offerToFind.order_id);
-      expect(responseData.data[0].offer.id).toBe(offerToFind.id);
+      expect(responseData.data[0].offers[0].id).toBe(offerToFind.id);
       expect(responseData.data[0].invoices.length).toBe(0);
     });
   });

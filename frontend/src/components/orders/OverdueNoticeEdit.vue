@@ -40,6 +40,7 @@ const finalExistingSubOrder = ref(props.existingOverdueNotice);
 
 const emit = defineEmits<{
   deleted: [];
+  saved: [id: number];
 }>();
 
 const confirm = useConfirmations();
@@ -155,10 +156,12 @@ async function onClickSave() {
   if (finalExistingSubOrder.value != null) {
     await updateOverdueNotice(finalExistingSubOrder.value.id, payload);
     notifications.showNotification("Die Mahnungsänderung wurde gespeichert.");
+    emit("saved", finalExistingSubOrder.value.id);
   } else {
     const newNotice = await createOverdueNotice(payload);
     notifications.showNotification("Eine neue Mahnung wurde erstellt.");
     finalExistingSubOrder.value = newNotice;
+    emit("saved", newNotice.id);
   }
 }
 </script>
