@@ -6,7 +6,7 @@ import { OverdueNoticeDocument } from "@/db/entities/documents";
 import { OverdueNotice } from "@/db/entities/overdue_notice";
 import { ErrorCode, UserPermissions } from "@/global/types/backendTypes";
 import { OverdueNoticeCreate, OverdueNoticeUpdate } from "@/global/types/dataEditTypes";
-import { ApiError } from "@/helpers/apiErrors";
+import { ApiError, isSQLiteConstraintErrorOnColumn } from "@/helpers/apiErrors";
 import { findFirstUnusedNumber } from "@/helpers/findFirstUnusedNumber";
 
 export const overdueNoticesRouter = express.Router();
@@ -144,14 +144,6 @@ overdueNoticesRouter.post(
       return;
     }
 
-    const existingDocumentCount = await dataSource.manager.countBy(OverdueNoticeDocument, {
-      overdue_notice_id: parseInt(id),
-    });
-    if (existingDocumentCount > 0) {
-      next(new ApiError(ErrorCode.DUPLICATE_DOCUMENT, 409));
-      return;
-    }
-
     const documentsOfTheMonth = await dataSource.manager.query(`
       SELECT id from overdue_notice_document where id LIKE 'M${overdueNotice.notice_date.substring(0, 7)}-%'
     `);
@@ -184,7 +176,7 @@ overdueNoticesRouter.post(
     try {
       await dataSource.transaction(async (transactionalEntityManager) => {
         await transactionalEntityManager.insert(OverdueNoticeDocument, document);
-        transactionalEntityManager
+        await transactionalEntityManager
           .createQueryBuilder()
           .relation(OverdueNoticeDocument, "invoice_documents")
           .of(document)
@@ -193,6 +185,11 @@ overdueNoticesRouter.post(
 
       res.json(document);
     } catch (error) {
+      if (isSQLiteConstraintErrorOnColumn(error, "overdue_notice_document.overdue_notice_id")) {
+        next(new ApiError(ErrorCode.DUPLICATE_DOCUMENT, 409));
+        return;
+      }
+
       next(error);
       return;
     }

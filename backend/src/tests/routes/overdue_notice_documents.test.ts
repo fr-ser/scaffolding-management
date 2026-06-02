@@ -9,6 +9,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 
 import { closeDatabase, initializeAppDataSource } from "@/db";
 import { OverdueNoticeDocument } from "@/db/entities/documents";
+import { ErrorCode } from "@/global/types/backendTypes";
 import { getApp } from "@/main";
 import { getRequest } from "@/tests/api-utils";
 
@@ -51,5 +52,22 @@ describe("overdue notice document routes", () => {
       where: { id: "M2025-11-02" },
     });
     expect(newDocument).toBeTruthy();
+  });
+
+  test("returns conflict when creating a second document for the same overdue notice", async () => {
+    const overdueNoticeDocument = await getOverdueNoticeDocument({}, appDataSource);
+
+    const response = await fetch(
+      getRequest(
+        server,
+        `api/orders/overdue_notices/${overdueNoticeDocument.overdue_notice_id}/documents`,
+        {
+          method: "POST",
+        },
+      ),
+    );
+
+    expect(response.status).toBe(409);
+    expect((await response.json()).error.code).toBe(ErrorCode.DUPLICATE_DOCUMENT);
   });
 });

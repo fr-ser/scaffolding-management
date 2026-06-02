@@ -122,8 +122,8 @@ ordersRouter.get(
       relations = {
         client: true,
         offers: { items: true },
-        overdue_notices: { invoice_documents: { items: true } },
-        invoices: { items: true },
+        overdue_notices: { invoice_documents: { items: true }, documents: true },
+        invoices: { items: true, documents: true },
         credit_notes: { items: true },
       };
     }
@@ -159,8 +159,8 @@ ordersRouter.patch(
         relations: {
           client: true,
           offers: { items: true },
-          overdue_notices: { invoice_documents: { items: true } },
-          invoices: { items: true },
+          overdue_notices: { invoice_documents: { items: true }, documents: true },
+          invoices: { items: true, documents: true },
           credit_notes: { items: true },
         },
         where: { id },

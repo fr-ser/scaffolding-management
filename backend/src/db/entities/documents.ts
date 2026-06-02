@@ -91,7 +91,7 @@ export class InvoiceDocument extends BaseDocument {
   @Column({ type: "text" })
   declare invoice_id: number;
 
-  @ManyToOne(() => Invoice)
+  @ManyToOne(() => Invoice, (invoice) => invoice.documents)
   @JoinColumn({ name: "invoice_id" })
   declare invoice: Invoice;
 
@@ -147,7 +147,7 @@ export class OverdueNoticeDocument extends BaseDocument {
   @Column({ type: "text" })
   declare overdue_notice_id: number;
 
-  @ManyToOne(() => OverdueNotice)
+  @ManyToOne(() => OverdueNotice, (overdue_notice) => overdue_notice.documents)
   @JoinColumn({ name: "overdue_notice_id" })
   declare overdue_notice: OverdueNotice;
 
