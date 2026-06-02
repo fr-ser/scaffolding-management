@@ -1,7 +1,9 @@
 import { DataSource } from "typeorm";
 
 import { Client as DbClient } from "@/db/entities/client";
+import { CreditNote as DbCreditNote } from "@/db/entities/credit_note";
 import {
+  CreditNoteDocument as DbCreditNoteDocument,
   InvoiceDocument as DbInvoiceDocument,
   OfferDocument as DbOfferDocument,
   OverdueNoticeDocument as DbOverdueNoticeDocument,
@@ -21,6 +23,8 @@ import {
 } from "@/global/types/appTypes";
 import {
   Client,
+  CreditNote,
+  CreditNoteDocument,
   Invoice,
   InvoiceDocument,
   Offer,
@@ -29,6 +33,56 @@ import {
   OverdueNotice,
   OverdueNoticeDocument,
 } from "@/global/types/entities";
+
+function getOrderOverride(orderId: string | undefined): Partial<{ order_id: string }> {
+  return orderId ? { order_id: orderId } : {};
+}
+
+export async function getCreditNoteDocument(
+  override: Partial<CreditNoteDocument> = {},
+  saveInDb?: DataSource,
+): Promise<CreditNoteDocument> {
+  let creditNoteId: number;
+  let creditNote: CreditNote | undefined;
+
+  if (override.credit_note_id) {
+    creditNoteId = override.credit_note_id;
+  } else {
+    creditNote = await getCreditNote(getOrderOverride(override.order_id), saveInDb);
+    creditNoteId = creditNote.id;
+  }
+
+  const creditNoteDocument = {
+    ...{
+      id: "document_id",
+      created_at: 1,
+      updated_at: 1,
+      creation_date: "1992-12-12",
+      client_id: "client_id",
+      client_email: "client@mail.com",
+      client_company_name: "client_company_name",
+      client_first_name: "client_first_name",
+      client_last_name: "client_last_name",
+      client_street_and_number: "client_street_and_number",
+      client_postal_code: "client_postal_code",
+      client_city: "client_city",
+      order_title: "order_title",
+      order_id: creditNote?.order_id ?? "order_id",
+      credit_note_id: creditNoteId,
+      items: [],
+      credit_date: "1994-12-12",
+    },
+    ...override,
+  };
+
+  if (saveInDb) {
+    if (creditNote) await saveInDb.getRepository(DbCreditNote).save(creditNote);
+
+    await saveInDb.getRepository(DbCreditNoteDocument).save(creditNoteDocument);
+  }
+
+  return creditNoteDocument;
+}
 
 export async function getInvoiceDocument(
   override: Partial<InvoiceDocument> = {},
@@ -40,7 +94,7 @@ export async function getInvoiceDocument(
   if (override.invoice_id) {
     invoiceId = override.invoice_id;
   } else {
-    invoice = await getInvoice({}, saveInDb);
+    invoice = await getInvoice(getOrderOverride(override.order_id), saveInDb);
     invoiceId = invoice.id;
   }
 
@@ -59,7 +113,7 @@ export async function getInvoiceDocument(
       client_postal_code: "client_postal_code",
       client_city: "client_city",
       order_title: "order_title",
-      order_id: "order_id",
+      order_id: invoice?.order_id ?? "order_id",
       invoice_id: invoiceId,
       items: [
         {
@@ -109,7 +163,7 @@ export async function getOfferDocument(
   if (override.offer_id) {
     offerId = override.offer_id;
   } else {
-    offer = await getOffer({}, saveInDb);
+    offer = await getOffer(getOrderOverride(override.order_id), saveInDb);
     offerId = offer.id;
   }
 
@@ -128,7 +182,7 @@ export async function getOfferDocument(
       client_postal_code: "client_postal_code",
       client_city: "client_city",
       order_title: "order_title",
-      order_id: "order_id",
+      order_id: offer?.order_id ?? "order_id",
       offer_id: offerId,
       items: [
         {
@@ -173,9 +227,12 @@ export async function getOverdueNoticeDocument(
   if (override.overdue_notice_id) {
     overdueNoticeId = override.overdue_notice_id;
   } else {
-    overdueNotice = await getOverdueNotice({}, saveInDb);
+    overdueNotice = await getOverdueNotice(getOrderOverride(override.order_id), saveInDb);
     overdueNoticeId = overdueNotice.id;
   }
+  const invoiceDocuments = override.invoice_documents ?? [
+    await getInvoiceDocument(getOrderOverride(override.order_id), saveInDb),
+  ];
 
   const overdueNoticeDocument = {
     ...{
@@ -192,7 +249,7 @@ export async function getOverdueNoticeDocument(
       client_postal_code: "client_postal_code",
       client_city: "client_city",
       order_title: "order_title",
-      order_id: "order_id",
+      order_id: overdueNotice?.order_id ?? "order_id",
       overdue_notice_id: overdueNoticeId,
       notice_level: OverdueNoticeLevel.first,
       notice_date: "1993-12-12",
@@ -200,7 +257,7 @@ export async function getOverdueNoticeDocument(
       payment_target: "1995-12-12",
       notice_costs: 55,
       default_interest: 2.5,
-      invoice_documents: [await getInvoiceDocument({}, saveInDb)],
+      invoice_documents: invoiceDocuments,
     },
     ...override,
   };
@@ -363,6 +420,48 @@ export async function getInvoice(
   }
 
   return invoice;
+}
+
+export async function getCreditNote(
+  override: Partial<CreditNote> = {},
+  saveInDb?: DataSource,
+): Promise<CreditNote> {
+  let order: Order;
+  let orderId: string;
+
+  if (override.order) {
+    order = override.order;
+    orderId = order.id;
+  } else if (override.order_id) {
+    orderId = override.order_id;
+    order = await getOrder({ id: orderId }, saveInDb);
+  } else {
+    order = await getOrder({}, saveInDb);
+    orderId = order.id;
+  }
+
+  const creditNote = {
+    ...{
+      id: Date.now(),
+      created_at: 1,
+      updated_at: 1,
+      order_id: orderId,
+      order,
+      items: [],
+      description: `Description`,
+      status: PaymentStatus.initial,
+      credit_date: `2021-01-01`,
+      referenced_invoice_document_ids: [],
+    },
+    ...override,
+  };
+
+  if (saveInDb) {
+    await saveInDb.getRepository(DbOrder).save(creditNote.order);
+    await saveInDb.getRepository(DbCreditNote).save(creditNote);
+  }
+
+  return creditNote;
 }
 
 export async function getOverdueNotice(

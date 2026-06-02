@@ -229,6 +229,17 @@ ordersRouter.get(
 
     const promises = [];
 
+    if (kind == undefined || kind == DocumentKind.offer) {
+      promises.push(
+        dataSource.manager.find(OfferDocument, {
+          where: {
+            offer: { order_id: id },
+          },
+          order: { id: "ASC" },
+          relations: withItems ? ["items"] : [],
+        }),
+      );
+    }
     if (kind == undefined || kind == DocumentKind.invoice) {
       promises.push(
         dataSource.manager.find(InvoiceDocument, {
@@ -238,16 +249,18 @@ ordersRouter.get(
               status: unpaid ? Not(PaymentStatus.paid) : undefined,
             },
           },
+          order: { id: "ASC" },
           relations: withItems ? ["items"] : [],
         }),
       );
     }
-    if (kind == undefined || kind == DocumentKind.offer) {
+    if (kind == undefined || kind == DocumentKind.creditNote) {
       promises.push(
-        dataSource.manager.find(OfferDocument, {
+        dataSource.manager.find(CreditNoteDocument, {
           where: {
-            offer: { order_id: id },
+            credit_note: { order_id: id },
           },
+          order: { id: "ASC" },
           relations: withItems ? ["items"] : [],
         }),
       );
@@ -261,17 +274,8 @@ ordersRouter.get(
               payment_status: unpaid ? Not(OverdueNoticePaymentStatus.paid) : undefined,
             },
           },
+          order: { id: "ASC" },
           relations: withItems ? ["invoice_documents"] : [],
-        }),
-      );
-    }
-    if (kind == undefined || kind == DocumentKind.creditNote) {
-      promises.push(
-        dataSource.manager.find(CreditNoteDocument, {
-          where: {
-            credit_note: { order_id: id },
-          },
-          relations: withItems ? ["items"] : [],
         }),
       );
     }
