@@ -47,31 +47,35 @@ deploy-ssh: ## connect to deploy target via ssh
 	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS}
 
 deploy-database-to-local: ## copy the production database to the local machine
-	scp -P $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS}:~/apps/scaffolding/production.db ./production.db
+	scp -q -P $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS}:~/apps/scaffolding/production.db ./production.db
 
 deploy-database-to-remote: ## copy the local database to the deployment machine
-	scp -P $${SSH_PORT} ./production.db $${SSH_USER}@$${SSH_ADDRESS}:~/apps/scaffolding/production.copy.db
+	scp -q -P $${SSH_PORT} ./production.db $${SSH_USER}@$${SSH_ADDRESS}:~/apps/scaffolding/production.copy.db
 
 # Internal deployment steps
 deploy-build-no-test: build-all
 	@test -f .env.production || (echo "Production env for the frontend not found!" && exit 1)
-	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS} 'mkdir -p ~/apps/next-scaffolding'
-	scp -P $${SSH_PORT} -r ./backend/dist $${SSH_USER}@$${SSH_ADDRESS}:~/apps/next-scaffolding
-	scp -P $${SSH_PORT} ./backend/package*.json $${SSH_USER}@$${SSH_ADDRESS}:~/apps/next-scaffolding
-	scp -P $${SSH_PORT} -r ./deployment $${SSH_USER}@$${SSH_ADDRESS}:~/apps
+	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS} 'rm -rf ~/apps/next-scaffolding && mkdir -p ~/apps/next-scaffolding'
+	scp -q -P $${SSH_PORT} -r ./backend/dist $${SSH_USER}@$${SSH_ADDRESS}:~/apps/next-scaffolding
+	scp -q -P $${SSH_PORT} ./backend/package*.json $${SSH_USER}@$${SSH_ADDRESS}:~/apps/next-scaffolding
+	scp -q -P $${SSH_PORT} -r ./deployment $${SSH_USER}@$${SSH_ADDRESS}:~/apps
 	@echo "To replace the old version you should run 'make deploy-upgrade' here or"
 	@echo "run 'cd ~/apps/deployment && make update' on the deployment target"
+	@echo "For releases with database migrations, run 'cd ~/apps/deployment && make update-with-migrations'"
 
 deploy-build: test-all deploy-build-no-test ## Build, test, and upload to production machine
 
 deploy-upgrade: ## update the application on the deployment target - causes downtime
 	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS} 'cd ~/apps/deployment && make update'
 
+deploy-upgrade-with-migrations: ## update the application and run database migrations on the deployment target - causes downtime
+	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS} 'cd ~/apps/deployment && make update-with-migrations'
+
 uat-deploy: uat-build-no-test ## Build and upload to UAT machine
 	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS} 'mkdir -p ~/apps/uat-scaffolding'
-	scp -P $${SSH_PORT} -r ./backend/dist $${SSH_USER}@$${SSH_ADDRESS}:~/apps/uat-scaffolding
-	scp -P $${SSH_PORT} ./backend/package*.json $${SSH_USER}@$${SSH_ADDRESS}:~/apps/uat-scaffolding
-	scp -P $${SSH_PORT} -r ./deployment $${SSH_USER}@$${SSH_ADDRESS}:~/apps
+	scp -q -P $${SSH_PORT} -r ./backend/dist $${SSH_USER}@$${SSH_ADDRESS}:~/apps/uat-scaffolding
+	scp -q -P $${SSH_PORT} ./backend/package*.json $${SSH_USER}@$${SSH_ADDRESS}:~/apps/uat-scaffolding
+	scp -q -P $${SSH_PORT} -r ./deployment $${SSH_USER}@$${SSH_ADDRESS}:~/apps
 	ssh -p $${SSH_PORT} $${SSH_USER}@$${SSH_ADDRESS} 'cd ~/apps/deployment && make update-uat'
 
 uat-build-no-test:

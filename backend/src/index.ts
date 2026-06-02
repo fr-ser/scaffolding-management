@@ -32,12 +32,14 @@ async function main() {
         },
         app,
       )
-      .listen(HTTPS_PORT, () => {
+      .listen(HTTPS_PORT, (error?: Error) => {
+        if (error) throw error;
         log(`HTTPS app started on port ${(httpsServer.address() as AddressInfo).port}`);
       });
   }
 
-  const httpServer = app.listen(HTTP_PORT, () => {
+  const httpServer = app.listen(HTTP_PORT, (error?: Error) => {
+    if (error) throw error;
     log(`HTTP app started on port ${(httpServer.address() as AddressInfo).port}`);
   });
 }

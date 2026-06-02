@@ -1,4 +1,4 @@
-//  npm run run-script -- scripts/json-to-sqlite.ts
+//  npm run run-script -- scripts/one-off/2025-03-14-json-to-sqlite.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from "node:fs";
 

@@ -29,6 +29,7 @@ const finalExistingSubOrder = ref(props.existingInvoice);
 
 const emit = defineEmits<{
   deleted: [];
+  saved: [id: number];
 }>();
 
 const confirm = useConfirmations();
@@ -99,10 +100,12 @@ async function onSaveInvoice() {
   if (finalExistingSubOrder.value != null) {
     await updateInvoice(finalExistingSubOrder.value.id, payload);
     notifications.showNotification("Die Rechnungsänderung wurde gespeichert.");
+    emit("saved", finalExistingSubOrder.value.id);
   } else {
     const newInvoice = await createInvoice(payload);
     notifications.showNotification("Eine neue Rechnung wurde erstellt.");
     finalExistingSubOrder.value = newInvoice;
+    emit("saved", newInvoice.id);
   }
 }
 

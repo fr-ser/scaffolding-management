@@ -5,12 +5,13 @@ import { DB_PATH } from "@/config";
 import { initializeAppDataSource } from "@/db";
 import { Article } from "@/db/entities/article";
 import { Client } from "@/db/entities/client";
+import { CreditNote } from "@/db/entities/credit_note";
 import { InvoiceDocumentItem, OfferDocumentItem } from "@/db/entities/document_items";
 import { InvoiceDocument, OfferDocument, OverdueNoticeDocument } from "@/db/entities/documents";
 import { Invoice } from "@/db/entities/invoice";
 import { Offer } from "@/db/entities/offer";
 import { Order } from "@/db/entities/order";
-import { InvoiceItem, OfferItem } from "@/db/entities/order_items";
+import { CreditNoteItem, InvoiceItem, OfferItem } from "@/db/entities/order_items";
 import { OverdueNotice } from "@/db/entities/overdue_notice";
 import {
   ArticleKind,
@@ -121,7 +122,7 @@ async function insertData(dataSource: DataSource) {
         const isEven = index % 2 === 0;
 
         return {
-          offer_id: () => `(SELECT id from offer where order_id='A${index + 1}')`,
+          offer_id: () => `(SELECT min(id) from offer where order_id='A${index + 1}')`,
           kind: isEven ? ArticleKind.item : ArticleKind.heading,
           title: `Title ${index + 1}`,
           description: `Description ${index + 1}`,
@@ -154,7 +155,7 @@ async function insertData(dataSource: DataSource) {
           client_city: `city ${index + 1}`,
           order_title: `Order Title ${index + 1}`,
           order_id: `A${index + 1}`,
-          offer_id: () => `(SELECT id from offer where order_id='A${index + 1}')`,
+          offer_id: () => `(SELECT min(id) from offer where order_id='A${index + 1}')`,
           offered_at: `2021-02-0${index + 1}`,
           offer_valid_until: `2021-03-0${index + 1}`,
         };
@@ -181,7 +182,7 @@ async function insertData(dataSource: DataSource) {
           client_city: `city ${index + 1}`,
           order_title: `Order Title ${index + 1}`,
           order_id: `A${index + 1}`,
-          offer_id: () => `(SELECT id from offer where order_id='A${index + 1}')`,
+          offer_id: () => `(SELECT min(id) from offer where order_id='A${index + 1}')`,
           offered_at: `2021-02-0${index + 1}`,
           offer_valid_until: `2021-03-0${index + 1}`,
         };
@@ -368,6 +369,63 @@ async function insertData(dataSource: DataSource) {
       .relation(OverdueNoticeDocument, "invoice_documents")
       .of(`M2020-01-${index + 1}`)
       .add(`R2020-01-${index + 1}`);
+  }
+
+  const groupingExampleOrderId = "A1";
+  const groupingExampleOffer = await dataSource.manager.save(Offer, {
+    order_id: groupingExampleOrderId,
+    status: OfferStatus.created,
+    description: "Additional offer for grouped tab navigation",
+    offered_at: "2021-02-01",
+    offer_valid_until: "2022-02-01",
+  });
+  await dataSource.manager.save(OfferItem, {
+    offer_id: groupingExampleOffer.id,
+    kind: ArticleKind.item,
+    title: "Grouping Example Offer Item",
+    description: "Additional item for the grouped tab navigation example",
+    unit: "Unit",
+    price: 125,
+    amount: 2,
+  });
+
+  const groupingExampleInvoice = await dataSource.manager.save(Invoice, {
+    order_id: groupingExampleOrderId,
+    sub_id: "grouping-example",
+    service_dates: ["2021-02-01", "2022-02-01"],
+    invoice_date: "2023-02-01",
+    payment_target: "2024-02-01",
+    status: PaymentStatus.open,
+    description: "Additional invoice for grouped tab navigation",
+  });
+  await dataSource.manager.save(InvoiceItem, {
+    invoice_id: groupingExampleInvoice.id,
+    kind: ArticleKind.item,
+    title: "Grouping Example Invoice Item",
+    description: "Additional item for the grouped tab navigation example",
+    unit: "Unit",
+    price: 150,
+    amount: 3,
+  });
+
+  for (const index of [1, 2]) {
+    const creditNote = await dataSource.manager.save(CreditNote, {
+      order_id: groupingExampleOrderId,
+      credit_date: `2023-03-0${index}`,
+      status: PaymentStatus.open,
+      description: `Additional credit note ${index} for grouped tab navigation`,
+      referenced_invoice_document_ids: ["R2020-01-1"],
+    });
+
+    await dataSource.manager.save(CreditNoteItem, {
+      credit_note_id: creditNote.id,
+      kind: ArticleKind.item,
+      title: `Grouping Example Credit Note Item ${index}`,
+      description: "Additional item for the grouped tab navigation example",
+      unit: "Unit",
+      price: -25 * index,
+      amount: index,
+    });
   }
 }
 

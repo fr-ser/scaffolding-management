@@ -72,7 +72,7 @@ describe("Orders routes", () => {
     expect(adminResponse.status).toBe(200);
 
     const adminResponseData = await adminResponse.json();
-    expect(adminResponseData.offer).toBeTruthy();
+    expect(adminResponseData.offers.length).toBeGreaterThan(0);
     expect(adminResponseData.invoices.length).toBeGreaterThan(0);
     expect(adminResponseData.overdue_notices.length).toBeGreaterThan(0);
 
@@ -83,7 +83,7 @@ describe("Orders routes", () => {
     expect(employeeResponse.status).toBe(200);
 
     const employeeResponseData = await employeeResponse.json();
-    expect(employeeResponseData.offer).toBeUndefined();
+    expect(employeeResponseData.offers).toBeUndefined();
     expect(employeeResponseData.invoices).toBeUndefined();
     expect(employeeResponseData.overdue_notices).toBeUndefined();
   });

@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 import { OfferDocument } from "@/db/entities/documents";
 import { Order } from "@/db/entities/order";
@@ -19,7 +19,7 @@ export class Offer {
   @Column({ type: "text" })
   declare order_id: string;
 
-  @OneToOne(() => Order)
+  @ManyToOne(() => Order)
   @JoinColumn({ name: "order_id" })
   declare order: Order;
 

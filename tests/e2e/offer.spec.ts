@@ -24,8 +24,8 @@ test("create, issue document for, and delete an offer", async ({ page }) => {
 
   // Create an offer
   await page.getByRole("button", { name: "Angebot erstellen" }).click();
-  await expect(page.getByRole("tab", { name: "Angebot" })).toBeVisible();
-  await page.getByRole("tab", { name: "Angebot" }).click();
+  await expect(page.getByRole("tab", { name: "Neues Angebot" })).toBeVisible();
+  await page.getByRole("tab", { name: "Neues Angebot" }).click();
 
   // Add a line item
   await page.getByRole("button", { name: "Artikel" }).click();
@@ -42,6 +42,15 @@ test("create, issue document for, and delete an offer", async ({ page }) => {
   // Save the offer
   await page.getByRole("button", { name: "Angebot speichern" }).click();
   await expect(page.getByText("Ein neues Angebot wurde erstellt.")).toBeVisible();
+  await expect(page.getByRole("tab", { name: /Angebot / })).toBeVisible();
+
+  // A second offer can be created for the same order without leaving the page
+  await page.getByRole("button", { name: "Angebot erstellen" }).click();
+  await expect(page.getByRole("tab", { name: "Neues Angebot" })).toBeVisible();
+  await page.getByRole("tab", { name: "Neues Angebot" }).click();
+  await page.getByRole("button", { name: "Angebot speichern" }).click();
+  await expect(page.getByText("Ein neues Angebot wurde erstellt.")).toBeVisible();
+  await expect(page.getByRole("tab", { name: /Angebot / })).toHaveCount(2);
 
   // Create an offer document
   await page.getByRole("button", { name: "Dokument Erstellen" }).click();
@@ -70,8 +79,11 @@ test("create, issue document for, and delete an offer", async ({ page }) => {
   await page.getByTestId("order-card").getByLabel("Anschauen / Bearbeiten").click();
   await page.waitForURL("**/orders/**/edit");
 
-  await expect(page.getByRole("tab", { name: "Angebot" })).toBeVisible();
-  await page.getByRole("tab", { name: "Angebot" }).click();
+  await expect(page.getByRole("tab", { name: /Angebot / }).first()).toBeVisible();
+  await page
+    .getByRole("tab", { name: /Angebot / })
+    .first()
+    .click();
   await page.getByRole("button", { name: "Angebot löschen" }).click();
   await page.getByRole("alertdialog").getByText("Bestätigen").click();
   await expect(page.getByText("Das Angebot wurde gelöscht.")).toBeVisible();

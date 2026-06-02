@@ -19,7 +19,7 @@ export type ArticleUpdate = Partial<Omit<Article, "id">>;
 
 export type OrderCreate = Omit<
   Order,
-  "id" | "client" | "offer" | "overdue_notices" | "invoices" | "created_at" | "updated_at"
+  "id" | "client" | "offers" | "overdue_notices" | "invoices" | "created_at" | "updated_at"
 >;
 export type OrderUpdate = Partial<OrderCreate>;
 

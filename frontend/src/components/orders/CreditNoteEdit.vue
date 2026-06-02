@@ -33,6 +33,7 @@ const finalExistingSubOrder = ref(props.existingCreditNote);
 
 const emit = defineEmits<{
   deleted: [];
+  saved: [id: number];
 }>();
 
 const confirm = useConfirmations();
@@ -107,10 +108,12 @@ async function onSaveCreditNote() {
   if (finalExistingSubOrder.value != null) {
     await updateCreditNote(finalExistingSubOrder.value.id, payload);
     notifications.showNotification("Die Gutschriftsänderung wurde gespeichert.");
+    emit("saved", finalExistingSubOrder.value.id);
   } else {
     const newCreditNote = await createCreditNote(payload);
     notifications.showNotification("Eine neue Gutschrift wurde erstellt.");
     finalExistingSubOrder.value = newCreditNote;
+    emit("saved", newCreditNote.id);
   }
 }
 
