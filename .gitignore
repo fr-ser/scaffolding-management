@@ -15,6 +15,7 @@ node_modules/
 
 # AI
 .claude
+.codex
 .serena
 
 # environment files
@@ -32,4 +33,3 @@ deployment/production
 # database
 *.db
 *.db.backup
-
