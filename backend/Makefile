@@ -9,10 +9,10 @@ generate-pdf-snapshots: ## regenerate PDF test snapshots
 	npm run build && CONFIG_PATH=../.env.development node ./dist/src/tests/pdf/generate-snapshot-pdfs.js
 
 db-seed: ## seed the development database
-	npm run build && CONFIG_PATH=../.env.development npx ts-node -r tsconfig-paths/register scripts/seed-local-data.ts
+	npm run build && CONFIG_PATH=../.env.development npx ts-node --require tsconfig-paths/register scripts/seed-local-data.ts
 
 db-seed-overwrite: ## seed the development database, overwriting existing data
-	npm run build && CONFIG_PATH=../.env.development npx ts-node -r tsconfig-paths/register scripts/seed-local-data.ts --overwrite
+	npm run build && CONFIG_PATH=../.env.development npx ts-node --require tsconfig-paths/register scripts/seed-local-data.ts --overwrite
 
 task-prepared-orders-email: ## run the prepared orders email task
 	npm run build && CONFIG_PATH=../.env.development node ./dist/src/tasks/prepared_orders_mail/task.js

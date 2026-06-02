@@ -37,7 +37,7 @@ This invokes the deployment target:
 cd ~/apps/deployment && make update-with-migrations
 ```
 
-That target creates a timestamped database backup, copies the existing production database into the new app directory, switches `next-scaffolding` into `scaffolding`, runs pending migrations, and only then starts PM2.
+That target stops the production PM2 app, creates a timestamped database backup, copies the existing production database into the new app directory, switches `next-scaffolding` into `scaffolding`, runs pending migrations, and only then starts production again.
 
 To create only the backup against the currently active production app directory:
 
@@ -54,7 +54,7 @@ cd ~/apps/deployment && make migrate
 The migration step runs the deployed JavaScript datasource:
 
 ```bash
-cd ~/apps/scaffolding && CONFIG_PATH=.env ./node_modules/.bin/typeorm migration:run -d ./dist/src/db/dataSource.js
+cd ~/apps/scaffolding && CONFIG_PATH=.env ./node_modules/.bin/typeorm migration:run --dataSource ./dist/src/db/dataSource.js
 ```
 
 Do not use the backend development migration command for deployed production data, because production only deploys the compiled `dist/` output.

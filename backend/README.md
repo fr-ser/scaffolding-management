@@ -38,13 +38,13 @@ One-off TypeScript scripts in the backend context live in `scripts/one-off/` and
 To run one of them:
 
 ```bash
-cd backend && npm run build && CONFIG_PATH=../.env.development npx ts-node -r tsconfig-paths/register scripts/one-off/YYYY-MM-DD-purpose.ts
+cd backend && npm run build && CONFIG_PATH=../.env.development npx ts-node --require tsconfig-paths/register scripts/one-off/YYYY-MM-DD-purpose.ts
 ```
 
 ## Migrations
 
 In order to create migrations use the following command:
-`CONFIG_PATH=local.env NODE_OPTIONS='-r tsconfig-paths/register' npx typeorm-ts-node-commonjs migration:generate ./src/migrations/update-post-table -d ./src/db/dataSource.ts`.
+`CONFIG_PATH=local.env NODE_OPTIONS='--require tsconfig-paths/register' npx typeorm-ts-node-commonjs migration:generate ./src/migrations/update-post-table --dataSource ./src/db/dataSource.ts`.
 
 In order to run migrations use:
-`CONFIG_PATH=local.env NODE_OPTIONS='-r tsconfig-paths/register' npx typeorm-ts-node-commonjs migration:run -d ./src/db/dataSource.ts`.
+`CONFIG_PATH=local.env NODE_OPTIONS='--require tsconfig-paths/register' npx typeorm-ts-node-commonjs migration:run --dataSource ./src/db/dataSource.ts`.
