@@ -5,10 +5,11 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
 
-import { InvoiceDocument } from "@/db/entities/documents";
+import { InvoiceDocument, OverdueNoticeDocument } from "@/db/entities/documents";
 import { Order } from "@/db/entities/order";
 import { OverdueNoticeLevel, OverdueNoticePaymentStatus } from "@/global/types/appTypes";
 
@@ -67,4 +68,7 @@ export class OverdueNotice {
 
   @Column({ type: "real", nullable: true })
   declare default_interest: number;
+
+  @OneToMany(() => OverdueNoticeDocument, (document) => document.overdue_notice)
+  declare documents: OverdueNoticeDocument[];
 }

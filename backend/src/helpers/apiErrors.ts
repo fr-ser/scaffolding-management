@@ -13,8 +13,14 @@ export class ApiError extends Error {
 
 export interface SQLiteError {
   code?: string;
+  message?: string;
 }
 
 export function isSQLiteConstraintError(error: unknown): boolean {
   return (error as SQLiteError).code?.startsWith("SQLITE_CONSTRAINT") ?? false;
+}
+
+export function isSQLiteConstraintErrorOnColumn(error: unknown, column: string): boolean {
+  const sqliteError = error as SQLiteError;
+  return isSQLiteConstraintError(error) && (sqliteError.message?.includes(column) ?? false);
 }

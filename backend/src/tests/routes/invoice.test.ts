@@ -10,6 +10,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 
 import { closeDatabase, initializeAppDataSource } from "@/db";
 import { InvoiceDocument } from "@/db/entities/documents";
+import { ErrorCode } from "@/global/types/backendTypes";
 import { getApp } from "@/main";
 import { getRequest } from "@/tests/api-utils";
 import { getInvoice, getInvoiceDocument } from "@/tests/factories";
@@ -76,5 +77,18 @@ describe("invoice routes", () => {
       where: { id: "2025-11-02" },
     });
     expect(newDocument).toBeTruthy();
+  });
+
+  test("returns conflict when creating a second document for the same invoice", async () => {
+    const invoiceDocument = await getInvoiceDocument({}, appDataSource);
+
+    const response = await fetch(
+      getRequest(server, `api/orders/invoices/${invoiceDocument.invoice_id}/documents`, {
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(409);
+    expect((await response.json()).error.code).toBe(ErrorCode.DUPLICATE_DOCUMENT);
   });
 });

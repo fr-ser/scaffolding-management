@@ -71,6 +71,7 @@ export interface Invoice extends CreatedAtUpdatedAt {
   status: PaymentStatus;
   description: string;
   items: InvoiceItem[];
+  documents?: InvoiceDocument[];
 }
 
 export interface OrderItem {
@@ -206,4 +207,5 @@ export interface OverdueNotice extends CreatedAtUpdatedAt {
   payment_status: OverdueNoticePaymentStatus;
   notice_costs: number;
   default_interest: number;
+  documents?: OverdueNoticeDocument[];
 }

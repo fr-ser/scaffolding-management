@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
+import { InvoiceDocument } from "@/db/entities/documents";
 import { Order } from "@/db/entities/order";
 import { InvoiceItem } from "@/db/entities/order_items";
 import { PaymentStatus } from "@/global/types/appTypes";
@@ -42,4 +43,7 @@ export class Invoice {
 
   @OneToMany(() => InvoiceItem, (invoice_item) => invoice_item.invoice)
   declare items: InvoiceItem[];
+
+  @OneToMany(() => InvoiceDocument, (document) => document.invoice)
+  declare documents: InvoiceDocument[];
 }

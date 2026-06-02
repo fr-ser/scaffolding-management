@@ -8,7 +8,7 @@ import { Invoice } from "@/db/entities/invoice";
 import { InvoiceItem } from "@/db/entities/order_items";
 import { ErrorCode, UserPermissions } from "@/global/types/backendTypes";
 import { InvoiceCreate, InvoiceUpdate } from "@/global/types/dataEditTypes";
-import { ApiError } from "@/helpers/apiErrors";
+import { ApiError, isSQLiteConstraintErrorOnColumn } from "@/helpers/apiErrors";
 import { findFirstUnusedNumber } from "@/helpers/findFirstUnusedNumber";
 
 export const invoicesRouter = express.Router();
@@ -174,14 +174,6 @@ invoicesRouter.post(
       return;
     }
 
-    const existingDocumentCount = await dataSource.manager.countBy(InvoiceDocument, {
-      invoice_id: parseInt(id),
-    });
-    if (existingDocumentCount > 0) {
-      next(new ApiError(ErrorCode.DUPLICATE_DOCUMENT, 409));
-      return;
-    }
-
     const documentsOfTheMonth = await dataSource.manager.query(`
       SELECT id from invoice_document where id LIKE '%${invoice.invoice_date.substring(0, 7)}-%'
     `);
@@ -237,6 +229,11 @@ invoicesRouter.post(
 
       res.json(document);
     } catch (error) {
+      if (isSQLiteConstraintErrorOnColumn(error, "invoice_document.invoice_id")) {
+        next(new ApiError(ErrorCode.DUPLICATE_DOCUMENT, 409));
+        return;
+      }
+
       next(error);
       return;
     }

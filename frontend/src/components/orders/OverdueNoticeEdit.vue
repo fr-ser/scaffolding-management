@@ -172,6 +172,7 @@ async function onClickSave() {
       v-if="finalExistingSubOrder"
       :kind="DocumentKind.overdueNotice"
       :id="finalExistingSubOrder.id"
+      :has-existing-document="(finalExistingSubOrder.documents?.length || 0) > 0"
     />
     <div class="grow" />
     <Button

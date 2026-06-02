@@ -120,6 +120,7 @@ function onUpdatePositions(positions: InvoiceItemCreate[]) {
       v-if="finalExistingSubOrder"
       :kind="DocumentKind.invoice"
       :id="finalExistingSubOrder.id"
+      :has-existing-document="(finalExistingSubOrder.documents?.length || 0) > 0"
     />
     <div class="grow" />
     <Button

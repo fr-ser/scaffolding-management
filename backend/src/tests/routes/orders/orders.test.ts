@@ -14,7 +14,16 @@ import { Order } from "@/global/types/entities";
 import { getApp } from "@/main";
 import { getRequest } from "@/tests/api-utils";
 import { clearDatabase } from "@/tests/db";
-import { getInvoice, getOffer, getOrder, getOverdueNotice } from "@/tests/factories";
+import {
+  getCreditNoteDocument,
+  getInvoice,
+  getInvoiceDocument,
+  getOffer,
+  getOfferDocument,
+  getOrder,
+  getOverdueNotice,
+  getOverdueNoticeDocument,
+} from "@/tests/factories";
 
 describe("Orders routes", () => {
   let app: Express;
@@ -86,5 +95,34 @@ describe("Orders routes", () => {
     expect(employeeResponseData.offers).toBeUndefined();
     expect(employeeResponseData.invoices).toBeUndefined();
     expect(employeeResponseData.overdue_notices).toBeUndefined();
+  });
+
+  test("gets order documents sorted by document kind and document number", async () => {
+    const order = await getOrder({ id: "A100" }, appDataSource);
+
+    await getOverdueNoticeDocument(
+      { id: "M2025-07-01", order_id: order.id, invoice_documents: [] },
+      appDataSource,
+    );
+    await getInvoiceDocument({ id: "R2025-07-31", order_id: order.id }, appDataSource);
+    await getCreditNoteDocument({ id: "G2025-07-01", order_id: order.id }, appDataSource);
+    await getOfferDocument({ id: "A2025-07-02", order_id: order.id }, appDataSource);
+    await getInvoiceDocument({ id: "R2025-07-27", order_id: order.id }, appDataSource);
+    await getOfferDocument({ id: "A2025-07-01", order_id: order.id }, appDataSource);
+
+    const response = await fetch(getRequest(server, `api/orders/${order.id}/documents`));
+
+    expect(response.status).toBe(200);
+
+    const responseData = await response.json();
+
+    expect(responseData.map((document: { id: string }) => document.id)).toEqual([
+      "A2025-07-01",
+      "A2025-07-02",
+      "R2025-07-27",
+      "R2025-07-31",
+      "G2025-07-01",
+      "M2025-07-01",
+    ]);
   });
 });
