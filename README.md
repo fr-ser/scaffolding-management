@@ -43,9 +43,10 @@ Run `npm run test` from the root to run root-level tests only.
 
 The following hints can help running e2e tests:
 
-- in order to run the tests against a running development environment use:
+- in order to run the tests against an isolated test database use:
   `npm run test:e2e`
-- in order to run tests with a UI use:
+  - the isolated test database is regenerated from seed data for each Playwright run.
+- in order to run tests with a UI against the running development instance on port 3001 use:
   `make test-e2e-dev`
 
 ## Deployment
