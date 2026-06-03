@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const PORT = process.env.PLAYWRIGHT_BACKEND_PORT || 3099;
+const REUSE_EXISTING_SERVER = process.env.PLAYWRIGHT_REUSE_EXISTING_SERVER === "true";
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -25,10 +26,12 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  webServer: {
-    command: `make build-all && cd backend && HTTP_PORT=${PORT} STATIC_FILE_ROOT=dist/static CONFIG_PATH=../.env.development node ./dist/src/index.js`,
-    url: `http://localhost:${PORT}`,
-    reuseExistingServer: !process.env.CI,
-    stdout: process.env.CI ? "pipe" : "ignore",
-  },
+  webServer: REUSE_EXISTING_SERVER
+    ? undefined
+    : {
+        command: "make start-playwright-services",
+        url: `http://localhost:${PORT}`,
+        reuseExistingServer: false,
+        stdout: process.env.CI ? "pipe" : "ignore",
+      },
 });

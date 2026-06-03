@@ -28,6 +28,7 @@ Everything else goes in the `Makefile`.
 ```bash
 make build-all        # Build both frontend and backend for production
 make test-all         # Run all tests (all levels: root, backend, frontend)
+npm run test:e2e      # Run Playwright tests against an isolated test database
 make test-e2e-dev     # Run Playwright tests with UI (against dev instance on :3001)
 make lint-all         # Lint across root, backend, and frontend
 make format-all       # Format across root, backend, and frontend
@@ -60,11 +61,14 @@ npm run format         # Auto-fix ESLint + Prettier
 make test-all          # Run all tests across the project
 npm run test           # Root-level tests only (unit + lint)
 npm run test:unit      # Vitest unit tests only
-npm run test:e2e       # Playwright E2E tests
+npm run test:e2e       # Playwright E2E tests against an isolated test database
 make test-e2e-dev      # E2E tests with UI (against dev instance on :3001)
 # Run single test file:
 npx vitest run backend/tests/someFile.test.ts
 ```
+
+Automated Playwright e2e tests use `.env.test` and regenerate `backend/test.db` from seed data before each run.
+`make test-e2e-dev` is the exception and runs with the UI against the already-running development instance on `:3001`.
 
 ## Architecture
 
@@ -170,6 +174,7 @@ Key variables:
 - `VITE_COMPANY_*` — Company branding used in PDFs and frontend
 
 Development env file: `.env.development`
+Playwright e2e test env file: `.env.test`
 
 ## Style
 

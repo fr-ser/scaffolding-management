@@ -39,8 +39,13 @@ test-all: ## run all tests across all levels
 	npm run test
 	npm run test:e2e
 
+start-playwright-services: ## build, seed, and start the playwright backend with a fresh test database
+	$(MAKE) build-all BUILD_ARGS="--mode test"
+	cd backend && CONFIG_PATH=../.env.test npx ts-node --require tsconfig-paths/register scripts/seed-local-data.ts --overwrite
+	cd backend && HTTP_PORT=$${PLAYWRIGHT_BACKEND_PORT:-3099} STATIC_FILE_ROOT=dist/static CONFIG_PATH=../.env.test node ./dist/src/index.js
+
 test-e2e-dev: ## run playwright UI tests against the running development instance
-	PLAYWRIGHT_BACKEND_PORT=3001 npm run test:e2e -- --ui
+	PLAYWRIGHT_REUSE_EXISTING_SERVER=true PLAYWRIGHT_BACKEND_PORT=3001 npm run test:e2e -- --ui
 
 
 deploy-ssh: ## connect to deploy target via ssh

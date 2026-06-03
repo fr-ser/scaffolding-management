@@ -21,8 +21,6 @@ jobs:
       - run: make install-all
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
-      - name: Seed/Create database
-        run: cd backend && make db-seed
       - name: Run Playwright tests
         run: npm run test:e2e
       - uses: actions/upload-artifact@v4
