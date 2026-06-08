@@ -557,6 +557,7 @@ const groupedTabData = computed(() =>
                     <div class="min-w-0 grow">
                       <OfferEdit
                         v-if="getSelectedGroupedTab(group.kind)?.kind === DocumentKind.offer"
+                        :key="`offer-editor-${getSelectedGroupedTab(group.kind)?.key}`"
                         @deleted="onSubOrderDeleted"
                         @saved="(id) => onSubOrderSaved(DocumentKind.offer, id)"
                         :order="orderInfo as Order"
@@ -564,6 +565,7 @@ const groupedTabData = computed(() =>
                       />
                       <InvoiceEdit
                         v-else-if="getSelectedGroupedTab(group.kind)?.kind === DocumentKind.invoice"
+                        :key="`invoice-editor-${getSelectedGroupedTab(group.kind)?.key}`"
                         @deleted="onSubOrderDeleted"
                         @saved="(id) => onSubOrderSaved(DocumentKind.invoice, id)"
                         :order="orderInfo as Order"
@@ -573,6 +575,7 @@ const groupedTabData = computed(() =>
                         v-else-if="
                           getSelectedGroupedTab(group.kind)?.kind === DocumentKind.creditNote
                         "
+                        :key="`credit-note-editor-${getSelectedGroupedTab(group.kind)?.key}`"
                         @deleted="onSubOrderDeleted"
                         @saved="(id) => onSubOrderSaved(DocumentKind.creditNote, id)"
                         :order="orderInfo as Order"
@@ -584,6 +587,7 @@ const groupedTabData = computed(() =>
                         v-else-if="
                           getSelectedGroupedTab(group.kind)?.kind === DocumentKind.overdueNotice
                         "
+                        :key="`overdue-notice-editor-${getSelectedGroupedTab(group.kind)?.key}`"
                         @deleted="onSubOrderDeleted"
                         @saved="(id) => onSubOrderSaved(DocumentKind.overdueNotice, id)"
                         :order="orderInfo as Order"

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { getOrderListPath } from "../../frontend/src/helpers/routes";
+import { getOrderEditPath, getOrderListPath } from "../../frontend/src/helpers/routes";
 
 test("create, edit and delete an order", async ({ page }) => {
   await page.goto(getOrderListPath());
@@ -39,4 +39,21 @@ test("create, edit and delete an order", async ({ page }) => {
   await page.getByRole("alertdialog").getByText("Bestätigen").click();
   await expect(page.getByText("Der Auftrag wurde gelöscht")).toBeVisible();
   await expect(page.getByTestId("order-card")).toHaveCount(0);
+});
+
+test("switches between grouped suborders", async ({ page }) => {
+  await page.goto(getOrderEditPath("A1"));
+
+  await expect(page.getByRole("tab", { name: "Angebote (2)" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Gutschriften (2)" })).toBeVisible();
+
+  await page.getByRole("tab", { name: "Gutschriften (2)" }).click();
+  const creditNotesPanel = page.getByRole("tabpanel", { name: "Gutschriften (2)" });
+  const titleInput = creditNotesPanel.locator('[data-name="description"] input').first();
+
+  await page.getByRole("button", { name: "Gutschrift 01.03.2023" }).click();
+  await expect(titleInput).toHaveValue("Grouping Example Credit Note Item 1");
+
+  await page.getByRole("button", { name: "Gutschrift 02.03.2023" }).click();
+  await expect(titleInput).toHaveValue("Grouping Example Credit Note Item 2");
 });
