@@ -42,6 +42,11 @@ overdueNoticesRouter.post(
     try {
       await dataSource.transaction(async (transactionalEntityManager) => {
         await transactionalEntityManager.insert(OverdueNotice, overdueNotice);
+        await transactionalEntityManager
+          .createQueryBuilder()
+          .relation(OverdueNotice, "invoice_documents")
+          .of(overdueNotice)
+          .add(payloadWitDocuments.invoice_documents);
       });
 
       res.json(overdueNotice);

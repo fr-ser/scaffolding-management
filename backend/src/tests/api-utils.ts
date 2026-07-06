@@ -4,6 +4,7 @@ import { AddressInfo } from "node:net";
 import { USERS } from "@/authorization";
 import { USER_ADMIN_NAME } from "@/config";
 
+/** Builds an authenticated `Request` against the given test server. */
 export function getRequest(
   server: Server,
   url: string,
@@ -13,6 +14,7 @@ export function getRequest(
     params?: {
       [key: string]: string;
     };
+    body?: Record<string, unknown>;
   } = {},
 ): Request {
   const defaultOptions = { userName: USER_ADMIN_NAME, method: "GET", params: {} };
@@ -28,6 +30,8 @@ export function getRequest(
     headers: {
       Authorization:
         "Basic " + Buffer.from(finalOptions.userName + ":" + password).toString("base64"),
+      ...(finalOptions.body ? { "Content-Type": "application/json" } : {}),
     },
+    body: finalOptions.body ? JSON.stringify(finalOptions.body) : undefined,
   });
 }
