@@ -66,6 +66,10 @@ test("create, issue document for, and delete an overdue notice", async ({ page }
   await page.getByRole("button", { name: "Mahnung speichern" }).click();
   await expect(page.getByText("Eine neue Mahnung wurde erstellt.")).toBeVisible();
 
+  // Regression check: after the create-triggered remount/refetch, the invoice
+  // linked during creation must still be listed (previously required a second save)
+  await expect(page.getByText("Nummer:")).toBeVisible();
+
   // Create an overdue notice document
   await page.getByRole("button", { name: "Dokument Erstellen" }).click();
   await page.getByRole("alertdialog").getByText("Bestätigen").click();
