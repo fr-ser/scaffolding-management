@@ -84,6 +84,19 @@ The job to renew certificates:
 0 2 * * 1 certbot renew --webroot -w ~/apps/scaffolding/dist/static/
 ```
 
+The application serves HTTPS directly via PM2 and loads the certificate files into memory at startup.
+Renewing the certificate on disk does not make the running process pick up the new one, so the app must be restarted after every renewal.
+Certbot supports this via a deploy hook, which only runs when a certificate is actually renewed (not on every no-op weekly check).
+
+To set this up on the remote:
+
+```bash
+mkdir -p /etc/letsencrypt/renewal-hooks/deploy
+ln -s ~/apps/deployment/certbot-restart-app.sh /etc/letsencrypt/renewal-hooks/deploy/certbot-restart-app.sh
+```
+
+The hook script itself is checked into [`deployment/certbot-restart-app.sh`](./certbot-restart-app.sh).
+
 ## UAT Environment
 
 The UAT environment is a parallel instance of the application used for testing. It lives in `~/apps/uat-scaffolding` and is managed by its own PM2 configuration.
