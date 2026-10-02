@@ -7,7 +7,7 @@ import Select from "primevue/select";
 import Textarea from "primevue/textarea";
 import { ref } from "vue";
 
-import { createInvoice, deleteSubOrder, updateInvoice } from "@/backendClient";
+import { createInvoice, deleteSubOrder, isAppErrorCode, updateInvoice } from "@/backendClient";
 import CreateDocumentButton from "@/components/orders/CreateDocumentButton.vue";
 import SubOrderPositions from "@/components/orders/SubOrderPositions.vue";
 import useConfirmations from "@/composables/useConfirmations";
@@ -15,6 +15,7 @@ import useNotifications from "@/composables/useNotifications";
 import { getAutomaticRentalNote, useInvoiceValidation } from "@/composables/useOrderLogic";
 import { getItemSum } from "@/global/helpers";
 import { DocumentKind, PaymentStatus } from "@/global/types/appTypes";
+import { ErrorCode } from "@/global/types/backendTypes";
 import type { InvoiceItemCreate } from "@/global/types/dataEditTypes";
 import type { Invoice, Order } from "@/global/types/entities";
 import { ValidationError, formatDateToIsoString } from "@/helpers/utils";
@@ -66,8 +67,15 @@ async function onDeleteInvoice() {
     await deleteSubOrder(finalExistingSubOrder.value!.id, DocumentKind.invoice);
     notifications.showNotification("Die Rechnung wurde gelöscht.");
     emit("deleted");
-  } catch {
-    notifications.showNotification("Die Rechnung konnte nicht gelöscht werden.", "error");
+  } catch (error) {
+    if (isAppErrorCode(error, ErrorCode.FK_CONSTRAINT_DOCUMENT)) {
+      notifications.showNotification(
+        "Es existieren noch Dokumente für diese Rechnung. Diese müssen zuerst gelöscht werden.",
+        "error",
+      );
+    } else {
+      notifications.showNotification("Die Rechnung konnte nicht gelöscht werden.", "error");
+    }
   }
 }
 

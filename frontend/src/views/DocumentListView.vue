@@ -8,11 +8,12 @@ import InputIcon from "primevue/inputicon";
 import InputText from "primevue/inputtext";
 import { onMounted, ref, watch } from "vue";
 
-import { deleteDocument, getDocumentPdf, getDocuments } from "@/backendClient";
+import { deleteDocument, getDocumentPdf, getDocuments, isAppErrorCode } from "@/backendClient";
 import useConfirmations from "@/composables/useConfirmations";
 import useNotifications from "@/composables/useNotifications";
 import { neverFunction } from "@/global/helpers";
 import { DocumentKind } from "@/global/types/appTypes";
+import { ErrorCode } from "@/global/types/backendTypes";
 import type {
   CreditNoteDocument,
   InvoiceDocument,
@@ -81,8 +82,15 @@ async function removeDocument(
     await deleteDocument(doc.id, kind);
     loadData();
     notifications.showNotification("Das Dokument wurde gelöscht");
-  } catch {
-    notifications.showNotification("Das Dokument konnte nicht gelöscht werden.", "error");
+  } catch (error) {
+    if (isAppErrorCode(error, ErrorCode.FK_CONSTRAINT_OVERDUE_NOTICE)) {
+      notifications.showNotification(
+        "Es existiert noch eine Mahnung für dieses Rechnungsdokument. Diese muss zuerst gelöscht werden.",
+        "error",
+      );
+    } else {
+      notifications.showNotification("Das Dokument konnte nicht gelöscht werden.", "error");
+    }
   }
 }
 

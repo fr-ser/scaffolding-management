@@ -91,4 +91,16 @@ describe("invoice routes", () => {
     expect(response.status).toBe(409);
     expect((await response.json()).error.code).toBe(ErrorCode.DUPLICATE_DOCUMENT);
   });
+
+  test("cannot delete invoice with documents", async () => {
+    const invoice = await getInvoice({}, appDataSource);
+    await getInvoiceDocument({ invoice_id: invoice.id, order_id: invoice.order_id }, appDataSource);
+
+    const response = await fetch(
+      getRequest(server, `api/orders/invoices/${invoice.id}`, { method: "DELETE" }),
+    );
+
+    expect(response.status).toBe(400);
+    expect((await response.json()).error.code).toBe(ErrorCode.FK_CONSTRAINT_DOCUMENT);
+  });
 });
