@@ -10,9 +10,10 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 
 import { closeDatabase, initializeAppDataSource } from "@/db";
 import { Client } from "@/db/entities/client";
+import { ErrorCode } from "@/global/types/backendTypes";
 import { getApp } from "@/main";
 import { getRequest } from "@/tests/api-utils";
-import { getClient } from "@/tests/factories";
+import { getClient, getOrder } from "@/tests/factories";
 
 describe("Clients routes", () => {
   let app: Express;
@@ -59,5 +60,17 @@ describe("Clients routes", () => {
     const filteredResponseData = await filteredResponse.json();
     expect(filteredResponseData.data).toHaveLength(1);
     expect(filteredResponseData.totalCount).toBe(1);
+  });
+
+  test("cannot delete client with orders", async () => {
+    const order = await getOrder({}, appDataSource);
+    const clientId = order.client_id;
+
+    const response = await fetch(
+      getRequest(server, `api/clients/${clientId}`, { method: "DELETE" }),
+    );
+
+    expect(response.status).toBe(400);
+    expect((await response.json()).error.code).toBe(ErrorCode.FK_CONSTRAINT_ORDER);
   });
 });

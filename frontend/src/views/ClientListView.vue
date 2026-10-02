@@ -6,10 +6,10 @@ import InputIcon from "primevue/inputicon";
 import InputText from "primevue/inputtext";
 import { computed, onMounted, ref, watch } from "vue";
 
-import { deleteClient, getClients } from "@/backendClient";
+import { deleteClient, getClients, isAppErrorCode } from "@/backendClient";
 import useConfirmations from "@/composables/useConfirmations";
 import useNotifications from "@/composables/useNotifications";
-import { UserPermissions } from "@/global/types/backendTypes";
+import { ErrorCode, UserPermissions } from "@/global/types/backendTypes";
 import type { Client } from "@/global/types/entities";
 import { getClientCreatePath, getClientEditPath } from "@/helpers/routes";
 import { debounce } from "@/helpers/utils";
@@ -67,8 +67,15 @@ async function onClickDelete(client: Client) {
     await deleteClient(client.id);
     loadData();
     notifications.showNotification("Der Kunde wurde gelöscht");
-  } catch {
-    notifications.showNotification("Der Kunde konnte nicht gelöscht werden.", "error");
+  } catch (error) {
+    if (isAppErrorCode(error, ErrorCode.FK_CONSTRAINT_ORDER)) {
+      notifications.showNotification(
+        "Es existieren noch Aufträge für diesen Kunden. Diese müssen zuerst gelöscht werden.",
+        "error",
+      );
+    } else {
+      notifications.showNotification("Der Kunde konnte nicht gelöscht werden.", "error");
+    }
   }
 }
 

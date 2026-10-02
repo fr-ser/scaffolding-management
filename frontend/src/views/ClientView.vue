@@ -11,12 +11,19 @@ import Textarea from "primevue/textarea";
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { createClient, deleteClient, getClient, getOrders, updateClient } from "@/backendClient";
+import {
+  createClient,
+  deleteClient,
+  getClient,
+  getOrders,
+  isAppErrorCode,
+  updateClient,
+} from "@/backendClient";
 import { useClientValidation } from "@/composables/useClientLogic";
 import useConfirmations from "@/composables/useConfirmations";
 import useNotifications from "@/composables/useNotifications";
 import { ClientSalutation } from "@/global/types/appTypes";
-import { UserPermissions } from "@/global/types/backendTypes";
+import { ErrorCode, UserPermissions } from "@/global/types/backendTypes";
 import type { ClientUpdate } from "@/global/types/dataEditTypes";
 import type { Order } from "@/global/types/entities";
 import { getClientListPath, getOrderEditPath } from "@/helpers/routes";
@@ -62,8 +69,15 @@ async function onClickDelete() {
     await deleteClient(`${route.params.id}`);
     router.push(getClientListPath());
     notifications.showNotification("Der Kunde wurde gelöscht");
-  } catch {
-    notifications.showNotification("Der Kunde konnte nicht gelöscht werden.", "error");
+  } catch (error) {
+    if (isAppErrorCode(error, ErrorCode.FK_CONSTRAINT_ORDER)) {
+      notifications.showNotification(
+        "Es existieren noch Aufträge für diesen Kunden. Diese müssen zuerst gelöscht werden.",
+        "error",
+      );
+    } else {
+      notifications.showNotification("Der Kunde konnte nicht gelöscht werden.", "error");
+    }
   }
 }
 

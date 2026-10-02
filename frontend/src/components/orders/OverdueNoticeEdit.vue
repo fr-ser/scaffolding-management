@@ -14,6 +14,7 @@ import {
   createOverdueNotice,
   deleteSubOrder,
   getDocumentsByOrder,
+  isAppErrorCode,
   updateOverdueNotice,
 } from "@/backendClient";
 import CreateDocumentButton from "@/components/orders/CreateDocumentButton.vue";
@@ -27,6 +28,7 @@ import {
   OverdueNoticePaymentStatus,
   PaymentStatus,
 } from "@/global/types/appTypes";
+import { ErrorCode } from "@/global/types/backendTypes";
 import type { InvoiceDocument, Order, OverdueNotice } from "@/global/types/entities";
 import { ValidationError } from "@/helpers/utils";
 
@@ -126,8 +128,15 @@ async function onClickedDelete() {
     await deleteSubOrder(finalExistingSubOrder.value!.id, DocumentKind.overdueNotice);
     notifications.showNotification("Die Mahnung wurde gelöscht.");
     emit("deleted");
-  } catch {
-    notifications.showNotification("Die Mahnung konnte nicht gelöscht werden.", "error");
+  } catch (error) {
+    if (isAppErrorCode(error, ErrorCode.FK_CONSTRAINT_DOCUMENT)) {
+      notifications.showNotification(
+        "Es existieren noch Dokumente für diese Mahnung. Diese müssen zuerst gelöscht werden.",
+        "error",
+      );
+    } else {
+      notifications.showNotification("Die Mahnung konnte nicht gelöscht werden.", "error");
+    }
   }
 }
 

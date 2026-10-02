@@ -12,6 +12,7 @@ import {
   createCreditNote,
   deleteSubOrder,
   getDocumentsByOrder,
+  isAppErrorCode,
   updateCreditNote,
 } from "@/backendClient";
 import CreateDocumentButton from "@/components/orders/CreateDocumentButton.vue";
@@ -20,6 +21,7 @@ import useConfirmations from "@/composables/useConfirmations";
 import useNotifications from "@/composables/useNotifications";
 import { useCreditNoteValidation } from "@/composables/useOrderLogic";
 import { DocumentKind, PaymentStatus } from "@/global/types/appTypes";
+import { ErrorCode } from "@/global/types/backendTypes";
 import type { CreditNoteItemCreate } from "@/global/types/dataEditTypes";
 import type { CreditNote, InvoiceDocument, Order } from "@/global/types/entities";
 import { ValidationError } from "@/helpers/utils";
@@ -74,8 +76,15 @@ async function onDeleteCreditNote() {
     await deleteSubOrder(finalExistingSubOrder.value!.id, DocumentKind.creditNote);
     notifications.showNotification("Die Gutschrift wurde gelöscht.");
     emit("deleted");
-  } catch {
-    notifications.showNotification("Die Gutschrift konnte nicht gelöscht werden.", "error");
+  } catch (error) {
+    if (isAppErrorCode(error, ErrorCode.FK_CONSTRAINT_DOCUMENT)) {
+      notifications.showNotification(
+        "Es existieren noch Dokumente für diese Gutschrift. Diese müssen zuerst gelöscht werden.",
+        "error",
+      );
+    } else {
+      notifications.showNotification("Die Gutschrift konnte nicht gelöscht werden.", "error");
+    }
   }
 }
 

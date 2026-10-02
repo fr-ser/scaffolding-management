@@ -10,6 +10,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
 
 import { USER_ADMIN_NAME, USER_EMPLOYEE_NAME } from "@/config";
 import { closeDatabase, initializeAppDataSource } from "@/db";
+import { ErrorCode } from "@/global/types/backendTypes";
 import { Order } from "@/global/types/entities";
 import { getApp } from "@/main";
 import { getRequest } from "@/tests/api-utils";
@@ -124,5 +125,17 @@ describe("Orders routes", () => {
       "G2025-07-01",
       "M2025-07-01",
     ]);
+  });
+
+  test("cannot delete order with documents", async () => {
+    const order = await getOrder({}, appDataSource);
+    await getInvoiceDocument({ order_id: order.id }, appDataSource);
+
+    const response = await fetch(
+      getRequest(server, `api/orders/${order.id}`, { method: "DELETE" }),
+    );
+
+    expect(response.status).toBe(400);
+    expect((await response.json()).error.code).toBe(ErrorCode.FK_CONSTRAINT_DOCUMENT);
   });
 });

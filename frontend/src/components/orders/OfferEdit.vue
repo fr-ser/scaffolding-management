@@ -7,7 +7,7 @@ import Select from "primevue/select";
 import Textarea from "primevue/textarea";
 import { ref } from "vue";
 
-import { createOffer, deleteSubOrder, updateOffer } from "@/backendClient";
+import { createOffer, deleteSubOrder, isAppErrorCode, updateOffer } from "@/backendClient";
 import CreateDocumentButton from "@/components/orders/CreateDocumentButton.vue";
 import SubOrderPositions from "@/components/orders/SubOrderPositions.vue";
 import useConfirmations from "@/composables/useConfirmations";
@@ -15,6 +15,7 @@ import useNotifications from "@/composables/useNotifications";
 import { getAutomaticRentalNote, useOfferValidation } from "@/composables/useOrderLogic";
 import { getItemSum } from "@/global/helpers";
 import { DocumentKind, OfferStatus } from "@/global/types/appTypes";
+import { ErrorCode } from "@/global/types/backendTypes";
 import type { OfferItemCreate } from "@/global/types/dataEditTypes";
 import type { Offer, Order } from "@/global/types/entities";
 import { ValidationError } from "@/helpers/utils";
@@ -59,8 +60,15 @@ async function onDeleteOffer() {
     await deleteSubOrder(finalExistingSubOrder.value!.id, DocumentKind.offer);
     notifications.showNotification("Das Angebot wurde gelöscht.");
     emit("deleted");
-  } catch {
-    notifications.showNotification("Das Angebot konnte nicht gelöscht werden.", "error");
+  } catch (error) {
+    if (isAppErrorCode(error, ErrorCode.FK_CONSTRAINT_DOCUMENT)) {
+      notifications.showNotification(
+        "Es existieren noch Dokumente für dieses Angebot. Diese müssen zuerst gelöscht werden.",
+        "error",
+      );
+    } else {
+      notifications.showNotification("Das Angebot konnte nicht gelöscht werden.", "error");
+    }
   }
 }
 
