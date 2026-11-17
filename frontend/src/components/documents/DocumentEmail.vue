@@ -66,13 +66,25 @@ if (props.kind === DocumentKind.invoice) {
 const emailRecipient = ref(props.document.client_email || "");
 const emailSubject = ref(`${VITE_COMPANY_NAME} - ${props.kind} - ${props.document.id}`);
 const emailAttachmentName = ref(`${props.kind}_${props.document.id}.pdf`);
+const now = Date.now();
+const showYearEndNotice =
+  props.kind === DocumentKind.invoice &&
+  now >= Date.parse("2026-11-17T00:00:00+01:00") &&
+  now < Date.parse("2026-12-20T00:00:00+01:00");
+const yearEndNotice = `🎄 Wichtiger Hinweis zum Gerüstabbau zum Jahresende 🎄
+
+Bitte beachten Sie: Gerüste, die nach dem 07.12.2026 abgemeldet werden, können in diesem Jahr leider nicht mehr abgebaut werden. Der Abbau erfolgt in diesem Fall erst im neuen Jahr.
+
+Wir bitten um entsprechende Berücksichtigung und wünschen Ihnen eine schöne und besinnliche Adventszeit sowie frohe Weihnachten! ✨🎅
+
+❄️ Vielen Dank für Ihr Verständnis! ❄️`;
 const emailMessage = ref(`Sehr geehrte Damen und Herren,
 
 anbei erhalten Sie ${emailKind} für Ihr BV: ${props.document.order_title}.
 
 Mit freundlichen Grüßen
 
-${VITE_COMPANY_NAME}
+${showYearEndNotice ? `${yearEndNotice}\n\n` : ""}${VITE_COMPANY_NAME}
 
 ${VITE_COMPANY_STREET_AND_NUMBER}
 ${VITE_COMPANY_POSTAL_CODE_AND_CITY}
