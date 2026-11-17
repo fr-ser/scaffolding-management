@@ -26,6 +26,7 @@ test("create, edit and delete a client", async ({ page }) => {
 
   // edit
   await firstClientCard.getByLabel("Anschauen / Bearbeiten").click();
+  await expect(page.getByLabel("Nachname")).toHaveValue("test last name " + timestamp);
   await page.getByLabel("Kommentar").fill("edit comment");
   await page.getByLabel("Speichern").click();
   await expect(page.getByText("Die Änderung der Kundendaten wurde gespeichert")).toBeVisible();
