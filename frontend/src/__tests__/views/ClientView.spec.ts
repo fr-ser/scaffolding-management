@@ -1,6 +1,9 @@
 import { createTestingPinia } from "@pinia/testing";
 import { flushPromises, shallowMount } from "@vue/test-utils";
+import Checkbox from "primevue/checkbox";
+import PrimeVue from "primevue/config";
 import { describe, expect, it, vi } from "vitest";
+import { defineComponent } from "vue";
 import { useRoute } from "vue-router";
 
 import { getClientMock, getOrderMock } from "@/__tests__/helpers/mocks";
@@ -10,12 +13,63 @@ import ClientView from "@/views/ClientView.vue";
 vi.mock("vue-router");
 vi.mock("@/backendClient");
 
+const SelectStub = defineComponent({
+  props: ["id", "modelValue", "options", "optionLabel", "optionValue"],
+  template: "<div />",
+});
+
 describe("ClientView", () => {
   vi.mocked(useRoute).mockReturnValue({ params: { id: "1" } } as unknown as ReturnType<
     typeof useRoute
   >);
   vi.mocked(getClient).mockResolvedValue(getClientMock());
   vi.mocked(getOrders).mockResolvedValue({ data: [getOrderMock()], totalCount: 1 });
+
+  it("associates the reverse-charge label with the checkbox input", async () => {
+    const wrapper = shallowMount(ClientView, {
+      global: {
+        plugins: [createTestingPinia({ createSpy: vi.fn }), PrimeVue],
+        stubs: {
+          Card: { template: "<div><slot name='content' /></div>" },
+          Checkbox,
+          "router-link": true,
+        },
+      },
+    });
+    await flushPromises();
+    const label = wrapper.get('label[for="reverse-vat"]');
+    const input = wrapper.get('input[type="checkbox"]');
+    expect((label.element as HTMLLabelElement).control).toBe(input.element);
+    await input.setValue(true);
+    expect((input.element as HTMLInputElement).checked).toBe(true);
+  });
+
+  it("offers Germany and Austria as country choices with Germany selected by default", async () => {
+    const wrapper = shallowMount(ClientView, {
+      global: {
+        plugins: [createTestingPinia({ createSpy: vi.fn }), PrimeVue],
+        stubs: {
+          Card: { template: "<div><slot name='content' /></div>" },
+          Checkbox,
+          Select: SelectStub,
+          "router-link": true,
+        },
+      },
+    });
+    await flushPromises();
+
+    const countrySelect = wrapper
+      .findAllComponents(SelectStub)
+      .find((select) => select.props("id") === "country");
+    if (!countrySelect) throw new Error("Country select was not rendered");
+    expect(countrySelect.props("options")).toEqual([
+      { name: "Deutschland", code: "DE" },
+      { name: "Österreich", code: "AT" },
+    ]);
+    expect(countrySelect.props("optionLabel")).toBe("name");
+    expect(countrySelect.props("optionValue")).toBe("code");
+    expect(countrySelect.props("modelValue")).toBe("DE");
+  });
 
   describe("get orders of client", () => {
     it("renders the button and opens the modal", async () => {

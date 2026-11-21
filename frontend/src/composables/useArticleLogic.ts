@@ -1,14 +1,14 @@
 import useNotifications from "@/composables/useNotifications";
 import { ArticleKind } from "@/global/types/appTypes";
 import type { Article } from "@/global/types/entities";
-import { ValidationError, replaceEmptyStringsWithNull } from "@/helpers/utils";
+import { ValidationError, trimStringsAndReplaceEmptyWithNull } from "@/helpers/utils";
 
 export function useArticleValidation() {
   const notifications = useNotifications();
 
   return {
     validateAndCleanPayload(data: Article): Article {
-      const cleaned = replaceEmptyStringsWithNull(data);
+      const cleaned = trimStringsAndReplaceEmptyWithNull(data);
 
       if (
         cleaned.kind === ArticleKind.heading &&

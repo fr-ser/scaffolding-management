@@ -12,7 +12,13 @@ import { closeDatabase, initializeAppDataSource } from "@/db";
 import { ErrorCode } from "@/global/types/backendTypes";
 import { getApp } from "@/main";
 import { getRequest } from "@/tests/api-utils";
-import { getInvoiceDocument, getOverdueNotice } from "@/tests/factories";
+import {
+  getClient,
+  getInvoice,
+  getInvoiceDocument,
+  getOrder,
+  getOverdueNotice,
+} from "@/tests/factories";
 
 describe("invoiceDocuments routes", () => {
   let app: Express;
@@ -55,5 +61,26 @@ describe("invoiceDocuments routes", () => {
 
     expect(response.status).toBe(400);
     expect((await response.json()).error.code).toBe(ErrorCode.FK_CONSTRAINT_OVERDUE_NOTICE);
+  });
+
+  test("creates invoice document snapshotting client country, vat_id and reverse_vat", async () => {
+    const client = getClient({
+      country: "AT",
+      vat_id: "ATU12345",
+      reverse_vat: true,
+    });
+    const order = await getOrder({ client }, appDataSource);
+    const invoice = await getInvoice({ order, order_id: order.id }, appDataSource);
+
+    const response = await fetch(
+      getRequest(server, `api/orders/invoices/${invoice.id}/documents`, { method: "POST" }),
+    );
+
+    expect(response.status).toBe(200);
+    const document = await response.json();
+    expect(document.client_country).toBe("AT");
+    expect(document.client_vat_id).toBe("ATU12345");
+    expect(document.client_reverse_vat).toBe(true);
+    expect(document).not.toHaveProperty("reverse_vat");
   });
 });

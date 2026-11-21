@@ -427,6 +427,97 @@ async function insertData(dataSource: DataSource) {
       amount: index,
     });
   }
+
+  const client = await dataSource.manager.save(Client, {
+    id: "K10",
+    company_name: "Reverse Charge Example",
+    street_and_number: "Example Street 1",
+    postal_code: "1010",
+    city: "Vienna",
+    country: "AT",
+    vat_id: "ATU12345678",
+    reverse_vat: true,
+  });
+  const order = await dataSource.manager.save(Order, {
+    id: "A10",
+    client_id: client.id,
+    title: "Reverse Charge Example",
+    description: "Cross-border scaffolding rental",
+    status: OrderStatus.finished,
+    can_have_cash_discount: false,
+  });
+  const invoice = await dataSource.manager.save(Invoice, {
+    order_id: order.id,
+    sub_id: "reverse-charge",
+    service_dates: ["2024-01-15"],
+    invoice_date: "2024-01-20",
+    payment_target: "2024-02-03",
+    status: PaymentStatus.reminded,
+    description: "Reverse-charge scaffolding rental",
+  });
+  const item = {
+    kind: ArticleKind.item,
+    title: "Scaffolding rental",
+    description: "Scaffolding rental and installation",
+    unit: "m2",
+    amount: 10,
+    price: 50,
+  };
+  await dataSource.manager.save(InvoiceItem, { ...item, invoice_id: invoice.id });
+
+  const snapshot = {
+    client_id: client.id,
+    client_company_name: client.company_name,
+    client_street_and_number: client.street_and_number,
+    client_postal_code: client.postal_code,
+    client_city: client.city,
+    client_country: client.country,
+    client_vat_id: client.vat_id,
+    client_reverse_vat: client.reverse_vat,
+    order_id: order.id,
+    order_title: order.title,
+  };
+  const invoiceDocument = await dataSource.manager.save(InvoiceDocument, {
+    ...snapshot,
+    id: "R2024-01-01",
+    creation_date: invoice.invoice_date,
+    invoice_id: invoice.id,
+    invoice_date: invoice.invoice_date,
+    service_dates: invoice.service_dates,
+    payment_target: invoice.payment_target,
+    can_have_cash_discount: order.can_have_cash_discount,
+  });
+  await dataSource.manager.save(InvoiceDocumentItem, {
+    ...item,
+    invoice_document_id: invoiceDocument.id,
+  });
+
+  const overdueNotice = await dataSource.manager.save(OverdueNotice, {
+    order_id: order.id,
+    sub_id: "reverse-charge",
+    description: "Reminder for the reverse-charge invoice",
+    notice_date: "2024-02-10",
+    payments_until: "2024-02-09",
+    payment_target: "2024-02-24",
+    notice_level: OverdueNoticeLevel.first,
+    payment_status: OverdueNoticePaymentStatus.open,
+    notice_costs: 10,
+    default_interest: 0,
+    invoice_documents: [invoiceDocument],
+  });
+  await dataSource.manager.save(OverdueNoticeDocument, {
+    ...snapshot,
+    id: "M2024-02-01",
+    creation_date: overdueNotice.notice_date,
+    overdue_notice_id: overdueNotice.id,
+    notice_level: overdueNotice.notice_level,
+    notice_date: overdueNotice.notice_date,
+    payments_until: overdueNotice.payments_until,
+    payment_target: overdueNotice.payment_target,
+    notice_costs: overdueNotice.notice_costs,
+    default_interest: overdueNotice.default_interest,
+    invoice_documents: [invoiceDocument],
+  });
 }
 
 async function main() {

@@ -7,6 +7,15 @@ export function neverFunction(_: never): never {
   throw new Error("This function should not have been called.");
 }
 
+const countryNames = new Map([
+  ["DE", "Deutschland"],
+  ["AT", "Österreich"],
+]);
+
+export function getCountryName(countryCode: string): string {
+  return countryNames.get(countryCode) ?? countryCode;
+}
+
 interface GetVatRateOptions {
   isoDate?: string;
 }

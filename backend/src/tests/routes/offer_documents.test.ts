@@ -12,7 +12,7 @@ import { closeDatabase, initializeAppDataSource } from "@/db";
 import { OfferDocument } from "@/db/entities/documents";
 import { getApp } from "@/main";
 import { getRequest } from "@/tests/api-utils";
-import { getOffer, getOfferDocument } from "@/tests/factories";
+import { getClient, getOffer, getOfferDocument, getOrder } from "@/tests/factories";
 
 describe("offer document routes", () => {
   let app: Express;
@@ -53,5 +53,26 @@ describe("offer document routes", () => {
       where: { id: "A2025-11-02" },
     });
     expect(newDocument).toBeTruthy();
+  });
+
+  test("creates offer document snapshotting client country, vat_id and reverse_vat", async () => {
+    const client = getClient({
+      country: "CH",
+      vat_id: "CHE-123.456.789",
+      reverse_vat: true,
+    });
+    const order = await getOrder({ client }, appDataSource);
+    const offer = await getOffer({ order, order_id: order.id }, appDataSource);
+
+    const response = await fetch(
+      getRequest(server, `api/orders/offers/${offer.id}/documents`, { method: "POST" }),
+    );
+
+    expect(response.status).toBe(200);
+    const document = await response.json();
+    expect(document.client_country).toBe("CH");
+    expect(document.client_vat_id).toBe("CHE-123.456.789");
+    expect(document.client_reverse_vat).toBe(true);
+    expect(document).not.toHaveProperty("reverse_vat");
   });
 });

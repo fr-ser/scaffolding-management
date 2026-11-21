@@ -12,6 +12,7 @@ import TabList from "primevue/tablist";
 import TabPanel from "primevue/tabpanel";
 import TabPanels from "primevue/tabpanels";
 import Tabs from "primevue/tabs";
+import Tag from "primevue/tag";
 import Textarea from "primevue/textarea";
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -383,6 +384,12 @@ const groupedTabData = computed(() =>
       <template #content>
         <div class="flex flex-col gap-y-5">
           <p class="font-bold">Daten</p>
+          <Tag
+            v-if="selectedClient?.reverse_vat"
+            severity="warn"
+            icon="pi pi-exclamation-triangle"
+            value="Reverse Charge (ohne MwSt.)"
+          />
           <div class="flex flex-row flex-wrap gap-6">
             <FloatLabel class="grow">
               <InputText id="order-title" v-model="orderInfo.title" class="w-full" />
@@ -497,6 +504,7 @@ const groupedTabData = computed(() =>
                     @deleted="onSubOrderDeleted"
                     @saved="(id) => onSubOrderSaved(DocumentKind.offer, id)"
                     :order="orderInfo as Order"
+                    :is-reverse-vat="selectedClient?.reverse_vat"
                     :existing-offer="tab.item as Offer"
                   />
                   <InvoiceEdit
@@ -504,6 +512,7 @@ const groupedTabData = computed(() =>
                     @deleted="onSubOrderDeleted"
                     @saved="(id) => onSubOrderSaved(DocumentKind.invoice, id)"
                     :order="orderInfo as Order"
+                    :is-reverse-vat="selectedClient?.reverse_vat"
                     :existing-invoice="tab.item as Invoice"
                   />
                   <CreditNoteEdit
@@ -511,6 +520,7 @@ const groupedTabData = computed(() =>
                     @deleted="onSubOrderDeleted"
                     @saved="(id) => onSubOrderSaved(DocumentKind.creditNote, id)"
                     :order="orderInfo as Order"
+                    :is-reverse-vat="selectedClient?.reverse_vat"
                     :existing-credit-note="tab.item as CreditNote"
                   />
                   <OverdueNoticeEdit
@@ -561,6 +571,7 @@ const groupedTabData = computed(() =>
                         @deleted="onSubOrderDeleted"
                         @saved="(id) => onSubOrderSaved(DocumentKind.offer, id)"
                         :order="orderInfo as Order"
+                        :is-reverse-vat="selectedClient?.reverse_vat"
                         :existing-offer="getSelectedGroupedTab(group.kind)?.item as Offer"
                       />
                       <InvoiceEdit
@@ -569,6 +580,7 @@ const groupedTabData = computed(() =>
                         @deleted="onSubOrderDeleted"
                         @saved="(id) => onSubOrderSaved(DocumentKind.invoice, id)"
                         :order="orderInfo as Order"
+                        :is-reverse-vat="selectedClient?.reverse_vat"
                         :existing-invoice="getSelectedGroupedTab(group.kind)?.item as Invoice"
                       />
                       <CreditNoteEdit
@@ -579,6 +591,7 @@ const groupedTabData = computed(() =>
                         @deleted="onSubOrderDeleted"
                         @saved="(id) => onSubOrderSaved(DocumentKind.creditNote, id)"
                         :order="orderInfo as Order"
+                        :is-reverse-vat="selectedClient?.reverse_vat"
                         :existing-credit-note="
                           getSelectedGroupedTab(group.kind)?.item as CreditNote
                         "

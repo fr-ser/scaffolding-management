@@ -16,7 +16,7 @@ import type {
   OverdueNoticeUpdate,
 } from "@/global/types/dataEditTypes";
 import type { OrderItem } from "@/global/types/entities";
-import { ValidationError, replaceEmptyStringsWithNull } from "@/helpers/utils";
+import { ValidationError, trimStringsAndReplaceEmptyWithNull } from "@/helpers/utils";
 
 export default function useOrderLogic() {
   const notifications = useNotifications();
@@ -54,7 +54,7 @@ export function useOrderValidation() {
 
   return {
     validateAndCleanPayload<T extends OrderCreate | OrderUpdate>(data: T): T {
-      const cleaned = replaceEmptyStringsWithNull(data);
+      const cleaned = trimStringsAndReplaceEmptyWithNull(data);
 
       if (!cleaned.title) {
         notifications.showNotification("Ein Titel ist nötig", "error");
@@ -81,8 +81,8 @@ export function useOfferValidation() {
         throw new ValidationError();
       }
 
-      const cleanedItems = data.items.map(replaceEmptyStringsWithNull);
-      const cleaned = { ...replaceEmptyStringsWithNull(data), items: cleanedItems };
+      const cleanedItems = data.items.map(trimStringsAndReplaceEmptyWithNull);
+      const cleaned = { ...trimStringsAndReplaceEmptyWithNull(data), items: cleanedItems };
 
       validateOfferOrInvoiceItems(cleaned.items, notifications);
 
@@ -101,8 +101,8 @@ export function useInvoiceValidation() {
         throw new ValidationError();
       }
 
-      const cleanedItems = data.items.map(replaceEmptyStringsWithNull);
-      const cleaned = { ...replaceEmptyStringsWithNull(data), items: cleanedItems };
+      const cleanedItems = data.items.map(trimStringsAndReplaceEmptyWithNull);
+      const cleaned = { ...trimStringsAndReplaceEmptyWithNull(data), items: cleanedItems };
 
       if (!cleaned.service_dates || cleaned.service_dates.length === 0) {
         notifications.showNotification("Mindestens ein Leistungsdatum ist nötig", "error");
@@ -155,8 +155,8 @@ export function useCreditNoteValidation() {
         throw new ValidationError();
       }
 
-      const cleanedItems = data.items.map(replaceEmptyStringsWithNull);
-      const cleaned = { ...replaceEmptyStringsWithNull(data), items: cleanedItems };
+      const cleanedItems = data.items.map(trimStringsAndReplaceEmptyWithNull);
+      const cleaned = { ...trimStringsAndReplaceEmptyWithNull(data), items: cleanedItems };
 
       validateOfferOrInvoiceItems(cleaned.items, notifications);
 
@@ -175,7 +175,7 @@ export function useOverdueNoticeValidation() {
         throw new ValidationError();
       }
 
-      const cleaned = replaceEmptyStringsWithNull(data);
+      const cleaned = trimStringsAndReplaceEmptyWithNull(data);
 
       return cleaned;
     },
