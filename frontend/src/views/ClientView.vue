@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Card from "primevue/card";
+import Checkbox from "primevue/checkbox";
 import DatePicker from "primevue/datepicker";
 import Dialog from "primevue/dialog";
 import FloatLabel from "primevue/floatlabel";
@@ -24,7 +25,7 @@ import useConfirmations from "@/composables/useConfirmations";
 import useNotifications from "@/composables/useNotifications";
 import { ClientSalutation } from "@/global/types/appTypes";
 import { ErrorCode, UserPermissions } from "@/global/types/backendTypes";
-import type { ClientUpdate } from "@/global/types/dataEditTypes";
+import type { ClientCreate, ClientUpdate } from "@/global/types/dataEditTypes";
 import type { Order } from "@/global/types/entities";
 import { getClientListPath, getOrderEditPath } from "@/helpers/routes";
 import { useUserStore } from "@/store";
@@ -81,7 +82,10 @@ async function onClickDelete() {
   }
 }
 
-const currentClient = ref<ClientUpdate>({}); // the client as shown in the frontend
+const currentClient = ref<ClientUpdate>({
+  country: "DE",
+  reverse_vat: false,
+}); // the client as shown in the frontend
 
 const birthdayDate = ref<Date>();
 
@@ -108,7 +112,7 @@ const onSaveClient = async () => {
     await updateClient(`${route.params.id}`, cleanPayload);
     notifications.showNotification("Die Änderung der Kundendaten wurde gespeichert");
   } else {
-    await createClient(cleanPayload);
+    await createClient(cleanPayload as ClientCreate);
     router.push(getClientListPath());
     notifications.showNotification("Ein neuer Kunde wurde erstellt");
   }
@@ -124,6 +128,8 @@ onMounted(async () => {
 
     currentClient.value = {
       ...clientData,
+      country: clientData.country || "DE",
+      reverse_vat: clientData.reverse_vat ?? false,
     };
 
     birthdayDate.value = clientData.birthday ? new Date(clientData.birthday) : undefined;
@@ -201,6 +207,10 @@ onMounted(async () => {
             <InputText id="city" v-model="currentClient.city" class="w-full" />
             <label for="city">Stadt</label>
           </FloatLabel>
+          <FloatLabel>
+            <InputText id="country" v-model="currentClient.country" class="w-full" />
+            <label for="country">Land</label>
+          </FloatLabel>
         </div>
       </template>
     </Card>
@@ -228,6 +238,16 @@ onMounted(async () => {
       <template #content>
         <div class="mb-4 font-bold">Sonstiges</div>
         <div class="card flex flex-col justify-center gap-y-6">
+          <div class="flex items-center gap-2">
+            <Checkbox inputId="reverse-vat" v-model="currentClient.reverse_vat" :binary="true" />
+            <label for="reverse-vat" class="text-sm cursor-pointer"
+              >Reverse Charge (Steuerschuldnerschaft des Leistungsempfängers)</label
+            >
+          </div>
+          <FloatLabel>
+            <InputText id="vat-id" v-model="currentClient.vat_id" class="w-full" />
+            <label for="vat-id">USt-IdNr. / Steuer-Nr.</label>
+          </FloatLabel>
           <FloatLabel>
             <DatePicker
               id="birthday"

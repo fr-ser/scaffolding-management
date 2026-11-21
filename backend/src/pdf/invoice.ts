@@ -78,7 +78,7 @@ export const setInvoiceSubSumTableText = async function setInvoiceSubSumTableTex
   // EPC-QR Code
   const netSum = getItemSum(document.items);
   const vatRate = getVatRate({ isoDate: document.service_dates[0] });
-  const grossSum = netSum * (1 + vatRate);
+  const grossSum = document.client_reverse_vat ? netSum : netSum * (1 + vatRate);
   await drawEpcQrCode(
     pdfFile,
     grossSum,

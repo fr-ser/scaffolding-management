@@ -19,6 +19,7 @@ const props = defineProps<{
   vatDate: Date;
   hasAutomaticRentalNote: boolean;
   negate?: boolean;
+  isReverseVat?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -85,8 +86,14 @@ async function onItemCreate(kind: ArticleKind) {
     <div class="grow flex flex-row flex-wrap gap-x-10 gap-y-2 items-center">
       <div class="font-bold">Summe:</div>
       <span>Netto: {{ formatNumber(itemsNetSum, { currency: true }) }} </span>
-      <span>USt: {{ formatNumber(itemsNetSum * vatRate, { currency: true }) }}</span>
-      <span>Brutto: {{ formatNumber(itemsNetSum * (1 + vatRate), { currency: true }) }} </span>
+      <span
+        >USt:
+        {{ isReverseVat ? "-" : formatNumber(itemsNetSum * vatRate, { currency: true }) }}</span
+      >
+      <span
+        >Brutto:
+        {{ isReverseVat ? "-" : formatNumber(itemsNetSum * (1 + vatRate), { currency: true }) }}
+      </span>
     </div>
     <div class="flex flex-wrap items-center gap-2">
       <Button
@@ -115,6 +122,7 @@ async function onItemCreate(kind: ArticleKind) {
     :key="idx"
     :vat-date="vatDate.toISOString()"
     :negate="negate"
+    :is-reverse-vat="isReverseVat"
     @deleted="onItemDelete(idx)"
     @updated="onItemUpdate(idx, item)"
   />
@@ -126,6 +134,7 @@ async function onItemCreate(kind: ArticleKind) {
     :item="automaticRentalNoteItem"
     :key="automaticRentalNoteItem.description"
     :vat-date="vatDate.toISOString()"
+    :is-reverse-vat="isReverseVat"
     @deleted="emit('removeAutomaticRentalNote')"
   />
 </template>

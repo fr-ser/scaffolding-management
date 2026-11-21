@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { expect, test } from "vitest";
+import PDFDocument from "pdfkit";
+import { expect, test, vi } from "vitest";
 
 import { DocumentKind } from "@/global/types/appTypes";
 import { renderMultiplePDF } from "@/pdf/renderPDF";
@@ -26,6 +27,41 @@ test("invoice PDF generation", async () => {
     { kind: DocumentKind.invoice, document: await getInvoiceDocument() },
   ]);
   compareToSnapshot(buffer, "invoice_snapshot.pdf");
+});
+
+test("reverse-charge invoice PDF generation", async () => {
+  const buffer = await renderMultiplePDF([
+    {
+      kind: DocumentKind.invoice,
+      document: await getInvoiceDocument({
+        client_reverse_vat: true,
+        client_country: "AT",
+        client_vat_id: "ATU12345",
+      }),
+    },
+  ]);
+  compareToSnapshot(buffer, "reverse_charge_invoice_snapshot.pdf");
+});
+
+test.each([
+  ["AT", "Österreich"],
+  ["CH", "CH"],
+  ["DE", null],
+])("renders country %s as %s in the recipient address", async (country, expected) => {
+  const text = vi.spyOn(PDFDocument.prototype, "text");
+
+  try {
+    const document = await getInvoiceDocument({ client_country: country });
+    await renderMultiplePDF([{ kind: DocumentKind.invoice, document }]);
+    const strings = text.mock.calls.map((call) => call[0]);
+    if (expected) {
+      expect(strings).toContain(expected);
+    } else {
+      expect(strings).not.toContain(country);
+    }
+  } finally {
+    text.mockRestore();
+  }
 });
 
 test("offer PDF generation", async () => {

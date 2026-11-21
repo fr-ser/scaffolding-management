@@ -22,6 +22,8 @@ const document: InvoiceDocument = {
   creation_date: "2026-11-17",
   client_id: "client-1",
   client_email: "client@example.com",
+  client_country: "DE",
+  client_reverse_vat: false,
   order_id: "order-1",
   order_title: "Test project",
   invoice_id: 1,

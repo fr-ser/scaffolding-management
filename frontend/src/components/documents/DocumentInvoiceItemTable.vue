@@ -13,7 +13,9 @@ const invoiceTotals = computed(() => {
 
   for (const invoice of props.document.invoice_documents) {
     const net = getItemSum(invoice.items);
-    const vatRate = getVatRate({ isoDate: invoice.service_dates[0] });
+    const vatRate = invoice.client_reverse_vat
+      ? 0
+      : getVatRate({ isoDate: invoice.service_dates[0] });
 
     result[invoice.id] = { net, vat: net * vatRate, gross: net * (1 + vatRate) };
   }
@@ -42,9 +44,11 @@ const invoiceTotals = computed(() => {
         <td>{{ formatNumber(invoiceTotals[item.id].net, { currency: true }) }}</td>
         <td>
           {{
-            formatNumber(invoiceTotals[item.id].vat, {
-              currency: true,
-            })
+            item.client_reverse_vat
+              ? "-"
+              : formatNumber(invoiceTotals[item.id].vat, {
+                  currency: true,
+                })
           }}
         </td>
         <td>

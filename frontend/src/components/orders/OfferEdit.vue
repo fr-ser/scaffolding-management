@@ -23,6 +23,7 @@ import { ValidationError } from "@/helpers/utils";
 const props = defineProps<{
   existingOffer?: Offer;
   order: Order;
+  isReverseVat?: boolean;
 }>();
 
 // we create this intermediate variable to allow setting the offer after saving
@@ -171,6 +172,7 @@ function onUpdatePositions(positions: OfferItemCreate[]) {
   <Divider />
 
   <SubOrderPositions
+    :is-reverse-vat="isReverseVat"
     :vat-date="offerDate || new Date()"
     :sub-order-positions="offerItemsArray"
     @update-positions="onUpdatePositions"

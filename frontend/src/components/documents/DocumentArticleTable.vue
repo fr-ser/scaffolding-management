@@ -18,7 +18,7 @@ const props = defineProps<{
   kind: DocumentKind.invoice | DocumentKind.offer | DocumentKind.creditNote;
 }>();
 
-const vatRate = computed(() => {
+const vatDate = computed(() => {
   let vatDate: string;
 
   if (props.kind === DocumentKind.invoice) {
@@ -29,8 +29,10 @@ const vatRate = computed(() => {
     vatDate = (props.document as CreditNoteDocument).credit_date;
   } else neverFunction(props.kind);
 
-  return getVatRate({ isoDate: vatDate });
+  return vatDate;
 });
+
+const vatRate = computed(() => getVatRate({ isoDate: vatDate.value }));
 
 const allItemsNetSum = computed(() => {
   return getItemSum(props.document.items);
@@ -71,40 +73,27 @@ const allItemsNetSum = computed(() => {
           {{
             item.kind === ArticleKind.heading
               ? ""
-              : `${
-                  getVatRate({
-                    isoDate: `${kind === DocumentKind.invoice ? "" : kind === DocumentKind.creditNote ? (document as CreditNoteDocument).credit_date : (document as OfferDocument).offered_at}`,
-                  }) *
-                    100 +
-                  " %"
-                }`
+              : document.client_reverse_vat
+                ? "-"
+                : `${vatRate * 100} %`
           }}
         </td>
         <td>
           {{
             item.kind === ArticleKind.heading
               ? ""
-              : formatNumber(
-                  getVatAmount(
-                    item.amount,
-                    item.price,
-                    `${kind === DocumentKind.invoice ? "" : kind === DocumentKind.creditNote ? (document as CreditNoteDocument).credit_date : (document as OfferDocument).offered_at}`,
-                  ),
-                  { maxDecimals: 2 },
-                )
+              : document.client_reverse_vat
+                ? "-"
+                : formatNumber(getVatAmount(item.amount, item.price, vatDate), { maxDecimals: 2 })
           }}
         </td>
         <td>
           {{
             item.kind === ArticleKind.heading
               ? ""
-              : formatNumber(
-                  getGrossAmount(
-                    item,
-                    `${kind === DocumentKind.invoice ? "" : kind === DocumentKind.creditNote ? (document as CreditNoteDocument).credit_date : (document as OfferDocument).offered_at}`,
-                  ),
-                  { maxDecimals: 2 },
-                )
+              : document.client_reverse_vat
+                ? "-"
+                : formatNumber(getGrossAmount(item, vatDate), { maxDecimals: 2 })
           }}
         </td>
       </tr>
@@ -115,15 +104,34 @@ const allItemsNetSum = computed(() => {
       <tr class="font-bold">
         <td>Netto:</td>
         <td>Umsatzsteuer</td>
-        <td>Rechnungsbetrag</td>
+        <td>Brutto</td>
       </tr>
       <tr class="font-bold">
         <td>{{ formatNumber(allItemsNetSum, { currency: true }) }}</td>
-        <td>{{ formatNumber(allItemsNetSum * vatRate, { currency: true }) }}</td>
-        <td>{{ formatNumber(allItemsNetSum * (1 + vatRate), { currency: true }) }}</td>
+        <td>
+          {{
+            document.client_reverse_vat
+              ? "-"
+              : formatNumber(allItemsNetSum * vatRate, { currency: true })
+          }}
+        </td>
+        <td>
+          {{
+            document.client_reverse_vat
+              ? "-"
+              : formatNumber(allItemsNetSum * (1 + vatRate), { currency: true })
+          }}
+        </td>
       </tr>
     </tbody>
   </table>
+  <div v-if="kind === DocumentKind.invoice && document.client_reverse_vat" class="mt-3">
+    <p>Steuerschuldnerschaft des Leistungsempfängers (Reverse Charge)</p>
+    <p>
+      Die Rechnung enthält keine Umsatzsteuer, da die Steuerschuldnerschaft auf den
+      Leistungsempfänger übergeht.
+    </p>
+  </div>
 </template>
 
 <style scoped>
