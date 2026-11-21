@@ -35,6 +35,10 @@ export interface Client extends CreatedAtUpdatedAt {
   postal_code?: string;
   city?: string;
   street_and_number?: string;
+  country: string;
+  reverse_vat: boolean;
+  // Null clears the VAT ID in an update; undefined leaves it unchanged.
+  vat_id?: string | null;
   orders?: Order[];
 }
 
@@ -133,6 +137,9 @@ interface BaseDocument extends CreatedAtUpdatedAt {
   client_street_and_number?: string;
   client_postal_code?: string;
   client_city?: string;
+  client_country: string;
+  client_reverse_vat: boolean;
+  client_vat_id?: string | null;
   order_id: string;
   order_title: string;
 }

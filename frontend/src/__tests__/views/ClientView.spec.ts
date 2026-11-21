@@ -1,5 +1,7 @@
 import { createTestingPinia } from "@pinia/testing";
 import { flushPromises, shallowMount } from "@vue/test-utils";
+import Checkbox from "primevue/checkbox";
+import PrimeVue from "primevue/config";
 import { describe, expect, it, vi } from "vitest";
 import { useRoute } from "vue-router";
 
@@ -16,6 +18,25 @@ describe("ClientView", () => {
   >);
   vi.mocked(getClient).mockResolvedValue(getClientMock());
   vi.mocked(getOrders).mockResolvedValue({ data: [getOrderMock()], totalCount: 1 });
+
+  it("associates the reverse-charge label with the checkbox input", async () => {
+    const wrapper = shallowMount(ClientView, {
+      global: {
+        plugins: [createTestingPinia({ createSpy: vi.fn }), PrimeVue],
+        stubs: {
+          Card: { template: "<div><slot name='content' /></div>" },
+          Checkbox,
+          "router-link": true,
+        },
+      },
+    });
+    await flushPromises();
+    const label = wrapper.get('label[for="reverse-vat"]');
+    const input = wrapper.get('input[type="checkbox"]');
+    expect((label.element as HTMLLabelElement).control).toBe(input.element);
+    await input.setValue(true);
+    expect((input.element as HTMLInputElement).checked).toBe(true);
+  });
 
   describe("get orders of client", () => {
     it("renders the button and opens the modal", async () => {

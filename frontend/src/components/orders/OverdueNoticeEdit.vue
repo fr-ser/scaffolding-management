@@ -71,7 +71,7 @@ const itemsArray = ref<InvoiceDocument[]>(finalExistingSubOrder.value?.invoice_d
 const enrichedItems = computed(() => {
   return itemsArray.value.map((item) => ({
     invoiceDocument: item,
-    vatRate: getVatRate({ isoDate: item.invoice_date }),
+    vatRate: item.client_reverse_vat ? 0 : getVatRate({ isoDate: item.service_dates[0] }),
     netSum: getItemSum(item.items),
   }));
 });
@@ -80,12 +80,17 @@ const itemsSum = computed(() => {
   return {
     net: itemsArray.value.reduce((sum, item) => sum + getItemSum(item.items), 0),
     vat: itemsArray.value.reduce(
-      (sum, item) => sum + getItemSum(item.items) * getVatRate({ isoDate: item.invoice_date }),
+      (sum, item) =>
+        sum +
+        getItemSum(item.items) *
+          (item.client_reverse_vat ? 0 : getVatRate({ isoDate: item.service_dates[0] })),
       0,
     ),
     gross: itemsArray.value.reduce(
       (sum, item) =>
-        sum + getItemSum(item.items) * (1 + getVatRate({ isoDate: item.invoice_date })),
+        sum +
+        getItemSum(item.items) *
+          (1 + (item.client_reverse_vat ? 0 : getVatRate({ isoDate: item.service_dates[0] }))),
       0,
     ),
   };

@@ -21,6 +21,7 @@ const props = defineProps<{
   vatDate: string;
   isAppManagedPosition?: boolean;
   negate?: boolean;
+  isReverseVat?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -92,10 +93,12 @@ watch(
         }}
         - Brutto:
         {{
-          formatNumber(
-            (negate ? -1 : 1) * editableItem.price * editableItem.amount * (1 + vatRate),
-            { currency: true },
-          )
+          isReverseVat
+            ? "-"
+            : formatNumber(
+                (negate ? -1 : 1) * editableItem.price * editableItem.amount * (1 + vatRate),
+                { currency: true },
+              )
         }}
       </div>
       <div>

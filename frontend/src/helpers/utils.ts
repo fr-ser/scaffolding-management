@@ -51,14 +51,15 @@ export class ValidationError extends Error {
 }
 
 /**
- * This function replaces all empty strings in an object with null.
+ * Trims string properties and replaces empty strings with null.
  * The primary use of this is to clean up data before sending it to the backend.
  */
-export function replaceEmptyStringsWithNull<T extends object>(data: T): T {
+export function trimStringsAndReplaceEmptyWithNull<T extends object>(data: T): T {
   const result: Record<string, unknown> = {};
   const untypedData = data as Record<string, unknown>;
   Object.keys(data).forEach((key) => {
-    result[key] = untypedData[key] === "" ? null : untypedData[key];
+    const value = untypedData[key];
+    result[key] = typeof value === "string" ? value.trim() || null : value;
   });
   return result as T;
 }

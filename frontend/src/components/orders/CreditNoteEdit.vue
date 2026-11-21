@@ -29,6 +29,7 @@ import { ValidationError } from "@/helpers/utils";
 const props = defineProps<{
   existingCreditNote?: CreditNote;
   order: Order;
+  isReverseVat?: boolean;
 }>();
 
 const finalExistingSubOrder = ref(props.existingCreditNote);
@@ -197,6 +198,7 @@ function onUpdatePositions(positions: CreditNoteItemCreate[]) {
   </div>
 
   <SubOrderPositions
+    :is-reverse-vat="isReverseVat"
     :vat-date="creditDate || new Date()"
     :sub-order-positions="creditNoteItemsArray"
     @update-positions="onUpdatePositions"

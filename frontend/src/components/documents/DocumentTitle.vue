@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { formatIsoDateString, neverFunction } from "@/global/helpers";
+import { formatIsoDateString, getCountryName, neverFunction } from "@/global/helpers";
 import { DocumentKind, OverdueNoticeLevel } from "@/global/types/appTypes";
 import type {
   CreditNoteDocument,
@@ -76,6 +76,10 @@ const content = computed(() => {
       </p>
       <p>{{ result.client_street_and_number }}</p>
       <p>{{ result.client_postal_code }} {{ result.client_city }}</p>
+      <p v-if="result.client_country && result.client_country !== 'DE'">
+        {{ getCountryName(result.client_country) }}
+      </p>
+      <p v-if="result.client_vat_id">USt-IdNr.: {{ result.client_vat_id }}</p>
     </div>
     <div class="">
       <hr class="border-black border-1 mb-3" />
