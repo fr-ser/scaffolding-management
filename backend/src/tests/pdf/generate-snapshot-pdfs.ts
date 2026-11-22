@@ -22,6 +22,22 @@ async function main() {
   fs.writeFileSync(path.join(SNAPSHOT_DIR, "invoice_snapshot.pdf"), invoicePdf);
   console.log("Written: invoice_snapshot.pdf");
 
+  const reverseChargeInvoicePdf = await renderMultiplePDF([
+    {
+      kind: DocumentKind.invoice,
+      document: await getInvoiceDocument({
+        client_reverse_vat: true,
+        client_country: "AT",
+        client_vat_id: "ATU12345",
+      }),
+    },
+  ]);
+  fs.writeFileSync(
+    path.join(SNAPSHOT_DIR, "reverse_charge_invoice_snapshot.pdf"),
+    reverseChargeInvoicePdf,
+  );
+  console.log("Written: reverse_charge_invoice_snapshot.pdf");
+
   const offerPdf = await renderMultiplePDF([
     { kind: DocumentKind.offer, document: await getOfferDocument() },
   ]);

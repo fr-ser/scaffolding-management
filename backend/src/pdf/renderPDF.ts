@@ -16,7 +16,13 @@ import {
   COMPANY_VAT_CODE,
   STATIC_FILE_ROOT,
 } from "@/config";
-import { formatNumber, getItemSum, getVatRate, neverFunction } from "@/global/helpers";
+import {
+  formatNumber,
+  getCountryName,
+  getItemSum,
+  getVatRate,
+  neverFunction,
+} from "@/global/helpers";
 import { ArticleKind, DocumentKind, OverdueNoticeLevel } from "@/global/types/appTypes";
 import { AnyDocument } from "@/global/types/backendTypes";
 import {
@@ -177,6 +183,13 @@ const createDocument = async function createDocument(
       .text(documentData.document.client_street_and_number || "")
       .text(documentData.document.client_postal_code + " " + documentData.document.client_city);
 
+    if (documentData.document.client_country && documentData.document.client_country !== "DE") {
+      pdfFile.text(getCountryName(documentData.document.client_country));
+    }
+    if (documentData.document.client_vat_id) {
+      pdfFile.text(`USt-IdNr.: ${documentData.document.client_vat_id}`);
+    }
+
     pdfFile
       .lineWidth(1)
       .moveTo(mmToPx(135), mmToPx(38))
@@ -304,6 +317,8 @@ const createDocument = async function createDocument(
         item.price != null &&
         item.unit != null
       ) {
+        const isReverseVat = documentData.document.client_reverse_vat === true;
+
         pdfFile
           .text(formatNumber(item.amount), tParams.c2x, pdfFileData.currY, {
             width: tParams.c3x - tParams.c2x,
@@ -326,12 +341,14 @@ const createDocument = async function createDocument(
               align: "center",
             },
           )
-          .text(`${vatRate * 100}%`, tParams.c6x, pdfFileData.currY, {
+          .text(isReverseVat ? "-" : `${vatRate * 100}%`, tParams.c6x, pdfFileData.currY, {
             width: tParams.c7x - tParams.c6x,
             align: "center",
           })
           .text(
-            formatNumber(item.price * item.amount * vatRate, { maxDecimals: 2 }),
+            isReverseVat
+              ? "-"
+              : formatNumber(item.price * item.amount * vatRate, { maxDecimals: 2 }),
             tParams.c7x,
             pdfFileData.currY,
             {
@@ -340,7 +357,9 @@ const createDocument = async function createDocument(
             },
           )
           .text(
-            formatNumber(item.price * item.amount * (1 + vatRate), { maxDecimals: 2 }),
+            isReverseVat
+              ? "-"
+              : formatNumber(item.price * item.amount * (1 + vatRate), { maxDecimals: 2 }),
             tParams.c8x,
             pdfFileData.currY,
             {
@@ -382,9 +401,28 @@ const createDocument = async function createDocument(
   }
 
   async function createTableBottomText() {
+    const reverseChargeHeading = "Steuerschuldnerschaft des Leistungsempfängers (Reverse Charge)";
+    const reverseChargeExplanation =
+      "Die Rechnung enthält keine Umsatzsteuer, da die Steuerschuldnerschaft auf den Leistungsempfänger übergeht.";
+    const showReverseChargeNotice =
+      documentData.kind === DocumentKind.invoice && documentData.document.client_reverse_vat;
+    const noticeWidth = appPageOptions.pageWidth - 2 * appPageOptions.horizontalMargin;
+
+    pdfFile.fontSize(10).font("Helvetica");
+    const noticeHeight = showReverseChargeNotice
+      ? pdfFile.heightOfString(reverseChargeHeading, { width: noticeWidth }) +
+        pdfFile.heightOfString(reverseChargeExplanation, { width: noticeWidth })
+      : 0;
     pdfFile.fontSize(10).font("Helvetica-Bold");
 
-    newPageCheck(pdfFile, pdfFileData.currY, pdfFile.currentLineHeight() * 3.5, pdfFileData);
+    newPageCheck(
+      pdfFile,
+      pdfFileData.currY,
+      showReverseChargeNotice
+        ? 15 + pdfFile.currentLineHeight() * 3 + noticeHeight
+        : pdfFile.currentLineHeight() * 3.5,
+      pdfFileData,
+    );
 
     pdfFile
       .lineWidth(1)
@@ -417,6 +455,7 @@ const createDocument = async function createDocument(
       documentData.kind === DocumentKind.creditNote
     ) {
       const netSum = getItemSum(documentData.document.items);
+      const isReverseVat = documentData.document.client_reverse_vat === true;
 
       pdfFile
         .font("Helvetica")
@@ -430,7 +469,7 @@ const createDocument = async function createDocument(
           },
         )
         .text(
-          formatNumber(netSum * vatRate, { currency: true }),
+          isReverseVat ? "-" : formatNumber(netSum * vatRate, { currency: true }),
           appPageOptions.horizontalMargin + mmToPx(60),
           pdfFileData.currY,
           {
@@ -439,7 +478,7 @@ const createDocument = async function createDocument(
           },
         )
         .text(
-          formatNumber(netSum * (1 + vatRate), { currency: true }),
+          isReverseVat ? "-" : formatNumber(netSum * (1 + vatRate), { currency: true }),
           appPageOptions.horizontalMargin + mmToPx(120),
           pdfFileData.currY,
           { width: mmToPx(60), align: "center" },
@@ -491,6 +530,16 @@ const createDocument = async function createDocument(
       .moveTo(appPageOptions.horizontalMargin + mmToPx(180), pdfFileData.prevY - 3)
       .lineTo(appPageOptions.horizontalMargin + mmToPx(180), pdfFileData.currY + 3)
       .stroke();
+
+    if (showReverseChargeNotice) {
+      pdfFile
+        .font("Helvetica")
+        .text(reverseChargeHeading, appPageOptions.horizontalMargin, pdfFileData.currY + 10, {
+          width: noticeWidth,
+        })
+        .text(reverseChargeExplanation, { width: noticeWidth });
+      pdfFileData.currY = pdfFile.y;
+    }
 
     if (documentData.kind === DocumentKind.offer) setOfferSubSumTableText(pdfFile, pdfFileData);
     else if (documentData.kind === DocumentKind.invoice)

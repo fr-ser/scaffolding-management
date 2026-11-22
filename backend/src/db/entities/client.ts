@@ -51,6 +51,15 @@ export class Client {
   @Column({ type: "text", nullable: true })
   street_and_number?: string;
 
+  @Column({ type: "text", default: "DE" })
+  declare country: string;
+
+  @Column({ type: "boolean", default: false })
+  declare reverse_vat: boolean;
+
+  @Column({ type: "text", nullable: true })
+  vat_id?: string | null;
+
   @OneToMany(() => Order, (order) => order.client)
   orders?: Order[];
 }

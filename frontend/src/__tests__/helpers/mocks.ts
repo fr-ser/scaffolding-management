@@ -17,6 +17,9 @@ export function getClientMock() {
     postal_code: "postal code 9",
     city: "city 9",
     street_and_number: "street and number 9",
+    country: "DE",
+    reverse_vat: false,
+    vat_id: undefined,
   };
 }
 

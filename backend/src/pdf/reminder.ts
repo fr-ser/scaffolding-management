@@ -123,7 +123,9 @@ export function createRmdTable(
     }
 
     const netSum = getItemSum(invoice.items);
-    const vatRate = getVatRate({ isoDate: invoice.service_dates[0] });
+    const vatRate = invoice.client_reverse_vat
+      ? 0
+      : getVatRate({ isoDate: invoice.service_dates[0] });
 
     pdfFile
       .font("Helvetica")
@@ -144,10 +146,15 @@ export function createRmdTable(
         width: rmdTParams.c5x - rmdTParams.c4x,
         align: "center",
       })
-      .text(formatNumber(netSum * vatRate, { currency: true }), rmdTParams.c5x, pdfFileData.currY, {
-        width: rmdTParams.c6x - rmdTParams.c5x,
-        align: "center",
-      })
+      .text(
+        invoice.client_reverse_vat ? "-" : formatNumber(netSum * vatRate, { currency: true }),
+        rmdTParams.c5x,
+        pdfFileData.currY,
+        {
+          width: rmdTParams.c6x - rmdTParams.c5x,
+          align: "center",
+        },
+      )
       .text(
         formatNumber(netSum * (1 + vatRate), { currency: true }),
         rmdTParams.c6x,
@@ -209,7 +216,9 @@ export function setReminderSumTable(
   let prices = { net: 0, tax: 0, gross: 0 };
   for (const invoice of document.invoice_documents) {
     const netSum = getItemSum(invoice.items);
-    const vatRate = getVatRate({ isoDate: invoice.service_dates[0] });
+    const vatRate = invoice.client_reverse_vat
+      ? 0
+      : getVatRate({ isoDate: invoice.service_dates[0] });
 
     prices = {
       net: prices.net + netSum,
@@ -267,7 +276,9 @@ export async function setReminderSubSumTableText(
   let prices = { net: 0, tax: 0, gross: 0 };
   for (const invoice of document.invoice_documents) {
     const netSum = getItemSum(invoice.items);
-    const vatRate = getVatRate({ isoDate: invoice.service_dates[0] });
+    const vatRate = invoice.client_reverse_vat
+      ? 0
+      : getVatRate({ isoDate: invoice.service_dates[0] });
 
     prices = {
       net: prices.net + netSum,

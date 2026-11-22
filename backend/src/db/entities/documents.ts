@@ -63,6 +63,15 @@ abstract class BaseDocument {
   @Column({ type: "text", nullable: true })
   client_city?: string;
 
+  @Column({ type: "text", default: "DE" })
+  declare client_country: string;
+
+  @Column({ type: "boolean", default: false })
+  declare client_reverse_vat: boolean;
+
+  @Column({ type: "text", nullable: true })
+  client_vat_id?: string | null;
+
   @Column({ type: "text" })
   declare order_title: string;
 }

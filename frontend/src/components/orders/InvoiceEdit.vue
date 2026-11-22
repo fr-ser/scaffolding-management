@@ -23,6 +23,7 @@ import { ValidationError, formatDateToIsoString } from "@/helpers/utils";
 const props = defineProps<{
   existingInvoice?: Invoice;
   order: Order;
+  isReverseVat?: boolean;
 }>();
 
 // we create this intermediate variable to allow setting the offer after saving
@@ -213,6 +214,7 @@ function onUpdatePositions(positions: InvoiceItemCreate[]) {
   <Divider />
 
   <SubOrderPositions
+    :is-reverse-vat="isReverseVat"
     :vat-date="invoiceDate || new Date()"
     :sub-order-positions="invoiceItemsArray"
     @update-positions="onUpdatePositions"
